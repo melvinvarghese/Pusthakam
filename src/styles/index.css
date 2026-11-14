@@ -1,0 +1,74 @@
+@import "@fontsource-variable/inter";
+@import "tailwindcss";
+
+/* Design tokens. Components use these only (no raw hex). Light = ivory/sand/sage, dark = charcoal. */
+:root {
+  --bg: #f6f3ea;
+  --surface: #fdfcf8;
+  --surface-2: #efeadc;
+  --sidebar: #ece6d5;
+  --border: #d9d1bb;
+  --fg: #23262a;
+  --muted-fg: #5b6066;
+  --accent: #4b6a54;
+  --accent-fg: #ffffff;
+  --accent-soft: #dbe6dc;
+  --sand: #cbbd9b;
+  --danger: #a33a32;
+  --warning: #8a5a12;
+  --ring: #4b6a54;
+  --radius: 6px;
+  color-scheme: light;
+}
+
+:root[data-theme="dark"] {
+  --bg: #1a1c1e;
+  --surface: #212427;
+  --surface-2: #2a2e31;
+  --sidebar: #17191b;
+  --border: #363b3f;
+  --fg: #ece8dc;
+  --muted-fg: #a5a99f;
+  --accent: #8fb39a;
+  --accent-fg: #14201a;
+  --accent-soft: #2a3a30;
+  --sand: #8a7d5f;
+  --danger: #e0877f;
+  --warning: #d9a65a;
+  --ring: #8fb39a;
+  color-scheme: dark;
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-sidebar: var(--sidebar);
+  --color-border: var(--border);
+  --color-fg: var(--fg);
+  --color-muted: var(--muted-fg);
+  --color-accent: var(--accent);
+  --color-accent-fg: var(--accent-fg);
+  --color-accent-soft: var(--accent-soft);
+  --color-sand: var(--sand);
+  --color-danger: var(--danger);
+  --color-warning: var(--warning);
+  --font-sans: "Inter Variable", system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans", "Noto Sans Malayalam", sans-serif;
+  --radius-md: var(--radius);
+}
+
+html, body, #root { height: 100%; }
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}
