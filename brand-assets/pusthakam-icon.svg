@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-labelledby="title desc">
+  <title id="title">Pusthakam app icon</title>
+  <desc id="desc">A deep green open-book monogram forming the letter P, with a copper bookmark.</desc>
+  <path d="M47 32h93c42 0 69 24 69 62 0 37-27 61-69 61H99v68H47V32zm52 45v34h40c13 0 20-6 20-17s-7-17-20-17H99z" fill="#123F35"/>
+  <path d="M99 160c18-22 42-34 72-38v52c-29 5-52 19-72 42v-56z" fill="#1D5A4C"/>
+  <path d="M171 161h27v68l-13.5-10-13.5 10v-68z" fill="#B96B32"/>
+  <path d="M112 43h28c30 0 49 15 49 39 0 10-3 19-10 26-6-16-21-25-43-25h-24V43z" fill="#F7F4EC" opacity=".95"/>
+</svg>
