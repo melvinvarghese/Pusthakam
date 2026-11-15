@@ -1,6 +1,7 @@
 import { Component, type ErrorInfo, type ReactNode } from "react";
 import { TriangleAlert } from "lucide-react";
 import { EmptyState } from "./EmptyState";
+import { Button } from "./ui/Button";
 
 interface State { error: Error | null }
 
@@ -24,15 +25,7 @@ export class ErrorBoundary extends Component<{ children: ReactNode }, State> {
           icon={TriangleAlert}
           title="Something went wrong on this page"
           description="Your data is safe. Try again, or go to another section and come back."
-          action={
-            <button
-              type="button"
-              className="rounded-md bg-accent px-3 py-1.5 text-accent-fg"
-              onClick={() => this.setState({ error: null })}
-            >
-              Try again
-            </button>
-          }
+          action={<Button variant="primary" onClick={() => this.setState({ error: null })}>Try again</Button>}
         />
       );
     }

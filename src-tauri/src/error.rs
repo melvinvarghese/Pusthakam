@@ -14,6 +14,9 @@ pub enum AppError {
     Conflict(String),
     #[error("{0}")]
     Permission(String),
+    /// Not signed in, or wrong credentials.
+    #[error("{0}")]
+    Auth(String),
     #[error("database error: {0}")]
     Database(#[from] rusqlite::Error),
     #[error("file system error: {0}")]
@@ -31,6 +34,7 @@ impl AppError {
             AppError::NotFound(_) => "NOT_FOUND",
             AppError::Conflict(_) => "CONFLICT",
             AppError::Permission(_) => "PERMISSION_DENIED",
+            AppError::Auth(_) => "AUTH_FAILED",
             AppError::Database(_) => "DATABASE",
             AppError::Io(_) => "IO",
             AppError::Internal(_) => "INTERNAL",
@@ -43,7 +47,8 @@ impl AppError {
             AppError::Validation(m)
             | AppError::NotFound(m)
             | AppError::Conflict(m)
-            | AppError::Permission(m) => m.clone(),
+            | AppError::Permission(m)
+            | AppError::Auth(m) => m.clone(),
             AppError::Database(_) => "A database error occurred. Your data was not changed.".into(),
             AppError::Io(_) => "A file operation failed. Check disk space and permissions.".into(),
             AppError::Internal(_) => "An unexpected error occurred.".into(),

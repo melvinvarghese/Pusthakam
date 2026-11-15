@@ -1,7 +1,16 @@
 {
   "$schema": "../gen/schemas/desktop-schema.json",
   "identifier": "default",
-  "description": "Minimum permissions for the main window. No filesystem, shell or network plugins are exposed to the webview.",
+  "description": "Minimum permissions for the main window. No filesystem or shell access. The only network-adjacent permission opens the approved Online Tools links in the system browser; add a new entry here whenever a tool is added to src/features/online-tools/tools.ts.",
   "windows": ["main"],
-  "permissions": ["core:default"]
+  "permissions": [
+    "core:default",
+    {
+      "identifier": "opener:allow-open-url",
+      "allow": [
+        { "url": "https://melvinvarghese.in/*" },
+        { "url": "https://melvinvarghese.github.io/*" }
+      ]
+    }
+  ]
 }

@@ -8,10 +8,11 @@ const OPTIONS: { value: ThemePreference; label: string; icon: typeof Sun }[] = [
   { value: "dark", label: "Dark theme", icon: Moon },
 ];
 
+/** Segmented control that sits on the ink top bar. */
 export function ThemeToggle() {
   const { preference, setPreference } = useTheme();
   return (
-    <div role="radiogroup" aria-label="Theme" className="flex rounded-md border border-border bg-surface p-0.5">
+    <div role="radiogroup" aria-label="Theme" className="flex rounded-md border border-ink-3 p-0.5">
       {OPTIONS.map(({ value, label, icon: Icon }) => (
         <button
           key={value}
@@ -22,11 +23,11 @@ export function ThemeToggle() {
           title={label}
           onClick={() => setPreference(value)}
           className={cn(
-            "flex size-7 items-center justify-center rounded text-muted transition-colors hover:text-fg",
-            preference === value && "bg-accent-soft text-fg",
+            "flex size-7 items-center justify-center rounded text-rail-mute transition-colors hover:text-white",
+            preference === value && "bg-ink-3 text-white",
           )}
         >
-          <Icon aria-hidden="true" className="size-4" />
+          <Icon aria-hidden="true" className="size-4" strokeWidth={1.75} />
         </button>
       ))}
     </div>

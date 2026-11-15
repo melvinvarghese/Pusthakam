@@ -29,8 +29,9 @@ Each requirement is tracked in `PROGRESS.md`.
 | REQ-ADM | Administration | Staff, roles, local auth, library config, policies, custom fields, audit log, backup/restore, import/export, preferences | 2, 7 |
 | REQ-CFG | Multi-library configuration | Profiles, categories, collections, sections, locations, shelves, schemes, accession formats, policies, custom fields, optional modules | 2 |
 | REQ-SRCH | Search | FTS5 + exact lookups across titles, authors, ISBN, accession, barcode, publisher, subject, classification, member ID/name; pagination, saved filters | 3, 4 |
-| REQ-IMP | Import/export | CSV/XLSX/JSON then MARC21/ISO 2709; staged wizard with mapping, validation, duplicate detection, summary; transactional | 3, 6 |
+| REQ-IMP | Import/export | CSV/XLSX/JSON and MARC21/ISO 2709/MARCXML; migration profiles for other systems starting with Koha (catalogue + holdings, members, current loans, fines); staged wizard with mapping, validation, duplicate detection, summary; transactional. See roadmap "Migration from other systems" | 3, 4 |
 | REQ-BAK | Backup/restore | Manual + scheduled backups, history, integrity checks, validation, pre-restore snapshot | 7 |
+| REQ-NET | Multi-computer (LAN) | One Library Server computer holds the data; other computers connect over the local network, each user signs in with their own account and everyone sees the same live data; no internet; encrypted, pairing-code based, server-side permissions and backups. See roadmap Phase 7b | 7b |
 | REQ-SEC | Security | Argon2id, RBAC, restricted Tauri capabilities, CSP, safe file handling, audit trail | 1–7 |
 | REQ-OFF | Offline | No network dependency; bundled assets/fonts | all |
 | REQ-UI | Design system | Tokens, light/dark, keyboard shortcuts, accessible, consistent tables/dialogs/states | 1+ |

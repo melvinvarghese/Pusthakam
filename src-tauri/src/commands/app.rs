@@ -1,8 +1,7 @@
-//! Application-level commands. Thin: validate, call a service, return a DTO.
-//! NOTE: authentication/permission checks arrive with staff accounts (Phase 2); see KNOWN_ISSUES KI-004.
+//! Application-level commands. Thin: check permission, call a service, return a DTO.
 
 use crate::db::migrations::latest_version;
-use crate::error::{AppError, AppResult};
+use crate::error::AppResult;
 use crate::services::settings;
 use crate::state::AppState;
 use serde::Serialize;
@@ -17,9 +16,10 @@ pub struct AppInfo {
     pub database_path: String,
 }
 
+/// Safe to call before sign-in: contains no library data.
 #[tauri::command]
 pub fn app_info(state: State<'_, AppState>) -> AppResult<AppInfo> {
-    let conn = state.db.lock().map_err(|_| AppError::Internal("database lock poisoned".into()))?;
+    let conn = state.conn()?;
     let schema_version: i64 =
         conn.query_row("SELECT COALESCE(MAX(version),0) FROM schema_migrations", [], |r| r.get(0))?;
     debug_assert!(schema_version <= latest_version());
@@ -33,12 +33,12 @@ pub fn app_info(state: State<'_, AppState>) -> AppResult<AppInfo> {
 
 #[tauri::command]
 pub fn get_setting(state: State<'_, AppState>, key: String) -> AppResult<Option<String>> {
-    let conn = state.db.lock().map_err(|_| AppError::Internal("database lock poisoned".into()))?;
-    settings::get(&conn, &key)
+    state.current()?;
+    state.with_conn(|c| settings::get(c, &key))
 }
 
 #[tauri::command]
 pub fn set_setting(state: State<'_, AppState>, key: String, value: String) -> AppResult<()> {
-    let conn = state.db.lock().map_err(|_| AppError::Internal("database lock poisoned".into()))?;
-    settings::set(&conn, &key, &value)
+    state.require("admin.settings")?;
+    state.with_conn(|c| settings::set(c, &key, &value))
 }

@@ -11,7 +11,9 @@ describe("navigation config", () => {
     expect(new Set(ALL_NAV_ITEMS.map((i) => i.label)).size).toBe(ALL_NAV_ITEMS.length);
   });
 
-  it("only marks modules available when they are actually built (Dashboard only in Phase 1)", () => {
-    expect(ALL_NAV_ITEMS.filter((i) => i.available).map((i) => i.label)).toEqual(["Dashboard"]);
+  it("only marks modules available when they are actually built", () => {
+    expect(ALL_NAV_ITEMS.filter((i) => i.available).map((i) => i.label)).toEqual([
+      "Dashboard", "Catalogue", "Accession Register", "Library Settings",
+    ]);
   });
 });

@@ -2,10 +2,23 @@
 
 | ID | Severity | Issue | Status |
 |---|---|---|---|
-| KI-001 | Blocker | Toolchain missing (Rust, MSVC Build Tools) and low disk on `C:`. User approved install to `D:\dev` on 2026-11-14; Rust installed and verified, Build Tools install in progress. | IN PROGRESS |
+| KI-001 | Blocker | Toolchain missing and low disk space on `C:`. Installed to `D:\dev` on 2026-11-14 with user approval. | RESOLVED |
 | KI-002 | Low | `git` not on PATH. GitHub Desktop's bundled git works (path in CLAUDE.md). | Workaround |
-| KI-003 | Info | Node v26 is very new; frontend typecheck/lint/tests pass with it. | Monitoring |
-| KI-004 | Medium | Tauri commands (`get_setting`, `set_setting`, `app_info`) are unauthenticated. Acceptable only while no library data exists; every data command added after Phase 2 must enforce permissions in Rust. | Open until Phase 2 |
-| KI-005 | Low | App icon is a generated placeholder (open book on charcoal). Final brand icon needs design before release. | Open |
-| KI-006 | Low | `npm audit` reports 7 moderate advisories in dev dependencies; to be reviewed before release (none ship in the app bundle unless proven otherwise). | Open |
-| KI-007 | Low | C: drive has under 10 GB free; build output is redirected to D: via `CARGO_TARGET_DIR`. `node_modules` and `dist` remain in the repo on C:. | Monitoring |
+| KI-003 | Info | Node v26 is very new; everything passes with it. | Monitoring |
+| KI-004 | Medium | Commands were unauthenticated. Now every data command checks the signed-in user's permission in Rust (verified by IPC tests). Only `setup_status`, `complete_setup` (works once), `login`, `logout`, `current_session` and `app_info` work signed out. | RESOLVED 2026-11-15 |
+| KI-005 | Low | App icon is a generated placeholder and does not match the Spine Label brand mark. Needs a final icon before release. | Open |
+| KI-006 | Low | `npm audit` reports moderate advisories in dev dependencies; review before release. | Open |
+| KI-007 | Low | `C:` has under 10 GB free; build output goes to D: via `CARGO_TARGET_DIR`. | Monitoring |
+| KI-008 | Low | Without `?preview`, a plain browser shows "Open Pusthakam as an app" (backend only exists in the desktop app). Intended. | Accepted |
+| KI-009 | Low | Vermilion class-8 label band sits near the red overdue colour; re-check when real catalogue data arrives. | Watch |
+| KI-010 | Low | `cargo fmt`/`clippy`, Playwright tests and CI are not set up yet. | Open |
+| KI-011 | Medium | No way yet to change a password, add staff, or unlock a locked account from the UI (staff management is Phase 7). The first administrator's password cannot be recovered if forgotten except by restoring or resetting the database. A recovery path must exist before release. | Open |
+| KI-012 | Low | Currency amounts assume 2 decimal places (minor units = 1/100). Currencies with other exponents (e.g. JPY) are not handled. | Open |
+| KI-013 | Low | Account lockout is per account (5 failures, 5 minutes). There is no separate rate limit for unknown usernames; acceptable for a local desktop app. | Accepted |
+| KI-014 | Info | Rust integration tests on Windows need a Common Controls manifest, embedded for test builds only by `src-tauri/build.rs`. | Documented |
+| KI-015 | Medium | Koha import follows Koha's default MARC21 framework (952 subfields) as documented, but has not been tried on a real Koha export. A customised framework may use other subfields. The preview always shows what will be imported. | Open: needs a sample file |
+| KI-016 | Low | Import supports ISO 2709 MARC (UTF-8) and CSV. MARCXML, JSON, XLSX and MARC-8 encoded files are not supported yet. Non-UTF-8 text is read as Latin-1 and flagged. | Open |
+| KI-017 | Low | Publisher and author authority records, subject hierarchies and bulk edit/delete are not built (Phase 6). Subjects are flat headings; publishers are plain text. | Open |
+| KI-018 | Low | Import has not been benchmarked on very large files; the whole file is held in memory until confirmed (limit 100 MB). | Open |
+| KI-019 | Low | Imported locations, collections and item categories are named after the source codes (for example MAIN, BK); rename them in Library Settings. A code-to-name mapping step is not built. | Open |
+| KI-020 | Low | Only one copy label can be printed at a time; label sheets and the Printing centre come in Phase 5. | Open |
