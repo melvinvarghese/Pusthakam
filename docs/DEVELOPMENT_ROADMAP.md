@@ -5,14 +5,32 @@ Status key: NOT STARTED · IN PROGRESS · IMPLEMENTED · VERIFIED · BLOCKED
 | Phase | Scope | Status | Acceptance criteria |
 |---|---|---|---|
 | 0 | Discovery, docs, architecture | IN PROGRESS | Docs in `docs/`, CLAUDE.md, workspace audit |
-| 1 | Tauri shell, React UI shell, SQLite + migrations, nav, design system, theme, errors, logging, settings | BLOCKED (KI-001) | Launches offline; DB created in app-data and persists across restarts |
-| 2 | First-launch wizard, library profile, collections/locations/shelves, categories, circulation policies, admin login | NOT STARTED | Admin configures a new library with no code edits |
-| 3 | Catalogue, contributors, subjects, classification, copies, accession, barcodes, search, bulk import | NOT STARTED | One title → many independently managed copies |
+| 1 | Tauri shell, React UI shell, SQLite + migrations, nav, design system, theme, errors, logging, settings | IMPLEMENTED (persistence verified; offline-with-network-off, fmt/clippy, Playwright, CI still open: see PROGRESS.md) | Launches offline; DB created in app-data and persists across restarts |
+| 2 | First-launch wizard, library profile, collections/locations/shelves, categories, circulation policies, admin login | IMPLEMENTED (50 Rust + 54 frontend tests pass; not yet clicked through inside the Tauri window) | Admin configures a new library with no code edits |
+| 3 | Catalogue, contributors, subjects, classification, copies, accession, barcodes, search, bulk import (CSV + MARC/Koha) | IMPLEMENTED (103 Rust + 81 frontend tests pass; Koha mapping unverified against a real export; not clicked through in the Tauri window) | One title → many independently managed copies |
 | 4 | Members, issue/return/renew/reserve, due dates, overdue, fines, history | NOT STARTED | Full borrow/return workflow on real records |
 | 5 | Dashboard analytics, reports, PDF/CSV/XLSX, labels, receipts | NOT STARTED | Reports match DB; exports open in Excel/PDF readers |
 | 6 | Acquisitions, serials, stock verification, advanced classification, MARC21 | NOT STARTED | Receive PO → records + copies created |
 | 7 | Staff/roles, audit log UI, backup/restore, integrity checks | NOT STARTED | Backup → restore round-trip verified |
+| 7b | **Several computers, one library (LAN mode)**: owner request 2026-11-15 | NOT STARTED | 3 librarians on 3 computers see and change the same data, each signed in to their own account, no internet needed |
 | 8 | Installers, CI matrix, signing docs, user docs | NOT STARTED | Per-platform smoke tests passed |
+
+## Several computers on one network (LAN mode), owner request 2026-11-15
+Was **not** in the original plan (the brief describes one local database per installation). Added as Phase 7b.
+- **Design:** one computer is the *Library Server*: it holds the only copy of the database and runs a small server inside Pusthakam. The other computers run the same app as *Clients* and connect to it by address plus a one-time pairing code. All rules and permission checks stay in the server, so every librarian sees exactly the same data and each signs in to their own account. Works on a local network with **no internet**.
+- **Why not just share the database file on the network:** SQLite files on network shares (SMB/NFS) are not safe for several writers; file locking is unreliable and it can corrupt the library. We will not do this.
+- **Needed:** (1) per-connection sessions instead of the single in-memory session; (2) the command layer callable without Tauri (the services already hold all logic, commands stay thin); (3) an authenticated, encrypted LAN endpoint (self-signed certificate, fingerprint confirmed by the pairing code), listening only when the owner turns LAN mode on; (4) live refresh (polling or server events) so one librarian's change appears on the others' screens; (5) edit-conflict protection (a record changed by someone else while you edit is detected, not silently overwritten); (6) server-side backups; (7) settings: turn LAN mode on/off, show address and pairing code, list and revoke connected computers; (8) installer guidance for the Windows firewall.
+- **Trade-offs to accept:** the Server computer must be on during opening hours; if it is off, other computers cannot work. A later option (not planned) would be a spare "backup server".
+- **To avoid rework, from now on:** new commands stay thin and put logic in `services/`; no new global state that assumes a single user.
+- **Open questions for the owner:** which computer will be the server; is read-only access from a second computer enough for some libraries; how many computers at once (target: up to 10).
+
+## Migration from other systems (e.g. Koha), owner request 2026-11-15
+Libraries must be able to move their existing data into Pusthakam. Plan:
+- **Moved earlier:** MARC21 / ISO 2709 / MARCXML import is built together with the catalogue in **Phase 3** (it was Phase 6), because Koha and most library systems export catalogues in MARC.
+- **Koha profile:** a ready-made mapping for Koha exports: bibliographic records (MARC) with holdings in field 952 mapped to physical copies (barcode, call number, branch/shelving location, collection, item type, acquisition date, price, copy number); patron exports (CSV) to members and member categories; optionally current checkouts and outstanding fines so a library can go live mid-stream. Field mappings will be checked against Koha's documentation and a real sample export before building; nothing is assumed.
+- **Phase 4:** members import, current loans and fines import.
+- **Always:** staged wizard (preview, map fields, validate, duplicates, errors and warnings, confirm, transactional import, summary), nothing silently discarded, nothing imported without the user's confirmation.
+- **Open question for the owner:** is historical circulation (past loans) required, or only current loans?
 
 ## Phase 1 work breakdown
 1. Toolchain ready (Rust stable, MSVC Build Tools, WebView2 ✔ present).

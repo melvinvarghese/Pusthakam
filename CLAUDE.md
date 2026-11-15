@@ -7,7 +7,7 @@ The name "Pusthakam" is fixed. Never rename or abbreviate it. Never claim tradem
 Tauri 2 · Rust backend · SQLite (rusqlite, bundled, WAL, FTS5) · React + TypeScript + Vite · Tailwind CSS · shadcn/ui · Lucide · Recharts · Vitest · Playwright · cargo test.
 
 ## Hard rules
-1. **Fully offline.** No CDN, remote fonts, telemetry, cloud auth, or required network calls. All assets bundled.
+1. **Fully offline.** No CDN, remote fonts, telemetry, cloud auth, or required network calls. All assets bundled. One owner-approved exception: the "Online Tools" menu opens optional web links in the system browser (DECISIONS D-020); links only, never required, never sends library data. Do not display "offline" messaging in the UI.
 2. **Frontend never touches SQLite.** All data access and business rules live in Rust, exposed via typed Tauri commands.
 3. **Layering (Rust):** `commands/` (thin, auth + validation) → `services/` (business rules, transactions) → `db/` (SQL, migrations). No SQL in commands.
 4. **Schema changes only via new migration files** in `src-tauri/migrations/`. Never edit an applied migration.
@@ -23,7 +23,7 @@ Tauri 2 · Rust backend · SQLite (rusqlite, bundled, WAL, FTS5) · React + Type
 
 ## Conventions
 - Keep files small and focused. Reusable UI components in `src/components`; feature code in `src/features/<module>`.
-- Design tokens only (CSS variables in `src/styles/tokens.css`); light + dark themes. Palette: charcoal, ivory, sand, sage, neutral grey.
+- Design tokens only (CSS variables in `src/styles/index.css`); light + dark themes. Visual world: **Spine Label** (owner-chosen 2026-11-15): dark shelf-ink rail/top bar, white work area, Hanken Grotesk UI + Courier Prime call numbers, stacked call-number label (`CallNumberLabel`) with Dewey class colour band as the signature component. Red/amber only for overdue/fines. No Malayalam text in the UI (owner request). Banned: colour side-borders on rows/cards, eyebrow labels above headings. Dev-only visual reference at route `#/design`. Design contract: `.impeccable/surfaces/`.
 - Errors: Rust `AppError` enum → serialised `{code, message}` → frontend toast/inline error. No `unwrap()` in non-test code.
 - Every bug fix gets a regression test.
 
@@ -31,6 +31,11 @@ Tauri 2 · Rust backend · SQLite (rusqlite, bundled, WAL, FTS5) · React + Type
 - Dev app: `npm run tauri dev`
 - Frontend tests: `npm test` · Rust tests: `cargo test --manifest-path src-tauri/Cargo.toml`
 - Lint/typecheck: `npm run lint`, `npm run typecheck`
+
+## Dev aids
+- Browser preview with synthetic data: `npm run dev`, then open `http://localhost:1420/?preview` (also `?preview=setup`, `?preview=login`) and `#/design`. Dev-only; never in production builds.
+- Rust command-layer tests: `src-tauri/tests/ipc.rs` (real IPC path, mock runtime). When adding a command, add it to `app_handlers!` in `src-tauri/src/lib.rs` and cover it there, including a permission-denied case.
+- Pass `beforeEach` bodies in braces in Vitest: returning a mock makes Vitest call it as cleanup.
 
 ## Project docs
 `PROGRESS.md` (status, update after each milestone) · `CHANGELOG.md` · `docs/` (PRODUCT_SPECIFICATION, ARCHITECTURE, DATABASE_DESIGN, DEVELOPMENT_ROADMAP, TESTING_STRATEGY, DECISIONS, KNOWN_ISSUES).

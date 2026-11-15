@@ -11,7 +11,8 @@
 | D-007 | Dates `YYYY-MM-DD` TEXT; timestamps UTC ISO-8601 TEXT; money INTEGER minor units; booleans INTEGER 0/1. | Accepted |
 | D-008 | Primary keys: INTEGER autoincrement internal IDs; human-facing identifiers (accession no., member no., barcode) are separate UNIQUE columns. | Accepted |
 | D-009 | Soft-delete (`archived_at`) for catalogue/members/vendors; circulation, fines, payments, audit are append-only. | Accepted |
-| D-010 | Fonts bundled locally via npm (`@fontsource-variable/inter`); Malayalam brand word rendered with OS fallback fonts, never required. | Accepted |
+| D-010 | Fonts bundled locally via npm (`@fontsource-variable/hanken-grotesk` for UI, `@fontsource/courier-prime` for call numbers); Malayalam content falls back to OS fonts. The Malayalam brand word (പുസ്തകം) was removed from the app interface at the owner's request on 2026-11-15; it remains a brand fact only. | Accepted |
+| D-019 | Visual world "Spine Label" chosen by the owner on 2026-11-15 after a decision round (alternatives: Ola Leaf, Terminal Yellow, Lexicon Shoulder, standard). Replaces the rejected ivory/sage/Inter shell. See `.impeccable/surfaces/src-app-appshell-tsx.md`. | Accepted |
 | D-011 | TanStack Query + react-hook-form + zod on the frontend; Rust is the source of truth for validation. | Accepted |
 | D-012 | Marc21/ISO 2709 and authority data deferred to Phase 6; schema keeps contributor/subject/classification normalised so import maps cleanly. | Accepted |
 | D-013 | Toolchain (Rust 1.100 via rustup, VS 2022 Build Tools C++ workload) installed with user approval on 2026-11-14 to `D:\dev` (low free space on C:). Env vars set at user level: `RUSTUP_HOME`, `CARGO_HOME`, `CARGO_TARGET_DIR=D:\dev\cargo-target`; `D:\dev\cargo\bin` added to user PATH. | Accepted |
@@ -21,5 +22,18 @@
 | D-017 | Theme preference currently in `localStorage` (per-viewer convenience); move to `application_settings` once the settings UI exists. | Accepted |
 | D-018 | Unbuilt modules stay visible in navigation but open an honest "not available yet (phase N)" page, so the product's shape is visible without fake functionality. | Accepted |
 
+| D-020 | "Online Tools" menu (owner-approved 2026-11-15): a rail-footer item listing optional web tools (DDC list, Library Toolkit). Links open in the system browser via `tauri-plugin-opener`, restricted by `capabilities/default.json` to `melvinvarghese.in` and `melvinvarghese.github.io`; every link carries `utm_source=pusthakam`. Only the address is opened; no library data is sent. Core functions never depend on it. New tools need an entry in `src/features/online-tools/tools.ts` and a capability entry. The permanent "Offline" text was removed from the UI at the owner's request. | Accepted |
+
+| D-021 | Sign-in session is held only in Rust memory (`AppState.session`); closing the app signs everyone out. No token is stored in the browser. Permission checks live in the command layer (`AppState::require`). Lockout: 5 failed attempts lock the account for 5 minutes. | Accepted |
+| D-022 | Setup wizard creates everything in one `BEGIN IMMEDIATE` transaction and can run once. Library-profile defaults are plain data (`domain/profiles.rs`), editable afterwards; an item category without a policy row for a member category means "not lendable". Fine defaults to 0 (no fines) so no currency is assumed. | Accepted |
+| D-023 | Frontend dev preview (`?preview`) serves synthetic data in a plain browser for design review; gated by `import.meta.env.DEV` so it is absent from production. The command layer is tested separately through Tauri's mock IPC (`src-tauri/tests/ipc.rs`). | Accepted |
+| D-024 | `argon2` pinned to 0.5 (0.6 changes the API); `rand_core` 0.6 with `getrandom` for salts. Argon2 compiled with `opt-level=3` even in debug builds. | Accepted |
+| D-025 | Import from other systems (Koha first) is a first-class goal: MARC21/ISO 2709/MARCXML import moves to Phase 3. See DEVELOPMENT_ROADMAP "Migration from other systems". | Accepted |
+
+| D-026 | Multi-computer use is a server/client design (Phase 7b), never a shared database file: SQLite over SMB/NFS is unsafe for several writers. One Library Server owns the database; clients use an encrypted LAN API with per-connection sessions. Until then the app is single-computer and the in-memory single session is acceptable. | Accepted |
+
 ## Deviations from the brief
+- The brief says "completely offline"; LAN mode (D-026) uses the local network only and never needs the internet, and is off by default.
+- Barcodes are drawn by the JsBarcode library (Code 128, bundled locally) instead of hand-written Rust, because it is widely tested; the data (barcode text) is still owned by the backend.
+- The brief prohibits online dependencies; the Online Tools menu is an explicit, owner-approved optional exception (D-020), links only.
 None so far.

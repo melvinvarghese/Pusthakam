@@ -12,11 +12,12 @@ pub struct Migration {
     pub sql: &'static str,
 }
 
-pub const MIGRATIONS: &[Migration] = &[Migration {
-    version: 1,
-    name: "core",
-    sql: include_str!("../../migrations/0001_core.sql"),
-}];
+pub const MIGRATIONS: &[Migration] = &[
+    Migration { version: 1, name: "core", sql: include_str!("../../migrations/0001_core.sql") },
+    Migration { version: 2, name: "config", sql: include_str!("../../migrations/0002_config.sql") },
+    Migration { version: 3, name: "auth", sql: include_str!("../../migrations/0003_auth.sql") },
+    Migration { version: 4, name: "catalogue", sql: include_str!("../../migrations/0004_catalogue.sql") },
+];
 
 pub fn checksum(sql: &str) -> String {
     Sha256::digest(sql.as_bytes()).iter().map(|b| format!("{b:02x}")).collect()
@@ -108,11 +109,11 @@ mod tests {
     fn upgrade_applies_only_new_migrations() {
         let mut c = mem();
         run(&mut c, MIGRATIONS).unwrap();
-        let extra = [
-            Migration { version: 1, name: "core", sql: MIGRATIONS[0].sql },
-            Migration { version: 2, name: "extra", sql: "CREATE TABLE extra (id INTEGER PRIMARY KEY);" },
-        ];
-        assert_eq!(run(&mut c, &extra).unwrap(), 2);
+        let next = latest_version() + 1;
+        let mut all: Vec<Migration> =
+            MIGRATIONS.iter().map(|m| Migration { version: m.version, name: m.name, sql: m.sql }).collect();
+        all.push(Migration { version: next, name: "extra", sql: "CREATE TABLE extra (id INTEGER PRIMARY KEY);" });
+        assert_eq!(run(&mut c, &all).unwrap(), next);
         c.execute("INSERT INTO extra DEFAULT VALUES", []).unwrap();
     }
 
@@ -120,7 +121,12 @@ mod tests {
     fn tampered_migration_is_rejected() {
         let mut c = mem();
         run(&mut c, MIGRATIONS).unwrap();
-        let tampered = [Migration { version: 1, name: "core", sql: "CREATE TABLE evil (id INTEGER);" }];
+        let tampered = [
+            Migration { version: 1, name: "core", sql: "CREATE TABLE evil (id INTEGER);" },
+            Migration { version: 2, name: "config", sql: MIGRATIONS[1].sql },
+            Migration { version: 3, name: "auth", sql: MIGRATIONS[2].sql },
+            Migration { version: 4, name: "catalogue", sql: MIGRATIONS[3].sql },
+        ];
         let err = run(&mut c, &tampered).unwrap_err();
         assert!(matches!(err, AppError::Internal(_)));
     }

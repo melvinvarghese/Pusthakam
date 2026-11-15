@@ -1,0 +1,142 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-15T12:00:00Z",
+  "title": "Design System: Pusthakam",
+  "extensions": {
+    "colorMeta": {
+      "shelf-ink": { "role": "primary", "displayName": "Shelf Ink", "canonical": "#16202e", "tonalRamp": ["#16202e", "#39414d", "#5c636d", "#7f848c", "#a2a6ab", "#c5c7cb", "#e3e4e6", "#f3f4f5"] },
+      "overdue-red": { "role": "secondary", "displayName": "Overdue Red", "canonical": "#c2171d", "tonalRamp": ["#c2171d", "#cb3a3f", "#d45d61", "#dd7f83", "#e7a2a5", "#f0c5c6", "#f8e3e4", "#fcf3f4"] },
+      "fine-amber": { "role": "secondary", "displayName": "Fine Amber", "canonical": "#8a5a00", "tonalRamp": ["#8a5a00", "#9c7326", "#ad8c4c", "#bfa473", "#d0bd99", "#e2d6bf", "#f1ebe0", "#f9f7f2"] },
+      "focus-blue": { "role": "secondary", "displayName": "Focus Blue", "canonical": "#3a6fb5", "tonalRamp": ["#3a6fb5", "#5885c0", "#759acb", "#93b0d6", "#b0c5e1", "#cedbec", "#e7eef6", "#f5f8fb"] },
+      "class-300-social": { "role": "tertiary", "displayName": "Social Sciences Yellow (Dewey 300)", "canonical": "#f0b400", "tonalRamp": ["#f0b400", "#f2bf26", "#f4ca4c", "#f7d673", "#f9e199", "#fbecbf", "#fdf6e0", "#fefbf2"] },
+      "muted-text": { "role": "neutral", "displayName": "Muted Text", "canonical": "#5b6676", "tonalRamp": ["#5b6676", "#747d8b", "#8c949f", "#a5abb4", "#bdc2c8", "#d6d9dd", "#ebedef", "#f7f7f8"] },
+      "night-work": { "role": "neutral", "displayName": "Night Work", "canonical": "#131d2e", "tonalRamp": ["#131d2e", "#363f4d", "#5a616d", "#7d838c", "#a1a5ab", "#c4c6cb", "#e3e4e6", "#f3f4f5"] }
+    },
+    "typographyMeta": {
+      "ui-body": { "displayName": "Body", "purpose": "All interface text at 13px/20px in Hanken Grotesk." },
+      "page-title": { "displayName": "Page Title", "purpose": "One h1 per screen, 20px bold." },
+      "panel-title": { "displayName": "Panel Title", "purpose": "h2 in a panel header row." },
+      "call-label": { "displayName": "Call Label", "purpose": "Typed lines of a call-number label in Courier Prime; call numbers and accession codes only." }
+    },
+    "shadows": [
+      { "name": "label-sticker", "value": "0 1px 1px rgb(22 32 46 / 0.12)", "purpose": "A 1px drop that makes a call-number label read as a sticker." },
+      { "name": "palette-overlay", "value": "0 16px 40px -8px rgb(13 20 32 / 0.45)", "purpose": "The floating command palette over a 60% ink scrim. No other element carries a shadow." }
+    ],
+    "motion": [
+      { "name": "palette-in", "value": "140ms cubic-bezier(0.16, 1, 0.3, 1)", "purpose": "Command palette entrance: fade, 6px rise, 0.985 to 1 scale. Disabled under prefers-reduced-motion." },
+      { "name": "color-transition", "value": "colors 150ms (Tailwind default)", "purpose": "Hover and active fills on buttons, nav rows and the search trigger." }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "640px" },
+      { "name": "lg", "value": "1024px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Call-Number Label",
+      "kind": "custom",
+      "refersTo": "call-number-label",
+      "description": "The signature component: a white label with a Dewey class band and typed Courier Prime lines.",
+      "html": "<span class=\"ds-call-label\" style=\"--cls: var(--cls-8, #d9482b)\"><span>894.8123</span><span>BAS</span><span>V.1</span></span>",
+      "css": ".ds-call-label { position: relative; display: inline-flex; flex-direction: column; flex: none; min-width: 50px; width: max-content; min-height: 48px; padding: 8px 6px 4px 5px; background: var(--label-stock, #ffffff); border: 1px solid var(--label-edge, #c5ccd6); border-top: 0; border-radius: 0 0 3px 3px; box-shadow: 0 1px 1px rgb(22 32 46 / 0.12); color: var(--label-ink, #111111); font: 700 10.5px/12px 'Courier Prime', 'Courier New', monospace; letter-spacing: 0.2px; } .ds-call-label::before { content: ''; position: absolute; inset: 0 -1px auto -1px; height: 5px; background: var(--cls, #8e9cb1); border-radius: 2px 2px 0 0; } .ds-call-label > span { display: block; min-height: 12px; white-space: nowrap; } .ds-call-label > span + span { font-weight: 400; }"
+    },
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The single main action of a panel or page, top right.",
+      "html": "<button class=\"ds-btn-primary\" type=\"button\">Issue Book</button>",
+      "css": ".ds-btn-primary { display: inline-flex; align-items: center; justify-content: center; height: 32px; padding: 0 12px; border: 1px solid var(--primary, #16202e); border-radius: 6px; background: var(--primary, #16202e); color: var(--primary-fg, #ffffff); font: 600 13px/20px 'Hanken Grotesk Variable', 'Segoe UI', system-ui, sans-serif; cursor: pointer; transition: opacity 150ms; } .ds-btn-primary:hover { opacity: 0.9; } .ds-btn-primary:active { opacity: 0.8; } .ds-btn-primary:focus-visible { outline: 2px solid var(--ring, #3a6fb5); outline-offset: 2px; }"
+    },
+    {
+      "name": "Secondary Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Default button: bordered, on the work surface.",
+      "html": "<button class=\"ds-btn-secondary\" type=\"button\">Back to Dashboard</button>",
+      "css": ".ds-btn-secondary { display: inline-flex; align-items: center; justify-content: center; height: 32px; padding: 0 12px; border: 1px solid var(--line-strong, #c3cbd6); border-radius: 6px; background: var(--surface, #ffffff); color: var(--fg, #16202e); font: 500 13px/20px 'Hanken Grotesk Variable', 'Segoe UI', system-ui, sans-serif; cursor: pointer; transition: background-color 150ms; } .ds-btn-secondary:hover { background: var(--band, #f6f8fb); } .ds-btn-secondary:active { background: var(--line, #dfe4ea); } .ds-btn-secondary:focus-visible { outline: 2px solid var(--ring, #3a6fb5); outline-offset: 2px; }"
+    },
+    {
+      "name": "Ghost Button",
+      "kind": "button",
+      "refersTo": "button-ghost",
+      "description": "Quiet tertiary action without a border.",
+      "html": "<button class=\"ds-btn-ghost\" type=\"button\">Cancel</button>",
+      "css": ".ds-btn-ghost { display: inline-flex; align-items: center; justify-content: center; height: 32px; padding: 0 12px; border: 1px solid transparent; border-radius: 6px; background: transparent; color: var(--muted, #5b6676); font: 500 13px/20px 'Hanken Grotesk Variable', 'Segoe UI', system-ui, sans-serif; cursor: pointer; transition: background-color 150ms, color 150ms; } .ds-btn-ghost:hover { background: var(--band, #f6f8fb); color: var(--fg, #16202e); } .ds-btn-ghost:focus-visible { outline: 2px solid var(--ring, #3a6fb5); outline-offset: 2px; }"
+    },
+    {
+      "name": "Rail Navigation Item",
+      "kind": "nav",
+      "refersTo": "nav-item",
+      "description": "Text-only item on the ink rail. Active is fill plus bold white text, no side marker.",
+      "html": "<div class=\"ds-rail\"><a class=\"ds-nav\" href=\"#\">Catalogue</a><a class=\"ds-nav ds-nav-active\" href=\"#\">Dashboard</a></div>",
+      "css": ".ds-rail { width: 216px; padding: 8px; background: var(--ink, #16202e); } .ds-nav { display: block; height: 32px; padding: 0 12px; border-radius: 6px; color: var(--rail-text, #c9d2de); font: 400 13px/32px 'Hanken Grotesk Variable', 'Segoe UI', system-ui, sans-serif; text-decoration: none; transition: background-color 150ms, color 150ms; } .ds-nav:hover { background: var(--ink-2, #222f42); color: #ffffff; } .ds-nav-active { background: var(--ink-2, #222f42); color: #ffffff; font-weight: 600; } .ds-nav:focus-visible { outline: 2px solid var(--ring, #3a6fb5); outline-offset: 2px; }"
+    },
+    {
+      "name": "Search Trigger",
+      "kind": "input",
+      "refersTo": "search-trigger",
+      "description": "Search-first control in the ink top bar that opens the command palette with Ctrl K.",
+      "html": "<button class=\"ds-search\" type=\"button\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.75\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><circle cx=\"11\" cy=\"11\" r=\"8\"/><path d=\"m21 21-4.3-4.3\"/></svg><span class=\"ds-search-text\">Search or go to a section</span><kbd class=\"ds-kbd\">Ctrl K</kbd></button>",
+      "css": ".ds-search { display: flex; align-items: center; gap: 8px; width: 420px; height: 36px; padding: 0 10px; border: 1px solid var(--ink-3, #2f3f56); border-radius: 6px; background: var(--ink-2, #222f42); color: var(--rail-field-text, #a4b1c4); font: 400 13px/20px 'Hanken Grotesk Variable', 'Segoe UI', system-ui, sans-serif; cursor: pointer; transition: border-color 150ms; } .ds-search:hover { border-color: var(--rail-line-strong, #44566f); } .ds-search-text { flex: 1; text-align: left; } .ds-kbd { padding: 0 6px; border: 1px solid var(--rail-line-strong, #44566f); border-radius: 4px; color: var(--rail-text, #c9d2de); font: 400 11px/18px 'Hanken Grotesk Variable', sans-serif; } .ds-search:focus-visible { outline: 2px solid var(--ring, #3a6fb5); outline-offset: 2px; }"
+    },
+    {
+      "name": "Status Chips",
+      "kind": "chip",
+      "refersTo": "chip-overdue",
+      "description": "Neutral, overdue and fine chips. Red and amber appear only for overdue and fines.",
+      "html": "<span class=\"ds-chip\">Issued</span> <span class=\"ds-chip ds-chip-overdue\">Overdue 4 days</span> <span class=\"ds-chip ds-chip-fine\">Fine due</span>",
+      "css": ".ds-chip { display: inline-block; padding: 0 8px; border: 1px solid var(--line-strong, #c3cbd6); border-radius: 4px; color: var(--fg, #16202e); font: 500 12px/20px 'Hanken Grotesk Variable', 'Segoe UI', system-ui, sans-serif; white-space: nowrap; } .ds-chip-overdue { border-width: 1.5px; border-color: var(--danger, #c2171d); background: var(--surface, #ffffff); color: var(--danger, #c2171d); font-weight: 700; } .ds-chip-fine { border-color: rgb(138 90 0 / 0.4); background: var(--warn-bg, #fff6dc); color: var(--warn, #8a5a00); font-weight: 600; }"
+    },
+    {
+      "name": "Panel",
+      "kind": "card",
+      "refersTo": "panel",
+      "description": "Flat bordered container with a titled header row.",
+      "html": "<section class=\"ds-panel\"><div class=\"ds-panel-head\"><h2 class=\"ds-panel-title\">System status</h2><span class=\"ds-panel-aside\">Local</span></div><p class=\"ds-panel-body\">Every record lives in the data folder on this computer.</p></section>",
+      "css": ".ds-panel { width: 320px; border: 1px solid var(--line, #dfe4ea); border-radius: 8px; background: var(--surface, #ffffff); color: var(--fg, #16202e); font: 400 13px/20px 'Hanken Grotesk Variable', 'Segoe UI', system-ui, sans-serif; } .ds-panel-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 16px; border-bottom: 1px solid var(--line, #dfe4ea); } .ds-panel-title { margin: 0; font-size: 14px; font-weight: 600; } .ds-panel-aside { font-size: 12px; color: var(--muted, #5b6676); } .ds-panel-body { margin: 0; padding: 12px 16px; color: var(--muted, #5b6676); }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Spine Label",
+    "overview": "A library tool should look like the shelf it serves. Every book in a library is identified by a stacked call-number label that a librarian already reads at a glance, so that label is the signature of the whole system: a white sticker with a coloured Dewey class band across its top and typed lines beneath. Everything else is built to stay out of its way. A deep shelf-ink frame (rail and top bar) surrounds a calm work area, hairline cool-grey rules do the separating, and one grotesque face carries the interface while a typed monospace is kept for call numbers and accession codes.\n\nThe mood is quiet, exact and desk-ready: dense enough for eight hours of scanning, issuing and cataloguing, restrained enough that the only strong colour on screen belongs to the books. It refuses the pale admin-dashboard default (icon-and-card grid, sage-on-cream, one sans everywhere) and is explicitly not the first Pusthakam shell, which the owner rejected as generic.\n\nThe product is offline and honest, and the design says so plainly: an offline footer in the rail, unbuilt modules that state \"not available yet\", no invented numbers. Recognisable with all content removed: the dark ink frame, and a white label with a coloured top band.",
+    "keyCharacteristics": [
+      "Dark ink frame (rail 232px, top bar 56px) around a flat work area; both themes keep the frame darker than the work area.",
+      "The stacked call-number label is the one signature component, wherever a book appears.",
+      "Ten Dewey class colours exist only on label bands; red and amber exist only for overdue and fines.",
+      "Flat by default: hairline rules and tonal fills, no card shadows.",
+      "Text-only navigation; icons are used sparingly (search, theme, empty-state tile).",
+      "Light and dark themes are both first-class; labels stay light stock in dark theme."
+    ],
+    "rules": [
+      { "name": "The Band-Only Rule", "body": "The ten class colours appear only as the top band of a call-number label (and on the logo mark, which is a miniature label). They are never used for buttons, chips, charts, row accents or decoration.", "section": "colors" },
+      { "name": "The Reserved Alarm Rule", "body": "Red and amber mean overdue and fines, nothing else. If a screen has neither, it has no red or amber.", "section": "colors" },
+      { "name": "The Stock Stays Light Rule", "body": "A call-number label is light stock in both themes, like a real sticker. Never invert it for dark mode.", "section": "colors" },
+      { "name": "The Frame Is Darker Rule", "body": "In both themes the ink frame is darker than the work area (light: #16202e over white; dark: #090f19 over #131d2e).", "section": "colors" },
+      { "name": "The Typed-Only Rule", "body": "Courier Prime is for call numbers and accession codes. Never set headings, buttons or running text in it.", "section": "typography" },
+      { "name": "The One Grotesque Rule", "body": "Hanken Grotesk is the only interface face; hierarchy comes from weight and size, not extra families.", "section": "typography" },
+      { "name": "The Flat Panel Rule", "body": "Panels, buttons, chips and rows carry no shadow. Only the label sticker and the floating palette may.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do show every book with its stacked call-number label, and let the label be the loudest colour on the row.",
+      "Do keep red (#c2171d) and amber (#8a5a00) for overdue and fines only.",
+      "Do build with the CSS variable tokens in `src/styles/index.css`; give every colour a light and a dark value.",
+      "Do keep the frame darker than the work area in both themes and keep labels light stock in dark theme.",
+      "Do show unbuilt modules honestly with a \"not available yet\" page and a dimmed rail item.",
+      "Do keep the offline reassurance visible in the rail footer.",
+      "Do mark active navigation with fill and bold white text.",
+      "Do set call numbers and accession codes in Courier Prime and nothing else.",
+      "Do keep the UI fully offline: bundled fonts, no remote assets."
+    ],
+    "donts": [
+      "Don't use Dewey class colours anywhere except a label band.",
+      "Don't add coloured side-borders or left accent stripes to rows, cards or nav items.",
+      "Don't put small uppercase eyebrow labels above headings.",
+      "Don't add shadows to panels, buttons or chips.",
+      "Don't show the Malayalam word in the interface (owner decision, 2026-11-15).",
+      "Don't return to the rejected ivory, sage and Inter sidebar look, or to an icon-and-card dashboard grid.",
+      "Don't display placeholder figures or fake records in production screens.",
+      "Don't invert a call-number label for dark theme."
+    ]
+  }
+}
