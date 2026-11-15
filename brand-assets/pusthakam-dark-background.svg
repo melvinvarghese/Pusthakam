@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 250" role="img" aria-labelledby="title">
+  <title id="title">Pusthakam logo for dark backgrounds</title>
+  <g transform="translate(28 18) scale(.82)">
+    <path d="M47 32h93c42 0 69 24 69 62 0 37-27 61-69 61H99v68H47V32zm52 45v34h40c13 0 20-6 20-17s-7-17-20-17H99z" fill="#F7F4EC"/>
+    <path d="M99 160c18-22 42-34 72-38v52c-29 5-52 19-72 42v-56z" fill="#D7E4DC"/>
+    <path d="M171 161h27v68l-13.5-10-13.5 10v-68z" fill="#B96B32"/>
+  </g>
+  <text x="250" y="116" fill="#F7F4EC" font-family="Georgia, 'Times New Roman', serif" font-size="91" letter-spacing="-3">Pusthakam</text>
+  <text x="255" y="165" fill="#D99A68" font-family="'Noto Serif Malayalam', 'Noto Sans Malayalam', serif" font-size="32">പുസ്തകം</text>
+  <text x="255" y="211" fill="#C2CDC7" font-family="Arial, Helvetica, sans-serif" font-size="17" letter-spacing="4.4">A BETTER WAY TO MANAGE LIBRARIES</text>
+</svg>

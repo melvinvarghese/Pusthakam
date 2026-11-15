@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 250" role="img" aria-labelledby="title">
+  <title id="title">Pusthakam monochrome logo</title>
+  <g fill="#17352F">
+    <path d="M66 44h76c35 0 57 20 57 51 0 30-22 50-57 50h-34v56H66V44zm42 37v28h33c11 0 17-5 17-14s-6-14-17-14h-33z"/>
+    <path d="M108 150c15-18 35-28 60-31v43c-24 4-43 16-60 35v-47z"/>
+    <path d="M168 151h22v56l-11-8-11 8v-56z"/>
+  </g>
+  <text x="250" y="145" fill="#17352F" font-family="Georgia, 'Times New Roman', serif" font-size="91" letter-spacing="-3">Pusthakam</text>
+  <text x="255" y="194" fill="#17352F" font-family="'Noto Serif Malayalam', 'Noto Sans Malayalam', serif" font-size="30">പുസ്തകം</text>
+</svg>
