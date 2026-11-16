@@ -8,7 +8,7 @@ import { previewMode } from "@/lib/preview";
 import type {
   AccessionFormat, AppErrorPayload, AppInfo, ArchiveKind, ConfigOverview, CopyBatchInput, CopyPage, CopyQuery,
   CopyRecord, CopyStatus, CopyUpdateInput, DuplicateHit, DuplicateProbe, ImportOptions, ImportPreview,
-  ImportPreviewRequest, ImportReport, LibraryInput, MemberCategoryInput,
+  ImportPreviewRequest, ImportReport, LibraryInput, MemberCategoryInput, MemberInput, MemberPage,
   NamedInput, NamedKind, PolicyInput, RecordDetail, RecordInput, SearchQuery, SearchResult, Session, SetupInput,
   SetupStatus, ShelfInput,
 } from "./types";
@@ -95,6 +95,12 @@ export const importApi = {
   preview: (request: ImportPreviewRequest) => call<ImportPreview>("import_preview", { request }),
   commit: (token: string, options: ImportOptions) => call<ImportReport>("import_commit", { token, options }),
   cancel: () => call<void>("import_cancel"),
+};
+
+export const membersApi = {
+  list: (search: string, page: number, archived: boolean) => call<MemberPage>("members_list", { search, page, archived }),
+  save: (input: MemberInput) => call<number>("members_save", { input }),
+  archive: (id: number, archived: boolean) => call<void>("members_archive", { id, archived }),
 };
 
 export const configApi = {

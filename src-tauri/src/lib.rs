@@ -45,6 +45,9 @@ macro_rules! app_handlers {
             $crate::commands::import::import_preview,
             $crate::commands::import::import_commit,
             $crate::commands::import::import_cancel,
+            $crate::commands::members::members_list,
+            $crate::commands::members::members_save,
+            $crate::commands::members::members_archive,
         ]
     };
 }

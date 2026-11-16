@@ -1,11 +1,12 @@
 # PROGRESS
 
-_Last updated: 2026-11-15_
+_Last updated: 2026-11-16_
 
 ## Current phase
-Phase 3 (catalogue, accession, import): **implemented and tested; not yet clicked through inside the real desktop window; the Koha import is not yet verified against a real Koha export.** Next: Phase 4 (members and circulation).
+Phase 4 is underway. The Members directory supports registration, search, profile editing, and archive/restore. The v4 to v5 migration and member SQL were exercised with SQLite. The Rust IPC test and desktop UI still need to be run. Phase 3 desktop walkthrough and real Koha export verification remain open.
 
 ## What exists
+- **Members:** permission-checked directory with paginated name and member-number search, local contact details, expiry defaulted from the selected category, and audited profile and status changes.
 - **Phases 1-2:** Tauri shell, Spine Label design, SQLite + migrations, first-launch wizard, staff sign-in with roles enforced in Rust, Library Settings (categories, loan rules, collections, locations, shelves, accession number format), Online Tools menu.
 - **Catalogue:** records with multiple contributors (author, editor, translator…) and subjects, ISBN-10/13 validation and conversion, classification (Dewey/UDC/LC scheme + number), archive/restore (never deleted), duplicate warning (same ISBN, or same title + author + year), edit with audit trail.
 - **Copies and accession:** many copies per title, each with its own accession number, barcode, call number (suggested from classification + author), collection/location/shelf, acquisition date/source/price/vendor, status (available, in repair, damaged, lost, withdrawn, in transit; on loan/reserved set by circulation later) and a permanent history. Accession numbers follow a configurable prefix/digits/counter and skip numbers already used. Code 128 barcode and printable label per copy.
@@ -38,7 +39,8 @@ Phase 3 (catalogue, accession, import): **implemented and tested; not yet clicke
 | REQ-CLS | IN PROGRESS | Scheme + number on records; authority control and classification browser (Phase 6) pending |
 | REQ-CFG, REQ-ADM, REQ-SEC, REQ-UI, REQ-OFF | IN PROGRESS | see previous entries |
 | REQ-NET | NOT STARTED | Added 2026-11-15: several computers on one library (Phase 7b), see roadmap |
-| REQ-CIRC, REQ-MEM | NOT STARTED | Phase 4 |
+| REQ-MEM | IN PROGRESS | Directory implemented. Cards, photos, member import, loans and fines remain. |
+| REQ-CIRC | NOT STARTED | Phase 4 |
 | REQ-DASH, REQ-RPT | NOT STARTED | Phase 5 |
 | REQ-ACQ, REQ-SER | NOT STARTED | Phase 6 |
 | REQ-BAK | NOT STARTED | Phase 7 |

@@ -8,6 +8,7 @@ import { AccessionPage } from "@/features/catalogue/AccessionPage";
 import { CataloguePage } from "@/features/catalogue/CataloguePage";
 import { RecordPage } from "@/features/catalogue/RecordPage";
 import { Dashboard } from "@/features/dashboard/Dashboard";
+import { MembersPage } from "@/features/members/MembersPage";
 import { NotAvailable } from "@/features/NotAvailable";
 import { SettingsPage } from "@/features/settings/SettingsPage";
 import { ThemeProvider } from "@/lib/theme";
@@ -28,6 +29,7 @@ export function AppRoutes() {
         <Route path="/catalogue" element={<CataloguePage />} />
         <Route path="/catalogue/:id" element={<RecordPage />} />
         <Route path="/accession" element={<AccessionPage />} />
+        <Route path="/members" element={<MembersPage />} />
         {ALL_NAV_ITEMS.filter((i) => !i.available).map((i) => (
           <Route key={i.path} path={i.path} element={<NotAvailable />} />
         ))}

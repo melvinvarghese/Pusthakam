@@ -76,6 +76,49 @@ fn setup_body() -> Value {
 }
 
 #[test]
+fn members_can_be_registered_found_updated_and_restored_through_ipc() {
+    let h = Harness::new();
+    let list = json!({ "search": "M%01", "page": 1, "archived": false });
+    assert_eq!(h.code("members_list", list.clone()), "AUTH_FAILED");
+    h.ok("complete_setup", setup_body());
+    let config = h.ok("config_overview", json!({}));
+    let mut input = json!({
+        "memberNumber": "M%01",
+        "name": "Asha Nair",
+        "categoryId": config["memberCategories"][0]["id"],
+        "email": "asha@example.test",
+        "phone": null,
+        "expiresOn": null
+    });
+    let id = h.ok("members_save", json!({ "input": input.clone() }));
+    assert_eq!(h.code("members_save", json!({ "input": input.clone() })), "CONFLICT");
+    let row = &h.ok("members_list", list.clone())["rows"][0];
+    assert_eq!(row["id"], id);
+    assert_eq!(row["memberNumber"], "M%01");
+    assert_eq!(row["expiresOn"].as_str().unwrap().len(), 10);
+
+    input["id"] = id.clone();
+    input["name"] = json!("Asha Ravi");
+    h.ok("members_save", json!({ "input": input.clone() }));
+    h.ok("members_archive", json!({ "id": id, "archived": true }));
+    assert_eq!(h.ok("members_list", list.clone())["total"], 0);
+    let archived = h.ok("members_list", json!({ "search": "Ravi", "page": 1, "archived": true }));
+    assert_eq!(archived["rows"][0]["id"], id);
+    h.ok("members_archive", json!({ "id": id, "archived": false }));
+    assert_eq!(h.ok("members_list", list.clone())["total"], 1);
+
+    {
+        let state = h.webview.state::<AppState>();
+        let conn = state.db.lock().unwrap();
+        auth::create_user(&conn, "viewer", "Visitor", "visitor passphrase", "viewer").unwrap();
+    }
+    h.ok("login", json!({ "username": "viewer", "password": "visitor passphrase" }));
+    assert_eq!(h.ok("members_list", list)["total"], 1);
+    assert_eq!(h.code("members_save", json!({ "input": input })), "PERMISSION_DENIED");
+    assert_eq!(h.code("members_archive", json!({ "id": id, "archived": true })), "PERMISSION_DENIED");
+}
+
+#[test]
 fn setup_sign_in_and_configuration_work_through_the_real_commands() {
     let h = Harness::new();
 
@@ -323,6 +366,6 @@ fn import_preview_then_commit_through_the_real_commands() {
 fn app_info_works_before_sign_in_and_reports_the_current_schema() {
     let h = Harness::new();
     let info = h.ok("app_info", json!({}));
-    assert_eq!(info["schemaVersion"], 4);
+    assert_eq!(info["schemaVersion"], 5);
     assert!(info["databasePath"].as_str().unwrap().ends_with("pusthakam.db"));
 }
