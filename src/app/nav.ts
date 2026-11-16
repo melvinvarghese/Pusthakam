@@ -21,7 +21,7 @@ export const NAV_GROUPS: NavGroup[] = [
       { path: "/", label: "Dashboard", available: true, phase: 1, summary: "Overview of the library: records, copies, loans, members, overdue items and alerts." },
       { path: "/catalogue", label: "Catalogue", available: true, phase: 3, summary: "Catalogue books with authors, subjects and classification, and search the whole collection." },
       { path: "/circulation", label: "Circulation", available: false, phase: 4, summary: "Issue, return, renew and reserve books, with due dates, overdue tracking and fines." },
-      { path: "/members", label: "Members", available: false, phase: 4, summary: "Register members, print membership cards, and see each member's loans and fines." },
+      { path: "/members", label: "Members", available: true, phase: 4, summary: "Register members, find them by name or member number, and manage their membership." },
     ],
   },
   {

@@ -7,7 +7,7 @@ import { AppRoutes } from "@/App";
 import { ThemeProvider } from "@/lib/theme";
 import { SessionContext } from "@/lib/session";
 
-const SESSION = { userId: 1, username: "rekha", displayName: "Rekha Nair", role: "librarian", permissions: [] };
+const SESSION = { userId: 1, username: "rekha", displayName: "Rekha Nair", role: "librarian", permissions: ["members.read"] };
 
 function renderApp(path = "/") {
   const qc = new QueryClient({ defaultOptions: { queries: { retry: false } } });
@@ -62,7 +62,7 @@ describe("AppShell", () => {
     expect(input).toHaveFocus();
     await userEvent.type(input, "memb");
     await userEvent.keyboard("{Enter}");
-    expect(screen.getByRole("heading", { name: /Members is not available yet/ })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Members" })).toBeInTheDocument();
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
   });
 

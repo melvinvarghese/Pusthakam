@@ -304,3 +304,25 @@ export interface NamedInput { id: number | null; name: string; description: stri
 export interface MemberCategoryInput extends NamedInput { membershipDays: number }
 export interface ShelfInput { id: number | null; locationId: number; code: string; description: string | null }
 export type PolicyInput = Omit<Policy, "id"> & { id: number | null };
+export interface MemberInput {
+  id: number | null;
+  memberNumber: string;
+  name: string;
+  categoryId: number;
+  email: string | null;
+  phone: string | null;
+  expiresOn: string | null;
+}
+
+export interface Member extends MemberInput {
+  id: number;
+  categoryName: string;
+  expiresOn: string;
+}
+
+export interface MemberPage {
+  rows: Member[];
+  total: number;
+  page: number;
+  pageSize: number;
+}

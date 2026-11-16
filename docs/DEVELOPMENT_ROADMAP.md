@@ -8,7 +8,7 @@ Status key: NOT STARTED · IN PROGRESS · IMPLEMENTED · VERIFIED · BLOCKED
 | 1 | Tauri shell, React UI shell, SQLite + migrations, nav, design system, theme, errors, logging, settings | IMPLEMENTED (persistence verified; offline-with-network-off, fmt/clippy, Playwright, CI still open: see PROGRESS.md) | Launches offline; DB created in app-data and persists across restarts |
 | 2 | First-launch wizard, library profile, collections/locations/shelves, categories, circulation policies, admin login | IMPLEMENTED (50 Rust + 54 frontend tests pass; not yet clicked through inside the Tauri window) | Admin configures a new library with no code edits |
 | 3 | Catalogue, contributors, subjects, classification, copies, accession, barcodes, search, bulk import (CSV + MARC/Koha) | IMPLEMENTED (103 Rust + 81 frontend tests pass; Koha mapping unverified against a real export; not clicked through in the Tauri window) | One title → many independently managed copies |
-| 4 | Members, issue/return/renew/reserve, due dates, overdue, fines, history | NOT STARTED | Full borrow/return workflow on real records |
+| 4 | Members, issue/return/renew/reserve, due dates, overdue, fines, history | IN PROGRESS (member directory implemented) | Full borrow/return workflow on real records |
 | 5 | Dashboard analytics, reports, PDF/CSV/XLSX, labels, receipts | NOT STARTED | Reports match DB; exports open in Excel/PDF readers |
 | 6 | Acquisitions, serials, stock verification, advanced classification, MARC21 | NOT STARTED | Receive PO → records + copies created |
 | 7 | Staff/roles, audit log UI, backup/restore, integrity checks | NOT STARTED | Backup → restore round-trip verified |
