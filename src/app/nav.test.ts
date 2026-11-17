@@ -13,7 +13,7 @@ describe("navigation config", () => {
 
   it("only marks modules available when they are actually built", () => {
     expect(ALL_NAV_ITEMS.filter((i) => i.available).map((i) => i.label)).toEqual([
-      "Dashboard", "Catalogue", "Members", "Accession Register", "Library Settings",
+      "Dashboard", "Catalogue", "Circulation", "Members", "Accession Register", "Reports", "Library Settings",
     ]);
   });
 });

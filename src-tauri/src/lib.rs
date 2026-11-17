@@ -16,6 +16,7 @@ macro_rules! app_handlers {
     () => {
         ::tauri::generate_handler![
             $crate::commands::app::app_info,
+            $crate::commands::app::dashboard_overview,
             $crate::commands::app::get_setting,
             $crate::commands::app::set_setting,
             $crate::commands::auth::setup_status,
@@ -46,8 +47,29 @@ macro_rules! app_handlers {
             $crate::commands::import::import_commit,
             $crate::commands::import::import_cancel,
             $crate::commands::members::members_list,
+            $crate::commands::members::members_list_loans,
             $crate::commands::members::members_save,
             $crate::commands::members::members_archive,
+            $crate::commands::members::members_preview_koha,
+            $crate::commands::members::members_import_koha,
+            $crate::commands::members::members_get_photo,
+            $crate::commands::members::members_set_photo,
+            $crate::commands::circulation::circulation_prepare_issue,
+            $crate::commands::circulation::circulation_prepare_return,
+            $crate::commands::circulation::circulation_issue,
+            $crate::commands::circulation::circulation_return,
+            $crate::commands::circulation::circulation_prepare_renewal,
+            $crate::commands::circulation::circulation_renew,
+            $crate::commands::circulation::circulation_list_overdue,
+            $crate::commands::circulation::circulation_list_reservations,
+            $crate::commands::circulation::circulation_place_reservation,
+            $crate::commands::circulation::circulation_cancel_reservation,
+            $crate::commands::circulation::circulation_list_fines,
+            $crate::commands::circulation::circulation_settle_fine,
+            $crate::commands::circulation::circulation_fine_history,
+            $crate::commands::reports::reports_circulation_activity,
+            $crate::commands::reports::reports_popular_titles,
+            $crate::commands::reports::reports_stock_by_location,
         ]
     };
 }

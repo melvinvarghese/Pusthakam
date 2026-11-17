@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/Button";
 import { CheckField, SelectField } from "@/components/ui/Field";
 import { Modal } from "@/components/ui/Modal";
 import { ApiError, importApi } from "@/lib/api";
+import { fileToBase64 } from "@/lib/files";
 import type { ImportFormat, ImportOptions, ImportPreview, ImportProfile, ImportReport } from "@/lib/api/types";
 import { useConfig } from "./shared";
 
@@ -21,14 +22,6 @@ const FIELD_LABELS: Record<string, string> = {
   category: "Item category", dateAcquired: "Date acquired", vendor: "Vendor or donor", status: "Status", copies: "Number of copies",
   notes: "Notes", abstract: "Abstract",
 };
-
-/** File bytes to base64 without building one giant string argument (large MARC files are tens of megabytes). */
-export async function fileToBase64(file: File): Promise<string> {
-  const bytes = new Uint8Array(await file.arrayBuffer());
-  let binary = "";
-  for (let i = 0; i < bytes.length; i += 0x8000) binary += String.fromCharCode(...bytes.subarray(i, i + 0x8000));
-  return btoa(binary);
-}
 
 function errMsg(e: unknown, fallback: string) {
   return e instanceof ApiError ? e.message : fallback;

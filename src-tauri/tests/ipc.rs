@@ -77,6 +77,7 @@ fn setup_body() -> Value {
 
 #[test]
 fn members_can_be_registered_found_updated_and_restored_through_ipc() {
+    use base64::Engine;
     let h = Harness::new();
     let list = json!({ "search": "M%01", "page": 1, "archived": false });
     assert_eq!(h.code("members_list", list.clone()), "AUTH_FAILED");
@@ -96,6 +97,23 @@ fn members_can_be_registered_found_updated_and_restored_through_ipc() {
     assert_eq!(row["id"], id);
     assert_eq!(row["memberNumber"], "M%01");
     assert_eq!(row["expiresOn"].as_str().unwrap().len(), 10);
+    assert!(h.ok("members_get_photo", json!({ "id": id })).is_null());
+    assert_eq!(h.code("members_set_photo", json!({ "id": id, "pngBase64": "eA==" })), "VALIDATION");
+    let mut photo = Vec::new();
+    {
+        let mut encoder = png::Encoder::new(&mut photo, 1, 1);
+        encoder.set_color(png::ColorType::Rgb);
+        encoder.add_text_chunk("Comment".into(), "Camera metadata".into()).unwrap();
+        let mut writer = encoder.write_header().unwrap();
+        writer.write_image_data(&[20, 60, 90]).unwrap();
+        writer.finish().unwrap();
+    }
+    let photo = base64::engine::general_purpose::STANDARD.encode(photo);
+    h.ok("members_set_photo", json!({ "id": id, "pngBase64": photo }));
+    let stored = h.ok("members_get_photo", json!({ "id": id }));
+    let bytes = base64::engine::general_purpose::STANDARD.decode(stored.as_str().unwrap()).unwrap();
+    assert!(bytes.starts_with(b"\x89PNG\r\n\x1a\n"));
+    assert!(!bytes.windows(b"Camera metadata".len()).any(|part| part == b"Camera metadata"));
 
     input["id"] = id.clone();
     input["name"] = json!("Asha Ravi");
@@ -114,8 +132,17 @@ fn members_can_be_registered_found_updated_and_restored_through_ipc() {
     }
     h.ok("login", json!({ "username": "viewer", "password": "visitor passphrase" }));
     assert_eq!(h.ok("members_list", list)["total"], 1);
+    let dashboard = h.ok("dashboard_overview", json!({}));
+    assert_eq!(dashboard["activeMembers"], 1);
+    assert_eq!(dashboard["catalogue"]["titles"], 0);
+    assert!(dashboard["circulation"].is_null());
     assert_eq!(h.code("members_save", json!({ "input": input })), "PERMISSION_DENIED");
     assert_eq!(h.code("members_archive", json!({ "id": id, "archived": true })), "PERMISSION_DENIED");
+    assert_eq!(h.ok("members_get_photo", json!({ "id": id })), stored);
+    assert_eq!(h.code("members_set_photo", json!({ "id": id, "pngBase64": null })), "PERMISSION_DENIED");
+    h.ok("login", json!({ "username": "admin", "password": "a long passphrase" }));
+    h.ok("members_set_photo", json!({ "id": id, "pngBase64": null }));
+    assert!(h.ok("members_get_photo", json!({ "id": id })).is_null());
 }
 
 #[test]
@@ -297,10 +324,21 @@ fn catalogue_commands_accept_the_ui_payloads_and_enforce_permissions() {
         "locationId": null, "shelfId": null, "callNumber": null, "acquisitionDate": null, "acquisitionSource": "purchase",
         "priceMinor": null, "vendor": null, "invoiceRef": null, "notes": null }})), "CONFLICT");
 
-    // A clerk can read the catalogue but not change anything.
+    let policy = &cfg["policies"][0];
+    let member = h.ok("members_save", json!({ "input": {
+        "memberNumber": "MEM-101", "name": "Asha Nair", "categoryId": policy["memberCategoryId"]
+    }}));
+    let member_loans = json!({ "memberId": member, "page": 1 });
+    assert_eq!(h.ok("members_list_loans", member_loans.clone())["total"], 0);
+    assert_eq!(h.code("members_list_loans", json!({ "memberId": -1, "page": 1 })), "NOT_FOUND");
+
+    // A clerk can read the catalogue and circulate copies but cannot edit the catalogue.
     {
         let state = h.webview.state::<AppState>();
         let conn = state.db.lock().unwrap();
+        conn.execute("UPDATE circulation_policies SET max_renewals = 1, renewal_days = 7,
+            fine_per_day_minor = 150, fine_grace_days = 1, fine_cap_minor = 250 WHERE id = ?1",
+            [policy["id"].as_i64().unwrap()]).unwrap();
         auth::create_user(&conn, "clerk", "Front Desk", "clerk passphrase!", "circulation").unwrap();
     }
     h.ok("logout", json!({}));
@@ -311,8 +349,115 @@ fn catalogue_commands_accept_the_ui_payloads_and_enforce_permissions() {
     assert_eq!(h.code("catalogue_archive_record", json!({ "id": id, "archived": true })), "PERMISSION_DENIED");
     assert_eq!(h.code("catalogue_set_copy_status", json!({ "id": copy_id, "status": "available", "note": null })), "PERMISSION_DENIED");
     assert_eq!(h.code("accession_format_set", json!({ "format": { "prefix": "", "padding": 6, "next": 1 } })), "PERMISSION_DENIED");
+    let lookup = json!({ "memberNumber": "MEM-101", "barcode": "LIB-00101" });
+    let preview = h.ok("circulation_prepare_issue", lookup.clone());
+    assert_eq!(preview["memberName"], "Asha Nair");
+    assert_eq!(preview["title"], "Balyakalasakhi");
+    let request = json!({ "memberNumber": "MEM-101", "barcode": "LIB-00101",
+        "memberId": member, "itemId": preview["itemId"], "dueOn": preview["dueOn"] });
+    h.ok("circulation_issue", request.clone());
+    assert_eq!(h.code("circulation_issue", request), "CONFLICT");
+    assert_eq!(h.ok("catalogue_list_copies", json!({ "query": { "status": "on_loan", "page": 1, "pageSize": 25 } }))["total"], 1);
+    let barcode = json!({ "barcode": "LIB-00101" });
+    let initial_renewal = h.ok("circulation_prepare_renewal", barcode.clone());
+    assert_eq!(initial_renewal["previousDueOn"], preview["dueOn"]);
+    {
+        let state = h.webview.state::<AppState>();
+        let conn = state.db.lock().unwrap();
+        conn.execute("INSERT INTO holidays (date, name) VALUES (?1, 'Holiday')",
+            [initial_renewal["dueOn"].as_str().unwrap()]).unwrap();
+    }
+    assert_eq!(h.code("circulation_renew", json!({ "confirmation": initial_renewal })), "CONFLICT");
+    let renewal = h.ok("circulation_prepare_renewal", barcode.clone());
+    assert!(renewal["dueOn"].as_str().unwrap() > initial_renewal["dueOn"].as_str().unwrap());
+    let confirm = json!({ "confirmation": renewal });
+    h.ok("circulation_renew", confirm.clone());
+    assert_eq!(h.code("circulation_renew", confirm), "CONFLICT");
+    assert_eq!(h.code("circulation_prepare_renewal", barcode.clone()), "CONFLICT");
+    let loan = h.ok("circulation_prepare_return", barcode.clone());
+    assert_eq!(loan["dueOn"], renewal["dueOn"]);
+    let first_page = json!({ "page": 1 });
+    assert_eq!(h.ok("circulation_list_overdue", first_page.clone())["total"], 0);
+    {
+        let state = h.webview.state::<AppState>();
+        let conn = state.db.lock().unwrap();
+        let id = loan["loanId"].as_i64().unwrap();
+        conn.execute("UPDATE loans SET due_on = date('now','localtime') WHERE id = ?1", [id]).unwrap();
+    }
+    assert_eq!(h.ok("circulation_list_overdue", first_page.clone())["total"], 0);
+    {
+        let state = h.webview.state::<AppState>();
+        let conn = state.db.lock().unwrap();
+        conn.execute("UPDATE loans SET due_on = date('now','localtime','-3 days') WHERE id = ?1",
+            [loan["loanId"].as_i64().unwrap()]).unwrap();
+        conn.execute("UPDATE circulation_policies SET fine_per_day_minor = 0 WHERE id = ?1",
+            [policy["id"].as_i64().unwrap()]).unwrap();
+    }
+    let overdue = h.ok("circulation_list_overdue", json!({ "page": 99 }));
+    assert_eq!(overdue["page"], 1);
+    assert_eq!(overdue["total"], 1);
+    assert_eq!(overdue["rows"][0]["loanId"], loan["loanId"]);
+    assert_eq!(overdue["rows"][0]["barcode"], "LIB-00101");
+    assert_eq!(overdue["rows"][0]["memberNumber"], "MEM-101");
+    assert_eq!(overdue["rows"][0]["daysOverdue"], 3);
+    let dashboard = h.ok("dashboard_overview", json!({}));
+    assert_eq!(dashboard["catalogue"], json!({ "titles": 1, "copies": 2, "available": 0 }));
+    assert_eq!(dashboard["activeMembers"], 1);
+    assert_eq!(dashboard["circulation"]["onLoan"], 1);
+    assert_eq!(dashboard["circulation"]["overdue"], 1);
+    let history = h.ok("members_list_loans", member_loans.clone());
+    assert_eq!(history["total"], 1);
+    assert_eq!(history["rows"][0]["id"], loan["loanId"]);
+    assert_eq!(history["rows"][0]["title"], "Balyakalasakhi");
+    assert_eq!(history["rows"][0]["overdue"], true);
+    assert!(history["rows"][0]["returnedOn"].is_null());
+    let return_preview = h.ok("circulation_prepare_return", barcode.clone());
+    assert_eq!(return_preview["estimatedFine"], json!({ "amountMinor": 250, "currency": "INR" }));
+    assert_eq!(h.code("circulation_return", json!({ "loanId": loan["loanId"], "condition": "damaged" })), "PERMISSION_DENIED");
+    let fine = h.ok("circulation_return", json!({ "loanId": loan["loanId"] }));
+    assert_eq!(fine, json!({ "amountMinor": 250, "currency": "INR" }));
+    assert_eq!(h.ok("dashboard_overview", json!({}))["circulation"]["outstandingFines"], 1);
+    let history = h.ok("members_list_loans", member_loans.clone());
+    assert_eq!(history["total"], 1);
+    assert_eq!(history["rows"][0]["overdue"], false);
+    assert!(history["rows"][0]["returnedOn"].is_string());
+    assert_eq!(h.ok("circulation_list_overdue", first_page.clone())["total"], 0);
+    assert_eq!(h.code("circulation_return", json!({ "loanId": loan["loanId"] })), "CONFLICT");
+    assert_eq!(h.code("circulation_prepare_renewal", barcode), "NOT_FOUND");
+    assert_eq!(h.ok("catalogue_list_copies", json!({ "query": { "status": "available", "page": 1, "pageSize": 25 } }))["total"], 1);
+    let outstanding = json!({ "page": 1, "includeSettled": false });
+    let fines = h.ok("circulation_list_fines", outstanding.clone());
+    assert_eq!(fines["total"], 1);
+    let fine_id = &fines["rows"][0]["id"];
+    let payment = json!({ "fineId": fine_id, "amountMinor": 125, "expectedBalance": 250,
+        "entry": { "kind": "payment", "method": "cash" } });
+    h.ok("circulation_settle_fine", payment.clone());
+    assert_eq!(h.code("circulation_settle_fine", payment), "CONFLICT");
+    assert_eq!(h.ok("circulation_list_fines", outstanding.clone())["rows"][0]["outstandingMinor"], 125);
+    let waiver = json!({ "fineId": fine_id, "amountMinor": 125, "expectedBalance": 125,
+        "entry": { "kind": "waiver", "reason": "Approved by librarian" } });
+    assert_eq!(h.code("circulation_settle_fine", waiver.clone()), "PERMISSION_DENIED");
+    h.ok("logout", json!({}));
+    h.ok("login", json!({ "username": "admin", "password": "a long passphrase" }));
+    h.ok("circulation_settle_fine", waiver);
+    assert_eq!(h.ok("circulation_list_fines", outstanding)["total"], 0);
+    let settled = h.ok("circulation_list_fines", json!({ "page": 1, "includeSettled": true }));
+    assert_eq!(settled["rows"][0]["paidMinor"], 125);
+    assert_eq!(settled["rows"][0]["waivedMinor"], 125);
+    let history_request = json!({ "fineId": fine_id, "page": 1 });
+    let entries = h.ok("circulation_fine_history", history_request.clone());
+    assert_eq!(entries["total"], 2);
+    assert_eq!(entries["rows"][0]["reason"], "Approved by librarian");
+    assert_eq!(entries["rows"][1]["method"], "cash");
+    h.ok("login", json!({ "username": "clerk", "password": "clerk passphrase!" }));
+    let entries = h.ok("circulation_fine_history", history_request);
+    assert!(entries["rows"][0]["reason"].is_null());
     // Signed-out callers get nothing.
     h.ok("logout", json!({}));
+    assert_eq!(h.code("circulation_list_overdue", first_page), "AUTH_FAILED");
+    assert_eq!(h.code("members_list_loans", member_loans), "AUTH_FAILED");
+    assert_eq!(h.code("dashboard_overview", json!({})), "AUTH_FAILED");
+    assert_eq!(h.code("circulation_prepare_issue", lookup), "AUTH_FAILED");
     assert_eq!(h.code("catalogue_search", json!({ "query": { "text": "balya", "page": 1, "pageSize": 25 } })), "AUTH_FAILED");
 }
 
@@ -363,9 +508,136 @@ fn import_preview_then_commit_through_the_real_commands() {
 }
 
 #[test]
+fn reservation_queue_controls_issue_and_renewal_through_ipc() {
+    let h = Harness::new();
+    h.ok("complete_setup", setup_body());
+    let config = h.ok("config_overview", json!({}));
+    let policy = &config["policies"][0];
+    let member_category = &policy["memberCategoryId"];
+    for (number, name) in [("M-1", "First Member"), ("M-2", "Second Member"), ("M-3", "Third Member")] {
+        h.ok("members_save", json!({ "input": { "name": name, "categoryId": member_category, "memberNumber": number } }));
+    }
+    {
+        let state = h.webview.state::<AppState>();
+        let conn = state.db.lock().unwrap();
+        conn.execute("INSERT INTO bibliographic_records (title) VALUES ('Reservation test')", []).unwrap();
+        conn.execute("INSERT INTO physical_items (record_id, accession_no, barcode, item_category_id)
+            VALUES (?1, 'COPY-1', 'COPY-1', ?2)",
+            [conn.last_insert_rowid(), policy["itemCategoryId"].as_i64().unwrap()]).unwrap();
+        conn.execute("UPDATE circulation_policies SET max_renewals = 1, renewal_days = 7 WHERE id = ?1",
+            [policy["id"].as_i64().unwrap()]).unwrap();
+    }
+    let lookup = |number| json!({ "memberNumber": number, "barcode": "COPY-1" });
+    let issue = |number| {
+        let preview = h.ok("circulation_prepare_issue", lookup(number));
+        h.ok("circulation_issue", json!({
+            "memberNumber": number, "barcode": "COPY-1", "memberId": preview["memberId"],
+            "itemId": preview["itemId"], "dueOn": preview["dueOn"]
+        }));
+    };
+    let list = || h.ok("circulation_list_reservations", json!({ "page": 1 }));
+    issue("M-1");
+    h.ok("circulation_place_reservation", lookup("M-2"));
+    h.ok("circulation_place_reservation", lookup("M-3"));
+    assert_eq!(h.code("circulation_place_reservation", lookup("M-2")), "CONFLICT");
+    assert_eq!(list()["rows"][0]["status"], "pending");
+    assert_eq!(h.code("circulation_prepare_renewal", json!({ "barcode": "COPY-1" })), "CONFLICT");
+    let loan = h.ok("circulation_prepare_return", json!({ "barcode": "COPY-1" }));
+    h.ok("circulation_return", json!({ "loanId": loan["loanId"] }));
+    let queue = list();
+    assert_eq!(queue["rows"][0]["memberNumber"], "M-2");
+    assert_eq!(queue["rows"][0]["status"], "ready");
+    assert!(queue["rows"][0]["expiresAt"].is_string());
+    assert_eq!(queue["rows"][1]["status"], "pending");
+    assert_eq!(h.code("circulation_prepare_issue", lookup("M-3")), "CONFLICT");
+    {
+        let state = h.webview.state::<AppState>();
+        let conn = state.db.lock().unwrap();
+        conn.execute("UPDATE reservations SET expires_at = '2000-01-01T00:00:00Z' WHERE id = ?1",
+            [queue["rows"][0]["id"].as_i64().unwrap()]).unwrap();
+    }
+    let queue = list();
+    assert_eq!(queue["total"], 1);
+    assert_eq!(queue["rows"][0]["memberNumber"], "M-3");
+    assert_eq!(queue["rows"][0]["status"], "ready");
+    h.ok("circulation_cancel_reservation", json!({ "id": queue["rows"][0]["id"] }));
+    assert_eq!(list()["total"], 0);
+    h.ok("circulation_place_reservation", lookup("M-2"));
+    issue("M-2");
+    assert_eq!(list()["total"], 0);
+    let loan = h.ok("circulation_prepare_return", json!({ "barcode": "COPY-1" }));
+    h.ok("circulation_place_reservation", lookup("M-3"));
+    h.ok("circulation_return", json!({ "loanId": loan["loanId"], "condition": "lost" }));
+    assert_eq!(list()["rows"][0]["status"], "pending");
+    let copies = h.ok("catalogue_list_copies", json!({ "query": { "status": "lost", "page": 1, "pageSize": 25 } }));
+    assert_eq!(copies["total"], 1);
+    let today: String = {
+        let state = h.webview.state::<AppState>();
+        let conn = state.db.lock().unwrap();
+        conn.query_row("SELECT date('now','localtime')", [], |r| r.get(0)).unwrap()
+    };
+    let activity = h.ok("reports_circulation_activity", json!({ "from": today, "to": today }));
+    assert_eq!(activity, json!([{
+        "date": today, "issued": 2, "returned": 1, "lost": 1, "renewed": 0, "reservations": 4
+    }]));
+    let popular = h.ok("reports_popular_titles", json!({ "from": today, "to": today }));
+    assert_eq!(popular.as_array().unwrap().len(), 1);
+    assert_eq!(popular[0]["title"], "Reservation test");
+    assert_eq!(popular[0]["issues"], 2);
+    let stock = h.ok("reports_stock_by_location", json!({}));
+    assert_eq!(stock[0]["location"], Value::Null);
+    assert_eq!(stock[0]["lost"], 1);
+    assert_eq!(stock[0]["total"], 1);
+    assert_eq!(h.code("reports_circulation_activity", json!({ "from": "2025-01-01", "to": "2027-01-01" })), "VALIDATION");
+    let state = h.webview.state::<AppState>();
+    let conn = state.db.lock().unwrap();
+    let mut stmt = conn.prepare("SELECT status FROM reservations ORDER BY id").unwrap();
+    let outcomes = stmt.query_map([], |row| row.get::<_, String>(0)).unwrap().collect::<Result<Vec<_>, _>>().unwrap();
+    assert_eq!(outcomes, ["expired", "cancelled", "fulfilled", "pending"]);
+}
+
+#[test]
+fn koha_patron_import_previews_and_saves_transactionally_through_ipc() {
+    use base64::Engine;
+    let h = Harness::new();
+    h.ok("complete_setup", setup_body());
+    let config = h.ok("config_overview", json!({}));
+    let category = &config["memberCategories"][0]["id"];
+    let csv = "cardnumber,firstname,surname,categorycode,email,phone,dateexpiry\r\n\
+        0001,Asha,Nair,STU,asha@example.test,555-0101,2030-10-22\r\n\
+        A-02,അനു,നായർ,STAFF,,,\r\n\
+        0001,Duplicate,Member,STU,,,\r\n\
+        0003,Invalid,Date,STU,,,2026-02-30\r\n";
+    let data = base64::engine::general_purpose::STANDARD.encode(csv);
+    let preview_request = json!({ "dataBase64": data });
+    let preview = h.ok("members_preview_koha", preview_request.clone());
+    assert_eq!(preview["ready"], 2);
+    assert_eq!(preview["skipped"], 2);
+    assert_eq!(preview["categories"], json!({ "STU": 1, "STAFF": 1 }));
+    let list = json!({ "search": "", "page": 1, "archived": false });
+    assert_eq!(h.ok("members_list", list.clone())["total"], 0);
+
+    let invalid = json!({ "dataBase64": data, "expectedReady": 2, "mappings": { "STU": category, "STAFF": -1 } });
+    assert_eq!(h.code("members_import_koha", invalid), "VALIDATION");
+    assert_eq!(h.ok("members_list", list.clone())["total"], 0);
+    let request = json!({ "dataBase64": data, "expectedReady": 2, "mappings": { "STU": category, "STAFF": category } });
+    assert_eq!(h.ok("members_import_koha", request.clone()), 2);
+    assert_eq!(h.code("members_import_koha", request), "CONFLICT");
+    assert_eq!(h.ok("members_list", list)["total"], 2);
+    let found = h.ok("members_list", json!({ "search": "0001", "page": 1, "archived": false }));
+    assert_eq!(found["rows"][0]["memberNumber"], "0001");
+    assert_eq!(found["rows"][0]["expiresOn"], "2030-10-22");
+    assert_eq!(found["rows"][0]["email"], "asha@example.test");
+    let found = h.ok("members_list", json!({ "search": "A-02", "page": 1, "archived": false }));
+    assert_eq!(found["rows"][0]["name"], "അനു നായർ");
+    h.ok("logout", json!({}));
+    assert_eq!(h.code("members_preview_koha", preview_request), "AUTH_FAILED");
+}
+
+#[test]
 fn app_info_works_before_sign_in_and_reports_the_current_schema() {
     let h = Harness::new();
     let info = h.ok("app_info", json!({}));
-    assert_eq!(info["schemaVersion"], 5);
+    assert_eq!(info["schemaVersion"], 11);
     assert!(info["databasePath"].as_str().unwrap().ends_with("pusthakam.db"));
 }

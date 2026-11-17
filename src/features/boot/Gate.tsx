@@ -45,7 +45,8 @@ export function Gate({ children }: { children: ReactNode }) {
   const signOut = async () => {
     await authApi.logout();
     qc.setQueryData(["session"], null);
-    qc.removeQueries({ queryKey: ["config"] });
+    qc.removeQueries({ predicate: ({ queryKey }) => queryKey[0] !== "session" && queryKey[0] !== "setup-status" });
+    qc.getMutationCache().clear();
   };
   return <SessionContext.Provider value={{ session: session.data, signOut }}>{children}</SessionContext.Provider>;
 }

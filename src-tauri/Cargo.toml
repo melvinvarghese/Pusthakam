@@ -26,6 +26,7 @@ sha2 = "0.11"
 # Import: CSV files and base64 transport of file bytes from the UI.
 csv = "1"
 base64 = "0.22"
+png = "0.18"
 # Password hashing (RustCrypto argon2id). Pinned to 0.5: the 0.6 line changes the API (DECISIONS D-014).
 argon2 = "0.5"
 # Operating-system random numbers for password salts (same rand_core line argon2 0.5 uses).

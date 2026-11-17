@@ -7,8 +7,9 @@ import { Modal } from "@/components/ui/Modal";
 import { ApiError, catalogueApi } from "@/lib/api";
 import type { AcquisitionSource, ConfigOverview, CopyBatchInput, CopyRecord, CopyStatus, RecordDetail } from "@/lib/api/types";
 import { suggestCallNumber } from "@/lib/callNumber";
+import { localDate } from "@/lib/dates";
 import { minorToInput, parseMinor } from "@/lib/money";
-import { BarcodeSvg, MANUAL_STATUSES, SOURCE_LABELS, STATUS_LABELS, today } from "./shared";
+import { BarcodeSvg, MANUAL_STATUSES, SOURCE_LABELS, STATUS_LABELS } from "./shared";
 
 function useSave<T>(onClose: () => void, run: () => Promise<T>) {
   const qc = useQueryClient();
@@ -53,7 +54,7 @@ function useCopyFields(config: ConfigOverview, initial?: CopyRecord, defaults?: 
     location: String(initial?.locationId ?? config.locations.find((l) => !l.archived)?.id ?? ""),
     shelf: String(initial?.shelfId ?? ""),
     callNumber: initial?.callNumber ?? defaults?.callNumber ?? "",
-    date: initial?.acquisitionDate ?? today(),
+    date: initial?.acquisitionDate ?? localDate(),
     source: (initial?.acquisitionSource ?? "purchase") as AcquisitionSource,
     price: initial?.priceMinor == null ? "" : minorToInput(initial.priceMinor),
     vendor: initial?.vendor ?? "",

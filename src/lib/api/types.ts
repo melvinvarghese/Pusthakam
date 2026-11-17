@@ -12,6 +12,47 @@ export interface AppInfo {
   databasePath: string;
 }
 
+export interface DashboardOverview {
+  catalogue: { titles: number; copies: number; available: number } | null;
+  activeMembers: number | null;
+  circulation: {
+    onLoan: number;
+    dueToday: number;
+    overdue: number;
+    readyHolds: number;
+    outstandingFines: number;
+  } | null;
+}
+
+export interface CirculationDay {
+  date: string;
+  issued: number;
+  returned: number;
+  lost: number;
+  renewed: number;
+  reservations: number;
+}
+
+export interface PopularTitle {
+  recordId: number;
+  title: string;
+  archived: boolean;
+  issues: number;
+}
+
+export interface StockRow {
+  locationId: number | null;
+  location: string | null;
+  archivedLocation: boolean;
+  available: number;
+  onLoan: number;
+  held: number;
+  lost: number;
+  damaged: number;
+  other: number;
+  total: number;
+}
+
 // ----- sign-in and setup -----
 
 export interface Session {
@@ -325,4 +366,128 @@ export interface MemberPage {
   total: number;
   page: number;
   pageSize: number;
+}
+
+export interface MemberLoan {
+  id: number;
+  title: string;
+  barcode: string;
+  issuedOn: string;
+  dueOn: string;
+  returnedOn: string | null;
+  overdue: boolean;
+  returnCondition: ReturnCondition | null;
+}
+
+export interface MemberLoanPage {
+  rows: MemberLoan[];
+  total: number;
+  page: number;
+  pageSize: number;
+}
+
+export interface KohaPatronPreview {
+  ready: number;
+  skipped: number;
+  categories: Record<string, number>;
+  sample: {
+    memberNumber: string;
+    name: string;
+    categoryCode: string;
+    expiresOn: string | null;
+  }[];
+  problems: string[];
+}
+
+export interface LoanDetails {
+  memberName: string;
+  title: string;
+  dueOn: string;
+}
+
+export interface IssuePreview extends LoanDetails {
+  memberId: number;
+  itemId: number;
+}
+
+export interface ReturnPreview extends LoanDetails {
+  loanId: number;
+  estimatedFine?: FineAmount;
+}
+
+export type ReturnCondition = "available" | "damaged" | "lost";
+
+export interface RenewalPreview extends ReturnPreview {
+  previousDueOn: string;
+}
+
+export interface OverdueLoan extends ReturnPreview {
+  barcode: string;
+  memberNumber: string;
+  daysOverdue: number;
+}
+
+export interface OverduePage {
+  rows: OverdueLoan[];
+  page: number;
+  pageSize: number;
+  total: number;
+}
+
+export interface Reservation {
+  id: number;
+  title: string;
+  barcode: string;
+  memberName: string;
+  memberNumber: string;
+  status: "pending" | "ready";
+  expiresAt: string | null;
+}
+
+export interface ReservationPage {
+  rows: Reservation[];
+  page: number;
+  pageSize: number;
+  total: number;
+}
+
+export interface FineAmount {
+  amountMinor: number;
+  currency: string;
+}
+
+export interface Fine extends FineAmount {
+  id: number;
+  memberName: string;
+  memberNumber: string;
+  title: string;
+  paidMinor: number;
+  waivedMinor: number;
+  outstandingMinor: number;
+}
+
+export interface FinePage {
+  rows: Fine[];
+  page: number;
+  pageSize: number;
+  total: number;
+}
+
+export type FineSettlement =
+  | { kind: "payment"; method: string }
+  | { kind: "waiver"; reason: string };
+
+export interface FineHistoryPage {
+  rows: {
+    id: number;
+    kind: FineSettlement["kind"];
+    amountMinor: number;
+    method: string | null;
+    reason: string | null;
+    recordedAt: string;
+    staffName: string;
+  }[];
+  page: number;
+  pageSize: number;
+  total: number;
 }

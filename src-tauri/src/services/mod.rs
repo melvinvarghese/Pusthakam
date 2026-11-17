@@ -1,8 +1,15 @@
 pub mod audit;
 pub mod auth;
 pub mod catalogue;
+pub mod circulation;
 pub mod config;
+pub mod dashboard;
+pub mod fines;
 pub mod import;
+pub mod member_import;
+pub mod member_photo;
 pub mod members;
+pub mod reservations;
+pub mod reports;
 pub mod settings;
 pub mod setup;

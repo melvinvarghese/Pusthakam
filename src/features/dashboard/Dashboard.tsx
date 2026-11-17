@@ -3,7 +3,9 @@ import { Link } from "react-router-dom";
 import { NAV_GROUPS } from "@/app/nav";
 import { PageHeader } from "@/components/PageHeader";
 import { Panel, PanelHeader } from "@/components/ui/Panel";
-import { appApi, ApiError } from "@/lib/api";
+import { appApi, ApiError, isDesktop, toApiError } from "@/lib/api";
+import { previewMode } from "@/lib/preview";
+import { useSession } from "@/lib/session";
 
 function Row({ label, value }: { label: string; value: string }) {
   return (
@@ -14,24 +16,59 @@ function Row({ label, value }: { label: string; value: string }) {
   );
 }
 
-/**
- * Phase 1 dashboard: real system status and the real module list only.
- * Library figures (records, copies, loans, members) appear with their data modules; no placeholder numbers.
- */
+function Count({ label, value, attention = false }: { label: string; value: number; attention?: boolean }) {
+  return (
+    <div className="min-w-0 border-b border-line p-4">
+      <dt className="text-xs text-muted">{label}</dt>
+      <dd className={`mt-1 font-mono text-2xl font-semibold tabular-nums ${attention && value > 0 ? "text-danger" : ""}`}>
+        {value.toLocaleString()}
+      </dd>
+    </div>
+  );
+}
+
 export function Dashboard() {
+  const { session } = useSession();
   const info = useQuery({ queryKey: ["app-info"], queryFn: appApi.info, retry: false });
+  const overview = useQuery({
+    queryKey: ["dashboard", session.userId],
+    queryFn: appApi.overview,
+    enabled: isDesktop() || !!previewMode(),
+    retry: false,
+    refetchInterval: 60_000,
+  });
+  const { catalogue, activeMembers, circulation } = overview.data ?? {};
 
   return (
     <div className="mx-auto max-w-[1100px] space-y-5 p-6">
       <PageHeader title="Dashboard" description="A Better Way to Manage Libraries." />
 
+      {overview.isFetching && !overview.data && <p role="status" className="text-muted">Loading library overview.</p>}
+      {overview.isError && <p role="alert" className="text-danger">{toApiError(overview.error).message}</p>}
+      {overview.data && (catalogue || activeMembers != null || circulation) && (
+        <Panel aria-labelledby="overview-h">
+          <PanelHeader id="overview-h" title="Library at a glance" />
+          <dl className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5">
+            {catalogue && <>
+              <Count label="Catalogue titles" value={catalogue.titles} />
+              <Count label="Copies" value={catalogue.copies} />
+              <Count label="Available copies" value={catalogue.available} />
+            </>}
+            {activeMembers != null && <Count label="Active members" value={activeMembers} />}
+            {circulation && <>
+              <Count label="On loan" value={circulation.onLoan} />
+              <Count label="Due today" value={circulation.dueToday} />
+              <Count label="Overdue" value={circulation.overdue} attention />
+              <Count label="Holds ready" value={circulation.readyHolds} />
+              <Count label="Outstanding fines" value={circulation.outstandingFines} attention />
+            </>}
+          </dl>
+        </Panel>
+      )}
+
       <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_320px]">
         <Panel aria-labelledby="modules-h">
-          <PanelHeader id="modules-h" title="Coming to your library" />
-          <p className="px-4 pt-3 text-muted">
-            Pusthakam is being built in stages. Library setup comes first, then the catalogue and circulation.
-            Modules below open a page that explains what they will do.
-          </p>
+          <PanelHeader id="modules-h" title="Library modules" />
           <div className="grid gap-x-8 gap-y-5 p-4 sm:grid-cols-2">
             {NAV_GROUPS.map((group) => (
               <div key={group.label}>

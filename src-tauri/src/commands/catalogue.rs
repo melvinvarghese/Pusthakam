@@ -6,19 +6,24 @@ use crate::services::catalogue::{
     self, AccessionFormat, Copy, CopyBatchInput, CopyPage, CopyQuery, CopyUpdateInput, DuplicateHit, DuplicateProbe,
     RecordDetail, RecordInput, SearchQuery, SearchResult,
 };
+use crate::services::reservations;
 use crate::state::AppState;
 use tauri::State;
 
 #[tauri::command]
 pub fn catalogue_search(state: State<'_, AppState>, query: SearchQuery) -> AppResult<SearchResult> {
     state.require("catalogue.read")?;
-    state.with_conn(|c| catalogue::search(c, &query))
+    let mut conn = state.conn()?;
+    reservations::refresh(&mut conn)?;
+    catalogue::search(&conn, &query)
 }
 
 #[tauri::command]
 pub fn catalogue_get_record(state: State<'_, AppState>, id: i64) -> AppResult<RecordDetail> {
     state.require("catalogue.read")?;
-    state.with_conn(|c| catalogue::get_record(c, id))
+    let mut conn = state.conn()?;
+    reservations::refresh(&mut conn)?;
+    catalogue::get_record(&conn, id)
 }
 
 #[tauri::command]
@@ -41,7 +46,9 @@ pub fn catalogue_find_duplicates(state: State<'_, AppState>, probe: DuplicatePro
 #[tauri::command]
 pub fn catalogue_archive_record(state: State<'_, AppState>, id: i64, archived: bool) -> AppResult<()> {
     let who = state.require("catalogue.write")?;
-    state.with_conn(|c| catalogue::set_record_archived(c, Some(&who), id, archived))
+    let mut conn = state.conn()?;
+    reservations::refresh(&mut conn)?;
+    catalogue::set_record_archived(&conn, Some(&who), id, archived)
 }
 
 #[tauri::command]
@@ -64,13 +71,17 @@ pub fn catalogue_update_copy(state: State<'_, AppState>, id: i64, input: CopyUpd
 #[tauri::command]
 pub fn catalogue_set_copy_status(state: State<'_, AppState>, id: i64, status: String, note: Option<String>) -> AppResult<()> {
     let who = state.require("catalogue.write")?;
-    state.with_conn(|c| catalogue::set_copy_status(c, Some(&who), id, &status, note.as_deref()))
+    let mut conn = state.conn()?;
+    reservations::refresh(&mut conn)?;
+    catalogue::set_copy_status(&conn, Some(&who), id, &status, note.as_deref())
 }
 
 #[tauri::command]
 pub fn catalogue_list_copies(state: State<'_, AppState>, query: CopyQuery) -> AppResult<CopyPage> {
     state.require("catalogue.read")?;
-    state.with_conn(|c| catalogue::list_copies(c, &query))
+    let mut conn = state.conn()?;
+    reservations::refresh(&mut conn)?;
+    catalogue::list_copies(&conn, &query)
 }
 
 #[tauri::command]
