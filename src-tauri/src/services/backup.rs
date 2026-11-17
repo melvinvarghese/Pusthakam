@@ -220,6 +220,8 @@ fn restore(conn: &mut Connection, paths: &AppPaths, name: &str) -> AppResult<Str
     copy_database(&source, &mut candidate)?;
     candidate.pragma_update(None, "foreign_keys", "ON")?;
     migrations::run(&mut candidate, migrations::MIGRATIONS)?;
+    // An older snapshot may contain a code that was already used or revoked.
+    candidate.execute("DELETE FROM staff_recovery_codes", [])?;
     check_integrity(&candidate)?;
     if candidate.prepare("PRAGMA foreign_key_check")?.query([])?.next()?.is_some() {
         return Err(AppError::Validation("The backup contains broken database references.".into()));

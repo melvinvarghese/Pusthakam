@@ -76,6 +76,171 @@ fn setup_body() -> Value {
 }
 
 #[test]
+fn member_directory_paginates_and_uses_the_selected_category_expiry() {
+    let h = Harness::new();
+    h.ok("complete_setup", setup_body());
+    let config = h.ok("config_overview", json!({}));
+    let category = &config["memberCategories"][0];
+    for index in 0..26 {
+        h.ok("members_save", json!({ "input": {
+            "name": format!("Page Reader {index:02}"), "memberNumber": format!("PAGE-{index:02}"),
+            "categoryId": category["id"]
+        }}));
+    }
+    let first = h.ok("members_list", json!({ "search": "Page Reader", "page": 1, "archived": false }));
+    let second = h.ok("members_list", json!({ "search": "Page Reader", "page": 2, "archived": false }));
+    assert_eq!(first["total"], 26);
+    assert_eq!(first["rows"].as_array().unwrap().len(), 25);
+    assert_eq!(second["rows"].as_array().unwrap().len(), 1);
+    assert_eq!(second["rows"][0]["memberNumber"], "PAGE-25");
+    let lookup = h.ok("members_list", json!({ "search": "PAGE-25", "page": 1, "archived": false }));
+    assert_eq!(lookup["rows"][0]["id"], second["rows"][0]["id"]);
+    let expiry: String = {
+        let state = h.webview.state::<AppState>();
+        let conn = state.conn().unwrap();
+        conn.query_row("SELECT date('now','localtime','+' || membership_days || ' days') FROM member_categories WHERE id = ?1",
+            [category["id"].as_i64().unwrap()], |row| row.get(0)).unwrap()
+    };
+    assert_eq!(lookup["rows"][0]["expiresOn"], expiry);
+}
+
+#[test]
+fn stock_checks_preserve_expected_and_unexpected_copies_across_reopen() {
+    let h = Harness::new();
+    assert_eq!(h.code("stock_check_list", json!({ "page": 1 })), "AUTH_FAILED");
+    h.ok("complete_setup", setup_body());
+    let config = h.ok("config_overview", json!({}));
+    let location = &config["locations"][0]["id"];
+    let record = h.ok("catalogue_save_record", json!({ "input": {
+        "title": "Shelf fixture", "contributors": [], "subjects": []
+    }}));
+    let copies = h.ok("catalogue_add_copies", json!({ "recordId": record, "input": {
+        "count": 3, "itemCategoryId": config["itemCategories"][0]["id"], "locationId": location,
+        "barcodes": ["SCAN-A", "SCAN-B", "SCAN-C"], "acquisitionSource": "purchase"
+    }}));
+    h.ok("catalogue_set_copy_status", json!({ "id": copies[2]["id"], "status": "damaged" }));
+    assert_eq!(h.code("stock_check_start", json!({ "locationId": location, "shelfId": -1 })), "VALIDATION");
+    let id = h.ok("stock_check_start", json!({ "locationId": location }));
+    let scan = |code: &str| json!({ "id": id, "barcode": code });
+    assert_eq!(h.ok("stock_check_scan", scan("scan-a")), "matched");
+    assert_eq!(h.ok("stock_check_scan", scan("SCAN-A")), "duplicate");
+    assert_eq!(h.ok("stock_check_scan", scan("SCAN-C")), "unexpected");
+    assert_eq!(h.ok("stock_check_scan", scan("UNKNOWN-1")), "unexpected");
+    let missing = h.ok("stock_check_review", json!({ "id": id, "view": "missing", "page": 1 }));
+    assert_eq!(missing["check"]["expected"], 2);
+    assert_eq!(missing["check"]["matched"], 1);
+    assert_eq!(missing["check"]["unexpected"], 2);
+    assert_eq!(missing["entries"]["rows"][0]["barcode"], "SCAN-B");
+    let unexpected = h.ok("stock_check_review", json!({ "id": id, "view": "unexpected", "page": 1 }));
+    assert_eq!(unexpected["entries"]["rows"][0]["title"], "Shelf fixture");
+    assert!(unexpected["entries"]["rows"][1]["title"].is_null());
+    {
+        let paths = h.webview.state::<AppState>().paths.clone();
+        let reopened = db::open(&paths.database).unwrap();
+        let review = pusthakam_lib::services::inventory::review(&reopened, id.as_i64().unwrap(),
+            pusthakam_lib::services::inventory::View::Missing, 1).unwrap();
+        assert_eq!(serde_json::to_value(review).unwrap(), missing);
+    }
+    h.ok("stock_check_close", json!({ "id": id }));
+    assert_eq!(h.code("stock_check_scan", scan("SCAN-B")), "CONFLICT");
+    assert!(h.ok("stock_check_list", json!({ "page": 1 }))["rows"][0]["closedAt"].is_string());
+    assert_eq!(h.ok("catalogue_list_copies", json!({ "query": { "status": "available" } }))["total"], 2);
+    let destination = h.ok("config_save_named", json!({ "kind": "location", "input": { "name": "Destination reading room" } }));
+    assert_eq!(h.code("stock_transfer_send", json!({ "barcode": "SCAN-A", "locationId": location })), "VALIDATION");
+    let transfer = h.ok("stock_transfer_send", json!({ "barcode": "SCAN-A", "locationId": destination }));
+    assert_eq!(h.ok("stock_transfer_list", json!({ "page": 1 }))["rows"][0]["status"], "in_transit");
+    {
+        let paths = h.webview.state::<AppState>().paths.clone();
+        let reopened = db::open(&paths.database).unwrap();
+        let history = pusthakam_lib::services::transfers::list(&reopened, 1).unwrap();
+        assert_eq!(serde_json::to_value(history).unwrap()["rows"][0]["id"], transfer);
+    }
+    assert_eq!(h.code("catalogue_set_copy_status", json!({ "id": copies[0]["id"], "status": "available" })), "CONFLICT");
+    assert_eq!(h.code("catalogue_archive_record", json!({ "id": record, "archived": true })), "CONFLICT");
+    h.ok("stock_transfer_finish", json!({ "id": transfer, "receive": true }));
+    let moved = h.ok("catalogue_get_record", json!({ "id": record }));
+    let copy = moved["copies"].as_array().unwrap().iter().find(|copy| copy["barcode"] == "SCAN-A").unwrap();
+    assert_eq!(copy["locationId"], destination);
+    assert_eq!(copy["status"], "available");
+    assert_eq!(h.code("stock_transfer_finish", json!({ "id": transfer, "receive": true })), "CONFLICT");
+    let transfer_back = h.ok("stock_transfer_send", json!({ "barcode": "SCAN-A", "locationId": location }));
+    h.ok("stock_transfer_finish", json!({ "id": transfer_back, "receive": false }));
+    let transfers = h.ok("stock_transfer_list", json!({ "page": 1 }));
+    assert_eq!(transfers["rows"][0]["status"], "cancelled");
+    assert_eq!(transfers["rows"][1]["destination"], "Destination reading room");
+    {
+        let state = h.webview.state::<AppState>();
+        let conn = state.conn().unwrap();
+        auth::create_user(&conn, "viewer", "Read Only", "viewer passphrase", "viewer").unwrap();
+    }
+    h.ok("login", json!({ "username": "viewer", "password": "viewer passphrase" }));
+    assert_eq!(h.ok("stock_check_review", json!({ "id": id, "view": "missing", "page": 1 }))["entries"]["total"], 1);
+    assert_eq!(h.code("stock_check_start", json!({ "locationId": location })), "PERMISSION_DENIED");
+    assert_eq!(h.code("stock_transfer_send", json!({ "barcode": "SCAN-A", "locationId": location })), "PERMISSION_DENIED");
+}
+
+#[test]
+fn staff_roles_passwords_and_administrator_recovery_take_effect_without_touching_library_data() {
+    let h = Harness::new();
+    assert_eq!(h.code("staff_list", json!({})), "AUTH_FAILED");
+    let admin = h.ok("complete_setup", setup_body());
+    let account = h.ok("staff_create", json!({ "input": {
+        "username": "desk", "displayName": "Desk Staff", "role": "viewer", "password": "first test password"
+    }}));
+    let id = account.as_i64().unwrap();
+    let stale = {
+        let state = h.webview.state::<AppState>();
+        let conn = state.conn().unwrap();
+        conn.execute("UPDATE staff_users SET locked_until = '2099-01-01T00:00:00Z' WHERE id = ?1", [id]).unwrap();
+        auth::load_session(&conn, id).unwrap()
+    };
+    assert_eq!(h.ok("staff_list", json!({}))["users"][1]["locked"], true);
+    h.ok("staff_unlock", json!({ "id": id }));
+    assert_eq!(h.ok("staff_list", json!({}))["users"][1]["locked"], false);
+    let changes = |active| json!({ "displayName": "Desk Staff", "role": "circulation", "active": active });
+    assert_eq!(h.code("staff_update", json!({ "id": admin["userId"], "input": changes(false) })), "VALIDATION");
+    h.ok("staff_update", json!({ "id": id, "input": changes(false) }));
+    assert_eq!(h.code("login", json!({ "username": "desk", "password": "first test password" })), "AUTH_FAILED");
+    h.ok("staff_update", json!({ "id": id, "input": changes(true) }));
+    h.ok("staff_reset_password", json!({ "id": id, "password": "replacement test password" }));
+    {
+        let state = h.webview.state::<AppState>();
+        let conn = state.conn().unwrap();
+        assert!(auth::refresh_session(&conn, &stale).is_err(), "an earlier session cannot outlive account changes");
+        let hash: String = conn.query_row("SELECT password_hash FROM staff_users WHERE id = ?1", [id], |row| row.get(0)).unwrap();
+        assert!(hash.starts_with("$argon2id$"));
+    }
+    let desk = h.ok("login", json!({ "username": "desk", "password": "replacement test password" }));
+    assert_eq!(desk["role"], "circulation");
+    assert!(desk.get("revision").is_none());
+    assert_eq!(h.code("staff_list", json!({})), "PERMISSION_DENIED");
+    assert_eq!(h.code("staff_change_password", json!({ "currentPassword": "wrong", "newPassword": "changed test password" })), "AUTH_FAILED");
+    h.ok("staff_change_password", json!({ "currentPassword": "replacement test password", "newPassword": "changed test password" }));
+    assert!(h.ok("current_session", json!({})).is_null());
+    h.ok("login", json!({ "username": "desk", "password": "changed test password" }));
+    h.ok("login", json!({ "username": "admin", "password": "a long passphrase" }));
+    let discarded = h.ok("staff_generate_recovery_code", json!({ "currentPassword": "a long passphrase" }));
+    let code = h.ok("staff_generate_recovery_code", json!({ "currentPassword": "a long passphrase" }));
+    assert_ne!(discarded, code);
+    assert_eq!(code.as_str().unwrap().len(), 64);
+    {
+        let state = h.webview.state::<AppState>();
+        let conn = state.conn().unwrap();
+        let stored: String = conn.query_row("SELECT code_hash FROM staff_recovery_codes", [], |row| row.get(0)).unwrap();
+        assert!(stored.starts_with("$argon2id$"));
+        assert_ne!(stored, code.as_str().unwrap());
+    }
+    h.ok("logout", json!({}));
+    assert_eq!(h.code("staff_recover", json!({ "username": "admin", "code": discarded, "newPassword": "recovered password" })), "AUTH_FAILED");
+    let recover = json!({ "username": "admin", "code": code, "newPassword": "recovered password" });
+    h.ok("staff_recover", recover.clone());
+    assert_eq!(h.code("staff_recover", recover), "AUTH_FAILED");
+    h.ok("login", json!({ "username": "admin", "password": "recovered password" }));
+    assert_eq!(h.ok("config_overview", json!({}))["library"]["name"], "Demo Library");
+    assert_eq!(h.ok("audit_search", json!({ "query": { "action": "password_recovered", "page": 1 } }))["total"], 1);
+}
+
+#[test]
 fn manual_backups_are_permission_checked_complete_and_retained() {
     let h = Harness::new();
     assert_eq!(h.code("backup_list", json!({})), "AUTH_FAILED");
@@ -781,6 +946,7 @@ fn reservation_queue_controls_issue_and_renewal_through_ipc() {
     let queue = list();
     assert_eq!(queue["rows"][0]["memberNumber"], "M-2");
     assert_eq!(queue["rows"][0]["status"], "ready");
+    assert_eq!(h.ok("dashboard_overview", json!({}))["circulation"]["readyHolds"], 1);
     assert!(queue["rows"][0]["expiresAt"].is_string());
     assert_eq!(queue["rows"][1]["status"], "pending");
     assert_eq!(h.code("circulation_prepare_issue", lookup("M-3")), "CONFLICT");
@@ -885,6 +1051,6 @@ fn koha_patron_import_previews_and_saves_transactionally_through_ipc() {
 fn app_info_works_before_sign_in_and_reports_the_current_schema() {
     let h = Harness::new();
     let info = h.ok("app_info", json!({}));
-    assert_eq!(info["schemaVersion"], 11);
+    assert_eq!(info["schemaVersion"], db::migrations::latest_version());
     assert!(info["databasePath"].as_str().unwrap().ends_with("pusthakam.db"));
 }

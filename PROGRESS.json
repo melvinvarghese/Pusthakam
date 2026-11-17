@@ -1,12 +1,12 @@
 {
   "schemaVersion": 1,
-  "lastUpdated": "2026-11-17T09:17:41.109Z",
-  "currentPhase": "7",
+  "lastUpdated": "2026-11-17T10:06:10.897Z",
+  "currentPhase": "6",
   "currentTask": {
-    "taskId": "BAK-CREATE",
-    "title": "Phase 7 database backups",
-    "status": "in-progress",
-    "detail": "Manual, integrity-checked database snapshots and saved backup listing are in testing. Scheduling and restore remain open."
+    "taskId": "ACC-STOCK",
+    "title": "Phase 6 inventory and transfers",
+    "status": "verified",
+    "detail": "Shelf checks retain matched, missing and unexpected copies. Copy transfers preserve source, destination, status and history. Rust, frontend and IPC checks passed."
   },
   "nextMilestone": {
     "title": "Verify the Windows circulation workflow",
@@ -14,9 +14,9 @@
     "nextTaskId": "CIRC-LOAN"
   },
   "totals": {
-    "overall": 30.7,
-    "implementation": 40.3,
-    "verification": 18.5,
+    "overall": 40.4,
+    "implementation": 50.9,
+    "verification": 29.8,
     "releaseReadiness": 10
   },
   "phases": [
@@ -744,7 +744,7 @@
       "phase": "4",
       "module": "members",
       "weight": 5,
-      "status": "implemented",
+      "status": "verified",
       "title": "Member directory, search and loan history",
       "requirements": [
         "REQ-MEM",
@@ -760,11 +760,10 @@
       ],
       "verificationEvidence": [
         "baseline-frontend",
-        "baseline-rust"
+        "baseline-rust",
+        "staff-stock-dashboard-regression"
       ],
-      "verificationNeeded": [
-        "Check member lookup across multiple pages and confirm expiry against the selected category's exact duration."
-      ]
+      "verificationNeeded": []
     },
     {
       "id": "MEM-CARD",
@@ -864,7 +863,7 @@
       "phase": "5",
       "module": "reports",
       "weight": 4,
-      "status": "implemented",
+      "status": "verified",
       "title": "Live library dashboard counts",
       "requirements": [
         "REQ-DASH"
@@ -877,11 +876,10 @@
         "src/features/dashboard/Dashboard.tsx, src-tauri/src/services/dashboard.rs and dashboard_overview IPC."
       ],
       "verificationEvidence": [
-        "baseline-rust"
+        "baseline-rust",
+        "staff-stock-dashboard-regression"
       ],
-      "verificationNeeded": [
-        "Reconcile ready holds and verify the KPI display and error state in a frontend workflow test."
-      ]
+      "verificationNeeded": []
     },
     {
       "id": "DASH-TRENDS",
@@ -1136,7 +1134,7 @@
       "phase": "6",
       "module": "accession",
       "weight": 6,
-      "status": "not-started",
+      "status": "verified",
       "title": "Transfers and stock verification",
       "requirements": [
         "REQ-ACC"
@@ -1145,11 +1143,13 @@
         "Record a transfer with sending and receiving locations.",
         "Scan a shelf audit and reconcile matched, missing and unexpected copies with history."
       ],
-      "sourceEvidence": [],
-      "verificationEvidence": [],
-      "verificationNeeded": [
-        "Test stock snapshots, discrepancies, transfer permissions and recovery after interruption."
-      ]
+      "sourceEvidence": [
+        "Inventory stock checks and copy transfers, migrations 0014 and 0015, and their Tauri IPC workflows."
+      ],
+      "verificationEvidence": [
+        "staff-stock-dashboard-regression"
+      ],
+      "verificationNeeded": []
     },
     {
       "id": "CLS-AUTH",
@@ -1177,7 +1177,7 @@
       "phase": "7",
       "module": "administration",
       "weight": 6,
-      "status": "not-started",
+      "status": "verified",
       "title": "Staff administration and account recovery",
       "requirements": [
         "REQ-ADM",
@@ -1188,19 +1188,20 @@
         "Change a password, unlock an account and recover access without discarding library data."
       ],
       "sourceEvidence": [
-        "Sign-in and built-in roles exist; the staff route is a placeholder."
+        "Staff & Permissions page, status and role changes, password reset, local staff sessions and one-use administrator recovery.",
+        "Staff & Permissions and administrator recovery through Rust, with migration 0012 session revocation and migration 0013 recovery code hashes."
       ],
-      "verificationEvidence": [],
-      "verificationNeeded": [
-        "Verify least-privilege, last-admin protection and recovery on a disposable library."
-      ]
+      "verificationEvidence": [
+        "staff-stock-dashboard-regression"
+      ],
+      "verificationNeeded": []
     },
     {
       "id": "ADM-AUDIT",
       "phase": "7",
       "module": "administration",
       "weight": 4,
-      "status": "in-progress",
+      "status": "verified",
       "title": "Audit log UI and coverage",
       "requirements": [
         "REQ-ADM",
@@ -1211,12 +1212,12 @@
         "Reconcile key workflow events with the underlying records."
       ],
       "sourceEvidence": [
-        "src-tauri/src/services/audit.rs writes events; the audit route is a placeholder."
+        "Append-only database audit entries, filtered Tauri audit_search and src/features/audit/AuditPage.tsx."
       ],
-      "verificationEvidence": [],
-      "verificationNeeded": [
-        "Test log visibility and event coverage for privileged actions."
-      ]
+      "verificationEvidence": [
+        "backup-audit-regression"
+      ],
+      "verificationNeeded": []
     },
     {
       "id": "SEC-REVIEW",
@@ -1245,7 +1246,7 @@
       "phase": "7",
       "module": "backup",
       "weight": 6,
-      "status": "in-progress",
+      "status": "verified",
       "title": "Verified manual and scheduled backups",
       "requirements": [
         "REQ-BAK",
@@ -1256,19 +1257,19 @@
         "Schedule and list backups with integrity check, schema version and retained history."
       ],
       "sourceEvidence": [
-        "src-tauri/src/services/backup.rs and src/features/backup/BackupPage.tsx"
+        "SQLite backup API, daily scheduler, schema and integrity recheck, and saved backup list in src-tauri/src/services/backup.rs and src/features/backup/BackupPage.tsx."
       ],
-      "verificationEvidence": [],
-      "verificationNeeded": [
-        "Test concurrent writes, retained copies and corruption detection."
-      ]
+      "verificationEvidence": [
+        "backup-audit-regression"
+      ],
+      "verificationNeeded": []
     },
     {
       "id": "BAK-RESTORE",
       "phase": "7",
       "module": "backup",
       "weight": 7,
-      "status": "not-started",
+      "status": "implemented",
       "title": "Restore, pre-upgrade snapshot and recovery",
       "requirements": [
         "REQ-BAK",
@@ -1279,10 +1280,14 @@
         "Snapshot before restore and upgrade, then restore into a clean library and verify records, loans and users.",
         "Roll back after a failed restore."
       ],
-      "sourceEvidence": [],
-      "verificationEvidence": [],
+      "sourceEvidence": [
+        "Queue and verify a backup before restart. Startup gates exclusive restore, creates a recovery snapshot and stages the source through SQLite backup and migrations."
+      ],
+      "verificationEvidence": [
+        "backup-audit-regression"
+      ],
       "verificationNeeded": [
-        "Run a clean restore, corrupt input and failed-restore rollback through real SQLite and desktop UI."
+        "Run restart and restore through the native Windows user interface."
       ]
     },
     {
@@ -1560,6 +1565,30 @@
   ],
   "verificationRuns": [
     {
+      "id": "staff-stock-dashboard-regression",
+      "at": "2026-11-17T10:06:10.897Z",
+      "title": "Staff recovery, inventory and dashboard verification",
+      "check": "cargo test --offline --manifest-path src-tauri/Cargo.toml; npm test -- --maxWorkers 2; npm run build; npm run lint",
+      "outcome": "passed",
+      "result": "102 Rust unit, 13 Tauri IPC and 97 frontend tests passed. Verified one-use staff recovery, session revocation, saved stock checks, transfer receive/cancel and restart persistence, member pagination and expiry, and dashboard hold counts. The final UI suite also checked stock-check scanning and explicit restore confirmation."
+    },
+    {
+      "id": "windows-isolated-native-launch",
+      "at": "2026-11-17T10:05:50.877Z",
+      "title": "Windows native startup retry",
+      "check": "Build isolated custom-protocol executable and launch with a disposable app-data path",
+      "outcome": "incomplete",
+      "result": "Build passed. The Windows launch returned Access is denied (OS error 5) and never produced a WebView page-load marker. Native circulation, restoration and printing remain open."
+    },
+    {
+      "id": "backup-audit-regression",
+      "at": "2026-11-17T09:40:17.474Z",
+      "title": "Backups, recovery and audit log checks",
+      "check": "cargo test --offline --manifest-path src-tauri/Cargo.toml; npm run build; npm run lint; npm test -- --maxWorkers 2",
+      "outcome": "passed",
+      "result": "102 Rust unit, 10 Tauri IPC and 92 frontend tests passed. Reconciled snapshots with concurrent WAL writes, daily history, invalid backups, exclusive restore gating, catalogue and loan restoration, a pre-upgrade snapshot and audit filtering."
+    },
+    {
       "id": "member-summary",
       "at": "2026-11-17T09:17:41.109Z",
       "title": "Member report verification",
@@ -1737,6 +1766,34 @@
     }
   ],
   "recentActivity": [
+    {
+      "kind": "completed",
+      "at": "2026-11-17T10:05:50.877Z",
+      "taskId": "ACC-STOCK",
+      "title": "Inventory checks and transfers verified",
+      "detail": "Shelf checks retain matched, missing and unexpected copies. Copy transfers preserve source, destination, status and history. Rust, frontend and IPC checks passed."
+    },
+    {
+      "kind": "verification",
+      "at": "2026-11-17T10:05:50.877Z",
+      "taskId": "ADM-STAFF",
+      "title": "Staff and administrator recovery checks passed",
+      "detail": "Role changes, locked-account recovery and one-use codes passed through Tauri."
+    },
+    {
+      "kind": "verification",
+      "at": "2026-11-17T09:40:17.474Z",
+      "taskId": "BAK-CREATE",
+      "title": "Backups and audit log verified",
+      "detail": "102 Rust unit, 10 Tauri IPC and 92 frontend tests passed. Reconciled snapshots with concurrent WAL writes, daily history, invalid backups, exclusive restore gating, catalogue and loan restoration, a pre-upgrade snapshot and audit filtering."
+    },
+    {
+      "kind": "progress",
+      "at": "2026-11-17T09:40:17.474Z",
+      "taskId": "ADM-STAFF",
+      "title": "Staff management and recovery in testing",
+      "detail": "Staff management, role changes, password updates and administrator recovery codes are in testing."
+    },
     {
       "kind": "progress",
       "at": "2026-11-17T09:17:41.109Z",

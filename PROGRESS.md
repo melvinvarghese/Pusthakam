@@ -4,7 +4,7 @@ _Last updated: 2026-11-17_
 
 ## Local progress monitor
 
-Pusthakam is **30.7% complete overall**, with 40.3% implemented, 18.5% verified and 10% release-ready. The current task is Phase 7 database backups. Next product milestone: Verify the Windows circulation workflow.
+Pusthakam is **40.4% complete overall**, with 50.9% implemented, 29.8% verified and 10% release-ready. Stock checks and transfers passed automated verification. Next product milestone: Verify the Windows circulation workflow.
 
 Run `npm run progress:monitor` from this directory and open <http://127.0.0.1:4317/>. Keep the terminal open while using the dashboard. Run `npm run progress:validate` to check the task data and percentages.
 
@@ -14,19 +14,23 @@ Run `npm run progress:monitor` from this directory and open <http://127.0.0.1:43
 | 1 · Application foundation | 55.5% | 0% |
 | 2 · Setup and configuration | 80% | 80% |
 | 3 · Catalogue and accession | 58% | 40% |
-| 4 · Circulation and members | 78.2% | 19.5% |
-| 5 · Dashboard, reports and printing | 43.7% | 0% |
-| 6 · Collection operations | 0% | 0% |
-| 7 · Administration and recovery | 0% | 0% |
+| 4 · Circulation and members | 78.2% | 30.4% |
+| 5 · Dashboard, reports and printing | 43.7% | 12.5% |
+| 6 · Collection operations | 18.1% | 18.1% |
+| 7 · Administration and recovery | 82.1% | 57.1% |
 | 7b · LAN mode | 0% | 0% |
 | 8 · Release and distribution | 12% | 12% |
 
 Monitor verification passed for the data schema, weighted calculations, loopback serving, missing and invalid JSON, automatic refresh, and roadmap filters. Desktop and mobile browser layout and an adapter-disabled browser smoke test are open. Headless Edge failed to initialize, and Chrome UI access stopped at the browser URL check.
 
 ## Current phase
-Phase 4 circulation and member workflows are implemented, and the first Phase 5 dashboard and reports are available. The native Windows build succeeds. A disposable WebView2 smoke run applied the database migrations but did not produce a page-load result. An interactive desktop walkthrough, physical print checks, and validation with a real Koha export remain open.
+Phase 6 inventory and Phase 7 administration features are available in the working tree. An isolated native Windows build compiled, but its launch failed with OS error 5 before WebView loaded. The Windows circulation, printing and restore walkthroughs and validation with a real Koha export remain open.
 
 ## What exists
+- **Inventory:** save a location or shelf check, scan barcodes and review matched, missing and unexpected copies. Send, receive and cancel tracked copy transfers between locations or shelves.
+- **Staff and recovery:** manage roles, activation, unlocks and password changes. Administrators can generate a one-use recovery code before losing access.
+- **Database Backups:** verified manual and optional daily snapshots while the app is open. Check saved files and their schema version, or queue a restore. Startup keeps a recovery copy before restoring and a snapshot before upgrading an existing database.
+- **Audit Log:** filter append-only events by local date, staff name and action code.
 - **Members:** permission-checked directory with paginated name and member-number search, local contact details, expiry defaulted from the selected category, and audited profile and status changes.
 - **Member loan history:** the Loans action shows current, overdue and returned copies for active and archived members, with open loans first. Staff with read-only member access can view it.
 - **Member cards and photos:** active member cards use the configured library name, membership expiry, and a Code 128 member number where encodable. Photos are optional, stored locally as bounded PNGs, and re-encoded to clear metadata.
@@ -52,6 +56,9 @@ Phase 4 circulation and member workflows are implemented, and the first Phase 5 
 | `cargo test --offline --manifest-path src-tauri/Cargo.toml` | 99 unit and 8 Tauri IPC tests passed, including the return fine estimate and recorded amount. |
 | `npm run lint`, `npm run typecheck`, `npm run build` | Passed. |
 | Windows startup retry | An instrumented build created an isolated database and WebView2 profile. No page-load event arrived in 30 seconds. |
+| Staff, inventory and dashboard | 102 Rust unit, 13 Tauri IPC and 97 frontend tests passed, along with build and lint. |
+| Isolated native Windows build | Compiled. Launch returned Access is denied (OS error 5) before any WebView page load. |
+| Backup, restore and audit log | 102 Rust unit, 10 Tauri IPC and 92 frontend tests passed, as did build and lint. Native Windows restore remains unverified. |
 | Member reports, accession CSV and catalogue/circulation checks | 91 frontend, 101 Rust unit and 8 Tauri IPC tests passed. Confirmed archive and renewal rollback, hold handover and UDC/LCC handling. The first export test failed on an extra mock argument and passed on rerun. |
 | Catalogue growth | 90 frontend tests, 99 Rust unit tests, 8 Tauri IPC tests, build and lint passed. Counts matched seeded records and empty dates were shown. Native print output remains unverified. |
 | Fine summary | 90 frontend tests and 8 Tauri IPC tests passed. Build and lint passed. Exact decimal rendering, assessment and settlement totals, and signed-out denial were checked. |

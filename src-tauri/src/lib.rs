@@ -81,6 +81,22 @@ macro_rules! app_handlers {
             $crate::commands::backup::backup_request_restore,
             $crate::commands::backup::backup_cancel_restore,
             $crate::commands::audit::audit_search,
+            $crate::commands::staff::staff_list,
+            $crate::commands::staff::staff_create,
+            $crate::commands::staff::staff_update,
+            $crate::commands::staff::staff_reset_password,
+            $crate::commands::staff::staff_unlock,
+            $crate::commands::staff::staff_change_password,
+            $crate::commands::staff::staff_generate_recovery_code,
+            $crate::commands::staff::staff_recover,
+            $crate::commands::inventory::stock_check_list,
+            $crate::commands::inventory::stock_check_review,
+            $crate::commands::inventory::stock_check_start,
+            $crate::commands::inventory::stock_check_scan,
+            $crate::commands::inventory::stock_check_close,
+            $crate::commands::inventory::stock_transfer_list,
+            $crate::commands::inventory::stock_transfer_send,
+            $crate::commands::inventory::stock_transfer_finish,
         ]
     };
 }
