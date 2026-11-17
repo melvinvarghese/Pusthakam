@@ -34,10 +34,18 @@ pub struct ReservationPage {
     total: i64,
 }
 
-pub(super) fn copy_id(conn: &Connection, barcode: &str) -> AppResult<i64> {
-    let barcode = accession::validate_code("Copy barcode", barcode)?;
-    conn.query_row("SELECT id FROM physical_items WHERE barcode = ?1", [&barcode], |r| r.get(0))
-        .optional()?.ok_or_else(|| AppError::NotFound("No copy has that barcode.".into()))
+pub(super) fn copy_id(conn: &Connection, code: &str) -> AppResult<i64> {
+    let code = accession::validate_code("Book barcode or accession number", code)?;
+    let mut stmt = conn.prepare(
+        "SELECT id FROM physical_items WHERE barcode = ?1 OR accession_no = ?1 LIMIT 2",
+    )?;
+    let mut rows = stmt.query([&code])?;
+    let id = rows.next()?.map(|row| row.get(0)).transpose()?
+        .ok_or_else(|| AppError::NotFound("No copy has that barcode or accession number.".into()))?;
+    if rows.next()?.is_some() {
+        return Err(AppError::Conflict("That code matches two different copies. Enter a unique barcode or accession number.".into()));
+    }
+    Ok(id)
 }
 
 /// Apply expiry and promote the next eligible request within the caller's transaction.

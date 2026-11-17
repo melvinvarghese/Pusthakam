@@ -1,13 +1,14 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { CallNumberLabel } from "@/components/CallNumberLabel";
 import { PageHeader } from "@/components/PageHeader";
 import { Pager } from "@/components/Pager";
 import { Button } from "@/components/ui/Button";
 import { Chip } from "@/components/ui/Chip";
 import { Panel } from "@/components/ui/Panel";
-import { ApiError, catalogueApi } from "@/lib/api";
+import { Modal } from "@/components/ui/Modal";
+import { ApiError, catalogueApi, toApiError } from "@/lib/api";
 import type { SearchQuery } from "@/lib/api/types";
 import { can, useSession } from "@/lib/session";
 import { ImportDialog } from "./ImportDialog";
@@ -30,6 +31,17 @@ export function CataloguePage() {
   const [page, setPage] = useState(1);
   const [adding, setAdding] = useState(false);
   const [importing, setImporting] = useState(false);
+  const [selected, setSelected] = useState<number[]>([]);
+  const [confirmArchive, setConfirmArchive] = useState<{ id: number; title: string }[] | null>(null);
+  const client = useQueryClient();
+  const archive = useMutation({
+    mutationFn: (ids: number[]) => catalogueApi.archiveRecords(ids),
+    onSuccess: async () => {
+      setSelected([]);
+      setConfirmArchive(null);
+      await client.invalidateQueries({ queryKey: ["catalogue"] });
+    },
+  });
 
   useEffect(() => setPage(1), [debounced, collectionId, onlyAvailable, includeArchived, sort]);
 
@@ -42,6 +54,7 @@ export function CataloguePage() {
   });
 
   const rows = result.data?.rows ?? [];
+  const selectedRows = rows.filter((row) => !row.archived && selected.includes(row.id));
   const collections = (config.data?.collections ?? []).filter((c) => !c.archived);
 
   return (
@@ -111,6 +124,13 @@ export function CataloguePage() {
         )}
         {result.isPending && <p role="status" className="px-4 py-6 text-muted">Searching…</p>}
 
+        {canWrite && selectedRows.length > 0 && (
+          <div className="px-4 py-2">
+            <Button disabled={result.isFetching || archive.isPending} onClick={() => { archive.reset(); setConfirmArchive(selectedRows); }}>
+              Archive selected on this page ({selectedRows.length})
+            </Button>
+          </div>
+        )}
         {result.data && (
           rows.length === 0 ? (
             <p className="px-4 py-10 text-center text-muted">
@@ -122,6 +142,7 @@ export function CataloguePage() {
             <table className="w-full table-fixed border-collapse">
               <thead>
                 <tr className="h-8 text-left text-[11px] font-semibold uppercase tracking-wide text-muted">
+                  {canWrite && <th scope="col" className="w-12 border-b border-line"><span className="sr-only">Select records</span></th>}
                   <th className="border-b border-line px-4">Title and author</th>
                   <th className="w-40 border-b border-line px-4">Publisher</th>
                   <th className="w-24 border-b border-line px-4">Class</th>
@@ -131,6 +152,13 @@ export function CataloguePage() {
               <tbody>
                 {rows.map((r) => (
                   <tr key={r.id} className={r.archived ? "text-muted" : "even:bg-band"}>
+                    {canWrite && <td className="border-b border-line px-4">
+                      <input type="checkbox" aria-label={`Select ${r.title}`} disabled={r.archived || result.isFetching || archive.isPending}
+                        checked={!r.archived && selected.includes(r.id)} onChange={(event) => {
+                          const checked = event.target.checked;
+                          setSelected((ids) => checked ? [...ids, r.id] : ids.filter((id) => id !== r.id));
+                        }} />
+                    </td>}
                     <td className="border-b border-line px-4 py-2.5">
                       <Link to={`/catalogue/${r.id}`} className="font-semibold hover:underline">{r.title}</Link>
                       {r.subtitle && <span className="text-muted">: {r.subtitle}</span>}
@@ -158,6 +186,18 @@ export function CataloguePage() {
       </Panel>
 
       {importing && <ImportDialog onClose={() => setImporting(false)} />}
+      {canWrite && confirmArchive && (
+        <Modal title="Archive selected catalogue records" onClose={() => { if (!archive.isPending) setConfirmArchive(null); }}
+          footer={<>
+            <Button disabled={archive.isPending} onClick={() => setConfirmArchive(null)}>Cancel</Button>
+            <Button variant="primary" disabled={archive.isPending}
+              onClick={() => archive.mutate(confirmArchive.map((row) => row.id))}>Archive records</Button>
+          </>}>
+          <ul className="list-disc pl-5">{confirmArchive.map((row) => <li key={row.id}>{row.title}</li>)}</ul>
+          <p className="text-sm">Copies and loan history will be retained.</p>
+          {archive.isError && <p role="alert" className="text-danger">{toApiError(archive.error).message}</p>}
+        </Modal>
+      )}
       {adding && <RecordFormDialog onClose={() => setAdding(false)} onSaved={(id) => navigate(`/catalogue/${id}`)} />}
     </div>
   );

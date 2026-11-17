@@ -37,6 +37,13 @@ function renderGate() {
 beforeEach(() => Object.values(api).forEach((f) => f.mockReset()));
 
 describe("Gate", () => {
+  it("shows a loading status while the library configuration is pending", () => {
+    api.setupStatus.mockReturnValue(new Promise(() => {}));
+    renderGate();
+    expect(screen.getByRole("status")).toHaveTextContent("Opening your library");
+    expect(screen.queryByRole("heading", { name: "Sign in" })).not.toBeInTheDocument();
+  });
+
   it("shows the setup wizard on a fresh install", async () => {
     api.setupStatus.mockResolvedValue({ configured: false, profiles: [] });
     renderGate();

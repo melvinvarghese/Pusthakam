@@ -1,3 +1,6 @@
+import { useQuery } from "@tanstack/react-query";
+import { appApi } from "@/lib/api";
+
 export interface NavItem {
   path: string;
   label: string;
@@ -53,3 +56,27 @@ export const NAV_GROUPS: NavGroup[] = [
 ];
 
 export const ALL_NAV_ITEMS: NavItem[] = NAV_GROUPS.flatMap((g) => g.items);
+
+export const OPTIONAL_MODULES = [
+  { path: "/acquisitions", label: "Acquisitions" },
+  { path: "/periodicals", label: "Periodicals" },
+] as const;
+
+export function moduleVisibilityOptions(path: string) {
+  return {
+    queryKey: ["module-visibility", path],
+    queryFn: async () => (await appApi.setting(`modules.${path.slice(1)}`)) !== "false",
+    retry: false,
+  };
+}
+
+export function useVisibleNavGroups() {
+  const acquisitions = useQuery(moduleVisibilityOptions("/acquisitions"));
+  const periodicals = useQuery(moduleVisibilityOptions("/periodicals"));
+  return NAV_GROUPS.map((group) => ({
+    ...group,
+    items: group.items.filter(({ path }) =>
+      !(path === "/acquisitions" && acquisitions.data === false)
+      && !(path === "/periodicals" && periodicals.data === false)),
+  }));
+}

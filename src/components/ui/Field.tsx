@@ -2,7 +2,7 @@ import { useId, type InputHTMLAttributes, type ReactNode, type SelectHTMLAttribu
 import { cn } from "@/lib/utils";
 
 const CONTROL =
-  "h-9 w-full rounded-md border border-line-strong bg-surface px-3 text-[13px] text-fg placeholder:text-muted disabled:opacity-60";
+  "h-9 w-full rounded-md border border-field-line bg-surface px-3 text-[13px] text-fg placeholder:text-muted disabled:opacity-60";
 
 interface Shared {
   label: string;

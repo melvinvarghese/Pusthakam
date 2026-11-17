@@ -243,12 +243,14 @@ fn staff_roles_passwords_and_administrator_recovery_take_effect_without_touching
 #[test]
 fn manual_backups_are_permission_checked_complete_and_retained() {
     let h = Harness::new();
+    let destination = tempfile::tempdir().unwrap();
     assert_eq!(h.code("backup_list", json!({})), "AUTH_FAILED");
     assert_eq!(h.code("backup_create", json!({})), "AUTH_FAILED");
+    assert_eq!(h.code("backup_copy_to_folder", json!({ "name": "pusthakam-none.sqlite3", "folder": destination.path() })), "AUTH_FAILED");
     h.ok("complete_setup", setup_body());
     let initial = h.ok("backup_list", json!({}));
     assert_eq!(initial["files"], json!([]));
-    assert_eq!(initial["dailyEnabled"], false);
+    assert_eq!(initial["dailyEnabled"], true);
     let folder = std::path::PathBuf::from(initial["folder"].as_str().unwrap());
     let mut writer = {
         let state = h.webview.state::<AppState>();
@@ -266,6 +268,13 @@ fn manual_backups_are_permission_checked_complete_and_retained() {
     }
     let second = h.ok("backup_create", json!({}));
     assert_ne!(first["name"], second["name"]);
+    assert_eq!(h.code("backup_copy_to_folder", json!({ "name": first["name"], "folder": folder })), "VALIDATION");
+    let copied = h.ok("backup_copy_to_folder", json!({ "name": first["name"], "folder": destination.path() }));
+    let copied_name = copied["name"].as_str().unwrap();
+    assert_eq!(pusthakam_lib::services::backup::verify_saved(destination.path(), copied_name).unwrap(),
+        db::migrations::latest_version());
+    let exported = rusqlite::Connection::open(destination.path().join(copied_name)).unwrap();
+    assert_eq!(exported.query_row("SELECT name FROM libraries", [], |row| row.get::<_, String>(0)).unwrap(), "Demo Library");
     let files = h.ok("backup_list", json!({}));
     assert_eq!(files["files"].as_array().unwrap().len(), 2);
     assert_eq!(h.ok("backup_verify", json!({ "name": first["name"] })), db::migrations::latest_version());
@@ -284,13 +293,33 @@ fn manual_backups_are_permission_checked_complete_and_retained() {
     assert_eq!(h.code("backup_verify", json!({ "name": "pusthakam-broken.sqlite3" })), "DATABASE");
     let run_daily = || {
         let state = h.webview.state::<AppState>();
-        state.with_conn(|conn| pusthakam_lib::services::backup::run_daily(conn, &folder)).unwrap()
+        state.with_conn(|conn| pusthakam_lib::services::backup::run_daily(conn, &state.paths)).unwrap()
     };
-    assert!(!run_daily());
-    h.ok("backup_set_daily", json!({ "enabled": true }));
-    assert_eq!(h.ok("backup_list", json!({}))["dailyEnabled"], true);
+    let older = "pusthakam-20000101-daily.sqlite3";
+    let queued = "pusthakam-20000102-daily.sqlite3";
+    let manual = "pusthakam-20000101T000000Z-manual.sqlite3";
+    let source = std::fs::read_dir(&folder).unwrap().map(|entry| entry.unwrap().path())
+        .find(|path| path.file_name().unwrap() != "pusthakam-broken.sqlite3").unwrap();
+    for name in [older, queued, manual] {
+        std::fs::copy(&source, folder.join(name)).unwrap();
+    }
+    h.ok("backup_request_restore", json!({ "name": queued }));
     assert!(run_daily());
+    assert!(!folder.join(older).exists());
+    assert!(folder.join(queued).is_file());
+    assert!(folder.join(manual).is_file());
+    h.ok("backup_cancel_restore", json!({}));
+    std::fs::remove_file(folder.join(queued)).unwrap();
     assert!(!run_daily());
+    h.ok("backup_set_daily", json!({ "enabled": false }));
+    assert_eq!(h.ok("backup_list", json!({}))["dailyEnabled"], false);
+    let daily_name = h.ok("backup_list", json!({}))["files"].as_array().unwrap().iter()
+        .find(|file| file["name"].as_str().unwrap().ends_with("-daily.sqlite3")).unwrap()["name"]
+        .as_str().unwrap().to_owned();
+    let parked = folder.join("daily-check.sqlite3");
+    std::fs::rename(folder.join(&daily_name), &parked).unwrap();
+    assert!(!run_daily());
+    std::fs::rename(parked, folder.join(daily_name)).unwrap();
     let list = h.ok("backup_list", json!({}));
     let daily = list["files"].as_array().unwrap().iter()
         .find(|file| file["name"].as_str().unwrap().ends_with("-daily.sqlite3")).unwrap();
@@ -298,6 +327,7 @@ fn manual_backups_are_permission_checked_complete_and_retained() {
     h.ok("login", json!({ "username": "viewer", "password": "visitor passphrase" }));
     assert_eq!(h.code("backup_list", json!({})), "PERMISSION_DENIED");
     assert_eq!(h.code("backup_create", json!({})), "PERMISSION_DENIED");
+    assert_eq!(h.code("backup_copy_to_folder", json!({ "name": copied_name, "folder": destination.path() })), "PERMISSION_DENIED");
     assert_eq!(h.code("backup_set_daily", json!({ "enabled": false })), "PERMISSION_DENIED");
 }
 
@@ -656,7 +686,9 @@ fn catalogue_commands_accept_the_ui_payloads_and_enforce_permissions() {
         let conn = state.db.lock().unwrap();
         conn.execute_batch("DROP TRIGGER reject_archive_audit").unwrap();
     }
-    h.ok("catalogue_archive_record", json!({ "id": id, "archived": true }));
+    assert_eq!(h.code("catalogue_archive_records", json!({ "ids": [id, 999999] })), "NOT_FOUND");
+    assert_eq!(h.ok("catalogue_get_record", json!({ "id": id }))["archived"], false);
+    h.ok("catalogue_archive_records", json!({ "ids": [id] }));
     assert_eq!(h.ok("catalogue_get_record", json!({ "id": id }))["archived"], true);
     h.ok("catalogue_archive_record", json!({ "id": id, "archived": false }));
     assert_eq!(h.ok("catalogue_get_record", json!({ "id": id }))["archived"], false);
@@ -701,6 +733,9 @@ fn catalogue_commands_accept_the_ui_payloads_and_enforce_permissions() {
         conn.execute("UPDATE circulation_policies SET max_renewals = 1, renewal_days = 7,
             fine_per_day_minor = 150, fine_grace_days = 1, fine_cap_minor = 250 WHERE id = ?1",
             [policy["id"].as_i64().unwrap()]).unwrap();
+        conn.execute("UPDATE physical_items SET accession_no = 'ACC-101' WHERE barcode = 'LIB-00101'", []).unwrap();
+        conn.execute("UPDATE physical_items SET accession_no = 'LIB-00101' WHERE id = ?1",
+            [copy_id.as_i64().unwrap()]).unwrap();
         auth::create_user(&conn, "clerk", "Front Desk", "clerk passphrase!", "circulation").unwrap();
     }
     h.ok("logout", json!({}));
@@ -709,18 +744,20 @@ fn catalogue_commands_accept_the_ui_payloads_and_enforce_permissions() {
     h.ok("catalogue_get_record", json!({ "id": id }));
     assert_eq!(h.code("catalogue_save_record", record), "PERMISSION_DENIED");
     assert_eq!(h.code("catalogue_archive_record", json!({ "id": id, "archived": true })), "PERMISSION_DENIED");
+    assert_eq!(h.code("catalogue_archive_records", json!({ "ids": [id] })), "PERMISSION_DENIED");
     assert_eq!(h.code("catalogue_set_copy_status", json!({ "id": copy_id, "status": "available", "note": null })), "PERMISSION_DENIED");
     assert_eq!(h.code("accession_format_set", json!({ "format": { "prefix": "", "padding": 6, "next": 1 } })), "PERMISSION_DENIED");
-    let lookup = json!({ "memberNumber": "MEM-101", "barcode": "LIB-00101" });
+    assert_eq!(h.code("circulation_prepare_issue", json!({ "memberNumber": "MEM-101", "barcode": "LIB-00101" })), "CONFLICT");
+    let lookup = json!({ "memberNumber": "MEM-101", "barcode": "ACC-101" });
     let preview = h.ok("circulation_prepare_issue", lookup.clone());
     assert_eq!(preview["memberName"], "Asha Nair");
     assert_eq!(preview["title"], "Balyakalasakhi");
-    let request = json!({ "memberNumber": "MEM-101", "barcode": "LIB-00101",
+    let request = json!({ "memberNumber": "MEM-101", "barcode": "ACC-101",
         "memberId": member, "itemId": preview["itemId"], "dueOn": preview["dueOn"] });
     h.ok("circulation_issue", request.clone());
     assert_eq!(h.code("circulation_issue", request), "CONFLICT");
     assert_eq!(h.ok("catalogue_list_copies", json!({ "query": { "status": "on_loan", "page": 1, "pageSize": 25 } }))["total"], 1);
-    let barcode = json!({ "barcode": "LIB-00101" });
+    let barcode = json!({ "barcode": "ACC-101" });
     let initial_renewal = h.ok("circulation_prepare_renewal", barcode.clone());
     assert_eq!(initial_renewal["previousDueOn"], preview["dueOn"]);
     {

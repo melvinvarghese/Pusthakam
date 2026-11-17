@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
-import { NAV_GROUPS } from "@/app/nav";
+import { useVisibleNavGroups } from "@/app/nav";
 import { PageHeader } from "@/components/PageHeader";
 import { Panel, PanelHeader } from "@/components/ui/Panel";
 import { appApi, ApiError, isDesktop, toApiError } from "@/lib/api";
@@ -28,6 +28,7 @@ function Count({ label, value, attention = false }: { label: string; value: numb
 }
 
 export function Dashboard() {
+  const groups = useVisibleNavGroups();
   const { session } = useSession();
   const info = useQuery({ queryKey: ["app-info"], queryFn: appApi.info, retry: false });
   const overview = useQuery({
@@ -70,7 +71,7 @@ export function Dashboard() {
         <Panel aria-labelledby="modules-h">
           <PanelHeader id="modules-h" title="Library modules" />
           <div className="grid gap-x-8 gap-y-5 p-4 sm:grid-cols-2">
-            {NAV_GROUPS.map((group) => (
+            {groups.map((group) => (
               <div key={group.label}>
                 <h3 className="mb-1 text-xs font-semibold text-muted">{group.label}</h3>
                 <ul>

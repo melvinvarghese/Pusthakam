@@ -63,7 +63,7 @@ export default function Reservations() {
                 event.preventDefault();
                 event.currentTarget.form?.querySelector<HTMLInputElement>('input[name="barcode"]')?.focus();
               }} />
-            <TextField label="Copy barcode" name="barcode" required maxLength={40} autoComplete="off"
+            <TextField label="Book barcode or accession number" name="barcode" required maxLength={40} autoComplete="off"
               value={barcode} onChange={(event) => setBarcode(event.target.value)} />
           </fieldset>
           <Button type="submit" variant="primary" disabled={place.isPending}>Place reservation</Button>

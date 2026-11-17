@@ -9,8 +9,7 @@ import { SessionContext } from "@/lib/session";
 
 const SESSION = { userId: 1, username: "rekha", displayName: "Rekha Nair", role: "librarian", permissions: ["members.read"] };
 
-function renderApp(path = "/") {
-  const qc = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+function renderApp(path = "/", qc = new QueryClient({ defaultOptions: { queries: { retry: false } } })) {
   return render(
     <ThemeProvider>
       <QueryClientProvider client={qc}>
@@ -25,6 +24,17 @@ function renderApp(path = "/") {
 }
 
 describe("AppShell", () => {
+  it("hides optional modules throughout navigation when disabled", async () => {
+    const client = new QueryClient();
+    client.setQueryData(["module-visibility", "/acquisitions"], false);
+    renderApp("/", client);
+    expect(screen.queryByRole("link", { name: "Acquisitions" })).not.toBeInTheDocument();
+    expect(within(screen.getByRole("navigation", { name: "Primary" })).getByRole("link", { name: "Periodicals" })).toBeInTheDocument();
+    await userEvent.keyboard("{Control>}k{/Control}");
+    await userEvent.type(screen.getByRole("combobox", { name: "Go to section" }), "Acquisitions");
+    expect(within(screen.getByRole("dialog")).queryByText("Acquisitions", { exact: true })).not.toBeInTheDocument();
+  });
+
   it("renders brand, tagline and all navigation groups", () => {
     renderApp();
     expect(screen.getByText("Pusthakam")).toBeInTheDocument();
@@ -76,11 +86,29 @@ describe("AppShell", () => {
 });
 
 describe("theme", () => {
-  it("switches theme, applies it to the document and persists the choice", async () => {
+  it("moves focus and selects a theme with arrow keys", async () => {
     renderApp();
+    const light = screen.getByRole("radio", { name: "Light theme" });
+    const dark = screen.getByRole("radio", { name: "Dark theme" });
+    await userEvent.click(light);
+    await userEvent.keyboard("{ArrowLeft}");
+    expect(dark).toHaveFocus();
+    expect(dark).toBeChecked();
+    expect(light).toHaveAttribute("tabindex", "-1");
+    await userEvent.keyboard("{ArrowRight}");
+    expect(light).toHaveFocus();
+    expect(light).toBeChecked();
+  });
+
+  it("switches theme, applies it to the document and persists the choice", async () => {
+    const app = renderApp();
     await userEvent.click(screen.getByRole("radio", { name: "Dark theme" }));
     expect(document.documentElement.dataset.theme).toBe("dark");
     expect(localStorage.getItem("pusthakam.theme")).toBe("dark");
+    app.unmount();
+    renderApp();
+    expect(screen.getByRole("radio", { name: "Dark theme" })).toBeChecked();
+    expect(document.documentElement.dataset.theme).toBe("dark");
     await userEvent.click(screen.getByRole("radio", { name: "Light theme" }));
     expect(document.documentElement.dataset.theme).toBe("light");
   });

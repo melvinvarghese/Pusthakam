@@ -123,7 +123,7 @@ export function RecordFormDialog({ record, onClose, onSaved }: Props) {
         )}
 
         <div className="grid grid-cols-2 gap-3">
-          <div className="col-span-2"><TextField label="Title" value={f.title} onChange={set("title")} autoFocus /></div>
+          <div className="col-span-2"><TextField label="Title" value={f.title} onChange={set("title")} /></div>
           <div className="col-span-2"><TextField label="Subtitle" value={f.subtitle} onChange={set("subtitle")} /></div>
         </div>
 

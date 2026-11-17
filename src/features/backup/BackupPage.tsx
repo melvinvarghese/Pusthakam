@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
+import { TextField } from "@/components/ui/Field";
 import { Modal } from "@/components/ui/Modal";
 import { Panel } from "@/components/ui/Panel";
 import { backupApi, toApiError } from "@/lib/api";
@@ -12,6 +13,7 @@ export function BackupPage() {
   const allowed = can(session, "admin.backup");
   const client = useQueryClient();
   const [restoreTarget, setRestoreTarget] = useState<string | null>(null);
+  const [copyTarget, setCopyTarget] = useState<string | null>(null);
   const list = useQuery({ queryKey: ["database-backups"], queryFn: backupApi.list, enabled: allowed, refetchInterval: 60_000 });
   const create = useMutation({
     mutationFn: backupApi.create,
@@ -22,6 +24,10 @@ export function BackupPage() {
     onSuccess: () => client.invalidateQueries({ queryKey: ["database-backups"] }),
   });
   const verify = useMutation({ mutationFn: backupApi.verify });
+  const copy = useMutation({
+    mutationFn: ({ name, folder }: { name: string; folder: string }) => backupApi.copyToFolder(name, folder),
+    onSuccess: () => setCopyTarget(null),
+  });
   const restore = useMutation({
     mutationFn: backupApi.requestRestore,
     onSuccess: async () => {
@@ -43,6 +49,7 @@ export function BackupPage() {
         </Button>} />
       {create.isError && <p role="alert" className="text-danger">{toApiError(create.error).message}</p>}
       {create.data && <p role="status">Backup saved and checked. <span className="font-mono">{create.data.name}</span></p>}
+      {copy.data && <p role="status">Backup copy saved and checked. <span className="font-mono">{copy.data.name}</span></p>}
       {list.isPending && <p role="status" className="text-muted">Loading backups.</p>}
       {list.isError && <p role="alert" className="text-danger">{toApiError(list.error).message}</p>}
       {list.data && (
@@ -59,11 +66,13 @@ export function BackupPage() {
           <label className="mb-4 flex items-center gap-2 text-sm">
             <input type="checkbox" checked={list.data.dailyEnabled} disabled={schedule.isPending}
               onChange={(event) => schedule.mutate(event.target.checked)} />
-            Back up once daily while Pusthakam is open
+            Back up on first launch each day or when the date changes while Pusthakam is open
           </label>
+          <p className="mb-4 text-sm text-muted">A checked daily backup replaces older daily copies. Manual backups and backups queued for restore are kept.</p>
           {schedule.isError && <p role="alert" className="mb-4 text-danger">{toApiError(schedule.error).message}</p>}
           <p className="text-sm font-medium">Backup folder</p>
-          <p className="mb-4 break-all font-mono text-xs text-muted">{list.data.folder}</p>
+          <p className="break-all font-mono text-xs text-muted">{list.data.folder}</p>
+          <p className="mb-4 text-sm text-muted">Keep a copy on a separate drive or another computer so you can recover if this computer is lost.</p>
           {list.data.files.length === 0 ? <p className="text-muted">No database backups yet.</p> : (
             <ul aria-label="Saved backups" className="divide-y divide-line">
               {list.data.files.map((file) => (
@@ -74,6 +83,8 @@ export function BackupPage() {
                     <Button size="sm" disabled={verify.isPending} onClick={() => verify.mutate(file.name)} aria-label={`Verify ${file.name}`}>
                       {verify.isPending && verify.variables === file.name ? "Checking…" : "Verify"}
                     </Button>
+                    <Button size="sm" onClick={() => { copy.reset(); setCopyTarget(file.name); }}
+                      aria-label={`Copy ${file.name} to folder`}>Copy to folder</Button>
                     <Button size="sm" disabled={list.data.pendingRestore !== null} aria-label={`Restore ${file.name}`}
                       onClick={() => { restore.reset(); setRestoreTarget(file.name); }}>Restore…</Button>
                   </div>
@@ -88,6 +99,20 @@ export function BackupPage() {
             </ul>
           )}
         </Panel>
+      )}
+      {copyTarget && (
+        <Modal title="Copy backup to folder" onClose={() => { if (!copy.isPending) setCopyTarget(null); }}>
+          <form className="space-y-3" onSubmit={(event) => {
+            event.preventDefault();
+            const folder = String(new FormData(event.currentTarget).get("folder") ?? "");
+            copy.mutate({ name: copyTarget, folder });
+          }}>
+            <p className="break-all font-mono">{copyTarget}</p>
+            <TextField label="Destination folder" name="folder" required disabled={copy.isPending} />
+            {copy.isError && <p role="alert" className="text-danger">{toApiError(copy.error).message}</p>}
+            <Button type="submit" variant="primary" disabled={copy.isPending}>{copy.isPending ? "Copying…" : "Save copy"}</Button>
+          </form>
+        </Modal>
       )}
       {restoreTarget && (
         <Modal title="Restore database on next launch" onClose={() => { if (!restore.isPending) setRestoreTarget(null); }}

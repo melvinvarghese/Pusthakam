@@ -1,4 +1,4 @@
-use crate::domain::{accession, validate};
+use crate::domain::validate;
 use crate::error::{AppError, AppResult};
 use crate::services::{audit, auth::Session, catalogue, fines, reservations};
 use rusqlite::{params, Connection, OptionalExtension, TransactionBehavior};
@@ -169,17 +169,17 @@ fn advance_past_holidays(conn: &Connection, mut due_on: String) -> AppResult<Str
 }
 
 pub fn prepare_return(conn: &Connection, barcode: &str) -> AppResult<ReturnPreview> {
-    let barcode = accession::validate_code("Copy barcode", barcode)?;
+    let item_id = reservations::copy_id(conn, barcode)?;
     let mut preview = conn.query_row(
         "SELECT l.id, m.name, r.title, l.due_on FROM loans l
          JOIN members m ON m.id = l.member_id JOIN physical_items i ON i.id = l.item_id
          JOIN bibliographic_records r ON r.id = i.record_id
-         WHERE i.barcode = ?1 AND l.returned_at IS NULL",
-        [&barcode], |r| Ok(ReturnPreview {
+         WHERE l.item_id = ?1 AND l.returned_at IS NULL",
+        [item_id], |r| Ok(ReturnPreview {
             loan_id: r.get(0)?, member_name: r.get(1)?, title: r.get(2)?, due_on: r.get(3)?,
             estimated_fine: None,
         }),
-    ).optional()?.ok_or_else(|| AppError::NotFound("There is no open loan for that barcode.".into()))?;
+    ).optional()?.ok_or_else(|| AppError::NotFound("There is no open loan for that copy.".into()))?;
     preview.estimated_fine = fines::estimate_return(conn, preview.loan_id)?;
     Ok(preview)
 }

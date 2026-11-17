@@ -18,7 +18,7 @@ function renderCirculation() {
   render(
     <QueryClientProvider client={new QueryClient()}>
       <SessionContext.Provider value={{
-        session: { userId: 1, username: "clerk", displayName: "Clerk", role: "circulation", permissions: ["circulation.issue"] },
+        session: { userId: 1, username: "clerk", displayName: "Clerk", role: "circulation", permissions: ["circulation.issue", "members.read"] },
         signOut: async () => {},
       }}>
         <CirculationPage />
@@ -26,6 +26,33 @@ function renderCirculation() {
     </QueryClientProvider>,
   );
 }
+
+it("returns keyboard focus to the member lookup button when dismissed", async () => {
+  renderCirculation();
+  const user = userEvent.setup();
+  const button = screen.getByRole("button", { name: "Find member by name" });
+  button.focus();
+  await user.keyboard("{Enter}");
+  expect(screen.getByRole("textbox", { name: "Member name" })).toHaveFocus();
+  await user.keyboard("{Escape}");
+  expect(button).toHaveFocus();
+});
+
+it("looks up a borrower by name and fills the selected member number", async () => {
+  vi.mocked(invoke).mockResolvedValueOnce({
+    rows: [{ id: 1, name: "Asha Nair", memberNumber: "MEM-1" }, { id: 2, name: "Asha Nair", memberNumber: "MEM-2" }],
+    total: 2, page: 1, pageSize: 25,
+  });
+  renderCirculation();
+  const user = userEvent.setup();
+  await user.click(screen.getByRole("button", { name: "Find member by name" }));
+  const dialog = within(screen.getByRole("dialog", { name: "Find member by name" }));
+  await user.type(dialog.getByRole("textbox", { name: "Member name" }), "Asha");
+  await user.click(dialog.getByRole("button", { name: "Search" }));
+  await user.click(await dialog.findByRole("button", { name: "Asha Nair (MEM-2)" }));
+  expect(invoke).toHaveBeenCalledExactlyOnceWith("members_list", { search: "Asha", page: 1, archived: false });
+  expect(screen.getByRole("textbox", { name: "Member number" })).toHaveValue("MEM-2");
+});
 
 it("reviews the old and new due dates before confirming a renewal", async () => {
   const preview = {
@@ -41,7 +68,7 @@ it("reviews the old and new due dates before confirming a renewal", async () => 
 
   const user = userEvent.setup();
   await user.click(screen.getByRole("button", { name: "Renew" }));
-  await user.type(screen.getByRole("textbox", { name: "Copy barcode" }), "LIB-00101{Enter}");
+  await user.type(screen.getByRole("textbox", { name: "Book barcode or accession number" }), "LIB-00101{Enter}");
   const dialog = within(await screen.findByRole("dialog", { name: "Confirm renewal" }));
   expect(dialog.getByText(preview.previousDueOn)).toBeInTheDocument();
   expect(dialog.getByText(preview.dueOn)).toBeInTheDocument();
@@ -104,7 +131,7 @@ it("places a barcode reservation and refreshes the queue", async () => {
   await user.click(screen.getByRole("button", { name: "Reservations" }));
   expect(await screen.findByText("No active reservations.")).toBeInTheDocument();
   await user.type(screen.getByRole("textbox", { name: "Member number" }), "MEM-101{Enter}");
-  expect(screen.getByRole("textbox", { name: "Copy barcode" })).toHaveFocus();
+  expect(screen.getByRole("textbox", { name: "Book barcode or accession number" })).toHaveFocus();
   await user.keyboard("LIB-00101{Enter}");
   expect(await screen.findByText("Waiting")).toBeInTheDocument();
   expect(screen.getByText("Asha Nair")).toBeInTheDocument();

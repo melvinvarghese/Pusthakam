@@ -22,6 +22,7 @@
   --band: #f6f8fb;
   --line: #dfe4ea;
   --line-strong: #c3cbd6;
+  --field-line: #8491a3;
   --fg: #16202e;
   --muted: #5b6676;
   --primary: #16202e;
@@ -61,6 +62,7 @@
   --band: #152033;
   --line: #2a3b58;
   --line-strong: #3a5070;
+  --field-line: #647d9e;
   --fg: #e6ebf2;
   --muted: #98a6ba;
   --primary: #e6ebf2;
@@ -86,6 +88,7 @@
   --color-rail-line: var(--rail-line-strong);
   --color-bg: var(--bg);
   --color-surface: var(--surface);
+  --color-field-line: var(--field-line);
   --color-band: var(--band);
   --color-line: var(--line);
   --color-line-strong: var(--line-strong);
