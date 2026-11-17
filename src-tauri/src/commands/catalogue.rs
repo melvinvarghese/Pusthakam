@@ -48,7 +48,10 @@ pub fn catalogue_archive_record(state: State<'_, AppState>, id: i64, archived: b
     let who = state.require("catalogue.write")?;
     let mut conn = state.conn()?;
     reservations::refresh(&mut conn)?;
-    catalogue::set_record_archived(&conn, Some(&who), id, archived)
+    let tx = conn.transaction_with_behavior(rusqlite::TransactionBehavior::Immediate)?;
+    catalogue::set_record_archived(&tx, Some(&who), id, archived)?;
+    tx.commit()?;
+    Ok(())
 }
 
 #[tauri::command]
@@ -82,6 +85,14 @@ pub fn catalogue_list_copies(state: State<'_, AppState>, query: CopyQuery) -> Ap
     let mut conn = state.conn()?;
     reservations::refresh(&mut conn)?;
     catalogue::list_copies(&conn, &query)
+}
+
+#[tauri::command]
+pub fn catalogue_export_copies(state: State<'_, AppState>, query: CopyQuery) -> AppResult<String> {
+    state.require("catalogue.read")?;
+    let mut conn = state.conn()?;
+    reservations::refresh(&mut conn)?;
+    catalogue::export_copies_csv(&conn, &query)
 }
 
 #[tauri::command]

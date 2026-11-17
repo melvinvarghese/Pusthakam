@@ -1,0 +1,30 @@
+.label-sheet {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.25rem;
+}
+
+.copy-label {
+  padding: 0.5rem;
+  border: 1px dashed var(--line-strong);
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
+  overflow-wrap: anywhere;
+}
+
+.copy-label svg {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin-top: 0.25rem;
+}
+
+.label-sheet-print { display: none; }
+
+@media print {
+  body:has(> .label-sheet-print) { height: auto; overflow: visible; background: #fff; }
+  body:has(> .label-sheet-print) > #root { display: none; }
+  .label-sheet-print, .label-sheet-print * { visibility: visible; }
+  .label-sheet-print { display: grid; gap: 3mm; color: #000; color-scheme: light; }
+  .label-sheet-print .copy-label { break-inside: avoid; padding: 3mm; border-color: #888; border-radius: 0; }
+}

@@ -40,15 +40,20 @@ export const ROLE_LABELS = {
 } as const;
 
 /** Code 128 barcode drawn locally (no network). */
-export function BarcodeSvg({ value, height = 44 }: { value: string; height?: number }) {
+export function BarcodeSvg({ value, height = 44, quietZone = 0, displayValue = true }: {
+  value: string; height?: number; quietZone?: number; displayValue?: boolean;
+}) {
   const ref = useRef<SVGSVGElement>(null);
   useEffect(() => {
     if (!ref.current) return;
     try {
-      JsBarcode(ref.current, value, { format: "CODE128", displayValue: true, height, margin: 0, fontSize: 12, font: "Courier Prime" });
+      JsBarcode(ref.current, value, {
+        format: "CODE128", displayValue, height, margin: 0, marginLeft: quietZone, marginRight: quietZone,
+        fontSize: 12, font: "Courier Prime",
+      });
     } catch {
       /* a value Code 128 cannot encode simply shows no bars */
     }
-  }, [value, height]);
+  }, [value, height, quietZone, displayValue]);
   return <svg ref={ref} role="img" aria-label={`Barcode ${value}`} />;
 }

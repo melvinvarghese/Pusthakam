@@ -141,7 +141,9 @@ export function CataloguePage() {
                       {r.publicationYear && <span className="block text-xs text-muted">{r.publicationYear}</span>}
                     </td>
                     <td className="border-b border-line px-4 py-2.5">
-                      {r.classificationNumber ? <CallNumberLabel callNumber={r.classificationNumber} /> : <span className="text-muted">None</span>}
+                      {r.classificationNumber ? <CallNumberLabel callNumber={r.classificationNumber}
+                        schemeCode={config.data?.classificationSchemes.find((scheme) => scheme.id === r.classificationSchemeId)?.code} />
+                        : <span className="text-muted">None</span>}
                     </td>
                     <td className="border-b border-line px-4 py-2.5">
                       {r.archived ? <Chip>Archived</Chip> : r.totalCopies === 0 ? <span className="text-muted">No copies</span> : `${r.availableCopies} of ${r.totalCopies} available`}

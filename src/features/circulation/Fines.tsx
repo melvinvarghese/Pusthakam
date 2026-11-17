@@ -5,8 +5,8 @@ import { Button } from "@/components/ui/Button";
 import { SelectField, TextField } from "@/components/ui/Field";
 import { Modal } from "@/components/ui/Modal";
 import { Panel } from "@/components/ui/Panel";
-import { circulationApi, toApiError } from "@/lib/api";
-import type { Fine, FineSettlement } from "@/lib/api/types";
+import { circulationApi, configApi, toApiError } from "@/lib/api";
+import type { Fine, FineHistoryPage, FineSettlement } from "@/lib/api/types";
 import { formatMinor, minorToInput, parseMinor } from "@/lib/money";
 import { can, useSession } from "@/lib/session";
 
@@ -15,13 +15,40 @@ const PAYMENT_METHODS: Record<string, string> = {
   cash: "Cash", card: "Card", bank_transfer: "Bank transfer", other: "Other",
 };
 
+function FineReceipt({ fine, entry, onClose }: { fine: Fine; entry: FineHistoryPage["rows"][number]; onClose: () => void }) {
+  const { data } = useQuery({ queryKey: ["config"], queryFn: configApi.overview, retry: false });
+  return (
+    <Modal title="Fine payment receipt" onClose={onClose} footer={<>
+      <Button onClick={onClose}>Back to history</Button>
+      <Button variant="primary" onClick={() => window.print()}>Print receipt</Button>
+    </>}>
+      <section className="print-area w-[80mm] max-w-full space-y-2 bg-white p-3 text-black">
+        <header className="border-b border-black/20 pb-2">
+          <p className="font-semibold">{data?.library?.name ?? "Library"}</p>
+          <p>Fine payment receipt #{entry.id}</p>
+        </header>
+        <dl className="space-y-2 text-sm">
+          <div><dt>Member</dt><dd>{fine.memberName} ({fine.memberNumber})</dd></div>
+          <div><dt>Title</dt><dd>{fine.title}</dd></div>
+          <div><dt>Amount paid</dt><dd>{formatMinor(entry.amountMinor, fine.currency)}</dd></div>
+          <div><dt>Payment method</dt><dd>{PAYMENT_METHODS[entry.method ?? ""] ?? "Other"}</dd></div>
+          <div><dt>Recorded</dt><dd>{new Date(entry.recordedAt).toLocaleString()}</dd></div>
+          <div><dt>Received by</dt><dd>{entry.staffName}</dd></div>
+        </dl>
+      </section>
+    </Modal>
+  );
+}
+
 function FineHistory({ fine, onClose }: { fine: Fine; onClose: () => void }) {
   const [page, setPage] = useState(1);
+  const [receipt, setReceipt] = useState<FineHistoryPage["rows"][number] | null>(null);
   const history = useQuery({
     queryKey: ["circulation", "fines", "history", fine.id, page],
     queryFn: () => circulationApi.fineHistory(fine.id, page),
     retry: false,
   });
+  if (receipt) return <FineReceipt fine={fine} entry={receipt} onClose={() => setReceipt(null)} />;
   return (
     <Modal title="Fine history" onClose={onClose} wide footer={<Button onClick={onClose}>Close</Button>}>
       <p>{fine.title} · {fine.memberName} ({fine.memberNumber})</p>
@@ -39,6 +66,7 @@ function FineHistory({ fine, onClose }: { fine: Fine; onClose: () => void }) {
                 </div>
                 <div className="text-xs text-muted">{entry.staffName} · {new Date(entry.recordedAt).toLocaleString()}</div>
                 {entry.reason && <p className="break-words">{entry.reason}</p>}
+                {entry.kind === "payment" && <Button size="sm" variant="ghost" onClick={() => setReceipt(entry)}>Receipt #{entry.id}</Button>}
               </li>
             ))}
           </ul>

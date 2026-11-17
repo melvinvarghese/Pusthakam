@@ -206,6 +206,7 @@ export interface RecordSummary {
   publicationYear: number | null;
   isbn13: string | null;
   classificationNumber: string | null;
+  classificationSchemeId: number | null;
   totalCopies: number;
   availableCopies: number;
   archived: boolean;
@@ -454,6 +455,66 @@ export interface ReservationPage {
 export interface FineAmount {
   amountMinor: number;
   currency: string;
+}
+
+export interface FineSummary {
+  currency: string;
+  assessed: string;
+  paid: string;
+  waived: string;
+  outstanding: string;
+}
+
+export interface CatalogueGrowthDay {
+  date: string;
+  titlesAdded: number;
+  copiesAdded: number;
+}
+
+export interface MemberSummary {
+  categoryId: number;
+  category: string;
+  archivedCategory: boolean;
+  current: number;
+  expired: number;
+  archived: number;
+  total: number;
+}
+
+export interface BackupFile {
+  name: string;
+  sizeBytes: number;
+}
+
+export interface BackupList {
+  folder: string;
+  files: BackupFile[];
+  dailyEnabled: boolean;
+  pendingRestore: string | null;
+  lastRestore: string | null;
+}
+
+export interface AuditQuery {
+  from?: string;
+  to?: string;
+  actor?: string;
+  action?: string;
+  page: number;
+}
+
+export interface AuditPage {
+  rows: {
+    id: number;
+    occurredAt: string;
+    actor: string | null;
+    action: string;
+    entityType: string;
+    entityId: number | null;
+    summary: string;
+  }[];
+  total: number;
+  page: number;
+  pageSize: number;
 }
 
 export interface Fine extends FineAmount {

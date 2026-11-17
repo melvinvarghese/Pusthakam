@@ -2,7 +2,7 @@
 
 use crate::db::migrations::latest_version;
 use crate::error::AppResult;
-use crate::services::{dashboard, settings};
+use crate::services::{backup, dashboard, settings};
 use crate::state::AppState;
 use serde::Serialize;
 use tauri::State;
@@ -46,5 +46,8 @@ pub fn get_setting(state: State<'_, AppState>, key: String) -> AppResult<Option<
 #[tauri::command]
 pub fn set_setting(state: State<'_, AppState>, key: String, value: String) -> AppResult<()> {
     state.require("admin.settings")?;
+    if key == backup::DAILY_SETTING {
+        state.require("admin.backup")?;
+    }
     state.with_conn(|c| settings::set(c, &key, &value))
 }

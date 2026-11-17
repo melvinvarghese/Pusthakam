@@ -138,4 +138,16 @@ it("records a partial payment against the displayed balance", async () => {
     fineId: 9, amountMinor: 125, expectedBalance: 250, entry: { kind: "payment", method: "cash" },
   });
   expect(screen.queryByRole("button", { name: "Waive" })).not.toBeInTheDocument();
+  vi.mocked(invoke).mockResolvedValueOnce({ page: 1, pageSize: 25, total: 1, rows: [{
+    id: 17, kind: "payment", method: "cash", amountMinor: 125, staffName: "Clerk", recordedAt: "2026-11-17T03:00:00Z",
+  }] }).mockResolvedValueOnce({ library: { name: "Main Library" } });
+  await user.click(screen.getByRole("button", { name: "Fine history for MEM-101" }));
+  await user.click(await screen.findByRole("button", { name: "Receipt #17" }));
+  const receipt = within(screen.getByRole("dialog", { name: "Fine payment receipt" }));
+  expect(await receipt.findByText("Main Library")).toBeInTheDocument();
+  expect(receipt.getByText(/1\.25/)).toBeInTheDocument();
+  expect(receipt.getByText("Cash")).toBeInTheDocument();
+  const print = vi.spyOn(window, "print").mockImplementation(() => {});
+  await user.click(receipt.getByRole("button", { name: "Print receipt" }));
+  expect(print).toHaveBeenCalledOnce();
 });

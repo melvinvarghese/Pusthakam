@@ -12,7 +12,9 @@
     "lint": "eslint .",
     "test": "vitest run",
     "test:watch": "vitest",
-    "tauri": "tauri"
+    "tauri": "tauri",
+    "progress:monitor": "node tools/progress-monitor/server.mjs",
+    "progress:validate": "node tools/progress-monitor/validate.mjs"
   },
   "dependencies": {
     "@fontsource-variable/hanken-grotesk": "^5.3.0",

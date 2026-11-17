@@ -34,9 +34,9 @@ rand_core = { version = "0.6", features = ["getrandom"] }
 tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["fmt"] }
 tracing-appender = "0.2"
+tempfile = "3"
 
 [dev-dependencies]
-tempfile = "3"
 base64 = "0.22"
 # Lets tests call the real commands through Tauri's IPC layer with a mock runtime (no window needed).
 tauri = { version = "2", features = ["test"] }

@@ -8,6 +8,14 @@ export default tseslint.config(
   js.configs.recommended,
   ...tseslint.configs.recommended,
   {
+    files: ["tools/progress-monitor/app.js"],
+    languageOptions: { globals: globals.browser },
+  },
+  {
+    files: ["tools/progress-monitor/*.mjs"],
+    languageOptions: { globals: globals.node },
+  },
+  {
     files: ["src/**/*.{ts,tsx}"],
     languageOptions: { globals: globals.browser },
     plugins: { "react-hooks": reactHooks },
