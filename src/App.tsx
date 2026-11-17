@@ -8,12 +8,14 @@ import { AccessionPage } from "@/features/catalogue/AccessionPage";
 import { CataloguePage } from "@/features/catalogue/CataloguePage";
 import { RecordPage } from "@/features/catalogue/RecordPage";
 import { Dashboard } from "@/features/dashboard/Dashboard";
+import { CirculationPage } from "@/features/circulation/CirculationPage";
 import { MembersPage } from "@/features/members/MembersPage";
 import { NotAvailable } from "@/features/NotAvailable";
 import { SettingsPage } from "@/features/settings/SettingsPage";
 import { ThemeProvider } from "@/lib/theme";
 
 const queryClient = new QueryClient();
+const ReportsPage = lazy(() => import("@/features/reports/ReportsPage"));
 
 // Development-only visual reference; `import.meta.env.DEV` is false in production builds, so it is never bundled.
 const DesignGallery = import.meta.env.DEV
@@ -30,6 +32,8 @@ export function AppRoutes() {
         <Route path="/catalogue/:id" element={<RecordPage />} />
         <Route path="/accession" element={<AccessionPage />} />
         <Route path="/members" element={<MembersPage />} />
+        <Route path="/circulation" element={<CirculationPage />} />
+        <Route path="/reports" element={<Suspense fallback={<p role="status" className="p-6">Loading reports.</p>}><ReportsPage /></Suspense>} />
         {ALL_NAV_ITEMS.filter((i) => !i.available).map((i) => (
           <Route key={i.path} path={i.path} element={<NotAvailable />} />
         ))}

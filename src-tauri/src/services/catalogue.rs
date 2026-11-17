@@ -742,7 +742,7 @@ fn check_fields(
     })
 }
 
-fn event(conn: &Connection, actor: Option<&Session>, item_id: i64, kind: &str, from: Option<&str>, to: Option<&str>, note: Option<&str>) -> AppResult<()> {
+pub(super) fn event(conn: &Connection, actor: Option<&Session>, item_id: i64, kind: &str, from: Option<&str>, to: Option<&str>, note: Option<&str>) -> AppResult<()> {
     conn.execute(
         "INSERT INTO item_events (item_id, event_type, from_status, to_status, note, staff_user_id) VALUES (?1,?2,?3,?4,?5,?6)",
         rusqlite::params![item_id, kind, from, to, note, actor.map(|a| a.user_id)],

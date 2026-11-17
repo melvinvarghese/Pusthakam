@@ -18,6 +18,12 @@ pub const MIGRATIONS: &[Migration] = &[
     Migration { version: 3, name: "auth", sql: include_str!("../../migrations/0003_auth.sql") },
     Migration { version: 4, name: "catalogue", sql: include_str!("../../migrations/0004_catalogue.sql") },
     Migration { version: 5, name: "members", sql: include_str!("../../migrations/0005_members.sql") },
+    Migration { version: 6, name: "loans", sql: include_str!("../../migrations/0006_loans.sql") },
+    Migration { version: 7, name: "loan_renewals", sql: include_str!("../../migrations/0007_loan_renewals.sql") },
+    Migration { version: 8, name: "reservations", sql: include_str!("../../migrations/0008_reservations.sql") },
+    Migration { version: 9, name: "fines", sql: include_str!("../../migrations/0009_fines.sql") },
+    Migration { version: 10, name: "loan_return_condition", sql: include_str!("../../migrations/0010_loan_return_condition.sql") },
+    Migration { version: 11, name: "member_photos", sql: include_str!("../../migrations/0011_member_photos.sql") },
 ];
 
 pub fn checksum(sql: &str) -> String {
@@ -119,15 +125,49 @@ mod tests {
     }
 
     #[test]
+    fn upgrade_preserves_open_and_closed_loans_and_snapshots_only_open_fine_terms() {
+        let mut c = mem();
+        let previous = MIGRATIONS.iter().position(|m| m.version == 9).unwrap();
+        assert_eq!(run(&mut c, &MIGRATIONS[..previous]).unwrap(), 8);
+        c.execute_batch(
+            "INSERT INTO libraries (id, name, profile, currency, locale) VALUES (1, 'Test Library', 'school', 'INR', 'en');
+             INSERT INTO staff_users (id, username, display_name, password_hash, role_id)
+                SELECT 1, 'test', 'Test Librarian', 'unused', id FROM roles WHERE code = 'administrator';
+             INSERT INTO member_categories (id, name) VALUES (1, 'Students');
+             INSERT INTO item_categories (id, name) VALUES (1, 'Books');
+             INSERT INTO members (id, member_number, name, category_id, expires_on)
+                VALUES (1, 'M-1', 'Asha Nair', 1, '2030-12-31');
+             INSERT INTO circulation_policies (member_category_id, item_category_id, loan_days, max_loans,
+                fine_per_day_minor, fine_grace_days, fine_cap_minor) VALUES (1, 1, 14, 4, 150, 2, 800);
+             INSERT INTO bibliographic_records (id, title) VALUES (1, 'Test Book');
+             INSERT INTO physical_items (id, record_id, accession_no, barcode, item_category_id, status)
+                VALUES (1, 1, 'COPY-1', 'COPY-1', 1, 'on_loan'), (2, 1, 'COPY-2', 'COPY-2', 1, 'available');
+             INSERT INTO loans (id, item_id, member_id, item_category_id, issued_by, due_on, returned_at, returned_by)
+                VALUES (1, 1, 1, 1, 1, '2026-10-10', NULL, NULL), (2, 2, 1, 1, 1, '2026-10-10', '2026-10-12T00:00:00Z', 1);",
+        ).unwrap();
+        assert_eq!(run(&mut c, MIGRATIONS).unwrap(), latest_version());
+        let terms: (i64, i64, i64, String) = c.query_row(
+            "SELECT rate_minor, grace_days, cap_minor, currency FROM loan_fine_terms WHERE loan_id = 1",
+            [], |r| Ok((r.get(0)?, r.get(1)?, r.get(2)?, r.get(3)?)),
+        ).unwrap();
+        assert_eq!(terms, (150, 2, 800, "INR".into()));
+        let count: i64 = c.query_row("SELECT count(*) FROM loan_fine_terms", [], |r| r.get(0)).unwrap();
+        assert_eq!(count, 1);
+        let closed: (String, String) = c.query_row(
+            "SELECT returned_at, return_condition FROM loans WHERE id = 2", [],
+            |r| Ok((r.get(0)?, r.get(1)?)),
+        ).unwrap();
+        assert_eq!(closed, ("2026-10-12T00:00:00Z".into(), "available".into()));
+        assert_eq!(c.query_row("SELECT count(*) FROM fines", [], |r| r.get::<_, i64>(0)).unwrap(), 0);
+    }
+
+    #[test]
     fn tampered_migration_is_rejected() {
         let mut c = mem();
         run(&mut c, MIGRATIONS).unwrap();
-        let tampered = [
-            Migration { version: 1, name: "core", sql: "CREATE TABLE evil (id INTEGER);" },
-            Migration { version: 2, name: "config", sql: MIGRATIONS[1].sql },
-            Migration { version: 3, name: "auth", sql: MIGRATIONS[2].sql },
-            Migration { version: 4, name: "catalogue", sql: MIGRATIONS[3].sql },
-        ];
+        let mut tampered: Vec<Migration> =
+            MIGRATIONS.iter().map(|m| Migration { version: m.version, name: m.name, sql: m.sql }).collect();
+        tampered[0].sql = "CREATE TABLE evil (id INTEGER);";
         let err = run(&mut c, &tampered).unwrap_err();
         assert!(matches!(err, AppError::Internal(_)));
     }

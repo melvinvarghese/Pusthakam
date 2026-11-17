@@ -6,11 +6,11 @@ import { invoke } from "@tauri-apps/api/core";
 import { openUrl } from "@tauri-apps/plugin-opener";
 import { previewMode } from "@/lib/preview";
 import type {
-  AccessionFormat, AppErrorPayload, AppInfo, ArchiveKind, ConfigOverview, CopyBatchInput, CopyPage, CopyQuery,
-  CopyRecord, CopyStatus, CopyUpdateInput, DuplicateHit, DuplicateProbe, ImportOptions, ImportPreview,
-  ImportPreviewRequest, ImportReport, LibraryInput, MemberCategoryInput, MemberInput, MemberPage,
-  NamedInput, NamedKind, PolicyInput, RecordDetail, RecordInput, SearchQuery, SearchResult, Session, SetupInput,
-  SetupStatus, ShelfInput,
+  AccessionFormat, AppErrorPayload, AppInfo, ArchiveKind, CirculationDay, ConfigOverview, CopyBatchInput, CopyPage, CopyQuery,
+  CopyRecord, CopyStatus, CopyUpdateInput, DashboardOverview, DuplicateHit, DuplicateProbe, FineAmount, FineHistoryPage, FinePage, FineSettlement, ImportOptions, ImportPreview,
+  ImportPreviewRequest, ImportReport, IssuePreview, KohaPatronPreview, LibraryInput, MemberCategoryInput, MemberInput, MemberLoanPage, MemberPage, OverduePage, RenewalPreview, ReservationPage, ReturnCondition, ReturnPreview,
+  NamedInput, NamedKind, PolicyInput, PopularTitle, RecordDetail, RecordInput, SearchQuery, SearchResult, Session, SetupInput,
+  SetupStatus, ShelfInput, StockRow,
 } from "./types";
 
 export class ApiError extends Error {
@@ -66,6 +66,13 @@ async function call<T>(command: string, args?: Record<string, unknown>): Promise
 
 export const appApi = {
   info: () => call<AppInfo>("app_info"),
+  overview: () => call<DashboardOverview>("dashboard_overview"),
+};
+
+export const reportsApi = {
+  circulationActivity: (from: string, to: string) => call<CirculationDay[]>("reports_circulation_activity", { from, to }),
+  popularTitles: (from: string, to: string) => call<PopularTitle[]>("reports_popular_titles", { from, to }),
+  stockByLocation: () => call<StockRow[]>("reports_stock_by_location"),
 };
 
 export const authApi = {
@@ -101,6 +108,34 @@ export const membersApi = {
   list: (search: string, page: number, archived: boolean) => call<MemberPage>("members_list", { search, page, archived }),
   save: (input: MemberInput) => call<number>("members_save", { input }),
   archive: (id: number, archived: boolean) => call<void>("members_archive", { id, archived }),
+  listLoans: (memberId: number, page: number) => call<MemberLoanPage>("members_list_loans", { memberId, page }),
+  previewKoha: (dataBase64: string) => call<KohaPatronPreview>("members_preview_koha", { dataBase64 }),
+  importKoha: (dataBase64: string, mappings: Record<string, number>, expectedReady: number) =>
+    call<number>("members_import_koha", { dataBase64, mappings, expectedReady }),
+  getPhoto: (id: number) => call<string | null>("members_get_photo", { id }),
+  setPhoto: (id: number, pngBase64: string | null) => call<void>("members_set_photo", { id, pngBase64 }),
+};
+
+export const circulationApi = {
+  prepareIssue: (memberNumber: string, barcode: string) =>
+    call<IssuePreview>("circulation_prepare_issue", { memberNumber, barcode }),
+  prepareReturn: (barcode: string) => call<ReturnPreview>("circulation_prepare_return", { barcode }),
+  issue: (memberNumber: string, barcode: string, { memberId, itemId, dueOn }: IssuePreview) =>
+    call<void>("circulation_issue", { memberNumber, barcode, memberId, itemId, dueOn }),
+  returnCopy: (loanId: number, condition: ReturnCondition = "available") =>
+    call<FineAmount | null>("circulation_return", condition === "available" ? { loanId } : { loanId, condition }),
+  prepareRenewal: (barcode: string) => call<RenewalPreview>("circulation_prepare_renewal", { barcode }),
+  listOverdue: (page: number) => call<OverduePage>("circulation_list_overdue", { page }),
+  listReservations: (page: number) => call<ReservationPage>("circulation_list_reservations", { page }),
+  placeReservation: (memberNumber: string, barcode: string) =>
+    call<void>("circulation_place_reservation", { memberNumber, barcode }),
+  cancelReservation: (id: number) => call<void>("circulation_cancel_reservation", { id }),
+  listFines: (page: number, includeSettled: boolean) => call<FinePage>("circulation_list_fines", { page, includeSettled }),
+  settleFine: (fineId: number, amountMinor: number, expectedBalance: number, entry: FineSettlement) =>
+    call<void>("circulation_settle_fine", { fineId, amountMinor, expectedBalance, entry }),
+  fineHistory: (fineId: number, page: number) => call<FineHistoryPage>("circulation_fine_history", { fineId, page }),
+  renew: ({ loanId, previousDueOn, dueOn }: RenewalPreview) =>
+    call<void>("circulation_renew", { confirmation: { loanId, previousDueOn, dueOn } }),
 };
 
 export const configApi = {

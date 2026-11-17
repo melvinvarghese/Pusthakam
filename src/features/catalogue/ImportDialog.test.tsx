@@ -9,7 +9,8 @@ const cfg = vi.hoisted(() => ({ overview: vi.fn() }));
 vi.mock("@/lib/api", async (orig) => ({ ...(await orig<typeof import("@/lib/api")>()), importApi: imp, configApi: cfg }));
 
 import { ApiError } from "@/lib/api";
-import { fileToBase64, ImportDialog } from "./ImportDialog";
+import { fileToBase64 } from "@/lib/files";
+import { ImportDialog } from "./ImportDialog";
 
 const CONFIG: ConfigOverview = {
   library: { name: "Demo", profile: "school", address: null, contact: null, currency: "INR", locale: "en" },

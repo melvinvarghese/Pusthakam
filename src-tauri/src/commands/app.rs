@@ -2,7 +2,7 @@
 
 use crate::db::migrations::latest_version;
 use crate::error::AppResult;
-use crate::services::settings;
+use crate::services::{dashboard, settings};
 use crate::state::AppState;
 use serde::Serialize;
 use tauri::State;
@@ -29,6 +29,12 @@ pub fn app_info(state: State<'_, AppState>) -> AppResult<AppInfo> {
         data_dir: state.paths.data_dir.display().to_string(),
         database_path: state.paths.database.display().to_string(),
     })
+}
+
+#[tauri::command]
+pub fn dashboard_overview(state: State<'_, AppState>) -> AppResult<dashboard::Overview> {
+    let session = state.current()?;
+    dashboard::overview(&mut *state.conn()?, &session)
 }
 
 #[tauri::command]

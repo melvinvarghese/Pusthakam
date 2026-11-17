@@ -1,4 +1,4 @@
-import { useDeferredValue, useState, type FormEvent } from "react";
+import { lazy, Suspense, useDeferredValue, useState, type FormEvent } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import { PageHeader } from "@/components/PageHeader";
@@ -10,6 +10,10 @@ import { Panel } from "@/components/ui/Panel";
 import { configApi, membersApi, toApiError } from "@/lib/api";
 import type { Member, MemberInput, Named } from "@/lib/api/types";
 import { can, useSession } from "@/lib/session";
+import { MemberLoanHistory } from "./MemberLoanHistory";
+import { MemberCard } from "./MemberCard";
+
+const KohaMemberImport = lazy(() => import("./KohaMemberImport"));
 
 function MemberForm({ member, categories, onClose }: {
   member?: Member;
@@ -75,6 +79,9 @@ export function MembersPage() {
   const [filter, setFilter] = useState({ search: "", page: 1, archived: false });
   const deferred = useDeferredValue(filter);
   const [form, setForm] = useState<{ member?: Member } | null>(null);
+  const [loanHistory, setLoanHistory] = useState<Member | null>(null);
+  const [card, setCard] = useState<Member | null>(null);
+  const [importOpen, setImportOpen] = useState(false);
   const [confirm, setConfirm] = useState<{ member: Member; archive: boolean } | null>(null);
   const members = useQuery({
     queryKey: ["members", deferred],
@@ -105,7 +112,10 @@ export function MembersPage() {
           <option value="active">Active</option>
           <option value="archived">Archived</option>
         </SelectField>
-        {canEdit && <Button className="ml-auto" disabled={!hasCategory} onClick={() => setForm({})}>Register member</Button>}
+        {canEdit && <div className="ml-auto flex gap-2">
+          <Button disabled={!hasCategory} onClick={() => setImportOpen(true)}>Import Koha patrons</Button>
+          <Button disabled={!hasCategory} onClick={() => setForm({})}>Register member</Button>
+        </div>}
       </div>
       {canEdit && config.isError && <p role="alert" className="text-danger">{toApiError(config.error).message}</p>}
       {canEdit && config.isSuccess && !hasCategory && (
@@ -122,7 +132,7 @@ export function MembersPage() {
           ) : (
             <table className="w-full border-collapse text-left text-sm">
               <thead className="border-b border-line text-xs text-muted">
-                <tr>{["Member number", "Name", "Category", "Expiry date", ...(canEdit ? ["Actions"] : [])].map((label) => (
+                <tr>{["Member number", "Name", "Category", "Expiry date", "Actions"].map((label) => (
                   <th key={label} scope="col" className="px-4 py-2">{label}</th>
                 ))}</tr>
               </thead>
@@ -136,18 +146,25 @@ export function MembersPage() {
                     </td>
                     <td className="px-4 py-2">{member.categoryName}</td>
                     <td className="px-4 py-2">{member.expiresOn}</td>
-                    {canEdit && (
-                      <td className="whitespace-nowrap px-4 py-2">
-                        {!deferred.archived && <Button size="sm" variant="ghost" disabled={!config.isSuccess}
-                          onClick={() => setForm({ member })}>Edit</Button>}
+                    <td className="whitespace-nowrap px-4 py-2">
+                      <Button size="sm" variant="ghost" aria-label={`Loans for ${member.name} (${member.memberNumber})`}
+                        onClick={() => setLoanHistory(member)}>Loans</Button>
+                      {canEdit && <>
+                        {!deferred.archived && <>
+                          <Button size="sm" variant="ghost" disabled={!config.data?.library}
+                            aria-label={`Card for ${member.name} (${member.memberNumber})`}
+                            onClick={() => setCard(member)}>Card</Button>
+                          <Button size="sm" variant="ghost" disabled={!config.isSuccess}
+                            onClick={() => setForm({ member })}>Edit</Button>
+                        </>}
                         <Button size="sm" variant="ghost" onClick={() => {
                           archive.reset();
                           setConfirm({ member, archive: !deferred.archived });
                         }}>
                           {deferred.archived ? "Restore" : "Archive"}
                         </Button>
-                      </td>
-                    )}
+                      </>}
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -158,6 +175,15 @@ export function MembersPage() {
         </Panel>
       )}
       {form && <MemberForm member={form.member} categories={categories} onClose={() => setForm(null)} />}
+      {loanHistory && <MemberLoanHistory member={loanHistory} onClose={() => setLoanHistory(null)} />}
+      {card && config.data?.library && (
+        <MemberCard member={card} libraryName={config.data.library.name} onClose={() => setCard(null)} />
+      )}
+      {importOpen && (
+        <Suspense fallback={<p role="status" className="text-muted">Loading patron import.</p>}>
+          <KohaMemberImport categories={categories} onClose={() => setImportOpen(false)} />
+        </Suspense>
+      )}
       {confirm && (
         <Modal title={confirm.archive ? "Archive member" : "Restore member"} onClose={() => { if (!archive.isPending) setConfirm(null); }}
           footer={<>

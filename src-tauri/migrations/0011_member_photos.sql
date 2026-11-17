@@ -1,0 +1,4 @@
+CREATE TABLE member_photos (
+    member_id INTEGER PRIMARY KEY REFERENCES members(id) ON DELETE RESTRICT,
+    png BLOB NOT NULL CHECK (length(png) BETWEEN 1 AND 2097152)
+);

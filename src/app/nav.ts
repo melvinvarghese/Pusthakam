@@ -20,7 +20,7 @@ export const NAV_GROUPS: NavGroup[] = [
     items: [
       { path: "/", label: "Dashboard", available: true, phase: 1, summary: "Overview of the library: records, copies, loans, members, overdue items and alerts." },
       { path: "/catalogue", label: "Catalogue", available: true, phase: 3, summary: "Catalogue books with authors, subjects and classification, and search the whole collection." },
-      { path: "/circulation", label: "Circulation", available: false, phase: 4, summary: "Issue, return, renew and reserve books, with due dates, overdue tracking and fines." },
+      { path: "/circulation", label: "Circulation", available: true, phase: 4, summary: "Issue, return and renew loans by barcode, with due dates based on library loan rules." },
       { path: "/members", label: "Members", available: true, phase: 4, summary: "Register members, find them by name or member number, and manage their membership." },
     ],
   },
@@ -37,7 +37,7 @@ export const NAV_GROUPS: NavGroup[] = [
     label: "Operations",
     items: [
       { path: "/acquisitions", label: "Acquisitions", available: false, phase: 6, summary: "Purchase requests, approvals, vendors, orders, invoices and receiving new stock." },
-      { path: "/reports", label: "Reports", available: false, phase: 5, summary: "Circulation, catalogue, accession and fine reports, exportable to PDF, CSV and XLSX." },
+      { path: "/reports", label: "Reports", available: true, phase: 5, summary: "Review circulation activity and most borrowed titles by date, and export to CSV." },
       { path: "/printing", label: "Barcode & Printing", available: false, phase: 5, summary: "Barcode labels, spine labels, member cards and receipts." },
     ],
   },

@@ -87,7 +87,12 @@ export async function previewCall(command: string, mode: string): Promise<unknow
       };
     case "accession_format_get": return { prefix: "", padding: 6, next: 4220 };
     case "app_info":
-      return { version: "0.1.0", schemaVersion: 3, dataDir: "C:\\Users\\Preview\\AppData\\Roaming\\app.pusthakam.desktop", databasePath: "C:\\Users\\Preview\\AppData\\Roaming\\app.pusthakam.desktop\\pusthakam.db" };
+      return { version: "0.1.0", schemaVersion: 11, dataDir: "C:\\Users\\Preview\\AppData\\Roaming\\app.pusthakam.desktop", databasePath: "C:\\Users\\Preview\\AppData\\Roaming\\app.pusthakam.desktop\\pusthakam.db" };
+    case "dashboard_overview":
+      return {
+        catalogue: { titles: SUMMARIES.length, copies: COPIES.length, available: COPIES.filter((copy) => copy.status === "available").length },
+        activeMembers: 0, circulation: null,
+      };
     default: return null; // saves and archives succeed without changing anything
   }
 }

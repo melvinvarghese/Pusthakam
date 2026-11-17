@@ -52,10 +52,3 @@ export function BarcodeSvg({ value, height = 44 }: { value: string; height?: num
   }, [value, height]);
   return <svg ref={ref} role="img" aria-label={`Barcode ${value}`} />;
 }
-
-/** Local date as YYYY-MM-DD (not UTC, so "today" is the librarian's today). */
-export function today(): string {
-  const d = new Date();
-  const p = (n: number) => String(n).padStart(2, "0");
-  return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
-}
