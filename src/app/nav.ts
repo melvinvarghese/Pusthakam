@@ -28,7 +28,7 @@ export const NAV_GROUPS: NavGroup[] = [
     label: "Collections",
     items: [
       { path: "/accession", label: "Accession Register", available: true, phase: 3, summary: "Track every physical copy by accession number, barcode, location and status." },
-      { path: "/inventory", label: "Inventory", available: false, phase: 6, summary: "Verify stock against the shelf and record lost, damaged and withdrawn copies." },
+      { path: "/inventory", label: "Inventory", available: true, phase: 6, summary: "Scan copies and review matched, missing and unexpected stock." },
       { path: "/classification", label: "Classification", available: false, phase: 6, summary: "Dewey, UDC, Library of Congress and custom classification schemes, subjects and authorities." },
       { path: "/periodicals", label: "Periodicals", available: false, phase: 6, summary: "Journals, magazines and newspapers: subscriptions, expected and received issues." },
     ],
@@ -44,7 +44,7 @@ export const NAV_GROUPS: NavGroup[] = [
   {
     label: "Administration",
     items: [
-      { path: "/staff", label: "Staff & Permissions", available: false, phase: 7, summary: "Staff accounts and role-based permissions." },
+      { path: "/staff", label: "Staff & Permissions", available: true, phase: 7, summary: "Manage staff accounts and roles, or change your password." },
       { path: "/settings", label: "Library Settings", available: true, phase: 2, summary: "Library profile, collections, locations, member categories and circulation policies." },
       { path: "/backup", label: "Database Backups", available: true, phase: 7, summary: "Create checked database snapshots and review saved backups." },
       { path: "/audit", label: "Audit Log", available: true, phase: 7, summary: "Search permanent staff and system events by date, staff name and action." },

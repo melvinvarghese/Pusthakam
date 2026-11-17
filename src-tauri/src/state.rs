@@ -1,6 +1,6 @@
 use crate::error::{AppError, AppResult};
 use crate::paths::AppPaths;
-use crate::services::auth::Session;
+use crate::services::auth::{self, Session};
 use rusqlite::Connection;
 use std::sync::{Mutex, MutexGuard};
 use tracing_appender::non_blocking::WorkerGuard;
@@ -29,11 +29,12 @@ impl AppState {
     }
 
     pub fn current(&self) -> AppResult<Session> {
-        self.session
+        let session = self.session
             .lock()
             .map_err(|_| AppError::Internal("session lock poisoned".into()))?
             .clone()
-            .ok_or_else(|| AppError::Auth("Please sign in.".into()))
+            .ok_or_else(|| AppError::Auth("Please sign in.".into()))?;
+        self.with_conn(|conn| auth::refresh_session(conn, &session))
     }
 
     /// The signed-in user, who must hold `permission`. Every data command calls this first.

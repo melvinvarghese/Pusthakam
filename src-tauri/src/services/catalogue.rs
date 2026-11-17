@@ -4,7 +4,7 @@
 
 use crate::domain::{accession, isbn, validate};
 use crate::error::{AppError, AppResult};
-use crate::services::{audit, auth::Session, settings};
+use crate::services::{audit, auth::Session, settings, transfers};
 use rusqlite::{named_params, Connection, OptionalExtension};
 use serde::{Deserialize, Serialize};
 use std::collections::HashSet;
@@ -502,12 +502,14 @@ pub fn get_record(conn: &Connection, id: i64) -> AppResult<RecordDetail> {
 pub fn set_record_archived(conn: &Connection, actor: Option<&Session>, id: i64, archived: bool) -> AppResult<()> {
     if archived {
         let busy: bool = conn.query_row(
-            "SELECT EXISTS(SELECT 1 FROM physical_items WHERE record_id = ?1 AND status IN ('on_loan','reserved_hold'))",
+            "SELECT EXISTS(SELECT 1 FROM physical_items i WHERE i.record_id = ?1 AND
+                (i.status IN ('on_loan','reserved_hold') OR EXISTS(
+                    SELECT 1 FROM stock_transfers t WHERE t.item_id = i.id AND t.status = 'in_transit')))",
             [id],
             |r| r.get(0),
         )?;
         if busy {
-            return Err(AppError::Conflict("Some copies are on loan or reserved. Return them before archiving this record.".into()));
+            return Err(AppError::Conflict("Some copies are on loan, reserved or in transfer. Resolve them before archiving this record.".into()));
         }
     }
     let n = conn.execute(
@@ -825,6 +827,7 @@ pub fn add_copies(conn: &Connection, actor: Option<&Session>, record_id: i64, in
 
 pub fn update_copy(conn: &Connection, actor: Option<&Session>, id: i64, input: &CopyUpdateInput) -> AppResult<()> {
     get_copy(conn, id)?;
+    transfers::ensure_idle(conn, id)?;
     let acc = accession::validate_code("Accession number", &input.accession_no)?;
     let bar = accession::validate_code("Barcode", &input.barcode)?;
     let f = check_fields(
@@ -851,6 +854,7 @@ pub fn set_copy_status(conn: &Connection, actor: Option<&Session>, id: i64, stat
         return Err(AppError::Validation("That status can only be set by issuing or returning the item.".into()));
     }
     let current = get_copy(conn, id)?;
+    transfers::ensure_idle(conn, id)?;
     if matches!(current.status.as_str(), "on_loan" | "reserved_hold") {
         return Err(AppError::Conflict("This copy is on loan or reserved. Return it first.".into()));
     }

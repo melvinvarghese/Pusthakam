@@ -24,6 +24,8 @@ pub struct Session {
     pub display_name: String,
     pub role: String,
     pub permissions: Vec<String>,
+    #[serde(skip)]
+    pub(super) revision: i64,
 }
 
 impl Session {
@@ -56,7 +58,7 @@ pub fn verify_password(hash: &str, password: &str) -> bool {
 }
 
 /// A hash to verify against when the username does not exist, so timing does not reveal valid names.
-fn dummy_hash() -> &'static str {
+pub(super) fn dummy_hash() -> &'static str {
     static HASH: OnceLock<String> = OnceLock::new();
     HASH.get_or_init(|| hash_password("pusthakam-dummy-password").unwrap_or_default())
 }
@@ -91,12 +93,12 @@ pub fn create_user(
 }
 
 pub fn load_session(conn: &Connection, user_id: i64) -> AppResult<Session> {
-    let (username, display_name, role): (String, String, String) = conn.query_row(
-        "SELECT u.username, u.display_name, r.code FROM staff_users u JOIN roles r ON r.id = u.role_id
+    let (username, display_name, role, revision): (String, String, String, i64) = conn.query_row(
+        "SELECT u.username, u.display_name, r.code, u.session_revision FROM staff_users u JOIN roles r ON r.id = u.role_id
          WHERE u.id = ?1 AND u.active = 1",
         [user_id],
-        |r| Ok((r.get(0)?, r.get(1)?, r.get(2)?)),
-    )?;
+        |r| Ok((r.get(0)?, r.get(1)?, r.get(2)?, r.get(3)?)),
+    ).optional()?.ok_or_else(|| AppError::Auth("This staff account is no longer active. Sign in again.".into()))?;
     let mut stmt = conn.prepare(
         "SELECT p.code FROM permissions p
          JOIN role_permissions rp ON rp.permission_id = p.id
@@ -105,7 +107,15 @@ pub fn load_session(conn: &Connection, user_id: i64) -> AppResult<Session> {
          WHERE u.id = ?1 ORDER BY p.code",
     )?;
     let permissions = stmt.query_map([user_id], |r| r.get::<_, String>(0))?.collect::<Result<Vec<_>, _>>()?;
-    Ok(Session { user_id, username, display_name, role, permissions })
+    Ok(Session { user_id, username, display_name, role, permissions, revision })
+}
+
+pub fn refresh_session(conn: &Connection, session: &Session) -> AppResult<Session> {
+    let current = load_session(conn, session.user_id)?;
+    if current.revision != session.revision {
+        return Err(AppError::Auth("Your staff account changed. Sign in again.".into()));
+    }
+    Ok(current)
 }
 
 /// Checks credentials with lockout after repeated failures. Wrong user, wrong password and

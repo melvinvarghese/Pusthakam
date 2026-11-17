@@ -6,6 +6,8 @@ import { ALL_NAV_ITEMS } from "@/app/nav";
 import { Gate } from "@/features/boot/Gate";
 import { BackupPage } from "@/features/backup/BackupPage";
 import { AuditPage } from "@/features/audit/AuditPage";
+import { StaffPage } from "@/features/staff/StaffPage";
+import { InventoryPage } from "@/features/inventory/InventoryPage";
 import { AccessionPage } from "@/features/catalogue/AccessionPage";
 import { CataloguePage } from "@/features/catalogue/CataloguePage";
 import { RecordPage } from "@/features/catalogue/RecordPage";
@@ -32,9 +34,11 @@ export function AppRoutes() {
         <Route path="/settings" element={<SettingsPage />} />
         <Route path="/backup" element={<BackupPage />} />
         <Route path="/audit" element={<AuditPage />} />
+        <Route path="/staff" element={<StaffPage />} />
         <Route path="/catalogue" element={<CataloguePage />} />
         <Route path="/catalogue/:id" element={<RecordPage />} />
         <Route path="/accession" element={<AccessionPage />} />
+        <Route path="/inventory" element={<InventoryPage />} />
         <Route path="/members" element={<MembersPage />} />
         <Route path="/circulation" element={<CirculationPage />} />
         <Route path="/reports" element={<Suspense fallback={<p role="status" className="p-6">Loading reports.</p>}><ReportsPage /></Suspense>} />

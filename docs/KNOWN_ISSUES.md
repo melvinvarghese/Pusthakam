@@ -12,7 +12,7 @@
 | KI-008 | Low | Without `?preview`, a plain browser shows "Open Pusthakam as an app" (backend only exists in the desktop app). Intended. | Accepted |
 | KI-009 | Low | Vermilion class-8 label band sits near the red overdue colour; re-check when real catalogue data arrives. | Watch |
 | KI-010 | Low | `cargo fmt`/`clippy`, Playwright tests and CI are not set up yet. | Open |
-| KI-011 | Medium | No way yet to change a password, add staff, or unlock a locked account from the UI (staff management is Phase 7). The first administrator's password cannot be recovered if forgotten except by restoring or resetting the database. A recovery path must exist before release. | Open |
+| KI-011 | Medium | Staff management and account unlock are implemented. Administrator recovery requires a one-use code generated while signed in. | Implemented |
 | KI-012 | Low | Currency amounts assume 2 decimal places (minor units = 1/100). Currencies with other exponents (e.g. JPY) are not handled. | Open |
 | KI-013 | Low | Account lockout is per account (5 failures, 5 minutes). There is no separate rate limit for unknown usernames; acceptable for a local desktop app. | Accepted |
 | KI-014 | Info | Rust integration tests on Windows need a Common Controls manifest, embedded for test builds only by `src-tauri/build.rs`. | Documented |

@@ -502,6 +502,60 @@ export interface AuditQuery {
   page: number;
 }
 
+export interface StaffRow {
+  id: number;
+  username: string;
+  displayName: string;
+  role: string;
+  active: boolean;
+  locked: boolean;
+}
+
+export interface StaffDirectory {
+  users: StaffRow[];
+  roles: { code: string; name: string }[];
+}
+
+export interface StockCheck {
+  id: number;
+  location: string;
+  shelf: string | null;
+  startedAt: string;
+  closedAt: string | null;
+  expected: number;
+  matched: number;
+  unexpected: number;
+}
+
+export interface StockCheckPage<T> {
+  rows: T[];
+  total: number;
+  page: number;
+  pageSize: number;
+}
+
+export type StockCheckView = "matched" | "missing" | "unexpected";
+export type ScanOutcome = "matched" | "unexpected" | "duplicate";
+
+export interface StockCheckReview {
+  check: StockCheck;
+  entries: StockCheckPage<{ barcode: string; accessionNo: string | null; title: string | null }>;
+}
+
+export interface StockTransfer {
+  id: number;
+  barcode: string;
+  title: string;
+  source: string;
+  destination: string;
+  status: "in_transit" | "received" | "cancelled";
+  sentAt: string;
+  finishedAt: string | null;
+}
+
+export type StaffChanges = Pick<StaffRow, "displayName" | "role" | "active">;
+export type NewStaff = Pick<StaffRow, "username" | "displayName" | "role"> & { password: string };
+
 export interface AuditPage {
   rows: {
     id: number;

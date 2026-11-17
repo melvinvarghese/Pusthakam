@@ -11,6 +11,8 @@ import type {
   ImportPreviewRequest, ImportReport, IssuePreview, KohaPatronPreview, LibraryInput, MemberCategoryInput, MemberInput, MemberLoanPage, MemberPage, OverduePage, RenewalPreview, ReservationPage, ReturnCondition, ReturnPreview,
   NamedInput, NamedKind, PolicyInput, PopularTitle, RecordDetail, RecordInput, SearchQuery, SearchResult, Session, SetupInput,
   SetupStatus, ShelfInput, StockRow, FineSummary, CatalogueGrowthDay, MemberSummary, BackupFile, BackupList, AuditPage, AuditQuery,
+  NewStaff, StaffChanges, StaffDirectory,
+  ScanOutcome, StockCheck, StockCheckPage, StockCheckReview, StockCheckView, StockTransfer,
 } from "./types";
 
 export class ApiError extends Error {
@@ -89,6 +91,28 @@ export const backupApi = {
 
 export const auditApi = {
   search: (query: AuditQuery) => call<AuditPage>("audit_search", { query }),
+};
+
+export const staffApi = {
+  list: () => call<StaffDirectory>("staff_list"),
+  create: (input: NewStaff) => call<number>("staff_create", { input }),
+  update: (id: number, input: StaffChanges) => call<void>("staff_update", { id, input }),
+  resetPassword: (id: number, password: string) => call<void>("staff_reset_password", { id, password }),
+  unlock: (id: number) => call<void>("staff_unlock", { id }),
+  changePassword: (currentPassword: string, newPassword: string) => call<void>("staff_change_password", { currentPassword, newPassword }),
+  generateRecoveryCode: (currentPassword: string) => call<string>("staff_generate_recovery_code", { currentPassword }),
+  recover: (username: string, code: string, newPassword: string) => call<void>("staff_recover", { username, code, newPassword }),
+};
+
+export const inventoryApi = {
+  list: (page: number) => call<StockCheckPage<StockCheck>>("stock_check_list", { page }),
+  review: (id: number, view: StockCheckView, page: number) => call<StockCheckReview>("stock_check_review", { id, view, page }),
+  start: (locationId: number, shelfId: number | null) => call<number>("stock_check_start", { locationId, shelfId }),
+  scan: (id: number, barcode: string) => call<ScanOutcome>("stock_check_scan", { id, barcode }),
+  close: (id: number) => call<void>("stock_check_close", { id }),
+  transfers: (page: number) => call<StockCheckPage<StockTransfer>>("stock_transfer_list", { page }),
+  sendTransfer: (barcode: string, locationId: number, shelfId: number | null) => call<number>("stock_transfer_send", { barcode, locationId, shelfId }),
+  finishTransfer: (id: number, receive: boolean) => call<void>("stock_transfer_finish", { id, receive }),
 };
 
 export const authApi = {
