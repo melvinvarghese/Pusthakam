@@ -24,7 +24,7 @@ pub async fn backup_verify(state: State<'_, AppState>, name: String) -> AppResul
 #[tauri::command]
 pub async fn backup_request_restore(state: State<'_, AppState>, name: String) -> AppResult<()> {
     state.require("admin.backup")?;
-    backup::request_restore(&state.paths, &name)
+    state.with_conn(|conn| backup::request_restore(conn, &state.paths, &name))
 }
 
 #[tauri::command]
@@ -37,4 +37,10 @@ pub fn backup_cancel_restore(state: State<'_, AppState>) -> AppResult<()> {
 pub async fn backup_create(state: State<'_, AppState>) -> AppResult<BackupFile> {
     state.require("admin.backup")?;
     state.with_conn(|conn| backup::create(conn, &state.paths.backups))
+}
+
+#[tauri::command]
+pub async fn backup_copy_to_folder(state: State<'_, AppState>, name: String, folder: String) -> AppResult<BackupFile> {
+    state.require("admin.backup")?;
+    backup::copy_to_folder(&state.paths, &name, &folder)
 }

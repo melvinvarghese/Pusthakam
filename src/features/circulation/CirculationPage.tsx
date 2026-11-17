@@ -11,6 +11,7 @@ import { formatMinor } from "@/lib/money";
 import { can, useSession } from "@/lib/session";
 import { OverdueLoans } from "./OverdueLoans";
 import { DueSlip } from "./DueSlip";
+import { FindMember } from "./FindMember";
 
 const Reservations = lazy(() => import("./Reservations"));
 const Fines = lazy(() => import("./Fines"));
@@ -38,6 +39,7 @@ export function CirculationPage() {
   const [message, setMessage] = useState("");
   const [completedLoan, setCompletedLoan] = useState<Extract<Review, { mode: "issue" | "renew" }> | null>(null);
   const [slipOpen, setSlipOpen] = useState(false);
+  const [findingMember, setFindingMember] = useState(false);
   const prepare = useMutation({
     mutationFn: async ({ mode, memberNumber, barcode }: { mode: Mode; memberNumber: string; barcode: string }): Promise<Review> => {
       switch (mode) {
@@ -145,7 +147,10 @@ export function CirculationPage() {
                 event.preventDefault();
                 formRef.current?.querySelector<HTMLInputElement>('input[name="barcode"]')?.focus();
               }} />}
-            <TextField label="Copy barcode" name="barcode" required maxLength={40} autoComplete="off" />
+            {mode === "issue" && can(session, "members.read") && (
+              <Button type="button" size="sm" onClick={() => setFindingMember(true)}>Find member by name</Button>
+            )}
+            <TextField label="Book barcode or accession number" name="barcode" required maxLength={40} autoComplete="off" />
           </fieldset>
           <Button type="submit" variant="primary" disabled={prepare.isPending}>
             {prepare.isPending ? "Looking up…" : ACTIONS[mode].review}
@@ -153,6 +158,13 @@ export function CirculationPage() {
         </form>
         {!review && error && <p role="alert" className="mt-3 text-danger">{toApiError(error).message}</p>}
       </Panel>}
+      {mode === "issue" && findingMember && <FindMember onClose={() => setFindingMember(false)}
+        onSelect={(number) => {
+          const input = formRef.current?.querySelector<HTMLInputElement>('input[name="memberNumber"]');
+          if (input) input.value = number;
+          setFindingMember(false);
+          requestAnimationFrame(() => formRef.current?.querySelector<HTMLInputElement>('input[name="barcode"]')?.focus());
+        }} />}
       {message && <div className="flex flex-wrap items-center gap-3">
         <p role="status">{message}</p>
         {completedLoan && <Button size="sm" onClick={() => setSlipOpen(true)}>View due slip</Button>}

@@ -50,7 +50,7 @@ async function call<T>(command: string, args?: Record<string, unknown>): Promise
     const preview = previewMode();
     if (preview) {
       const { previewCall } = await import("@/features/dev/preview");
-      return (await previewCall(command, preview)) as T;
+      return (await previewCall(command, preview, args)) as T;
     }
   }
   if (!isDesktop()) {
@@ -67,6 +67,8 @@ async function call<T>(command: string, args?: Record<string, unknown>): Promise
 }
 
 export const appApi = {
+  setting: (key: string) => call<string | null>("get_setting", { key }),
+  setSetting: (key: string, value: string) => call<void>("set_setting", { key, value }),
   info: () => call<AppInfo>("app_info"),
   overview: () => call<DashboardOverview>("dashboard_overview"),
 };
@@ -83,6 +85,7 @@ export const reportsApi = {
 export const backupApi = {
   list: () => call<BackupList>("backup_list"),
   create: () => call<BackupFile>("backup_create"),
+  copyToFolder: (name: string, folder: string) => call<BackupFile>("backup_copy_to_folder", { name, folder }),
   setDaily: (enabled: boolean) => call<void>("backup_set_daily", { enabled }),
   verify: (name: string) => call<number>("backup_verify", { name }),
   requestRestore: (name: string) => call<void>("backup_request_restore", { name }),
@@ -129,6 +132,7 @@ export const catalogueApi = {
   saveRecord: (input: RecordInput) => call<number>("catalogue_save_record", { input }),
   findDuplicates: (probe: DuplicateProbe) => call<DuplicateHit[]>("catalogue_find_duplicates", { probe }),
   archiveRecord: (id: number, archived: boolean) => call<void>("catalogue_archive_record", { id, archived }),
+  archiveRecords: (ids: number[]) => call<void>("catalogue_archive_records", { ids }),
   addCopies: (recordId: number, input: CopyBatchInput) => call<CopyRecord[]>("catalogue_add_copies", { recordId, input }),
   updateCopy: (id: number, input: CopyUpdateInput) => call<void>("catalogue_update_copy", { id, input }),
   setCopyStatus: (id: number, status: CopyStatus, note: string | null) =>

@@ -1,7 +1,7 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Search } from "lucide-react";
-import { NAV_GROUPS } from "@/app/nav";
+import { useVisibleNavGroups } from "@/app/nav";
 import { cn } from "@/lib/utils";
 
 interface Props {
@@ -9,19 +9,18 @@ interface Props {
   onClose: () => void;
 }
 
-const ENTRIES = NAV_GROUPS.flatMap((g) => g.items.map((item) => ({ ...item, group: g.label })));
-
 /** Ctrl/Cmd+K quick navigation. Record search joins this palette when the catalogue ships (Phase 3). */
 export function CommandPalette({ open, onClose }: Props) {
   const navigate = useNavigate();
   const [query, setQuery] = useState("");
   const [active, setActive] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
+  const groups = useVisibleNavGroups();
 
-  const results = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    return q ? ENTRIES.filter((i) => i.label.toLowerCase().includes(q)) : ENTRIES;
-  }, [query]);
+  const q = query.trim().toLowerCase();
+  const results = groups.flatMap((g) => g.items
+    .filter((item) => item.label.toLowerCase().includes(q))
+    .map((item) => ({ ...item, group: g.label })));
 
   useEffect(() => {
     if (open) {

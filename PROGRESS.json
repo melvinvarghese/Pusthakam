@@ -1,22 +1,22 @@
 {
   "schemaVersion": 1,
-  "lastUpdated": "2026-11-17T11:10:10.157Z",
-  "currentPhase": "4",
+  "lastUpdated": "2026-11-17T14:56:27.479Z",
+  "currentPhase": "3",
   "currentTask": {
-    "taskId": "CIRC-LOAN",
-    "title": "Isolate the Windows startup failure",
-    "status": "implemented",
-    "detail": "The isolated build exits with OS error 5 before the application setup callback runs. The native walkthrough needs a successful interactive Windows launch."
+    "taskId": "CAT-BULK",
+    "title": "Bulk catalogue operations and covers",
+    "status": "in-progress",
+    "detail": "Write-authorized staff can confirm and archive multiple titles from a catalogue results page. Updates and audit entries share one transaction. Local cover selection and the native walkthrough remain open."
   },
   "nextMilestone": {
-    "title": "Verify the Windows circulation workflow",
-    "detail": "Walk through issue, return, renewal, holds and fine settlement in the native app. Check printed output and reconcile a real anonymised Koha sample when available.",
-    "nextTaskId": "CIRC-LOAN"
+    "nextTaskId": "CAT-BULK",
+    "title": "Implement Phase 3 bulk catalogue operations and covers",
+    "detail": "Add validated local cover selection and removal, then verify covers and bulk archiving in Windows."
   },
   "totals": {
-    "overall": 40.9,
-    "implementation": 50.9,
-    "verification": 31.2,
+    "overall": 45.6,
+    "implementation": 54.9,
+    "verification": 38.9,
     "releaseReadiness": 10
   },
   "phases": [
@@ -155,30 +155,30 @@
       "phase": "0",
       "module": "foundation",
       "weight": 2,
-      "status": "in-progress",
+      "status": "verified",
       "title": "Resolve migration and LAN operating decisions",
       "requirements": [
         "REQ-IMP",
         "REQ-NET"
       ],
       "acceptanceCriteria": [
-        "Record the v1 migration history boundary and identify the pilot server and client capacity.",
-        "Add the agreed choices to the roadmap."
+        "Record the full v1 migration scope, including historical data, and the single-host LAN topology and client capacity policy.",
+        "Add the owner-approved choices to the roadmap and specification."
       ],
       "sourceEvidence": [
-        "docs/DEVELOPMENT_ROADMAP.md records open questions."
+        "docs/DEVELOPMENT_ROADMAP.md and docs/PRODUCT_SPECIFICATION.md record the owner-approved migration scope and LAN topology."
       ],
-      "verificationEvidence": [],
-      "verificationNeeded": [
-        "Review the recorded decisions against the migration and LAN acceptance checks."
-      ]
+      "verificationEvidence": [
+        "phase-zero-owner-decisions"
+      ],
+      "verificationNeeded": []
     },
     {
       "id": "CORE-DB",
       "phase": "1",
       "module": "foundation",
       "weight": 6,
-      "status": "implemented",
+      "status": "verified",
       "title": "Local SQLite and migration safety",
       "requirements": [
         "REQ-OFF",
@@ -193,18 +193,18 @@
         "src-tauri/src/{paths.rs,db/} and migrations 0001–0011."
       ],
       "verificationEvidence": [
-        "baseline-rust"
+        "baseline-rust",
+        "phase1-db-upgrade-reopen",
+        "phase1-interactive-db-upgrade"
       ],
-      "verificationNeeded": [
-        "Verify an earlier database upgrades and persists across restart on the current Windows desktop build."
-      ]
+      "verificationNeeded": []
     },
     {
       "id": "CORE-UI",
       "phase": "1",
       "module": "foundation",
       "weight": 4,
-      "status": "implemented",
+      "status": "verified",
       "title": "Desktop shell and keyboard navigation",
       "requirements": [
         "REQ-UI"
@@ -218,18 +218,18 @@
         "src/app/, src/components/CommandPalette.tsx, src/lib/theme.tsx and src/features/boot/Gate.tsx."
       ],
       "verificationEvidence": [
-        "baseline-frontend"
+        "baseline-frontend",
+        "phase1-shell-checks",
+        "phase1-native-shell"
       ],
-      "verificationNeeded": [
-        "Check the loading state and walk through keyboard navigation and theme persistence in the native shell."
-      ]
+      "verificationNeeded": []
     },
     {
       "id": "CORE-OFF",
       "phase": "1",
       "module": "foundation",
       "weight": 5,
-      "status": "blocked",
+      "status": "verified",
       "title": "Offline desktop acceptance",
       "requirements": [
         "REQ-OFF"
@@ -241,10 +241,11 @@
       "sourceEvidence": [
         "Local SQLite, bundled Fontsource assets and Tauri CSP are present. Optional Online Tools open external links on request."
       ],
-      "verificationEvidence": [],
-      "verificationNeeded": [
-        "Run the documented adapter-disabled desktop workflow."
-      ]
+      "verificationEvidence": [
+        "phase1-offline-production-assets",
+        "phase1-offline-windows-walkthrough"
+      ],
+      "verificationNeeded": []
     },
     {
       "id": "CORE-A11Y",
@@ -261,11 +262,18 @@
         "Confirm focus restoration, accessible labels, readable contrast and understandable errors on both themes."
       ],
       "sourceEvidence": [
-        "UI primitives, modal handling and keyboard navigation exist."
+        "UI primitives, modal handling and keyboard navigation exist.",
+        "ThemeToggle supports arrow-key selection. The circulation regression tests Escape focus restoration from the member lookup dialog."
       ],
-      "verificationEvidence": [],
+      "verificationEvidence": [
+        "phase1-a11y-keyboard-focus",
+        "phase1-a11y-windows-keyboard",
+        "phase1-field-contrast",
+        "phase1-a11y-browser-preview",
+        "phase1-circulation-issue-browser"
+      ],
       "verificationNeeded": [
-        "Run keyboard and screen-reader walkthroughs plus browser smoke coverage."
+        "Deferred by the owner: verify spoken announcements with Windows Narrator in both themes."
       ]
     },
     {
@@ -288,7 +296,8 @@
       ],
       "verificationEvidence": [
         "baseline-frontend",
-        "baseline-rust"
+        "baseline-rust",
+        "windows-interactive-setup-completed"
       ],
       "verificationNeeded": []
     },
@@ -322,7 +331,7 @@
       "phase": "2",
       "module": "administration",
       "weight": 4,
-      "status": "not-started",
+      "status": "verified",
       "title": "Custom fields and optional modules",
       "requirements": [
         "REQ-CFG",
@@ -332,11 +341,16 @@
         "Create a typed custom field, store its value and return it after restart.",
         "Hide or show optional modules using library settings without removing stored data."
       ],
-      "sourceEvidence": [],
-      "verificationEvidence": [],
-      "verificationNeeded": [
-        "Test persistence, validation and the visibility setting in the desktop app."
-      ]
+      "sourceEvidence": [
+        "src/features/settings/OptionalModules.tsx, src/app/nav.ts and the existing get_setting/set_setting commands.",
+        "src/features/settings/LibraryCustomFields.tsx and src-tauri/src/services/settings.rs."
+      ],
+      "verificationEvidence": [
+        "phase2-optional-module-navigation",
+        "phase2-typed-library-fields",
+        "phase2-windows-settings-restart"
+      ],
+      "verificationNeeded": []
     },
     {
       "id": "AUTH-CORE",
@@ -391,7 +405,7 @@
       "phase": "3",
       "module": "catalogue",
       "weight": 4,
-      "status": "not-started",
+      "status": "in-progress",
       "title": "Bulk catalogue operations and covers",
       "requirements": [
         "REQ-CAT"
@@ -400,8 +414,12 @@
         "Apply a confirmed edit or archive to a selected set with an audit trail.",
         "Add or remove a validated local cover without exposing filesystem paths."
       ],
-      "sourceEvidence": [],
-      "verificationEvidence": [],
+      "sourceEvidence": [
+        "CataloguePage.tsx and catalogue_archive_records implement confirmed atomic bulk archiving."
+      ],
+      "verificationEvidence": [
+        "phase3-bulk-catalogue-archive"
+      ],
       "verificationNeeded": [
         "Test multi-record rollback, permission denial and malformed cover rejection."
       ]
@@ -630,14 +648,22 @@
         "Show due dates and remove a returned loan from the overdue list while retaining history."
       ],
       "sourceEvidence": [
-        "src/features/circulation/CirculationPage.tsx, src-tauri/src/services/circulation.rs and migration 0006."
+        "src/features/circulation/CirculationPage.tsx, src-tauri/src/services/circulation.rs and migration 0006.",
+        "src/features/circulation/FindMember.tsx reuses the permission-checked members list to select a borrower by name."
       ],
       "verificationEvidence": [
         "baseline-frontend",
-        "baseline-rust"
+        "baseline-rust",
+        "windows-interactive-setup-screen",
+        "windows-issue-return",
+        "circulation-member-name-lookup",
+        "windows-borrower-lookup-build",
+        "circulation-barcode-accession"
       ],
       "verificationNeeded": [
-        "Exercise issue, overdue list and return in a Windows desktop walkthrough."
+        "Verify that returning an overdue loan removes it from the Windows overdue list and retains member loan history.",
+        "Exercise borrower lookup by name in a fresh Windows build.",
+        "Exercise an accession number that differs from its barcode in a refreshed native Windows build."
       ]
     },
     {
@@ -843,14 +869,15 @@
       "module": "exchange",
       "weight": 5,
       "status": "not-started",
-      "title": "Migrate current loans and outstanding fines",
+      "title": "Migrate circulation and fine history",
       "requirements": [
         "REQ-IMP",
         "REQ-CIRC"
       ],
       "acceptanceCriteria": [
         "Map active Koha loans and balances to local member and copy IDs.",
-        "Preview invalid references, preserve due dates and amounts, and commit atomically."
+        "Preview invalid references, preserve due dates and amounts, and commit atomically.",
+        "Reconcile available open and closed loans, renewals, reservations, and outstanding and historical fines and settlements against the source export."
       ],
       "sourceEvidence": [],
       "verificationEvidence": [],
@@ -1262,7 +1289,10 @@
         "SQLite backup API, daily scheduler, schema and integrity recheck, and saved backup list in src-tauri/src/services/backup.rs and src/features/backup/BackupPage.tsx."
       ],
       "verificationEvidence": [
-        "backup-audit-regression"
+        "backup-audit-regression",
+        "backup-daily-default",
+        "backup-daily-rotation",
+        "backup-copy-outside-app-data"
       ],
       "verificationNeeded": []
     },
@@ -1329,7 +1359,8 @@
       "acceptanceCriteria": [
         "Synchronise catalogue and loans across clients using server permissions.",
         "Reject stale edits and competing issues.",
-        "Keep SQLite and backups on the server."
+        "Keep SQLite and backups on the server.",
+        "Allow clients on the same LAN without an application-imposed count cap and document measured concurrency on representative hardware."
       ],
       "sourceEvidence": [],
       "verificationEvidence": [],
@@ -1478,7 +1509,8 @@
       ],
       "acceptanceCriteria": [
         "Publish installation, setup, catalogue, migration, circulation, reporting, backup, restore and LAN instructions.",
-        "Document signing and upgrade procedures for each claimed OS."
+        "Document signing and upgrade procedures for each claimed OS.",
+        "Publish an illustrated end-user manual after feature completion, with step-by-step workflows, troubleshooting and a quick-start section."
       ],
       "sourceEvidence": [
         "README.md provides developer setup and launch commands."
@@ -1557,15 +1589,267 @@
       "detail": "A representative anonymised Koha export is needed. Synthetic fixtures do not establish how a real library’s framework maps."
     },
     {
-      "taskId": "CORE-OFF",
-      "detail": "An interactive Windows desktop and a network-disabled test session are needed for the desktop acceptance run."
-    },
-    {
       "taskId": "PRN-HARDWARE",
       "detail": "A physical printer and USB keyboard-wedge scanner are needed to check printed output and scan accuracy."
     }
   ],
   "verificationRuns": [
+    {
+      "id": "phase3-bulk-catalogue-archive",
+      "title": "Bulk archive confirmation and rollback",
+      "at": "2026-11-17T14:56:27.479Z",
+      "check": "cargo test --offline --manifest-path src-tauri/Cargo.toml --test ipc catalogue_commands_accept_the_ui_payloads_and_enforce_permissions and npm run typecheck && npm run lint && npm test -- src/features/catalogue/catalogue.test.tsx && git diff --check",
+      "outcome": "passed",
+      "result": "The IPC test verified rollback and permission denial. All 20 catalogue frontend tests passed after explicitly passing IDs to the API without React Query mutation context. Lint and typecheck passed."
+    },
+    {
+      "id": "phase2-windows-settings-restart",
+      "title": "Phase 2 settings across Windows restart",
+      "at": "2026-11-17T14:54:44.189Z",
+      "check": "Owner saved a typed field, hid Acquisitions and reopened the Windows settings fixture. Read-only SQLite verification checked both stored values.",
+      "outcome": "passed",
+      "result": "The owner confirmed the Windows settings restart walkthrough worked. Read-only inspection of the fixture database confirmed that the numeric floor field stored 2 and that Acquisitions was set to hidden."
+    },
+    {
+      "id": "phase2-typed-library-fields",
+      "title": "Typed library field validation and persistence",
+      "at": "2026-11-17T14:28:04.193Z",
+      "check": "cargo test --offline --manifest-path src-tauri/Cargo.toml --lib services::settings::tests; npm run typecheck, npm run lint, targeted settings and shell tests, npm run build and isolated Windows custom-protocol build.",
+      "outcome": "passed",
+      "result": "Four Rust settings tests and 19 frontend tests passed. Invalid values and duplicate labels were rejected. The valid fields survived reopening the database. The native build compiled with a frontend chunk-size warning."
+    },
+    {
+      "id": "phase2-optional-module-navigation",
+      "title": "Optional module navigation",
+      "at": "2026-11-17T14:22:01.887Z",
+      "check": "npm run typecheck && npm run lint && npm test -- src/app/AppShell.test.tsx src/app/nav.test.ts src/features/settings/SettingsPage.test.tsx && git diff --check",
+      "outcome": "passed",
+      "result": "21 focused tests passed. A stored hidden setting removed Acquisitions from navigation, the dashboard and the search palette. Typecheck and lint passed."
+    },
+    {
+      "id": "phase1-circulation-issue-browser",
+      "title": "Permitted circulation browser smoke",
+      "at": "2026-11-17T14:13:47.494Z",
+      "check": "Run Vite preview=circulation in the browser, submit an invalid identifier, switch to dark mode and review a valid synthetic loan. Run npm run typecheck and npm run lint.",
+      "outcome": "passed",
+      "result": "The development browser preview exposed named circulation inputs, an invalid-identifier error and the Confirm issue dialog. The issue review showed a synthetic borrower, title and due date in dark mode."
+    },
+    {
+      "id": "phase1-a11y-browser-preview",
+      "title": "Browser setup and permission error smoke",
+      "at": "2026-11-17T14:06:23.811Z",
+      "check": "Open local Vite setup and signed-in previews, submit the blank setup step and open Circulation. Inspect the browser accessibility tree.",
+      "outcome": "passed",
+      "result": "The local browser rendered setup and exposed the missing-library-name error in its accessibility tree. The signed-in preview rendered the dashboard and circulation route, which showed the permission-denied message. Native spoken announcements and browser circulation with a permitted session remain open."
+    },
+    {
+      "id": "phase1-a11y-edge-headless",
+      "title": "Headless Edge launch attempt",
+      "at": "2026-11-17T14:06:23.811Z",
+      "check": "Run msedge.exe --headless=new --dump-dom against the local setup preview",
+      "outcome": "failed",
+      "result": "Edge exited before rendering. Recovered using the in-app browser."
+    },
+    {
+      "id": "phase1-field-contrast",
+      "title": "Theme contrast and workflow checks",
+      "at": "2026-11-17T14:03:27.014Z",
+      "check": "Calculate relative luminance ratios from CSS tokens, then npm run build && npm test -- src/features/setup/SetupWizard.test.tsx src/features/boot/Gate.test.tsx src/features/circulation/CirculationPage.test.tsx && git diff --check",
+      "outcome": "passed",
+      "result": "Audited common text and UI colors in light and dark themes. Increased shared field border contrast against its surface from 1.64 to 3.20 in light mode and from 1.88 to 3.64 in dark mode. Native screen-reader review and browser smoke coverage remain open. Production build and 20 focused tests passed."
+    },
+    {
+      "id": "phase1-a11y-windows-keyboard",
+      "title": "Windows keyboard-only accessibility walkthrough",
+      "at": "2026-11-17T13:56:06.766Z",
+      "check": "Owner tested keyboard-only setup, catalogue and circulation, Escape focus restoration and arrow-key theme selection in the fresh Windows verification build.",
+      "outcome": "passed",
+      "result": "The owner reported that all four Windows keyboard walkthrough steps worked: setup, catalogue and circulation, Escape focus restoration, and arrow-key theme selection."
+    },
+    {
+      "id": "phase1-a11y-windows-build",
+      "title": "Windows accessibility fixture build",
+      "at": "2026-11-17T13:20:34.389Z",
+      "check": "npm run build and offline Cargo build with tauri/custom-protocol in the isolated checkout",
+      "outcome": "passed",
+      "result": "The fresh Windows accessibility build compiled with the theme and focus fixes, its own database directory, and a separate WebView profile. The interactive walkthrough remains open."
+    },
+    {
+      "id": "phase1-a11y-keyboard-focus",
+      "title": "Keyboard focus and workflow checks",
+      "at": "2026-11-17T13:17:15.792Z",
+      "check": "npm test -- src/app/AppShell.test.tsx src/features/circulation/CirculationPage.test.tsx src/features/setup/SetupWizard.test.tsx src/features/catalogue/catalogue.test.tsx && npm run typecheck && npm run lint && git diff --check",
+      "outcome": "passed",
+      "result": "40 tests passed. Typecheck, lint and diff check passed after adding a guard for the indexed theme option. Native keyboard-only workflows, screen-reader output and visual contrast remain open."
+    },
+    {
+      "id": "phase1-offline-windows-walkthrough",
+      "title": "Disconnected Windows walkthrough",
+      "at": "2026-11-17T13:12:52.998Z",
+      "check": "Owner retried the native walkthrough with networking disconnected. Read-only SQLite counts and the fixture startup log were checked afterward.",
+      "outcome": "passed",
+      "result": "The owner reported completing the disconnected Windows retry. The fresh fixture contains one configured library, administrator, title, copy, member and returned loan. The startup log shows two launches."
+    },
+    {
+      "id": "phase1-offline-production-assets",
+      "title": "Offline production asset and CSP audit",
+      "at": "2026-11-17T12:51:18.371Z",
+      "check": "Inspect dist/index.html and resolve every referenced asset. Scan bundled CSS and JS URLs and inspect src-tauri/tauri.conf.json CSP.",
+      "outcome": "passed",
+      "result": "HTML and CSS assets are local, and the CSP uses only local origins. External JS URL strings were dependency help links, SVG namespaces and explicit Online Tools links."
+    },
+    {
+      "id": "phase1-native-shell",
+      "title": "Native Windows keyboard and theme walkthrough",
+      "at": "2026-11-17T12:49:16.069Z",
+      "check": "Owner signed in to the Windows verification build, used Ctrl+K to open Members, enabled dark mode, and restarted.",
+      "outcome": "passed",
+      "result": "The owner confirmed that Ctrl+K opened Members through keyboard navigation and that dark mode stayed active after restarting the Windows verification app."
+    },
+    {
+      "id": "phase1-shell-checks",
+      "title": "Phase 1 shell verification",
+      "at": "2026-11-17T12:45:38.418Z",
+      "check": "npm test -- src/app/AppShell.test.tsx src/app/nav.test.ts src/features/boot/Gate.test.tsx && npm run typecheck && npm run lint",
+      "outcome": "passed",
+      "result": "17 tests passed, with typecheck and lint."
+    },
+    {
+      "id": "phase1-shell-loading-initial",
+      "title": "Initial shell tests",
+      "at": "2026-11-17T12:45:38.418Z",
+      "check": "npm test -- src/app/AppShell.test.tsx src/app/nav.test.ts src/features/boot/Gate.test.tsx",
+      "outcome": "failed",
+      "result": "16 passed. The new loading test expected a period where the UI used an ellipsis. The assertion now checks the loading message."
+    },
+    {
+      "id": "phase1-interactive-db-upgrade",
+      "title": "Interactive Windows upgrade and restart",
+      "at": "2026-11-17T12:43:11.549Z",
+      "check": "Owner launched pusthakam-phase1-upgrade.exe twice in interactive Windows. Read-only SQLite inspection compared both schemas, the seed record and integrity checks.",
+      "outcome": "passed",
+      "result": "The owner launched and reopened the current Windows build against a disposable database. The live database reached schema 15 and kept the seeded catalogue record. Exactly one pre-upgrade snapshot remained at schema 14 with the same record. Both passed integrity checking. The earlier verification library remained separate and passed its integrity check."
+    },
+    {
+      "id": "phase1-native-upgrade-probe",
+      "title": "Native database upgrade launch",
+      "at": "2026-11-17T12:39:40.842Z",
+      "check": "Build current frontend and isolated custom-protocol Windows app, then launch with an isolated schema 14 database",
+      "outcome": "incomplete",
+      "result": "Build passed. WebView2 returned HRESULT 0x800700AA before the setup callback. The interactive launch and restart remain open."
+    },
+    {
+      "id": "phase1-db-upgrade-reopen",
+      "title": "Upgrade and reopen an earlier database",
+      "at": "2026-11-17T12:39:40.842Z",
+      "check": "cargo test --offline --manifest-path src-tauri/Cargo.toml --lib db::",
+      "outcome": "passed",
+      "result": "All 13 database tests passed. The upgrade fixture retained an existing catalogue record and passed integrity after reopen without a duplicate upgrade snapshot."
+    },
+    {
+      "id": "phase1-db-integrity-query-initial",
+      "title": "Initial upgrade test",
+      "at": "2026-11-17T12:39:40.842Z",
+      "check": "cargo test --offline --manifest-path src-tauri/Cargo.toml --lib db::",
+      "outcome": "failed",
+      "result": "12 passed. SQLite interpreted pragma_integrity_check(1) as a table named 1. The amended check uses PRAGMA integrity_check(1)."
+    },
+    {
+      "id": "phase-zero-owner-decisions",
+      "title": "Phase 0 scope and LAN decisions",
+      "at": "2026-11-17T12:34:24.594Z",
+      "check": "Compare owner-confirmed requirements with the roadmap, specification and tracked acceptance criteria.",
+      "outcome": "passed",
+      "result": "The owner approved full migration of available data and history from Koha and other library systems, plus a single designated LAN host with no application-imposed client cap."
+    },
+    {
+      "id": "phase-zero-roadmap-review",
+      "title": "Phase 0 roadmap decision review",
+      "at": "2026-11-17T12:29:36.758Z",
+      "check": "Compare PLAN-02 acceptance criteria with the migration and LAN roadmap sections",
+      "outcome": "incomplete",
+      "result": "The roadmap has open questions and no confirmed migration history boundary or pilot server and capacity."
+    },
+    {
+      "id": "backup-copy-outside-app-data",
+      "title": "Copy saved backup to a separate folder",
+      "at": "2026-11-17T12:23:44.248Z",
+      "check": "cargo test --offline --manifest-path src-tauri/Cargo.toml --test ipc and npm test -- src/features/backup/BackupPage.test.tsx && npm run typecheck && npm run lint",
+      "outcome": "passed",
+      "result": "All 13 IPC tests, the backup screen test, typecheck and lint passed. The IPC fixture rejected unauthorized and in-app destinations, then verified the copied schema and original library contents. A native removable drive was not exercised."
+    },
+    {
+      "id": "backup-daily-rotation",
+      "title": "Daily backup rotation",
+      "at": "2026-11-17T12:18:15.979Z",
+      "check": "cargo test --offline --manifest-path src-tauri/Cargo.toml --test ipc and npm test -- src/features/backup/BackupPage.test.tsx && npm run typecheck",
+      "outcome": "passed",
+      "result": "All 13 IPC tests, the backup page test and typecheck passed. The backup fixture verified removal of an older daily file and retention of a manual backup and the queued restore source."
+    },
+    {
+      "id": "backup-daily-default",
+      "title": "Default daily database backups",
+      "at": "2026-11-17T12:10:59.781Z",
+      "check": "cargo test --offline --manifest-path src-tauri/Cargo.toml --test ipc manual_backups_are_permission_checked_complete_and_retained and npm test -- src/features/backup/BackupPage.test.tsx && npm run typecheck && npm run lint",
+      "outcome": "passed",
+      "result": "The IPC and frontend backup tests passed, along with typecheck and lint. IPC verified the default, one checked daily snapshot and explicit opt-out."
+    },
+    {
+      "id": "recovery-text-export-checks",
+      "title": "Recovery text export compatibility checks",
+      "at": "2026-11-17T12:05:08.185Z",
+      "check": "npm run typecheck && npm run lint && npm test -- src/features/auth/RecoverAccount.test.tsx src/features/reports/ReportsPage.test.tsx",
+      "outcome": "passed",
+      "result": "Typecheck, lint and eight related tests passed. Saving the recovery file in native Windows remains unverified."
+    },
+    {
+      "id": "circulation-barcode-accession",
+      "title": "Barcode and accession number lookup",
+      "at": "2026-11-17T11:57:22.650Z",
+      "check": "cargo test --offline --manifest-path src-tauri/Cargo.toml --test ipc and npm test -- src/features/circulation/CirculationPage.test.tsx && npm run typecheck && npm run lint",
+      "outcome": "passed",
+      "result": "13 IPC and five circulation frontend tests passed. The IPC fixture issued, renewed and returned a copy using a distinct accession number and rejected an ambiguous identifier. Typecheck and lint passed."
+    },
+    {
+      "id": "windows-borrower-lookup-build",
+      "title": "Windows borrower lookup build",
+      "at": "2026-11-17T11:33:44.359Z",
+      "check": "npm run build, then cargo build --offline with tauri/custom-protocol in the isolated checkout and check the bundle for the lookup control",
+      "outcome": "passed",
+      "result": "Built pusthakam-circulation-check.exe with borrower name lookup and the existing isolated verification database. Interactive name lookup and overdue return remain open."
+    },
+    {
+      "id": "windows-issue-return",
+      "title": "Native issue and return",
+      "at": "2026-11-17T11:27:58.105Z",
+      "check": "Owner walkthrough in the isolated Windows verification library",
+      "outcome": "passed",
+      "result": "The owner reported that issue and return both worked."
+    },
+    {
+      "id": "circulation-member-name-lookup",
+      "title": "Circulation member name lookup",
+      "at": "2026-11-17T11:27:58.105Z",
+      "check": "npm test -- src/features/circulation/CirculationPage.test.tsx && npm run typecheck && npm run lint",
+      "outcome": "passed",
+      "result": "Five circulation tests passed, including searching by name and selecting the intended member from duplicate names. Typecheck and lint passed."
+    },
+    {
+      "id": "windows-interactive-setup-completed",
+      "title": "First-run setup reached the Windows dashboard",
+      "at": "2026-11-17T11:18:58.830Z",
+      "check": "Owner walkthrough in the isolated native Windows build",
+      "outcome": "passed",
+      "result": "The owner completed first-run setup in the Windows verification library and reported reaching the dashboard."
+    },
+    {
+      "id": "windows-interactive-setup-screen",
+      "title": "Interactive Windows launch",
+      "at": "2026-11-17T11:15:35.338Z",
+      "check": "Run pusthakam-instrumented.exe from interactive PowerShell, review the supplied screenshot and read page-load.txt",
+      "outcome": "passed",
+      "result": "The isolated build opened the native setup wizard from interactive PowerShell. WebView finished loading and the disposable database was created. Complete setup and exercise circulation next."
+    },
     {
       "id": "windows-startup-callback-probe",
       "title": "Instrumented Windows startup",
@@ -1848,6 +2132,212 @@
     }
   ],
   "recentActivity": [
+    {
+      "kind": "progress",
+      "at": "2026-11-17T14:56:27.479Z",
+      "taskId": "CAT-BULK",
+      "title": "Added confirmed bulk catalogue archiving",
+      "detail": "Write-authorized staff can confirm and archive multiple titles from a catalogue results page. Updates and audit entries share one transaction. Local cover selection and the native walkthrough remain open."
+    },
+    {
+      "kind": "completed",
+      "at": "2026-11-17T14:54:44.189Z",
+      "taskId": "CFG-ADV",
+      "title": "Verified Phase 2 settings on Windows",
+      "detail": "The owner confirmed the Windows settings restart walkthrough worked. Read-only inspection of the fixture database confirmed that the numeric floor field stored 2 and that Acquisitions was set to hidden."
+    },
+    {
+      "kind": "progress",
+      "at": "2026-11-17T14:54:44.189Z",
+      "title": "Recorded password rule and user manual",
+      "detail": "New passwords must have at least six characters and contain no spaces. Prepare the illustrated user manual after feature completion."
+    },
+    {
+      "kind": "completed",
+      "at": "2026-11-17T14:28:04.193Z",
+      "taskId": "CFG-ADV",
+      "title": "Added typed custom library fields",
+      "detail": "Administrators can add and edit text, number and yes/no fields for the library profile. Rust validates labels and value types. The stored values survived a database reopen, and a fresh Windows settings build is ready."
+    },
+    {
+      "kind": "progress",
+      "at": "2026-11-17T14:22:01.887Z",
+      "taskId": "CFG-ADV",
+      "title": "Added optional module visibility settings",
+      "detail": "Library Settings can show or hide Acquisitions and Periodicals in the sidebar, dashboard and command palette. The setting uses the existing admin-only settings command. Typed custom fields and the native restart check remain open."
+    },
+    {
+      "kind": "verification",
+      "at": "2026-11-17T14:13:47.494Z",
+      "taskId": "CORE-A11Y",
+      "title": "Passed browser circulation issue smoke",
+      "detail": "The development browser preview exposed named circulation inputs, an invalid-identifier error and the Confirm issue dialog. The issue review showed a synthetic borrower, title and due date in dark mode."
+    },
+    {
+      "kind": "verification",
+      "at": "2026-11-17T14:06:23.811Z",
+      "taskId": "CORE-A11Y",
+      "title": "Verified browser setup and permission messages",
+      "detail": "The local browser rendered setup and exposed the missing-library-name error in its accessibility tree. The signed-in preview rendered the dashboard and circulation route, which showed the permission-denied message. Native spoken announcements and browser circulation with a permitted session remain open."
+    },
+    {
+      "kind": "progress",
+      "at": "2026-11-17T14:03:27.014Z",
+      "taskId": "CORE-A11Y",
+      "title": "Improved field borders in both themes",
+      "detail": "Audited common text and UI colors in light and dark themes. Increased shared field border contrast against its surface from 1.64 to 3.20 in light mode and from 1.88 to 3.64 in dark mode. Native screen-reader review and browser smoke coverage remain open."
+    },
+    {
+      "kind": "verification",
+      "at": "2026-11-17T13:56:06.766Z",
+      "taskId": "CORE-A11Y",
+      "title": "Passed the Windows keyboard-only walkthrough",
+      "detail": "The owner reported that all four Windows keyboard walkthrough steps worked: setup, catalogue and circulation, Escape focus restoration, and arrow-key theme selection."
+    },
+    {
+      "kind": "progress",
+      "at": "2026-11-17T13:20:34.389Z",
+      "taskId": "CORE-A11Y",
+      "title": "Prepared the Windows accessibility walkthrough",
+      "detail": "The fresh Windows accessibility build compiled with the theme and focus fixes, its own database directory, and a separate WebView profile. The interactive walkthrough remains open."
+    },
+    {
+      "kind": "progress",
+      "at": "2026-11-17T13:17:15.792Z",
+      "taskId": "CORE-A11Y",
+      "title": "Improved theme keyboard controls and dialog focus",
+      "detail": "Added arrow-key navigation and a single Tab stop to the theme selector. Let the shared modal manage initial focus in member lookup and catalogue editing so it can restore the caller."
+    },
+    {
+      "kind": "completed",
+      "at": "2026-11-17T13:12:52.998Z",
+      "taskId": "CORE-OFF",
+      "title": "Verified offline Windows operation",
+      "detail": "The owner reported completing the disconnected Windows retry. The fresh fixture contains one configured library, administrator, title, copy, member and returned loan. The startup log shows two launches."
+    },
+    {
+      "kind": "verification",
+      "at": "2026-11-17T12:51:18.371Z",
+      "taskId": "CORE-OFF",
+      "title": "Audited production assets for offline use",
+      "detail": "The production asset and CSP audit passed. The Windows setup, search, issue, return and restart walkthrough still needs a disconnected interactive session."
+    },
+    {
+      "kind": "completed",
+      "at": "2026-11-17T12:49:16.069Z",
+      "taskId": "CORE-UI",
+      "title": "Verified Windows keyboard navigation and theme persistence",
+      "detail": "The owner confirmed that Ctrl+K opened Members through keyboard navigation and that dark mode stayed active after restarting the Windows verification app."
+    },
+    {
+      "kind": "verification",
+      "at": "2026-11-17T12:45:38.418Z",
+      "taskId": "CORE-UI",
+      "title": "Verified shell loading and theme restoration in frontend tests",
+      "detail": "Automated shell tests verified keyboard navigation, theme restoration on remount, loading, error and unavailable states. Native navigation and theme persistence across a restart remain open."
+    },
+    {
+      "kind": "completed",
+      "at": "2026-11-17T12:43:11.549Z",
+      "taskId": "CORE-DB",
+      "title": "Verified Windows database upgrade and restart",
+      "detail": "The owner launched and reopened the current Windows build against a disposable database. The live database reached schema 15 and kept the seeded catalogue record. Exactly one pre-upgrade snapshot remained at schema 14 with the same record. Both passed integrity checking."
+    },
+    {
+      "kind": "verification",
+      "at": "2026-11-17T12:39:40.842Z",
+      "taskId": "CORE-DB",
+      "title": "Verified upgrade and reopen in the Windows database tests",
+      "detail": "The Windows database tests passed, including a v14 to v15 upgrade, preservation of a pre-upgrade snapshot and a catalogue record, and integrity after reopening. The isolated desktop executable was built; its launch hit a WebView2 resource-in-use error. Interactive restart remains open."
+    },
+    {
+      "kind": "completed",
+      "at": "2026-11-17T12:34:24.594Z",
+      "taskId": "PLAN-02",
+      "title": "Closed Phase 0 roadmap decisions",
+      "detail": "The owner approved full migration of available data and history from Koha and other library systems, plus a single designated LAN host with no application-imposed client cap."
+    },
+    {
+      "kind": "progress",
+      "at": "2026-11-17T12:29:36.758Z",
+      "taskId": "PLAN-02",
+      "title": "Resumed roadmap work from Phase 0",
+      "detail": "Confirm the v1 migration history boundary and choose a pilot server and number of simultaneous computers. Proposed: import active loans and outstanding fines, archive closed history separately, and pilot with three computers total including the server."
+    },
+    {
+      "kind": "completed",
+      "at": "2026-11-17T12:23:44.248Z",
+      "taskId": "BAK-CREATE",
+      "title": "Added manual backup copies outside the app data folder",
+      "detail": "Administrators can copy a saved backup to an existing folder outside Pusthakam app data. The separate SQLite file passes integrity checking before publication. Automatic off-device copies and restore from a file on a fresh installation remain open."
+    },
+    {
+      "kind": "completed",
+      "at": "2026-11-17T12:18:15.979Z",
+      "taskId": "BAK-CREATE",
+      "title": "Rotated daily backups after successful verification",
+      "detail": "A verified new daily snapshot rotates older daily files. Manual backups and backups queued for restore are retained. Off-device backup and fresh-install restore remain open."
+    },
+    {
+      "kind": "completed",
+      "at": "2026-11-17T12:10:59.781Z",
+      "taskId": "BAK-CREATE",
+      "title": "Enabled automatic daily backups by default",
+      "detail": "Daily backups are enabled by default after setup and respect an explicit opt-out. The scheduler checks at launch and while open. Automatic off-device copies and previous-day rotation remain open."
+    },
+    {
+      "kind": "progress",
+      "at": "2026-11-17T12:04:06.724Z",
+      "title": "Recorded cover selection and administrator recovery requirements",
+      "detail": "Requested: local cover selection with optional online ISBN fallback and mandatory recovery-code confirmation during administrator setup. Added text export to the existing administrator recovery dialog. A library-specific backup recovery route is proposed for lost codes."
+    },
+    {
+      "kind": "progress",
+      "at": "2026-11-17T11:59:09.796Z",
+      "title": "Reviewed member photos, staff photos and ISBN cover requests",
+      "detail": "Member photo upload and removal already exist in the member card and need native verification. Requested new work: optional local staff profile photos and ISBN-based cover display without an API key or account. Confirm whether public image requests are allowed under the local-first requirement."
+    },
+    {
+      "kind": "completed",
+      "at": "2026-11-17T11:57:22.650Z",
+      "taskId": "CIRC-LOAN",
+      "title": "Added accession number lookup to Circulation",
+      "detail": "Issue, return, renewal and reservations accept a book barcode or accession number. Codes that match two copies require a unique identifier."
+    },
+    {
+      "kind": "progress",
+      "at": "2026-11-17T11:33:44.359Z",
+      "taskId": "CIRC-LOAN",
+      "title": "Built the native circulation verification executable",
+      "detail": "Built pusthakam-circulation-check.exe with borrower name lookup and the existing isolated verification database. Interactive name lookup and overdue return remain open."
+    },
+    {
+      "kind": "progress",
+      "at": "2026-11-17T11:27:58.105Z",
+      "taskId": "CIRC-LOAN",
+      "title": "Verified Windows issue and return and added borrower name lookup",
+      "detail": "The owner confirmed issue and return in the native Windows verification library. Name search is implemented and tested in the frontend. The native overdue-list and name lookup walkthroughs remain open."
+    },
+    {
+      "kind": "verification",
+      "at": "2026-11-17T11:18:58.830Z",
+      "taskId": "CFG-SETUP",
+      "title": "Reached the native dashboard after setup",
+      "detail": "The owner completed first-run setup in the Windows verification library and reported reaching the dashboard."
+    },
+    {
+      "kind": "progress",
+      "at": "2026-11-17T11:18:02.375Z",
+      "title": "Reduce the minimum password length from 10 to 6 characters",
+      "detail": "Deferred at the owner's request. When implemented, align the first-run wizard, staff password screens and backend validation, and verify the new boundary."
+    },
+    {
+      "kind": "verification",
+      "at": "2026-11-17T11:15:35.338Z",
+      "taskId": "CIRC-LOAN",
+      "title": "Native Windows setup wizard opened",
+      "detail": "The isolated build opened the native setup wizard from interactive PowerShell. WebView finished loading and the disposable database was created. Complete setup and exercise circulation next."
+    },
     {
       "kind": "progress",
       "at": "2026-11-17T11:10:10.157Z",

@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { configApi } from "@/lib/api";
 import { useSession } from "@/lib/session";
 import { Search } from "lucide-react";
-import { NAV_GROUPS } from "./nav";
+import { useVisibleNavGroups } from "./nav";
 import { BrandMark } from "@/components/BrandMark";
 import { CommandPalette } from "@/components/CommandPalette";
 import { OnlineToolsMenu } from "@/components/OnlineToolsMenu";
@@ -25,11 +25,12 @@ function Brand({ libraryName }: { libraryName?: string }) {
 }
 
 function NavRail({ libraryName }: { libraryName?: string }) {
+  const groups = useVisibleNavGroups();
   return (
     <aside className="row-span-2 flex min-h-0 flex-col bg-ink text-rail-text">
       <Brand libraryName={libraryName} />
       <nav aria-label="Primary" className="rail-scroll min-h-0 flex-1 overflow-y-auto px-2 pb-3">
-        {NAV_GROUPS.map((group) => (
+        {groups.map((group) => (
           <div key={group.label}>
             <div className="px-2 pb-1 pt-4 text-[11px] font-semibold uppercase leading-4 tracking-[0.08em] text-rail-mute">
               {group.label}

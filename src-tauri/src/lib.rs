@@ -37,6 +37,7 @@ macro_rules! app_handlers {
             $crate::commands::catalogue::catalogue_save_record,
             $crate::commands::catalogue::catalogue_find_duplicates,
             $crate::commands::catalogue::catalogue_archive_record,
+            $crate::commands::catalogue::catalogue_archive_records,
             $crate::commands::catalogue::catalogue_add_copies,
             $crate::commands::catalogue::catalogue_update_copy,
             $crate::commands::catalogue::catalogue_set_copy_status,
@@ -76,6 +77,7 @@ macro_rules! app_handlers {
             $crate::commands::reports::reports_catalogue_growth,
             $crate::commands::backup::backup_list,
             $crate::commands::backup::backup_create,
+            $crate::commands::backup::backup_copy_to_folder,
             $crate::commands::backup::backup_set_daily,
             $crate::commands::backup::backup_verify,
             $crate::commands::backup::backup_request_restore,
@@ -132,7 +134,7 @@ pub fn run() {
             if let Err(error) = std::thread::Builder::new().name("database-backup".into()).spawn(move || {
                 loop {
                     let state = handle.state::<state::AppState>();
-                    if let Err(error) = state.with_conn(|conn| services::backup::run_daily(conn, &state.paths.backups)) {
+                    if let Err(error) = state.with_conn(|conn| services::backup::run_daily(conn, &state.paths)) {
                         tracing::warn!(%error, "Scheduled database backup failed");
                     }
                     std::thread::sleep(std::time::Duration::from_secs(60));

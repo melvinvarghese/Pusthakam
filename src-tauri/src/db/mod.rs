@@ -58,6 +58,7 @@ mod tests {
             configure(&conn).unwrap();
             migrations::run(&mut conn, previous).unwrap();
             conn.execute("INSERT INTO application_settings (key, value) VALUES ('test', '17')", []).unwrap();
+            conn.execute("INSERT INTO bibliographic_records (id, title) VALUES (42, 'Phase 1 upgrade fixture')", []).unwrap();
         }
         let result = open_with_pre_upgrade(&paths.database, |_| {
             Err(crate::error::AppError::Validation("Backup location unavailable.".into()))
@@ -81,6 +82,21 @@ mod tests {
             [], |r| Ok((r.get(0)?, r.get(1)?)),
         ).unwrap();
         assert_eq!((version, value.as_str()), (previous_version, "17"));
+        drop(snapshot);
+        drop(upgraded);
+
+        let reopened = open_with_pre_upgrade(&paths.database, |_| {
+            panic!("Restarting at the current schema must not create another upgrade snapshot")
+        }).unwrap();
+        let (version, title): (i64, String) = reopened.query_row(
+            "SELECT (SELECT max(version) FROM schema_migrations), title
+             FROM bibliographic_records WHERE id = 42",
+            [], |row| Ok((row.get(0)?, row.get(1)?)),
+        ).unwrap();
+        let integrity: String = reopened.query_row("PRAGMA integrity_check(1)", [], |row| row.get(0)).unwrap();
+        assert_eq!(version, migrations::latest_version());
+        assert_eq!(title, "Phase 1 upgrade fixture");
+        assert_eq!(integrity, "ok");
     }
 
     #[test]

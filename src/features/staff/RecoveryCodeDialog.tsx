@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/Button";
 import { TextField } from "@/components/ui/Field";
 import { Modal } from "@/components/ui/Modal";
 import { staffApi, toApiError } from "@/lib/api";
+import { downloadTextFile } from "@/lib/files";
 
 export function RecoveryCodeDialog({ onClose }: { onClose: () => void }) {
   const [saving, setSaving] = useState(false);
@@ -29,6 +30,8 @@ export function RecoveryCodeDialog({ onClose }: { onClose: () => void }) {
       {code ? <>
         <p className="text-sm">Save this code securely. It appears once and can be used once to reset your password.</p>
         <code className="block select-all break-all rounded bg-band p-3">{code}</code>
+        <p className="text-sm">The exported text file contains the recovery code. Keep it somewhere only you or an authorized recovery contact can access.</p>
+        <Button onClick={() => downloadTextFile(code + "\n", "pusthakam-recovery-code.txt")}>Download recovery code (.txt)</Button>
         <Button onClick={onClose}>Done</Button>
       </> : (
         <form onSubmit={(event) => void submit(event)} className="space-y-4">

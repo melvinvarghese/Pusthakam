@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -10,7 +10,7 @@ const api = vi.hoisted(() => ({
 }));
 vi.mock("@/lib/api", async (orig) => ({ ...(await orig<typeof import("@/lib/api")>()), configApi: api }));
 
-import { ApiError } from "@/lib/api";
+import { ApiError, appApi } from "@/lib/api";
 import { SessionContext } from "@/lib/session";
 import { SettingsPage } from "./SettingsPage";
 
@@ -46,8 +46,24 @@ beforeEach(() => {
   Object.values(api).forEach((f) => f.mockReset());
   api.overview.mockResolvedValue(CONFIG);
 });
+afterEach(() => vi.restoreAllMocks());
 
 describe("SettingsPage", () => {
+  it("saves a custom library field as a number", async () => {
+    vi.spyOn(appApi, "setting").mockResolvedValue(null);
+    const save = vi.spyOn(appApi, "setSetting").mockResolvedValue(undefined);
+    renderPage(ADMIN);
+
+    await userEvent.click(await screen.findByRole("button", { name: "Add custom field" }));
+    await userEvent.type(screen.getByLabelText("Field label"), "Floors");
+    await userEvent.selectOptions(screen.getByLabelText("Field type"), "number");
+    await userEvent.type(screen.getByRole("spinbutton", { name: "Field value" }), "2");
+    await userEvent.click(screen.getByRole("button", { name: "Save custom field" }));
+
+    expect(await screen.findByText("Floors")).toBeInTheDocument();
+    expect(save).toHaveBeenCalledExactlyOnceWith("library.custom_fields", '[{"label":"Floors","kind":"number","value":2}]');
+  });
+
   it("shows the library, categories, loan rules and locations from the backend", async () => {
     renderPage(ADMIN);
     expect(await screen.findByText("Demo Library")).toBeInTheDocument();

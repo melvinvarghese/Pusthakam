@@ -62,10 +62,18 @@ const CONFIG: ConfigOverview = {
   ],
 };
 
-export async function previewCall(command: string, mode: string): Promise<unknown> {
+export async function previewCall(command: string, mode: string, args?: Record<string, unknown>): Promise<unknown> {
   switch (command) {
     case "setup_status": return { configured: mode !== "setup", profiles: [] };
-    case "current_session": return mode === "login" ? null : SESSION;
+    case "current_session":
+      if (mode === "login") return null;
+      if (mode === "circulation") return { ...SESSION, permissions: [...SESSION.permissions, "circulation.issue"] };
+      return SESSION;
+    case "circulation_prepare_issue":
+      if (args?.memberNumber !== "DEMO-001" || args?.barcode !== "004217") {
+        throw { code: "NOT_FOUND", message: "For this preview, use member DEMO-001 and copy 004217." };
+      }
+      return { memberId: 1, itemId: COPIES[0]?.id, memberName: "Demo Reader", title: SUMMARIES[0]?.title, dueOn: "2026-12-01" };
     case "login": case "complete_setup": return SESSION;
     case "config_overview": return CONFIG;
     case "catalogue_search": return { total: SUMMARIES.length, page: 1, pageSize: 25, rows: SUMMARIES };

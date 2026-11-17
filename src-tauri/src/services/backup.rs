@@ -1,8 +1,8 @@
 use crate::db::migrations;
 use crate::error::{AppError, AppResult};
 use crate::paths::AppPaths;
-use crate::services::settings;
-use rusqlite::{backup::{Backup, StepResult}, Connection, OpenFlags};
+use crate::services::{settings, setup};
+use rusqlite::{backup::{Backup, StepResult}, Connection, OpenFlags, Transaction, TransactionBehavior};
 use serde::Serialize;
 use std::fs;
 use std::io::{ErrorKind, Read, Write};
@@ -67,7 +67,7 @@ pub struct BackupList {
 }
 
 fn daily_enabled(conn: &Connection) -> AppResult<bool> {
-    Ok(settings::get(conn, DAILY_SETTING)?.as_deref() == Some("true"))
+    Ok(settings::get(conn, DAILY_SETTING)?.as_deref() != Some("false"))
 }
 
 pub fn set_daily(conn: &Connection, enabled: bool) -> AppResult<()> {
@@ -101,18 +101,50 @@ pub fn create(source: &Connection, folder: &Path) -> AppResult<BackupFile> {
     create_snapshot(source, folder, None)
 }
 
-pub fn run_daily(source: &Connection, folder: &Path) -> AppResult<bool> {
-    if !daily_enabled(source)? {
+pub fn copy_to_folder(paths: &AppPaths, name: &str, folder: &str) -> AppResult<BackupFile> {
+    let destination = Path::new(folder.trim());
+    if !destination.is_absolute() || !destination.is_dir() {
+        return Err(AppError::Validation("Enter the full path to an existing backup destination folder.".into()));
+    }
+    let destination = destination.canonicalize()?;
+    if destination.starts_with(paths.data_dir.canonicalize()?) {
+        return Err(AppError::Validation("Choose a folder outside the Pusthakam data directory.".into()));
+    }
+    let source = open_saved(&paths.backups, name)?;
+    check_schema_history(&source)?;
+    create_snapshot(&source, &destination, None)
+}
+
+pub fn run_daily(source: &Connection, paths: &AppPaths) -> AppResult<bool> {
+    if !daily_enabled(source)? || !setup::status(source)?.configured {
         return Ok(false);
     }
     let date: String = source.query_row(
         "SELECT strftime('%Y%m%d','now','localtime')", [], |row| row.get(0),
     )?;
     let name = format!("pusthakam-{date}-daily.sqlite3");
+    let folder = &paths.backups;
     if folder.join(&name).try_exists()? {
         return Ok(false);
     }
     create_snapshot(source, folder, Some(&name))?;
+    // Serialize rotation with restore requests, including requests from other app instances.
+    let tx = Transaction::new_unchecked(source, TransactionBehavior::Immediate)?;
+    let queued = pending_restore(paths)?;
+    for entry in fs::read_dir(folder)? {
+        let entry = entry?;
+        let filename = entry.file_name();
+        let Some(previous) = filename.to_str().and_then(|name| {
+            name.strip_prefix("pusthakam-")?.strip_suffix("-daily.sqlite3")
+        }) else { continue };
+        if previous.len() == 8 && previous.bytes().all(|byte| byte.is_ascii_digit())
+            && previous < date.as_str() && filename.to_str() != queued.as_deref()
+            && entry.file_type()?.is_file()
+        {
+            fs::remove_file(entry.path())?;
+        }
+    }
+    tx.commit()?;
     Ok(true)
 }
 
@@ -188,7 +220,8 @@ fn pending_restore(paths: &AppPaths) -> AppResult<Option<String>> {
     }
 }
 
-pub fn request_restore(paths: &AppPaths, name: &str) -> AppResult<()> {
+pub fn request_restore(conn: &Connection, paths: &AppPaths, name: &str) -> AppResult<()> {
+    let tx = Transaction::new_unchecked(conn, TransactionBehavior::Immediate)?;
     verify_saved(&paths.backups, name)?;
     let mut request = tempfile::NamedTempFile::new_in(&paths.data_dir)?;
     request.write_all(name.as_bytes())?;
@@ -200,6 +233,7 @@ pub fn request_restore(paths: &AppPaths, name: &str) -> AppResult<()> {
             AppError::Io(error.error)
         }
     })?;
+    tx.commit()?;
     Ok(())
 }
 

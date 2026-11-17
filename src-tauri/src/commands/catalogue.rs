@@ -45,11 +45,27 @@ pub fn catalogue_find_duplicates(state: State<'_, AppState>, probe: DuplicatePro
 
 #[tauri::command]
 pub fn catalogue_archive_record(state: State<'_, AppState>, id: i64, archived: bool) -> AppResult<()> {
+    archive_records(state, vec![id], archived)
+}
+
+#[tauri::command]
+pub fn catalogue_archive_records(state: State<'_, AppState>, ids: Vec<i64>) -> AppResult<()> {
+    archive_records(state, ids, true)
+}
+
+fn archive_records(state: State<'_, AppState>, mut ids: Vec<i64>, archived: bool) -> AppResult<()> {
     let who = state.require("catalogue.write")?;
+    if ids.is_empty() || ids.len() > 100 {
+        return Err(crate::error::AppError::Validation("Select between 1 and 100 records.".into()));
+    }
+    ids.sort_unstable();
+    ids.dedup();
     let mut conn = state.conn()?;
     reservations::refresh(&mut conn)?;
     let tx = conn.transaction_with_behavior(rusqlite::TransactionBehavior::Immediate)?;
-    catalogue::set_record_archived(&tx, Some(&who), id, archived)?;
+    for id in ids {
+        catalogue::set_record_archived(&tx, Some(&who), id, archived)?;
+    }
     tx.commit()?;
     Ok(())
 }

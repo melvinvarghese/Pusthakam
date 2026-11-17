@@ -7,8 +7,16 @@ export async function fileToBase64(file: File): Promise<string> {
 }
 
 export function downloadCsvFile(csv: string, filename: string) {
+  downloadFile(csv, filename, "text/csv;charset=utf-8");
+}
+
+export function downloadTextFile(text: string, filename: string) {
+  downloadFile(text, filename, "text/plain;charset=utf-8");
+}
+
+function downloadFile(content: string, filename: string, type: string) {
   const urls = URL;
-  const url = urls.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" }));
+  const url = urls.createObjectURL(new Blob([content], { type }));
   const link = document.createElement("a");
   link.href = url;
   link.download = filename;

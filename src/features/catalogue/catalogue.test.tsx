@@ -8,7 +8,7 @@ import type { ConfigOverview, CopyQuery, CopyRecord, CopyRow, RecordDetail, Sess
 const cat = vi.hoisted(() => ({
   search: vi.fn(), getRecord: vi.fn(), saveRecord: vi.fn(), findDuplicates: vi.fn(), archiveRecord: vi.fn(),
   addCopies: vi.fn(), updateCopy: vi.fn(), setCopyStatus: vi.fn(), listCopies: vi.fn(), accessionFormat: vi.fn(),
-  setAccessionFormat: vi.fn(), exportCopies: vi.fn(),
+  setAccessionFormat: vi.fn(), exportCopies: vi.fn(), archiveRecords: vi.fn(),
 }));
 const cfg = vi.hoisted(() => ({ overview: vi.fn() }));
 vi.mock("@/lib/api", async (orig) => ({ ...(await orig<typeof import("@/lib/api")>()), catalogueApi: cat, configApi: cfg }));
@@ -78,6 +78,21 @@ beforeEach(() => {
 });
 
 describe("CataloguePage", () => {
+  it("only archives the selected records after confirmation", async () => {
+    cat.search.mockResolvedValue({ total: 2, page: 1, pageSize: 25, rows: [SUMMARY, { ...SUMMARY, id: 2, title: "Second title" }] });
+    cat.archiveRecords.mockResolvedValue(undefined);
+    renderAt("/catalogue");
+    await userEvent.click(await screen.findByRole("checkbox", { name: "Select Balyakalasakhi" }));
+    await userEvent.click(screen.getByRole("checkbox", { name: "Select Second title" }));
+    await userEvent.click(screen.getByRole("button", { name: "Archive selected on this page (2)" }));
+    const dialog = within(screen.getByRole("dialog", { name: "Archive selected catalogue records" }));
+    expect(dialog.getByText("Second title")).toBeInTheDocument();
+    expect(cat.archiveRecords).not.toHaveBeenCalled();
+    await userEvent.click(dialog.getByRole("button", { name: "Archive records" }));
+    expect(cat.archiveRecords).toHaveBeenCalledExactlyOnceWith([1, 2]);
+    await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
+  });
+
   it("lists records with authors, copies and a class label", async () => {
     renderAt("/catalogue");
     expect(await screen.findByRole("link", { name: "Balyakalasakhi" })).toHaveAttribute("href", "/catalogue/1");

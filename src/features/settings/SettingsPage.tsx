@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/Button";
 import { Chip } from "@/components/ui/Chip";
 import { Panel, PanelHeader } from "@/components/ui/Panel";
 import { ApiError, catalogueApi, configApi } from "@/lib/api";
+import { OptionalModules } from "./OptionalModules";
+import { LibraryCustomFields } from "./LibraryCustomFields";
 import type { AccessionFormat, ArchiveKind, ConfigOverview, Library, Named, Policy, Shelf } from "@/lib/api/types";
 import { formatMinor } from "@/lib/money";
 import { can, useSession } from "@/lib/session";
@@ -122,6 +124,7 @@ export function SettingsPage() {
       />
 
       {archive.isError && <p role="alert" className="text-danger">{archive.error instanceof ApiError ? archive.error.message : "Could not update."}</p>}
+      <OptionalModules canEdit={canEdit} />
 
       <Panel aria-labelledby="library-h">
         <PanelHeader
@@ -142,6 +145,7 @@ export function SettingsPage() {
         )}
       </Panel>
 
+      <LibraryCustomFields canEdit={canEdit} />
       {listPanel("memberCategory", c.memberCategories)}
       {listPanel("itemCategory", c.itemCategories)}
 
