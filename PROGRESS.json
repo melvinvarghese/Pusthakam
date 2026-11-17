@@ -1,11 +1,12 @@
 {
   "schemaVersion": 1,
-  "lastUpdated": "2026-11-17T10:39:56.240Z",
-  "currentPhase": "6",
+  "lastUpdated": "2026-11-17T11:10:10.157Z",
+  "currentPhase": "4",
   "currentTask": {
-    "title": "Merge product positioning documentation",
+    "taskId": "CIRC-LOAN",
+    "title": "Isolate the Windows startup failure",
     "status": "implemented",
-    "detail": "Combined the product README with the local progress monitor instructions and aligned feature descriptions with verification evidence."
+    "detail": "The isolated build exits with OS error 5 before the application setup callback runs. The native walkthrough needs a successful interactive Windows launch."
   },
   "nextMilestone": {
     "title": "Verify the Windows circulation workflow",
@@ -13,9 +14,9 @@
     "nextTaskId": "CIRC-LOAN"
   },
   "totals": {
-    "overall": 40.4,
+    "overall": 40.9,
     "implementation": 50.9,
-    "verification": 29.8,
+    "verification": 31.2,
     "releaseReadiness": 10
   },
   "phases": [
@@ -905,7 +906,7 @@
       "phase": "5",
       "module": "reports",
       "weight": 4,
-      "status": "implemented",
+      "status": "verified",
       "title": "Circulation, popular titles and stock reports",
       "requirements": [
         "REQ-RPT"
@@ -915,14 +916,16 @@
         "Export each report to CSV with displayed totals and safe text cells."
       ],
       "sourceEvidence": [
-        "src/features/reports/ReportsPage.tsx and src-tauri/src/services/reports.rs."
+        "src/features/reports/ReportsPage.tsx and src-tauri/src/services/reports.rs.",
+        "src/features/reports/ReportsPage.test.tsx covers the CSV contents of all six operational reports."
       ],
       "verificationEvidence": [
-        "baseline-frontend"
+        "baseline-frontend",
+        "report-csv-exports",
+        "report-csv-query-reconciliation",
+        "report-failed-refresh-output"
       ],
-      "verificationNeeded": [
-        "Reconcile query output and check CSV export for each supported report."
-      ]
+      "verificationNeeded": []
     },
     {
       "id": "RPT-COVERAGE",
@@ -1564,6 +1567,70 @@
   ],
   "verificationRuns": [
     {
+      "id": "windows-startup-callback-probe",
+      "title": "Instrumented Windows startup",
+      "at": "2026-11-17T11:10:10.157Z",
+      "check": "cargo build --offline with tauri/custom-protocol in the isolated checkout, followed by Start-Process with stderr capture",
+      "outcome": "incomplete",
+      "result": "Build passed. Launch exited 101 with Tauri setup OS error 5. The callback entry marker never appeared and the disposable database directory was never created. The installed Tauri source creates the configured WebView window before calling application setup."
+    },
+    {
+      "id": "report-failed-refresh-output",
+      "title": "Report output after a refresh error",
+      "at": "2026-11-17T11:07:15.558Z",
+      "check": "npm test -- src/features/reports/ReportsPage.test.tsx && npm run typecheck && npm run lint",
+      "outcome": "passed",
+      "result": "Seven report tests, typecheck and lint passed. The regression test checks both output buttons after a failed refresh and a successful retry."
+    },
+    {
+      "id": "windows-isolated-startup-recheck",
+      "title": "Isolated native launch recheck",
+      "at": "2026-11-17T11:05:52.397Z",
+      "check": "Start-Process with separate APPDATA and WEBVIEW2_USER_DATA_FOLDER and captured stderr",
+      "outcome": "incomplete",
+      "result": "Process exited 101 with Tauri setup OS error 5. The isolated directory contained only stdout and stderr captures after exit."
+    },
+    {
+      "id": "report-csv-frontend-rerun",
+      "title": "Full frontend suite rerun",
+      "at": "2026-11-17T10:53:09.220Z",
+      "check": "npm test -- --maxWorkers 2",
+      "outcome": "passed",
+      "result": "All 102 tests passed across 20 files, including the circulation payment test that timed out on the first run."
+    },
+    {
+      "id": "report-csv-frontend-first-run",
+      "title": "Full frontend suite after report CSV changes",
+      "at": "2026-11-17T10:52:22.776Z",
+      "check": "npm test -- --maxWorkers 2",
+      "outcome": "failed",
+      "result": "101 passed. The circulation partial-payment test hit its five-second timeout during a run launched alongside the production build and Rust checks."
+    },
+    {
+      "id": "report-csv-query-reconciliation",
+      "title": "Report query reconciliation",
+      "at": "2026-11-17T10:52:22.776Z",
+      "check": "cargo test --offline --manifest-path src-tauri/Cargo.toml --test ipc",
+      "outcome": "passed",
+      "result": "13 IPC tests passed, including circulation events, popular titles, stock counts, catalogue growth, fines, and member category totals against seeded workflows."
+    },
+    {
+      "id": "report-csv-exports",
+      "title": "Report CSV exports",
+      "at": "2026-11-17T10:52:22.776Z",
+      "check": "npm test -- src/features/reports/ReportsPage.test.tsx && npm run typecheck",
+      "outcome": "passed",
+      "result": "Six frontend tests and typecheck passed. Exact CSV rows include matching table totals where displayed, safely quoted labels, and minor-unit currency amounts rendered as decimals."
+    },
+    {
+      "id": "report-csv-build",
+      "title": "Frontend quality checks for report CSV changes",
+      "at": "2026-11-17T10:52:22.776Z",
+      "check": "npm run lint and npm run build",
+      "outcome": "passed",
+      "result": "ESLint and the production build passed."
+    },
+    {
       "id": "product-positioning-merge-initial-format",
       "title": "Initial documentation merge check",
       "at": "2026-11-17T10:39:56.240Z",
@@ -1781,6 +1848,27 @@
     }
   ],
   "recentActivity": [
+    {
+      "kind": "progress",
+      "at": "2026-11-17T11:10:10.157Z",
+      "taskId": "CIRC-LOAN",
+      "title": "Isolated the Windows launch failure to early startup",
+      "detail": "The isolated build exits with OS error 5 before the application setup callback runs. The native walkthrough needs a successful interactive Windows launch."
+    },
+    {
+      "kind": "completed",
+      "at": "2026-11-17T11:07:15.558Z",
+      "taskId": "RPT-CSV",
+      "title": "Prevented stale report output after refresh errors",
+      "detail": "Export and print are disabled after a failed refresh and enabled again when the retry succeeds."
+    },
+    {
+      "kind": "completed",
+      "at": "2026-11-17T10:52:22.776Z",
+      "taskId": "RPT-CSV",
+      "title": "Verified report CSV exports",
+      "detail": "Circulation, stock, catalogue growth and member exports now include their on-screen totals. Automated checks covered the CSV contents and data queries of all six reports."
+    },
     {
       "kind": "completed",
       "at": "2026-11-17T10:39:39.069Z",

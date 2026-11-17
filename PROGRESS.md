@@ -4,7 +4,7 @@ _Last updated: 2026-11-17_
 
 ## Local progress monitor
 
-Pusthakam is **40.4% complete overall**, with 50.9% implemented, 29.8% verified and 10% release-ready. Stock checks and transfers passed automated verification. Product positioning documentation was merged with the local monitor instructions. Next product milestone: Verify the Windows circulation workflow.
+Pusthakam is **40.9% complete overall**, with 50.9% implemented, 31.2% verified and 10% release-ready. All six report CSV exports passed automated verification. Next product milestone: Verify the Windows circulation workflow.
 
 Run `npm run progress:monitor` from this directory and open <http://127.0.0.1:4317/>. Keep the terminal open while using the dashboard. Run `npm run progress:validate` to check the task data and percentages.
 
@@ -15,7 +15,7 @@ Run `npm run progress:monitor` from this directory and open <http://127.0.0.1:43
 | 2 · Setup and configuration | 80% | 80% |
 | 3 · Catalogue and accession | 58% | 40% |
 | 4 · Circulation and members | 78.2% | 30.4% |
-| 5 · Dashboard, reports and printing | 43.7% | 12.5% |
+| 5 · Dashboard, reports and printing | 43.7% | 25% |
 | 6 · Collection operations | 18.1% | 18.1% |
 | 7 · Administration and recovery | 82.1% | 57.1% |
 | 7b · LAN mode | 0% | 0% |
@@ -24,7 +24,7 @@ Run `npm run progress:monitor` from this directory and open <http://127.0.0.1:43
 Monitor verification passed for the data schema, weighted calculations, loopback serving, missing and invalid JSON, automatic refresh, and roadmap filters. Desktop and mobile browser layout and an adapter-disabled browser smoke test are open. Headless Edge failed to initialize, and Chrome UI access stopped at the browser URL check.
 
 ## Current phase
-Phase 6 inventory and Phase 7 administration features are available in the working tree. An isolated native Windows build compiled, but its launch failed with OS error 5 before WebView loaded. The Windows circulation, printing and restore walkthroughs and validation with a real Koha export remain open.
+Phase 4 circulation verification remains open. An isolated Windows build compiled and reproduced OS error 5 before the application setup callback ran. Windows circulation, printing and restore walkthroughs and validation with a real Koha export remain open.
 
 ## What exists
 - **Inventory:** save a location or shelf check, scan barcodes and review matched, missing and unexpected copies. Send, receive and cancel tracked copy transfers between locations or shelves.
@@ -39,7 +39,7 @@ Phase 6 inventory and Phase 7 administration features are available in the worki
 - **Overdue loans:** Circulation lists open loans whose due date is before the local calendar date, oldest due first. Staff can start a return from the list and the returned loan clears after confirmation.
 - **Reservations:** reserve a particular copy by barcode. When available, it goes to the earliest eligible member and stays held for the configured number of days. Expired and cancelled holds advance the queue. A waiting member blocks renewal.
 - **Fines and copy condition:** preview an overdue fine before return. Issue-time terms govern assessment. Existing open loans use their configured terms at upgrade. Staff can record payments, and authorized staff can waive balances or close loans as lost or damaged. Fine history records individual entries.
-- **Dashboard and reports:** live counts for catalogue stock, active members, circulation, ready holds, and outstanding fines. Reports provide date-range circulation activity, most borrowed titles, stock by location, all-time fines by currency, daily catalogue additions and member totals by category, with CSV export and printing.
+- **Dashboard and reports:** live counts for catalogue stock, active members, circulation, ready holds, and outstanding fines. Reports provide date-range circulation activity, most borrowed titles, stock by location, all-time fines by currency, daily catalogue additions and member totals by category, with CSV export and printing. CSV exports include the totals shown in each report.
 - **Batch copy labels:** select copies across pages of the Accession Register and preview a two-column sheet for plain paper or full-sheet label stock. Labels include the title, accession number, call number when available, and a Code 128 barcode or text fallback.
 - **Receipts and inventory:** Fine History opens printable receipts for individual recorded payments. The Accession Register prints the current filtered page with accession, title, call number, location, status and a column for staff to mark checked copies.
 - **Phases 1-2:** Tauri shell, Spine Label design, SQLite + migrations, first-launch wizard, staff sign-in with roles enforced in Rust, Library Settings (categories, loan rules, collections, locations, shelves, accession number format), Online Tools menu.
@@ -52,6 +52,11 @@ Phase 6 inventory and Phase 7 administration features are available in the worki
 
 | Check | Result |
 |---|---|
+| Windows startup callback probe | The isolated build compiled. Launch returned OS error 5 before the setup entry marker or disposable database directory appeared. |
+| Report refresh handling | Seven report tests, typecheck and lint passed. Verified export and print recovery after retry. |
+| Isolated Windows startup recheck | Process exited with code 101 and reported OS error 5 during Tauri setup. Native circulation verification remains open. |
+| Report CSV exports | Six report tests, 13 Tauri IPC tests, typecheck, lint and build passed. Checked displayed totals, quoted labels and currency amounts. |
+| `npm test -- --maxWorkers 2` after CSV changes | The first run had 101 passes and a circulation payment timeout. All 102 passed on rerun. |
 | `npm test -- --maxWorkers 2` | 90 passed, including cross-page label selection, Code 128 print content, payment receipts and filtered inventory sheets. |
 | `cargo test --offline --manifest-path src-tauri/Cargo.toml` | 99 unit and 8 Tauri IPC tests passed, including the return fine estimate and recorded amount. |
 | `npm run lint`, `npm run typecheck`, `npm run build` | Passed. |
@@ -92,7 +97,7 @@ Phase 6 inventory and Phase 7 administration features are available in the worki
 | REQ-NET | NOT STARTED | Added 2026-11-15: several computers on one library (Phase 7b), see roadmap |
 | REQ-MEM | IN PROGRESS | Directory, loan history, photos, cards and Koha patron import. |
 | REQ-CIRC | IN PROGRESS | Issue, return, renewal, overdue tracking, copy reservations, overdue fines and loss/damage close-outs. Desktop verification remains. |
-| REQ-DASH, REQ-RPT | IN PROGRESS | Live dashboard, circulation activity and most borrowed titles with CSV export. Additional reports and formats remain. |
+| REQ-DASH, REQ-RPT | IN PROGRESS | Live dashboard and six reports with verified CSV exports. Broader report coverage and more export formats remain. |
 | REQ-ACQ, REQ-SER | NOT STARTED | Phase 6 |
 | REQ-BAK | NOT STARTED | Phase 7 |
 
