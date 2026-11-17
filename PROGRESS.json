@@ -1,12 +1,11 @@
 {
   "schemaVersion": 1,
-  "lastUpdated": "2026-11-17T10:06:10.897Z",
+  "lastUpdated": "2026-11-17T10:39:56.240Z",
   "currentPhase": "6",
   "currentTask": {
-    "taskId": "ACC-STOCK",
-    "title": "Phase 6 inventory and transfers",
-    "status": "verified",
-    "detail": "Shelf checks retain matched, missing and unexpected copies. Copy transfers preserve source, destination, status and history. Rust, frontend and IPC checks passed."
+    "title": "Merge product positioning documentation",
+    "status": "implemented",
+    "detail": "Combined the product README with the local progress monitor instructions and aligned feature descriptions with verification evidence."
   },
   "nextMilestone": {
     "title": "Verify the Windows circulation workflow",
@@ -1565,6 +1564,22 @@
   ],
   "verificationRuns": [
     {
+      "id": "product-positioning-merge-initial-format",
+      "title": "Initial documentation merge check",
+      "at": "2026-11-17T10:39:56.240Z",
+      "check": "git diff --cached --check",
+      "outcome": "failed",
+      "result": "The incoming Markdown used trailing spaces for three hard line breaks. Converted them to explicit break tags before rechecking."
+    },
+    {
+      "id": "product-positioning-merge",
+      "title": "Product documentation merge review",
+      "at": "2026-11-17T10:39:39.069Z",
+      "check": "Review README and website copy against PROGRESS.md and run git diff --cached --check and npm run progress:validate",
+      "outcome": "passed",
+      "result": "Resolved the overlapping README. Kept monitor instructions and aligned member, circulation, report and backup claims with current evidence."
+    },
+    {
       "id": "staff-stock-dashboard-regression",
       "at": "2026-11-17T10:06:10.897Z",
       "title": "Staff recovery, inventory and dashboard verification",
@@ -1766,6 +1781,12 @@
     }
   ],
   "recentActivity": [
+    {
+      "kind": "completed",
+      "at": "2026-11-17T10:39:39.069Z",
+      "title": "Merge product positioning documentation",
+      "detail": "Combined the product README with the local progress monitor instructions and aligned feature descriptions with verification evidence."
+    },
     {
       "kind": "completed",
       "at": "2026-11-17T10:05:50.877Z",

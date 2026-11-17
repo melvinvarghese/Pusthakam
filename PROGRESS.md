@@ -4,7 +4,7 @@ _Last updated: 2026-11-17_
 
 ## Local progress monitor
 
-Pusthakam is **40.4% complete overall**, with 50.9% implemented, 29.8% verified and 10% release-ready. Stock checks and transfers passed automated verification. Next product milestone: Verify the Windows circulation workflow.
+Pusthakam is **40.4% complete overall**, with 50.9% implemented, 29.8% verified and 10% release-ready. Stock checks and transfers passed automated verification. Product positioning documentation was merged with the local monitor instructions. Next product milestone: Verify the Windows circulation workflow.
 
 Run `npm run progress:monitor` from this directory and open <http://127.0.0.1:4317/>. Keep the terminal open while using the dashboard. Run `npm run progress:validate` to check the task data and percentages.
 
