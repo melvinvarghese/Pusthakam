@@ -43,8 +43,12 @@ function recentRange() {
 }
 
 function textCell(value: string) {
-  const text = /^[\t\r\n]|^\s*[=+@-]/.test(value) ? `'${value}` : value;
+  const text = /^[\t\r\n]|^\s*[=+@＝＋－＠-]/.test(value) ? `'${value}` : value;
   return `"${text.replaceAll('"', '""')}"`;
+}
+
+function countTotal<Key extends string>(rows: ReadonlyArray<Record<Key, number>>, key: Key) {
+  return rows.reduce((sum, row) => sum + row[key], 0);
 }
 
 function downloadCsv(report: Report, from: string, to: string) {
@@ -55,6 +59,7 @@ function downloadCsv(report: Report, from: string, to: string) {
     case "activity":
       header = ["Date", ...COLUMNS.map(([, label]) => label)].join(",");
       lines = report.rows.map((row) => [row.date, ...COLUMNS.map(([key]) => row[key])].join(","));
+      lines.push(["Total", ...COLUMNS.map(([key]) => countTotal(report.rows, key))].join(","));
       filename = `circulation-${from}-to-${to}.csv`;
       break;
     case "popular":
@@ -68,6 +73,7 @@ function downloadCsv(report: Report, from: string, to: string) {
         textCell(row.location ?? "Unassigned"), row.archivedLocation ? "Archived" : row.location ? "Active" : "",
         ...STOCK_COLUMNS.map(([key]) => row[key]),
       ].join(","));
+      lines.push(["All locations", "", ...STOCK_COLUMNS.map(([key]) => countTotal(report.rows, key))].join(","));
       filename = `stock-by-location-${localDate()}.csv`;
       break;
     case "fines":
@@ -78,6 +84,7 @@ function downloadCsv(report: Report, from: string, to: string) {
     case "growth":
       header = "Date,Titles added,Copies added";
       lines = report.rows.map((row) => [row.date, row.titlesAdded, row.copiesAdded].join(","));
+      lines.push(["Total", countTotal(report.rows, "titlesAdded"), countTotal(report.rows, "copiesAdded")].join(","));
       filename = `catalogue-growth-${from}-to-${to}.csv`;
       break;
     case "members":
@@ -86,6 +93,7 @@ function downloadCsv(report: Report, from: string, to: string) {
         textCell(row.category), row.archivedCategory ? "Archived" : "Active",
         ...MEMBER_COLUMNS.map(([key]) => row[key]),
       ].join(","));
+      lines.push(["All categories", "", ...MEMBER_COLUMNS.map(([key]) => countTotal(report.rows, key))].join(","));
       filename = `members-by-category-${localDate()}.csv`;
       break;
   }
@@ -119,6 +127,7 @@ export default function ReportsPage() {
   const activity = result.data?.kind === "activity" ? result.data.rows : null;
   const stock = result.data?.kind === "stock" ? result.data.rows : null;
   const members = result.data?.kind === "members" ? result.data.rows : null;
+  const canOutput = result.isSuccess && !result.isFetching && result.data.rows.length > 0;
 
   if (!allowed) return <p role="alert" className="p-6">You do not have permission to view reports.</p>;
   function printReport() {
@@ -167,9 +176,9 @@ export default function ReportsPage() {
           <TextField label="End date" name="to" type="date" defaultValue={range.to} required />
         </>}
         <Button type="submit" disabled={result.isFetching}>Run report</Button>
-        <Button className="ml-auto" disabled={!result.data?.rows.length || result.isFetching}
+        <Button className="ml-auto" disabled={!canOutput}
           onClick={() => { if (result.data) downloadCsv(result.data, range.from, range.to); }}>Export CSV</Button>
-        <Button disabled={!result.data?.rows.length || result.isFetching} onClick={printReport}>Print report</Button>
+        <Button disabled={!canOutput} onClick={printReport}>Print report</Button>
       </form>
       {result.isPending && <p role="status" className="text-muted">Loading report.</p>}
       {result.isError && <p role="alert" className="text-danger">{toApiError(result.error).message}</p>}
@@ -200,7 +209,7 @@ export default function ReportsPage() {
                   <th scope="row" className="px-4 py-2">Total</th>
                   {COLUMNS.map(([key]) => (
                     <td key={key} className="px-4 py-2 text-right font-mono">
-                      {activity.reduce((sum, row) => sum + row[key], 0)}
+                      {countTotal(activity, key)}
                     </td>
                   ))}
                 </tr>
@@ -256,7 +265,7 @@ export default function ReportsPage() {
             <tfoot className="bg-band font-semibold"><tr>
               <th scope="row" className="px-4 py-2">All categories</th>
               {MEMBER_COLUMNS.map(([key]) => (
-                <td key={key} className="px-4 py-2 text-right font-mono">{members.reduce((sum, row) => sum + row[key], 0)}</td>
+                <td key={key} className="px-4 py-2 text-right font-mono">{countTotal(members, key)}</td>
               ))}
             </tr></tfoot>
           </table>
@@ -280,8 +289,8 @@ export default function ReportsPage() {
             </tr>)}</tbody>
             <tfoot className="bg-band font-semibold"><tr>
               <th scope="row" className="px-4 py-2">Total</th>
-              <td className="px-4 py-2 text-right font-mono">{result.data.rows.reduce((sum, row) => sum + row.titlesAdded, 0)}</td>
-              <td className="px-4 py-2 text-right font-mono">{result.data.rows.reduce((sum, row) => sum + row.copiesAdded, 0)}</td>
+              <td className="px-4 py-2 text-right font-mono">{countTotal(result.data.rows, "titlesAdded")}</td>
+              <td className="px-4 py-2 text-right font-mono">{countTotal(result.data.rows, "copiesAdded")}</td>
             </tr></tfoot>
           </table>
         </Panel>
@@ -329,7 +338,7 @@ export default function ReportsPage() {
                 <tr>
                   <th scope="row" className="px-3 py-2">All locations</th>
                   {STOCK_COLUMNS.map(([key]) => (
-                    <td key={key} className="px-3 py-2 text-right font-mono">{stock.reduce((sum, row) => sum + row[key], 0)}</td>
+                    <td key={key} className="px-3 py-2 text-right font-mono">{countTotal(stock, key)}</td>
                   ))}
                 </tr>
               </tfoot>
