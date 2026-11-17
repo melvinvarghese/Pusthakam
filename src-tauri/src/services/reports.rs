@@ -115,3 +115,102 @@ pub fn stock_by_location(conn: &mut Connection) -> AppResult<Vec<StockRow>> {
     }))?.collect::<Result<_, _>>()?;
     Ok(rows)
 }
+
+#[derive(Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct FineSummary {
+    currency: String,
+    assessed: String,
+    paid: String,
+    waived: String,
+    outstanding: String,
+}
+
+#[derive(Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct MemberSummary {
+    category_id: i64,
+    category: String,
+    archived_category: bool,
+    current: i64,
+    expired: i64,
+    archived: i64,
+    total: i64,
+}
+
+pub fn member_summary(conn: &Connection) -> AppResult<Vec<MemberSummary>> {
+    let mut stmt = conn.prepare(
+        "SELECT c.id, c.name, c.archived_at IS NOT NULL,
+                count(*) FILTER (WHERE m.archived_at IS NULL AND m.expires_on >= date('now','localtime')),
+                count(*) FILTER (WHERE m.archived_at IS NULL AND m.expires_on < date('now','localtime')),
+                count(*) FILTER (WHERE m.archived_at IS NOT NULL), count(*)
+         FROM members m JOIN member_categories c ON c.id = m.category_id
+         GROUP BY c.id ORDER BY c.archived_at IS NOT NULL, c.name COLLATE NOCASE, c.id",
+    )?;
+    let rows = stmt.query_map([], |row| Ok(MemberSummary {
+        category_id: row.get(0)?,
+        category: row.get(1)?,
+        archived_category: row.get(2)?,
+        current: row.get(3)?,
+        expired: row.get(4)?,
+        archived: row.get(5)?,
+        total: row.get(6)?,
+    }))?.collect::<Result<_, _>>()?;
+    Ok(rows)
+}
+
+pub fn fine_summary(conn: &Connection) -> AppResult<Vec<FineSummary>> {
+    let mut stmt = conn.prepare(
+        "WITH settlements AS (
+            SELECT fine_id, sum(amount_minor) FILTER (WHERE kind = 'payment') AS paid,
+                   sum(amount_minor) FILTER (WHERE kind = 'waiver') AS waived
+            FROM fine_settlements GROUP BY fine_id
+        )
+        SELECT f.currency, sum(f.amount_minor), coalesce(sum(s.paid), 0), coalesce(sum(s.waived), 0)
+        FROM fines f LEFT JOIN settlements s ON s.fine_id = f.id
+        GROUP BY f.currency ORDER BY f.currency",
+    )?;
+    let rows = stmt.query_map([], |row| {
+        let assessed: i64 = row.get(1)?;
+        let paid: i64 = row.get(2)?;
+        let waived: i64 = row.get(3)?;
+        Ok(FineSummary {
+            currency: row.get(0)?, assessed: assessed.to_string(), paid: paid.to_string(),
+            waived: waived.to_string(), outstanding: (assessed - paid - waived).to_string(),
+        })
+    })?.collect::<Result<_, _>>()?;
+    Ok(rows)
+}
+
+#[derive(Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct CatalogueGrowthDay {
+    date: String,
+    titles_added: i64,
+    copies_added: i64,
+}
+
+pub fn catalogue_growth(conn: &Connection, from: &str, to: &str) -> AppResult<Vec<CatalogueGrowthDay>> {
+    let (from, to) = date_range(conn, from, to)?;
+    let mut stmt = conn.prepare(
+        "WITH RECURSIVE days(day) AS (
+            SELECT ?1 UNION ALL SELECT date(day, '+1 day') FROM days WHERE day < ?2
+         ), additions(day, kind) AS (
+            SELECT date(created_at, 'localtime'), 'title' FROM bibliographic_records
+            UNION ALL
+            SELECT date(created_at, 'localtime'), 'copy' FROM physical_items
+         ), totals AS (
+            SELECT day, count(*) FILTER (WHERE kind = 'title') AS titles,
+                        count(*) FILTER (WHERE kind = 'copy') AS copies
+            FROM additions WHERE day BETWEEN ?1 AND ?2 GROUP BY day
+         )
+         SELECT days.day, coalesce(t.titles, 0), coalesce(t.copies, 0)
+         FROM days LEFT JOIN totals t ON t.day = days.day ORDER BY days.day",
+    )?;
+    let rows = stmt.query_map(params![from, to], |row| Ok(CatalogueGrowthDay {
+        date: row.get(0)?,
+        titles_added: row.get(1)?,
+        copies_added: row.get(2)?,
+    }))?.collect::<Result<_, _>>()?;
+    Ok(rows)
+}

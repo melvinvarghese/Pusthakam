@@ -215,7 +215,9 @@ export function StatusDialog({ copy, onClose }: { copy: CopyRecord; onClose: () 
 }
 
 /** A printable label: spine call number, title and a Code 128 barcode. Full label sheets come with the Printing centre. */
-export function LabelDialog({ copy, title, onClose }: { copy: CopyRecord; title: string; onClose: () => void }) {
+export function LabelDialog({ copy, title, schemeCode, onClose }: {
+  copy: CopyRecord; title: string; schemeCode?: string; onClose: () => void;
+}) {
   return (
     <Modal
       title={`Label for ${copy.accessionNo}`}
@@ -223,7 +225,7 @@ export function LabelDialog({ copy, title, onClose }: { copy: CopyRecord; title:
       footer={<><Button onClick={onClose}>Close</Button><Button variant="primary" onClick={() => window.print()}>Print label</Button></>}
     >
       <div className="print-area flex items-center gap-4 rounded-md border border-line p-4">
-        {copy.callNumber && <CallNumberLabel callNumber={copy.callNumber} size="lg" />}
+        {copy.callNumber && <CallNumberLabel callNumber={copy.callNumber} schemeCode={schemeCode} size="lg" />}
         <div className="min-w-0">
           <div className="truncate font-semibold">{title}</div>
           <BarcodeSvg value={copy.barcode} />

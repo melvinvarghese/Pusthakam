@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pusthakam · Progress Monitor</title>
+  <link rel="stylesheet" href="/styles.css">
+  <script type="module" src="/app.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#overview">Skip to progress</a>
+  <aside class="rail">
+    <a class="brand" href="#overview">
+      <span class="spine" aria-hidden="true"></span>
+      <span><b>Pusthakam</b><small>Development tracker</small></span>
+    </a>
+    <nav aria-label="Dashboard sections">
+      <a href="#overview" aria-current="location">Overview</a>
+      <a href="#modules">Modules</a>
+      <a href="#roadmap">Roadmap</a>
+      <a href="#activity">Activity</a>
+      <a href="#remaining">Remaining work</a>
+    </nav>
+    <div class="rail-foot">Local working directory<br><span>Checks for updates every 3 seconds</span></div>
+  </aside>
+  <main id="overview" tabindex="-1">
+    <header class="page-header">
+      <div>
+        <h1>Progress monitor</h1>
+        <p>Pusthakam v1 development and release readiness</p>
+      </div>
+      <div class="live" id="connection" role="status" data-state="loading">Connecting</div>
+    </header>
+
+    <p class="notice" id="notice" role="status">Reading PROGRESS.json…</p>
+    <div id="dashboard" hidden>
+      <div class="overview-grid">
+        <section class="overview sheet" aria-labelledby="overall-title">
+          <div class="score-top">
+            <h2 id="overall-title">Overall completion</h2>
+            <span id="phase-label"></span>
+          </div>
+          <div class="score" id="overall"></div>
+          <progress id="overall-bar" max="100" aria-labelledby="overall-title"></progress>
+          <p class="score-caption">Weighted across the full v1 roadmap</p>
+          <dl class="metrics">
+            <div><dt>Implementation</dt><dd id="implementation"></dd></div>
+            <div><dt>Verification</dt><dd id="verification"></dd></div>
+            <div><dt>Release readiness</dt><dd id="releaseReadiness"></dd></div>
+          </dl>
+          <details class="method">
+            <summary>How progress is calculated</summary>
+            <p>Implementation accounts for 60%, verification for 30%, and release readiness for 10%. Each task has a weight based on its scope and impact. A task earns implementation credit when its acceptance criteria are met and verification credit when its required checks pass. Release readiness uses the weighted gates below.</p>
+          </details>
+        </section>
+        <div class="work-column">
+          <section class="work sheet" aria-labelledby="work-title">
+            <h2 id="work-title">Current work</h2>
+            <div id="current-task"></div>
+          </section>
+          <section class="work sheet milestone" aria-labelledby="milestone-title">
+            <h2 id="milestone-title">Next milestone</h2>
+            <div id="next-milestone"></div>
+          </section>
+          <p class="updated">Last updated <time id="updated"></time></p>
+        </div>
+      </div>
+
+      <section id="modules" class="section" aria-labelledby="modules-title">
+        <header class="section-head">
+          <div><h2 id="modules-title">Module progress</h2><p>Select a module to see its work in the roadmap.</p></div>
+          <p class="legend"><span>Implemented</span><span>Verified</span></p>
+        </header>
+        <div class="modules sheet" id="module-list"></div>
+      </section>
+
+      <section id="roadmap" class="section" aria-labelledby="roadmap-title">
+        <header class="section-head"><div><h2 id="roadmap-title">Roadmap</h2><p>Acceptance criteria and verification evidence for each task.</p></div></header>
+        <div class="filters sheet">
+          <label>Phase <select id="phase-filter"><option value="">All phases</option></select></label>
+          <label>Status <select id="status-filter"><option value="">All statuses</option></select></label>
+          <label>Module <select id="module-filter"><option value="">All modules</option></select></label>
+          <button type="button" id="clear-filters">Clear filters</button>
+        </div>
+        <p class="matches" id="roadmap-count" role="status"></p>
+        <div class="phase-list" id="phase-list"></div>
+      </section>
+
+      <section id="activity" class="section" aria-labelledby="activity-title">
+        <header class="section-head"><div><h2 id="activity-title">Recent activity</h2><p>Completed work, verification results and changes in progress.</p></div></header>
+        <ol class="activity sheet" id="activity-list"></ol>
+      </section>
+
+      <section id="remaining" class="section" aria-labelledby="remaining-title">
+        <header class="section-head"><div><h2 id="remaining-title">Remaining work</h2><p>What still needs to be built or checked before release.</p></div></header>
+        <div class="remaining-grid">
+          <section class="sheet work"><h3>Blockers</h3><ul class="entries" id="blockers"></ul></section>
+          <section class="sheet work"><h3>Release gates</h3><ul class="entries" id="gates"></ul></section>
+          <section class="sheet work">
+            <h3>Features to build</h3><p class="remaining-count" id="pending-count"></p>
+            <ul class="entries" id="pending"></ul>
+            <button type="button" class="more" id="more-pending"></button>
+          </section>
+          <section class="sheet work">
+            <h3>Testing gaps</h3><p class="remaining-count" id="gaps-count"></p>
+            <ul class="entries" id="gaps"></ul>
+            <button type="button" class="more" id="more-gaps"></button>
+          </section>
+        </div>
+      </section>
+    </div>
+    <noscript>Enable JavaScript to load and refresh the local progress data.</noscript>
+  </main>
+</body>
+</html>

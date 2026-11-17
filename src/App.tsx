@@ -4,6 +4,8 @@ import { HashRouter, Route, Routes } from "react-router-dom";
 import { AppShell } from "@/app/AppShell";
 import { ALL_NAV_ITEMS } from "@/app/nav";
 import { Gate } from "@/features/boot/Gate";
+import { BackupPage } from "@/features/backup/BackupPage";
+import { AuditPage } from "@/features/audit/AuditPage";
 import { AccessionPage } from "@/features/catalogue/AccessionPage";
 import { CataloguePage } from "@/features/catalogue/CataloguePage";
 import { RecordPage } from "@/features/catalogue/RecordPage";
@@ -28,6 +30,8 @@ export function AppRoutes() {
       <Route element={<AppShell />}>
         <Route index element={<Dashboard />} />
         <Route path="/settings" element={<SettingsPage />} />
+        <Route path="/backup" element={<BackupPage />} />
+        <Route path="/audit" element={<AuditPage />} />
         <Route path="/catalogue" element={<CataloguePage />} />
         <Route path="/catalogue/:id" element={<RecordPage />} />
         <Route path="/accession" element={<AccessionPage />} />

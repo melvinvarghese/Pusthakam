@@ -1,0 +1,1814 @@
+{
+  "schemaVersion": 1,
+  "lastUpdated": "2026-11-17T09:17:41.109Z",
+  "currentPhase": "7",
+  "currentTask": {
+    "taskId": "BAK-CREATE",
+    "title": "Phase 7 database backups",
+    "status": "in-progress",
+    "detail": "Manual, integrity-checked database snapshots and saved backup listing are in testing. Scheduling and restore remain open."
+  },
+  "nextMilestone": {
+    "title": "Verify the Windows circulation workflow",
+    "detail": "Walk through issue, return, renewal, holds and fine settlement in the native app. Check printed output and reconcile a real anonymised Koha sample when available.",
+    "nextTaskId": "CIRC-LOAN"
+  },
+  "totals": {
+    "overall": 30.7,
+    "implementation": 40.3,
+    "verification": 18.5,
+    "releaseReadiness": 10
+  },
+  "phases": [
+    {
+      "id": "0",
+      "title": "Discovery and architecture"
+    },
+    {
+      "id": "1",
+      "title": "Application foundation"
+    },
+    {
+      "id": "2",
+      "title": "Setup and configuration"
+    },
+    {
+      "id": "3",
+      "title": "Catalogue and accession"
+    },
+    {
+      "id": "4",
+      "title": "Circulation and members"
+    },
+    {
+      "id": "5",
+      "title": "Dashboard, reports and printing"
+    },
+    {
+      "id": "6",
+      "title": "Collection operations"
+    },
+    {
+      "id": "7",
+      "title": "Administration and recovery"
+    },
+    {
+      "id": "7b",
+      "title": "LAN mode"
+    },
+    {
+      "id": "8",
+      "title": "Release and distribution"
+    }
+  ],
+  "modules": [
+    {
+      "id": "foundation",
+      "title": "Foundation"
+    },
+    {
+      "id": "catalogue",
+      "title": "Catalogue"
+    },
+    {
+      "id": "accession",
+      "title": "Accession"
+    },
+    {
+      "id": "search",
+      "title": "Search"
+    },
+    {
+      "id": "exchange",
+      "title": "Import / Export"
+    },
+    {
+      "id": "circulation",
+      "title": "Circulation"
+    },
+    {
+      "id": "members",
+      "title": "Members"
+    },
+    {
+      "id": "acquisitions",
+      "title": "Acquisitions"
+    },
+    {
+      "id": "serials",
+      "title": "Serials"
+    },
+    {
+      "id": "reports",
+      "title": "Reports"
+    },
+    {
+      "id": "printing",
+      "title": "Printing"
+    },
+    {
+      "id": "administration",
+      "title": "Administration"
+    },
+    {
+      "id": "security",
+      "title": "Security"
+    },
+    {
+      "id": "backup",
+      "title": "Backup / Restore"
+    },
+    {
+      "id": "lan",
+      "title": "LAN mode"
+    },
+    {
+      "id": "release",
+      "title": "Release"
+    }
+  ],
+  "tasks": [
+    {
+      "id": "PLAN-01",
+      "phase": "0",
+      "module": "foundation",
+      "weight": 3,
+      "status": "verified",
+      "title": "Product scope and architecture",
+      "requirements": [
+        "V1-SCOPE"
+      ],
+      "acceptanceCriteria": [
+        "Document user roles, v1 modules and release definition of done.",
+        "Map each documented requirement to a weighted roadmap task."
+      ],
+      "sourceEvidence": [
+        "docs/PRODUCT_SPECIFICATION.md, docs/ARCHITECTURE.md, docs/DEVELOPMENT_ROADMAP.md and PROGRESS.json."
+      ],
+      "verificationEvidence": [
+        "audit"
+      ],
+      "verificationNeeded": []
+    },
+    {
+      "id": "PLAN-02",
+      "phase": "0",
+      "module": "foundation",
+      "weight": 2,
+      "status": "in-progress",
+      "title": "Resolve migration and LAN operating decisions",
+      "requirements": [
+        "REQ-IMP",
+        "REQ-NET"
+      ],
+      "acceptanceCriteria": [
+        "Record the v1 migration history boundary and identify the pilot server and client capacity.",
+        "Add the agreed choices to the roadmap."
+      ],
+      "sourceEvidence": [
+        "docs/DEVELOPMENT_ROADMAP.md records open questions."
+      ],
+      "verificationEvidence": [],
+      "verificationNeeded": [
+        "Review the recorded decisions against the migration and LAN acceptance checks."
+      ]
+    },
+    {
+      "id": "CORE-DB",
+      "phase": "1",
+      "module": "foundation",
+      "weight": 6,
+      "status": "implemented",
+      "title": "Local SQLite and migration safety",
+      "requirements": [
+        "REQ-OFF",
+        "REQ-SEC"
+      ],
+      "acceptanceCriteria": [
+        "Open SQLite in OS app-data with foreign keys, WAL and versioned migrations.",
+        "Refuse checksum tampering and newer schemas.",
+        "Preserve earlier records on restart and upgrade."
+      ],
+      "sourceEvidence": [
+        "src-tauri/src/{paths.rs,db/} and migrations 0001–0011."
+      ],
+      "verificationEvidence": [
+        "baseline-rust"
+      ],
+      "verificationNeeded": [
+        "Verify an earlier database upgrades and persists across restart on the current Windows desktop build."
+      ]
+    },
+    {
+      "id": "CORE-UI",
+      "phase": "1",
+      "module": "foundation",
+      "weight": 4,
+      "status": "implemented",
+      "title": "Desktop shell and keyboard navigation",
+      "requirements": [
+        "REQ-UI"
+      ],
+      "acceptanceCriteria": [
+        "Navigate to a built module with Ctrl+K and keyboard.",
+        "Persist light, dark or system preference.",
+        "Show loading, error and unavailable states appropriately."
+      ],
+      "sourceEvidence": [
+        "src/app/, src/components/CommandPalette.tsx, src/lib/theme.tsx and src/features/boot/Gate.tsx."
+      ],
+      "verificationEvidence": [
+        "baseline-frontend"
+      ],
+      "verificationNeeded": [
+        "Check the loading state and walk through keyboard navigation and theme persistence in the native shell."
+      ]
+    },
+    {
+      "id": "CORE-OFF",
+      "phase": "1",
+      "module": "foundation",
+      "weight": 5,
+      "status": "blocked",
+      "title": "Offline desktop acceptance",
+      "requirements": [
+        "REQ-OFF"
+      ],
+      "acceptanceCriteria": [
+        "Launch on a machine with networking disabled, then set up, search, circulate and restart with assets available locally.",
+        "Check the production bundle and CSP for required external resources."
+      ],
+      "sourceEvidence": [
+        "Local SQLite, bundled Fontsource assets and Tauri CSP are present. Optional Online Tools open external links on request."
+      ],
+      "verificationEvidence": [],
+      "verificationNeeded": [
+        "Run the documented adapter-disabled desktop workflow."
+      ]
+    },
+    {
+      "id": "CORE-A11Y",
+      "phase": "1",
+      "module": "foundation",
+      "weight": 3,
+      "status": "in-progress",
+      "title": "Accessibility and recovery across workflows",
+      "requirements": [
+        "REQ-UI"
+      ],
+      "acceptanceCriteria": [
+        "Complete setup, catalogue search and circulation by keyboard.",
+        "Confirm focus restoration, accessible labels, readable contrast and understandable errors on both themes."
+      ],
+      "sourceEvidence": [
+        "UI primitives, modal handling and keyboard navigation exist."
+      ],
+      "verificationEvidence": [],
+      "verificationNeeded": [
+        "Run keyboard and screen-reader walkthroughs plus browser smoke coverage."
+      ]
+    },
+    {
+      "id": "CFG-SETUP",
+      "phase": "2",
+      "module": "administration",
+      "weight": 5,
+      "status": "verified",
+      "title": "First-run wizard and library profile",
+      "requirements": [
+        "REQ-CFG",
+        "REQ-ADM"
+      ],
+      "acceptanceCriteria": [
+        "Create a named library and first administrator from the wizard.",
+        "Apply library-type defaults and refuse a second setup."
+      ],
+      "sourceEvidence": [
+        "src/features/setup/SetupWizard.tsx, src-tauri/src/services/setup.rs and src-tauri/src/domain/profiles.rs."
+      ],
+      "verificationEvidence": [
+        "baseline-frontend",
+        "baseline-rust"
+      ],
+      "verificationNeeded": []
+    },
+    {
+      "id": "CFG-POLICY",
+      "phase": "2",
+      "module": "administration",
+      "weight": 5,
+      "status": "verified",
+      "title": "Collections, shelves, categories and loan rules",
+      "requirements": [
+        "REQ-CFG",
+        "REQ-ADM",
+        "REQ-CIRC"
+      ],
+      "acceptanceCriteria": [
+        "Save and archive categories and collection structures.",
+        "Edit a member×item-category loan rule and enforce staff permission checks."
+      ],
+      "sourceEvidence": [
+        "src/features/settings/, src-tauri/src/commands/config.rs and src-tauri/src/services/config.rs."
+      ],
+      "verificationEvidence": [
+        "baseline-frontend",
+        "baseline-rust"
+      ],
+      "verificationNeeded": []
+    },
+    {
+      "id": "CFG-ADV",
+      "phase": "2",
+      "module": "administration",
+      "weight": 4,
+      "status": "not-started",
+      "title": "Custom fields and optional modules",
+      "requirements": [
+        "REQ-CFG",
+        "REQ-ADM"
+      ],
+      "acceptanceCriteria": [
+        "Create a typed custom field, store its value and return it after restart.",
+        "Hide or show optional modules using library settings without removing stored data."
+      ],
+      "sourceEvidence": [],
+      "verificationEvidence": [],
+      "verificationNeeded": [
+        "Test persistence, validation and the visibility setting in the desktop app."
+      ]
+    },
+    {
+      "id": "AUTH-CORE",
+      "phase": "2",
+      "module": "security",
+      "weight": 6,
+      "status": "verified",
+      "title": "Local authentication and role enforcement",
+      "requirements": [
+        "REQ-SEC",
+        "REQ-ADM"
+      ],
+      "acceptanceCriteria": [
+        "Sign in with an Argon2id-verified password and keep the session in memory.",
+        "Enforce signed-out and role-denied responses in Rust.",
+        "Lock a known account after repeated bad passwords."
+      ],
+      "sourceEvidence": [
+        "src-tauri/src/{commands/auth.rs,services/auth.rs,state.rs} and src-tauri/tests/ipc.rs."
+      ],
+      "verificationEvidence": [
+        "baseline-rust"
+      ],
+      "verificationNeeded": []
+    },
+    {
+      "id": "CAT-RECORD",
+      "phase": "3",
+      "module": "catalogue",
+      "weight": 6,
+      "status": "verified",
+      "title": "Bibliographic editing and duplicate detection",
+      "requirements": [
+        "REQ-CAT"
+      ],
+      "acceptanceCriteria": [
+        "Add and edit a record with multiple contributors and subjects.",
+        "Normalize valid ISBNs, warn on duplicate ISBN or title-author-year, and archive or restore with an audit event."
+      ],
+      "sourceEvidence": [
+        "src/features/catalogue/RecordFormDialog.tsx and src-tauri/src/services/catalogue.rs."
+      ],
+      "verificationEvidence": [
+        "baseline-frontend",
+        "baseline-rust",
+        "accession-circulation-classification"
+      ],
+      "verificationNeeded": []
+    },
+    {
+      "id": "CAT-BULK",
+      "phase": "3",
+      "module": "catalogue",
+      "weight": 4,
+      "status": "not-started",
+      "title": "Bulk catalogue operations and covers",
+      "requirements": [
+        "REQ-CAT"
+      ],
+      "acceptanceCriteria": [
+        "Apply a confirmed edit or archive to a selected set with an audit trail.",
+        "Add or remove a validated local cover without exposing filesystem paths."
+      ],
+      "sourceEvidence": [],
+      "verificationEvidence": [],
+      "verificationNeeded": [
+        "Test multi-record rollback, permission denial and malformed cover rejection."
+      ]
+    },
+    {
+      "id": "ACC-COPIES",
+      "phase": "3",
+      "module": "accession",
+      "weight": 6,
+      "status": "verified",
+      "title": "Copy records and accession register",
+      "requirements": [
+        "REQ-ACC"
+      ],
+      "acceptanceCriteria": [
+        "Create multiple copies of a title with unique auto or manual accession numbers and barcodes.",
+        "Edit location, collection, source and copy status.",
+        "Filter the register and preserve copy history."
+      ],
+      "sourceEvidence": [
+        "src/features/catalogue/{AccessionPage,CopyDialogs,RecordPage}.tsx and src-tauri/src/{domain/accession.rs,services/catalogue.rs}."
+      ],
+      "verificationEvidence": [
+        "baseline-frontend",
+        "baseline-rust"
+      ],
+      "verificationNeeded": []
+    },
+    {
+      "id": "CLS-NUMBER",
+      "phase": "3",
+      "module": "catalogue",
+      "weight": 2,
+      "status": "verified",
+      "title": "Classification numbers and call labels",
+      "requirements": [
+        "REQ-CLS"
+      ],
+      "acceptanceCriteria": [
+        "Save Dewey, UDC or LCC and a class number on a record.",
+        "Suggest a copy call number and render it in the Spine Label layout."
+      ],
+      "sourceEvidence": [
+        "src/features/catalogue/RecordFormDialog.tsx, src/components/CallNumberLabel.tsx and src/lib/callNumber.ts."
+      ],
+      "verificationEvidence": [
+        "baseline-frontend",
+        "baseline-rust",
+        "accession-circulation-classification"
+      ],
+      "verificationNeeded": []
+    },
+    {
+      "id": "SRCH-CATALOGUE",
+      "phase": "3",
+      "module": "search",
+      "weight": 6,
+      "status": "verified",
+      "title": "Catalogue text search and exact scan lookups",
+      "requirements": [
+        "REQ-SRCH"
+      ],
+      "acceptanceCriteria": [
+        "Find multiword and Malayalam titles with FTS prefix matches.",
+        "Resolve ISBN, accession number and barcode exactly.",
+        "Apply availability, collection and archive filters with sorting and pagination."
+      ],
+      "sourceEvidence": [
+        "src/features/catalogue/CataloguePage.tsx, src-tauri/src/services/catalogue.rs and migration 0004."
+      ],
+      "verificationEvidence": [
+        "baseline-frontend",
+        "baseline-rust"
+      ],
+      "verificationNeeded": []
+    },
+    {
+      "id": "SRCH-FILTERS",
+      "phase": "3",
+      "module": "search",
+      "weight": 3,
+      "status": "not-started",
+      "title": "Saved searches and filters",
+      "requirements": [
+        "REQ-SRCH"
+      ],
+      "acceptanceCriteria": [
+        "Save a named filter, reopen it after restart and edit or remove it."
+      ],
+      "sourceEvidence": [],
+      "verificationEvidence": [],
+      "verificationNeeded": [
+        "Test persisted filters, conflicting names and relevant staff visibility."
+      ]
+    },
+    {
+      "id": "IMP-BIB",
+      "phase": "3",
+      "module": "exchange",
+      "weight": 7,
+      "status": "implemented",
+      "title": "Staged catalogue CSV and ISO 2709 MARC import",
+      "requirements": [
+        "REQ-IMP",
+        "REQ-CAT"
+      ],
+      "acceptanceCriteria": [
+        "Preview and map a CSV or MARC import before writing.",
+        "Import Koha 952 holdings as copies and report skipped rows, duplicates and barcode clashes.",
+        "Roll back the commit on a write failure."
+      ],
+      "sourceEvidence": [
+        "src/features/catalogue/ImportDialog.tsx and src-tauri/src/services/import/."
+      ],
+      "verificationEvidence": [
+        "baseline-frontend",
+        "baseline-rust"
+      ],
+      "verificationNeeded": [
+        "Import CSV and ISO 2709 samples in the native desktop workflow and reconcile the results."
+      ]
+    },
+    {
+      "id": "IMP-KOHA",
+      "phase": "3",
+      "module": "exchange",
+      "weight": 4,
+      "status": "blocked",
+      "title": "Real Koha bibliographic migration acceptance",
+      "requirements": [
+        "REQ-IMP"
+      ],
+      "acceptanceCriteria": [
+        "Import an anonymised Koha export and reconcile record count, per-record copies, statuses, barcodes and mapped locations with the source.",
+        "Benchmark a large export and record runtime and peak memory."
+      ],
+      "sourceEvidence": [
+        "The importer has synthetic Koha tests and a 100 MB limit."
+      ],
+      "verificationEvidence": [],
+      "verificationNeeded": [
+        "Run and record reconciliation and a large-file benchmark on representative exports."
+      ]
+    },
+    {
+      "id": "IMP-FORMATS",
+      "phase": "3",
+      "module": "exchange",
+      "weight": 5,
+      "status": "not-started",
+      "title": "MARCXML, XLSX and JSON catalogue import",
+      "requirements": [
+        "REQ-IMP"
+      ],
+      "acceptanceCriteria": [
+        "Preview and commit a representative file of each format with mapping and validation.",
+        "Reject malformed data without partial writes."
+      ],
+      "sourceEvidence": [],
+      "verificationEvidence": [],
+      "verificationNeeded": [
+        "Test a valid and a malformed sample of every added format."
+      ]
+    },
+    {
+      "id": "EXP-CATALOGUE",
+      "phase": "3",
+      "module": "exchange",
+      "weight": 5,
+      "status": "in-progress",
+      "title": "Catalogue and holdings export",
+      "requirements": [
+        "REQ-CAT",
+        "REQ-IMP"
+      ],
+      "acceptanceCriteria": [
+        "Export selected titles with holdings in documented CSV, XLSX, JSON and MARC exchange formats.",
+        "Reimport representative exports and retain supported record and copy fields."
+      ],
+      "sourceEvidence": [
+        "Accession Register exports all matching holdings to UTF-8 CSV through catalogue_export_copies."
+      ],
+      "verificationEvidence": [
+        "accession-circulation-classification"
+      ],
+      "verificationNeeded": [
+        "Test data reconciliation and reopen exported files in appropriate readers."
+      ]
+    },
+    {
+      "id": "PRN-LABEL",
+      "phase": "3",
+      "module": "printing",
+      "weight": 2,
+      "status": "implemented",
+      "title": "Single-copy barcode and spine label",
+      "requirements": [
+        "REQ-PRN"
+      ],
+      "acceptanceCriteria": [
+        "Open a printable label for a saved copy with its call number and Code 128 barcode."
+      ],
+      "sourceEvidence": [
+        "src/features/catalogue/CopyDialogs.tsx and src/features/catalogue/catalogue.test.tsx."
+      ],
+      "verificationEvidence": [
+        "baseline-frontend"
+      ],
+      "verificationNeeded": [
+        "Print and scan a saved copy label under PRN-HARDWARE."
+      ]
+    },
+    {
+      "id": "CIRC-LOAN",
+      "phase": "4",
+      "module": "circulation",
+      "weight": 8,
+      "status": "implemented",
+      "title": "Issue, return and overdue desk workflow",
+      "requirements": [
+        "REQ-CIRC"
+      ],
+      "acceptanceCriteria": [
+        "Preview and confirm a loan and its return by barcode.",
+        "Reject ineligible members and duplicate open loans.",
+        "Show due dates and remove a returned loan from the overdue list while retaining history."
+      ],
+      "sourceEvidence": [
+        "src/features/circulation/CirculationPage.tsx, src-tauri/src/services/circulation.rs and migration 0006."
+      ],
+      "verificationEvidence": [
+        "baseline-frontend",
+        "baseline-rust"
+      ],
+      "verificationNeeded": [
+        "Exercise issue, overdue list and return in a Windows desktop walkthrough."
+      ]
+    },
+    {
+      "id": "CIRC-RENEW",
+      "phase": "4",
+      "module": "circulation",
+      "weight": 4,
+      "status": "verified",
+      "title": "Renewal and policy limits",
+      "requirements": [
+        "REQ-CIRC"
+      ],
+      "acceptanceCriteria": [
+        "Preview and confirm an eligible renewal.",
+        "Respect overdue, holiday, waiting-reservation and renewal-limit rules.",
+        "Save the updated due date and history together."
+      ],
+      "sourceEvidence": [
+        "src-tauri/src/services/circulation.rs, src/features/circulation/CirculationPage.tsx and migration 0007."
+      ],
+      "verificationEvidence": [
+        "baseline-frontend",
+        "baseline-rust",
+        "accession-circulation-classification"
+      ],
+      "verificationNeeded": []
+    },
+    {
+      "id": "CIRC-HOLIDAYS",
+      "phase": "4",
+      "module": "circulation",
+      "weight": 3,
+      "status": "in-progress",
+      "title": "Staff-managed calendar and closed-day policies",
+      "requirements": [
+        "REQ-CIRC",
+        "REQ-CFG"
+      ],
+      "acceptanceCriteria": [
+        "Configure holiday dates and closed days in Library Settings.",
+        "Verify due dates skip closed dates for configured issue and renewal rules."
+      ],
+      "sourceEvidence": [
+        "Holiday-aware date calculation and SQLite holiday records exist. Settings exposes loan rules."
+      ],
+      "verificationEvidence": [],
+      "verificationNeeded": [
+        "Test calendar edit/permission, date boundaries and saved policies in the desktop app."
+      ]
+    },
+    {
+      "id": "CIRC-HOLDS",
+      "phase": "4",
+      "module": "circulation",
+      "weight": 5,
+      "status": "verified",
+      "title": "Copy reservation and hold queue",
+      "requirements": [
+        "REQ-CIRC"
+      ],
+      "acceptanceCriteria": [
+        "Queue eligible members in order.",
+        "Move to the next member after cancellation or expiry.",
+        "Prevent conflicting issue or renewal and preserve reservation history."
+      ],
+      "sourceEvidence": [
+        "src-tauri/src/services/reservations.rs, src/features/circulation/Reservations.tsx and migration 0008."
+      ],
+      "verificationEvidence": [
+        "baseline-frontend",
+        "baseline-rust",
+        "accession-circulation-classification"
+      ],
+      "verificationNeeded": []
+    },
+    {
+      "id": "CIRC-FINES",
+      "phase": "4",
+      "module": "circulation",
+      "weight": 6,
+      "status": "implemented",
+      "title": "Fines, settlement and lost/damaged returns",
+      "requirements": [
+        "REQ-CIRC"
+      ],
+      "acceptanceCriteria": [
+        "Show and assess the issue-time fine terms on overdue return.",
+        "Record partial payment and permission-checked waiver.",
+        "Close as lost or damaged with consistent stock, balance and audit entries."
+      ],
+      "sourceEvidence": [
+        "src-tauri/src/services/{fines,circulation}.rs, src/features/circulation/Fines.tsx and migrations 0009–0010."
+      ],
+      "verificationEvidence": [
+        "baseline-frontend",
+        "baseline-rust"
+      ],
+      "verificationNeeded": [
+        "Verify fine arithmetic and rollback, successful authorized loss/damage closure, and a Windows desktop settlement."
+      ]
+    },
+    {
+      "id": "MEM-DIR",
+      "phase": "4",
+      "module": "members",
+      "weight": 5,
+      "status": "implemented",
+      "title": "Member directory, search and loan history",
+      "requirements": [
+        "REQ-MEM",
+        "REQ-SRCH"
+      ],
+      "acceptanceCriteria": [
+        "Manage active and archived members with category-based expiry.",
+        "Find members by name and number with pagination.",
+        "Show current, overdue and returned loans with read-only access."
+      ],
+      "sourceEvidence": [
+        "src/features/members/{MembersPage,MemberLoanHistory}.tsx and src-tauri/src/services/members.rs."
+      ],
+      "verificationEvidence": [
+        "baseline-frontend",
+        "baseline-rust"
+      ],
+      "verificationNeeded": [
+        "Check member lookup across multiple pages and confirm expiry against the selected category's exact duration."
+      ]
+    },
+    {
+      "id": "MEM-CARD",
+      "phase": "4",
+      "module": "members",
+      "weight": 4,
+      "status": "implemented",
+      "title": "Member photos and printable cards",
+      "requirements": [
+        "REQ-MEM",
+        "REQ-PRN"
+      ],
+      "acceptanceCriteria": [
+        "Save or remove a bounded local photo.",
+        "Preview an active member's card with library name, expiry and encoded member number."
+      ],
+      "sourceEvidence": [
+        "src/features/members/MemberCard.tsx, src-tauri/src/services/member_photo.rs and migration 0011."
+      ],
+      "verificationEvidence": [
+        "baseline-frontend",
+        "baseline-rust"
+      ],
+      "verificationNeeded": [
+        "Print and scan a member card under PRN-HARDWARE."
+      ]
+    },
+    {
+      "id": "MEM-FINES",
+      "phase": "4",
+      "module": "members",
+      "weight": 2,
+      "status": "in-progress",
+      "title": "Member fine history and balances",
+      "requirements": [
+        "REQ-MEM"
+      ],
+      "acceptanceCriteria": [
+        "Open a member and reconcile their balance, settlements and waivers with the circulation fine ledger."
+      ],
+      "sourceEvidence": [
+        "Circulation has a separate fine ledger; members have a loan history view."
+      ],
+      "verificationEvidence": [],
+      "verificationNeeded": [
+        "Add and run a reconciliation test including a partially paid fine."
+      ]
+    },
+    {
+      "id": "IMP-PATRONS",
+      "phase": "4",
+      "module": "exchange",
+      "weight": 4,
+      "status": "implemented",
+      "title": "Koha patron CSV migration",
+      "requirements": [
+        "REQ-IMP",
+        "REQ-MEM"
+      ],
+      "acceptanceCriteria": [
+        "Map source codes to active categories, preserve leading-zero numbers and valid expiry dates, preview skips and commit eligible rows transactionally."
+      ],
+      "sourceEvidence": [
+        "src/features/members/KohaMemberImport.tsx and src-tauri/src/services/member_import.rs."
+      ],
+      "verificationEvidence": [
+        "baseline-frontend",
+        "baseline-rust"
+      ],
+      "verificationNeeded": [
+        "Reconcile an anonymised Koha patron export with the imported records."
+      ]
+    },
+    {
+      "id": "IMP-LOANS",
+      "phase": "4",
+      "module": "exchange",
+      "weight": 5,
+      "status": "not-started",
+      "title": "Migrate current loans and outstanding fines",
+      "requirements": [
+        "REQ-IMP",
+        "REQ-CIRC"
+      ],
+      "acceptanceCriteria": [
+        "Map active Koha loans and balances to local member and copy IDs.",
+        "Preview invalid references, preserve due dates and amounts, and commit atomically."
+      ],
+      "sourceEvidence": [],
+      "verificationEvidence": [],
+      "verificationNeeded": [
+        "Reconcile a real anonymised dataset and verify rollback on conflicts."
+      ]
+    },
+    {
+      "id": "DASH-KPI",
+      "phase": "5",
+      "module": "reports",
+      "weight": 4,
+      "status": "implemented",
+      "title": "Live library dashboard counts",
+      "requirements": [
+        "REQ-DASH"
+      ],
+      "acceptanceCriteria": [
+        "Display source-backed record, copy, member, circulation, hold and fine totals.",
+        "Show empty and backend-error states."
+      ],
+      "sourceEvidence": [
+        "src/features/dashboard/Dashboard.tsx, src-tauri/src/services/dashboard.rs and dashboard_overview IPC."
+      ],
+      "verificationEvidence": [
+        "baseline-rust"
+      ],
+      "verificationNeeded": [
+        "Reconcile ready holds and verify the KPI display and error state in a frontend workflow test."
+      ]
+    },
+    {
+      "id": "DASH-TRENDS",
+      "phase": "5",
+      "module": "reports",
+      "weight": 4,
+      "status": "not-started",
+      "title": "Dashboard trends, activity and alerts",
+      "requirements": [
+        "REQ-DASH"
+      ],
+      "acceptanceCriteria": [
+        "Select a date range and reconcile activity, growth and top titles with reports.",
+        "Show actionable alerts for overdue items and holds."
+      ],
+      "sourceEvidence": [],
+      "verificationEvidence": [],
+      "verificationNeeded": [
+        "Test date-range boundaries and empty and populated dashboards."
+      ]
+    },
+    {
+      "id": "RPT-CSV",
+      "phase": "5",
+      "module": "reports",
+      "weight": 4,
+      "status": "implemented",
+      "title": "Circulation, popular titles and stock reports",
+      "requirements": [
+        "REQ-RPT"
+      ],
+      "acceptanceCriteria": [
+        "Show circulation activity and popular titles for a date range and stock by location.",
+        "Export each report to CSV with displayed totals and safe text cells."
+      ],
+      "sourceEvidence": [
+        "src/features/reports/ReportsPage.tsx and src-tauri/src/services/reports.rs."
+      ],
+      "verificationEvidence": [
+        "baseline-frontend"
+      ],
+      "verificationNeeded": [
+        "Reconcile query output and check CSV export for each supported report."
+      ]
+    },
+    {
+      "id": "RPT-COVERAGE",
+      "phase": "5",
+      "module": "reports",
+      "weight": 6,
+      "status": "in-progress",
+      "title": "Remaining operational reports",
+      "requirements": [
+        "REQ-RPT"
+      ],
+      "acceptanceCriteria": [
+        "Produce catalogue, accession, available/issued/overdue, member, department, growth, expenditure, loss/damage, inventory and fine reports with totals that match fixtures."
+      ],
+      "sourceEvidence": [
+        "src-tauri/src/services/reports.rs",
+        "src/features/reports/ReportsPage.tsx"
+      ],
+      "verificationEvidence": [
+        "fine-summary-ipc",
+        "fine-summary-frontend",
+        "catalogue-growth-ipc",
+        "catalogue-growth-ui",
+        "catalogue-growth-regression",
+        "member-summary"
+      ],
+      "verificationNeeded": [
+        "Run seeded reconciliation and permission checks for each additional report."
+      ]
+    },
+    {
+      "id": "RPT-FORMATS",
+      "phase": "5",
+      "module": "reports",
+      "weight": 5,
+      "status": "in-progress",
+      "title": "Report PDF, XLSX and print coverage",
+      "requirements": [
+        "REQ-RPT"
+      ],
+      "acceptanceCriteria": [
+        "Open PDF and XLSX exports with matching row counts and totals.",
+        "Print every v1 report without clipping."
+      ],
+      "sourceEvidence": [
+        "ReportsPage has current-report printing and CSV; PDF/XLSX exports and full report coverage are open."
+      ],
+      "verificationEvidence": [],
+      "verificationNeeded": [
+        "Open output in a spreadsheet and PDF reader; print and compare against the source report."
+      ]
+    },
+    {
+      "id": "PRN-SLIP",
+      "phase": "5",
+      "module": "printing",
+      "weight": 2,
+      "status": "implemented",
+      "title": "Due slip print preview",
+      "requirements": [
+        "REQ-PRN",
+        "REQ-CIRC"
+      ],
+      "acceptanceCriteria": [
+        "Generate a printable issue slip from a confirmed loan with library, member, copy and due date."
+      ],
+      "sourceEvidence": [
+        "src/features/circulation/DueSlip.tsx and CirculationPage issue flow."
+      ],
+      "verificationEvidence": [],
+      "verificationNeeded": [
+        "Run a confirmed-issue slip test and verify the print path under PRN-HARDWARE."
+      ]
+    },
+    {
+      "id": "PRN-BATCH",
+      "phase": "5",
+      "module": "printing",
+      "weight": 4,
+      "status": "implemented",
+      "title": "Batch labels, receipts and stock sheets",
+      "requirements": [
+        "REQ-PRN"
+      ],
+      "acceptanceCriteria": [
+        "Print a selected batch as paginated barcode or spine labels.",
+        "Generate a fine receipt and inventory sheet with correct details."
+      ],
+      "sourceEvidence": [
+        "src/features/catalogue/AccessionPage.tsx",
+        "src/features/catalogue/LabelSheetDialog.tsx",
+        "src/features/catalogue/LabelSheet.css",
+        "src/features/circulation/Fines.tsx"
+      ],
+      "verificationEvidence": [
+        "batch-label-ui",
+        "batch-label-build",
+        "fine-receipt-inventory-ui"
+      ],
+      "verificationNeeded": [
+        "Check label pagination on A4 and Letter and confirm printed barcodes scan.",
+        "Print a payment receipt and filtered inventory page in the Windows desktop app and compare their contents with the source records."
+      ]
+    },
+    {
+      "id": "PRN-HARDWARE",
+      "phase": "5",
+      "module": "printing",
+      "weight": 3,
+      "status": "blocked",
+      "title": "Physical printer and USB scanner acceptance",
+      "requirements": [
+        "REQ-PRN"
+      ],
+      "acceptanceCriteria": [
+        "Print a label, member card and due slip on an OS printer.",
+        "Scan the printed codes with a USB keyboard-wedge scanner and resolve the intended copy/member."
+      ],
+      "sourceEvidence": [
+        "Print actions and keyboard-input fields exist."
+      ],
+      "verificationEvidence": [],
+      "verificationNeeded": [
+        "Run and record a physical print and scan walkthrough."
+      ]
+    },
+    {
+      "id": "ACQ-ORDER",
+      "phase": "6",
+      "module": "acquisitions",
+      "weight": 6,
+      "status": "not-started",
+      "title": "Acquisition requests, approval and purchasing",
+      "requirements": [
+        "REQ-ACQ"
+      ],
+      "acceptanceCriteria": [
+        "Approve a recommendation into a purchase order and record vendor, invoice and budget with a history."
+      ],
+      "sourceEvidence": [],
+      "verificationEvidence": [],
+      "verificationNeeded": [
+        "Test approval permissions and budget/invoice totals."
+      ]
+    },
+    {
+      "id": "ACQ-RECEIVE",
+      "phase": "6",
+      "module": "acquisitions",
+      "weight": 6,
+      "status": "not-started",
+      "title": "Purchase receiving into catalogue and accession",
+      "requirements": [
+        "REQ-ACQ",
+        "REQ-ACC"
+      ],
+      "acceptanceCriteria": [
+        "Receive full or partial orders and create linked records and copies in one transaction.",
+        "Reject duplicate receipts without re-creating copies."
+      ],
+      "sourceEvidence": [],
+      "verificationEvidence": [],
+      "verificationNeeded": [
+        "Test a partial order, rollback, duplicate receipt and catalogue linkage."
+      ]
+    },
+    {
+      "id": "SER-ISSUES",
+      "phase": "6",
+      "module": "serials",
+      "weight": 6,
+      "status": "not-started",
+      "title": "Serials subscriptions and issue check-in",
+      "requirements": [
+        "REQ-SER"
+      ],
+      "acceptanceCriteria": [
+        "Save titles with ISSN and frequency.",
+        "Generate expected issues, check in received issues and list missing issues."
+      ],
+      "sourceEvidence": [],
+      "verificationEvidence": [],
+      "verificationNeeded": [
+        "Test issue schedules, irregular frequency and duplicate check-in."
+      ]
+    },
+    {
+      "id": "SER-RENEW",
+      "phase": "6",
+      "module": "serials",
+      "weight": 4,
+      "status": "not-started",
+      "title": "Serials renewals and expenditure",
+      "requirements": [
+        "REQ-SER"
+      ],
+      "acceptanceCriteria": [
+        "Renew an expiring subscription and reconcile renewal history and spending for a date range."
+      ],
+      "sourceEvidence": [],
+      "verificationEvidence": [],
+      "verificationNeeded": [
+        "Test due reminders and recorded cost totals."
+      ]
+    },
+    {
+      "id": "ACC-STOCK",
+      "phase": "6",
+      "module": "accession",
+      "weight": 6,
+      "status": "not-started",
+      "title": "Transfers and stock verification",
+      "requirements": [
+        "REQ-ACC"
+      ],
+      "acceptanceCriteria": [
+        "Record a transfer with sending and receiving locations.",
+        "Scan a shelf audit and reconcile matched, missing and unexpected copies with history."
+      ],
+      "sourceEvidence": [],
+      "verificationEvidence": [],
+      "verificationNeeded": [
+        "Test stock snapshots, discrepancies, transfer permissions and recovery after interruption."
+      ]
+    },
+    {
+      "id": "CLS-AUTH",
+      "phase": "6",
+      "module": "catalogue",
+      "weight": 5,
+      "status": "not-started",
+      "title": "Classification browser and managed authorities",
+      "requirements": [
+        "REQ-CLS",
+        "REQ-CFG"
+      ],
+      "acceptanceCriteria": [
+        "Browse DDC, UDC, LCC and custom codes.",
+        "Manage shared author, publisher and subject authorities and controlled MARC mappings."
+      ],
+      "sourceEvidence": [],
+      "verificationEvidence": [],
+      "verificationNeeded": [
+        "Verify linked-record updates and sample MARC authority mappings."
+      ]
+    },
+    {
+      "id": "ADM-STAFF",
+      "phase": "7",
+      "module": "administration",
+      "weight": 6,
+      "status": "not-started",
+      "title": "Staff administration and account recovery",
+      "requirements": [
+        "REQ-ADM",
+        "REQ-SEC"
+      ],
+      "acceptanceCriteria": [
+        "Create, deactivate and assign roles to staff.",
+        "Change a password, unlock an account and recover access without discarding library data."
+      ],
+      "sourceEvidence": [
+        "Sign-in and built-in roles exist; the staff route is a placeholder."
+      ],
+      "verificationEvidence": [],
+      "verificationNeeded": [
+        "Verify least-privilege, last-admin protection and recovery on a disposable library."
+      ]
+    },
+    {
+      "id": "ADM-AUDIT",
+      "phase": "7",
+      "module": "administration",
+      "weight": 4,
+      "status": "in-progress",
+      "title": "Audit log UI and coverage",
+      "requirements": [
+        "REQ-ADM",
+        "REQ-SEC"
+      ],
+      "acceptanceCriteria": [
+        "Search immutable audit entries by date, user and action.",
+        "Reconcile key workflow events with the underlying records."
+      ],
+      "sourceEvidence": [
+        "src-tauri/src/services/audit.rs writes events; the audit route is a placeholder."
+      ],
+      "verificationEvidence": [],
+      "verificationNeeded": [
+        "Test log visibility and event coverage for privileged actions."
+      ]
+    },
+    {
+      "id": "SEC-REVIEW",
+      "phase": "7",
+      "module": "security",
+      "weight": 5,
+      "status": "in-progress",
+      "title": "Security and file-handling acceptance",
+      "requirements": [
+        "REQ-SEC"
+      ],
+      "acceptanceCriteria": [
+        "Review permissions and capabilities for every exposed command.",
+        "Reject path traversal and malformed or oversized input; retain least-privilege CSP."
+      ],
+      "sourceEvidence": [
+        "Backend permissions, restricted capabilities and bounded image/import handlers exist."
+      ],
+      "verificationEvidence": [],
+      "verificationNeeded": [
+        "Run a complete permission and input-negative matrix and review production CSP and dependencies."
+      ]
+    },
+    {
+      "id": "BAK-CREATE",
+      "phase": "7",
+      "module": "backup",
+      "weight": 6,
+      "status": "in-progress",
+      "title": "Verified manual and scheduled backups",
+      "requirements": [
+        "REQ-BAK",
+        "REQ-ADM"
+      ],
+      "acceptanceCriteria": [
+        "Create backups through SQLite's backup API.",
+        "Schedule and list backups with integrity check, schema version and retained history."
+      ],
+      "sourceEvidence": [
+        "src-tauri/src/services/backup.rs and src/features/backup/BackupPage.tsx"
+      ],
+      "verificationEvidence": [],
+      "verificationNeeded": [
+        "Test concurrent writes, retained copies and corruption detection."
+      ]
+    },
+    {
+      "id": "BAK-RESTORE",
+      "phase": "7",
+      "module": "backup",
+      "weight": 7,
+      "status": "not-started",
+      "title": "Restore, pre-upgrade snapshot and recovery",
+      "requirements": [
+        "REQ-BAK",
+        "REQ-SEC"
+      ],
+      "acceptanceCriteria": [
+        "Reject a corrupt or incompatible backup.",
+        "Snapshot before restore and upgrade, then restore into a clean library and verify records, loans and users.",
+        "Roll back after a failed restore."
+      ],
+      "sourceEvidence": [],
+      "verificationEvidence": [],
+      "verificationNeeded": [
+        "Run a clean restore, corrupt input and failed-restore rollback through real SQLite and desktop UI."
+      ]
+    },
+    {
+      "id": "LAN-SERVER",
+      "phase": "7b",
+      "module": "lan",
+      "weight": 7,
+      "status": "not-started",
+      "title": "Encrypted server, pairing and individual sessions",
+      "requirements": [
+        "REQ-NET",
+        "REQ-SEC"
+      ],
+      "acceptanceCriteria": [
+        "Enable LAN listener only when configured.",
+        "Pair with a single-use code and verify the server fingerprint.",
+        "Sign in with separate sessions and revoke a client."
+      ],
+      "sourceEvidence": [
+        "src-tauri/src/state.rs currently holds the desktop session."
+      ],
+      "verificationEvidence": [],
+      "verificationNeeded": [
+        "Test unauthorised, expired and revoked clients, and fingerprint mismatch."
+      ]
+    },
+    {
+      "id": "LAN-CLIENT",
+      "phase": "7b",
+      "module": "lan",
+      "weight": 7,
+      "status": "not-started",
+      "title": "Shared live data and concurrent edit safety",
+      "requirements": [
+        "REQ-NET"
+      ],
+      "acceptanceCriteria": [
+        "Synchronise catalogue and loans across clients using server permissions.",
+        "Reject stale edits and competing issues.",
+        "Keep SQLite and backups on the server."
+      ],
+      "sourceEvidence": [],
+      "verificationEvidence": [],
+      "verificationNeeded": [
+        "Test concurrency and recovery across at least three computers with internet access disabled."
+      ]
+    },
+    {
+      "id": "LAN-OPS",
+      "phase": "7b",
+      "module": "lan",
+      "weight": 4,
+      "status": "not-started",
+      "title": "LAN controls and operating guidance",
+      "requirements": [
+        "REQ-NET"
+      ],
+      "acceptanceCriteria": [
+        "Show server address, connected computers and explanations when disconnected.",
+        "Document firewall setup and exercise network loss and reconnection."
+      ],
+      "sourceEvidence": [],
+      "verificationEvidence": [],
+      "verificationNeeded": [
+        "Verify the three-computer pilot using the published guidance."
+      ]
+    },
+    {
+      "id": "REL-BUNDLE",
+      "phase": "8",
+      "module": "release",
+      "weight": 3,
+      "status": "verified",
+      "title": "Production frontend bundle",
+      "requirements": [
+        "V1-RELEASE"
+      ],
+      "acceptanceCriteria": [
+        "Build the TypeScript and Vite production assets successfully.",
+        "Keep development preview data and the design gallery out of the bundle."
+      ],
+      "sourceEvidence": [
+        "vite.config.ts, src/App.tsx and src/main.tsx guard development entry points."
+      ],
+      "verificationEvidence": [
+        "build",
+        "baseline-build"
+      ],
+      "verificationNeeded": []
+    },
+    {
+      "id": "REL-WIN",
+      "phase": "8",
+      "module": "release",
+      "weight": 5,
+      "status": "in-progress",
+      "title": "Windows installer and native smoke test",
+      "requirements": [
+        "V1-RELEASE"
+      ],
+      "acceptanceCriteria": [
+        "Build and install the Windows package on a clean machine.",
+        "Launch, configure, restart, upgrade and uninstall as documented."
+      ],
+      "sourceEvidence": [
+        "Tauri Windows bundle configuration is present; PROGRESS.md records a prior Windows build and an incomplete WebView2 smoke run."
+      ],
+      "verificationEvidence": [],
+      "verificationNeeded": [
+        "Run an interactive Windows installer smoke test and capture the workflow results."
+      ]
+    },
+    {
+      "id": "REL-MAC",
+      "phase": "8",
+      "module": "release",
+      "weight": 4,
+      "status": "not-started",
+      "title": "macOS package and native smoke test",
+      "requirements": [
+        "V1-RELEASE"
+      ],
+      "acceptanceCriteria": [
+        "Install, launch, configure, restart and uninstall the packaged app on macOS."
+      ],
+      "sourceEvidence": [],
+      "verificationEvidence": [],
+      "verificationNeeded": [
+        "Record the package and smoke result on macOS."
+      ]
+    },
+    {
+      "id": "REL-LINUX",
+      "phase": "8",
+      "module": "release",
+      "weight": 4,
+      "status": "not-started",
+      "title": "Linux package and native smoke test",
+      "requirements": [
+        "V1-RELEASE"
+      ],
+      "acceptanceCriteria": [
+        "Install, launch, configure, restart and uninstall the packaged app on a supported Linux distribution."
+      ],
+      "sourceEvidence": [],
+      "verificationEvidence": [],
+      "verificationNeeded": [
+        "Record the package and smoke result on the supported distribution."
+      ]
+    },
+    {
+      "id": "REL-CI",
+      "phase": "8",
+      "module": "release",
+      "weight": 5,
+      "status": "in-progress",
+      "title": "Automated release quality checks",
+      "requirements": [
+        "V1-RELEASE"
+      ],
+      "acceptanceCriteria": [
+        "Run Rust fmt, Clippy and tests, frontend typecheck, lint and tests, and a browser smoke test in CI.",
+        "Build the package matrix for the claimed operating systems."
+      ],
+      "sourceEvidence": [
+        "npm and Cargo checks exist; no tracked package matrix or desktop app browser smoke was found."
+      ],
+      "verificationEvidence": [
+        "baseline-frontend",
+        "baseline-rust",
+        "baseline-build"
+      ],
+      "verificationNeeded": [
+        "Set up CI, browser smoke tests, Rust fmt/Clippy checks, and the per-platform packages. Record the result of each required job."
+      ]
+    },
+    {
+      "id": "REL-DOCS",
+      "phase": "8",
+      "module": "release",
+      "weight": 4,
+      "status": "not-started",
+      "title": "User documentation and signing instructions",
+      "requirements": [
+        "V1-RELEASE"
+      ],
+      "acceptanceCriteria": [
+        "Publish installation, setup, catalogue, migration, circulation, reporting, backup, restore and LAN instructions.",
+        "Document signing and upgrade procedures for each claimed OS."
+      ],
+      "sourceEvidence": [
+        "README.md provides developer setup and launch commands."
+      ],
+      "verificationEvidence": [],
+      "verificationNeeded": [
+        "Use the user guide to complete a first installation, normal desk tasks, and a restore."
+      ]
+    }
+  ],
+  "releaseGates": [
+    {
+      "id": "bundle",
+      "title": "Production frontend build",
+      "weight": 10,
+      "taskIds": [
+        "REL-BUNDLE"
+      ]
+    },
+    {
+      "id": "desktop",
+      "title": "Desktop packages and smoke tests",
+      "weight": 24,
+      "taskIds": [
+        "REL-WIN",
+        "REL-MAC",
+        "REL-LINUX"
+      ]
+    },
+    {
+      "id": "data",
+      "title": "Verified migration and recovery",
+      "weight": 20,
+      "taskIds": [
+        "IMP-KOHA",
+        "IMP-LOANS",
+        "BAK-CREATE",
+        "BAK-RESTORE"
+      ]
+    },
+    {
+      "id": "desk",
+      "title": "Circulation and hardware walkthrough",
+      "weight": 14,
+      "taskIds": [
+        "CIRC-LOAN",
+        "PRN-HARDWARE",
+        "RPT-FORMATS"
+      ]
+    },
+    {
+      "id": "security",
+      "title": "Offline, security and LAN checks",
+      "weight": 18,
+      "taskIds": [
+        "CORE-OFF",
+        "SEC-REVIEW",
+        "LAN-SERVER",
+        "LAN-CLIENT",
+        "LAN-OPS"
+      ]
+    },
+    {
+      "id": "delivery",
+      "title": "Automated checks and user documentation",
+      "weight": 14,
+      "taskIds": [
+        "REL-CI",
+        "REL-DOCS"
+      ]
+    }
+  ],
+  "blockers": [
+    {
+      "taskId": "IMP-KOHA",
+      "detail": "A representative anonymised Koha export is needed. Synthetic fixtures do not establish how a real library’s framework maps."
+    },
+    {
+      "taskId": "CORE-OFF",
+      "detail": "An interactive Windows desktop and a network-disabled test session are needed for the desktop acceptance run."
+    },
+    {
+      "taskId": "PRN-HARDWARE",
+      "detail": "A physical printer and USB keyboard-wedge scanner are needed to check printed output and scan accuracy."
+    }
+  ],
+  "verificationRuns": [
+    {
+      "id": "member-summary",
+      "at": "2026-11-17T09:17:41.109Z",
+      "title": "Member report verification",
+      "check": "npm test -- --maxWorkers 2; npm run build; npm run lint; cargo test --offline --manifest-path src-tauri/Cargo.toml",
+      "outcome": "passed",
+      "result": "90 frontend, 99 Rust unit and 8 Tauri IPC tests passed. Confirmed current, expired and archived counts, aggregate display and authorization."
+    },
+    {
+      "id": "accession-export-initial",
+      "at": "2026-11-17T09:17:41.109Z",
+      "title": "Initial accession export test",
+      "check": "npm test -- --maxWorkers 2",
+      "outcome": "failed",
+      "result": "One test failed because the mutation mock received a React Query context argument. Wrapped the API call and reran successfully."
+    },
+    {
+      "id": "accession-circulation-classification",
+      "at": "2026-11-17T09:17:41.109Z",
+      "title": "Accession export and circulation regression",
+      "check": "npm test -- --maxWorkers 2; npm run build; npm run lint; cargo test --offline --manifest-path src-tauri/Cargo.toml",
+      "outcome": "passed",
+      "result": "91 frontend, 101 Rust unit and 8 Tauri IPC tests passed. Verified filtered CSV across pages, archive/restore audit and rollback, renewal due-date/history rollback, hold handover, and UDC/LCC round trips and label rendering."
+    },
+    {
+      "id": "catalogue-growth-regression",
+      "at": "2026-11-17T08:51:24.296Z",
+      "title": "Catalogue growth regression checks",
+      "check": "npm test -- --maxWorkers 2; cargo test --offline --manifest-path src-tauri/Cargo.toml --lib",
+      "outcome": "passed",
+      "result": "90 frontend tests and 99 Rust unit tests passed."
+    },
+    {
+      "id": "catalogue-growth-ipc",
+      "at": "2026-11-17T08:50:12.754Z",
+      "title": "Catalogue growth IPC checks",
+      "check": "cargo test --offline --manifest-path src-tauri/Cargo.toml --test ipc",
+      "outcome": "passed",
+      "result": "8 IPC tests passed. Growth reconciled title and copy additions, emitted zero-activity days, rejected reversed dates and required sign-in."
+    },
+    {
+      "id": "catalogue-growth-ui",
+      "at": "2026-11-17T08:50:12.754Z",
+      "title": "Catalogue growth frontend checks",
+      "check": "npm test -- src/features/reports/ReportsPage.test.tsx, npm run build, npm run lint",
+      "outcome": "passed",
+      "result": "Reports screen test passed for date controls and totals. Build and lint passed."
+    },
+    {
+      "id": "fine-summary-ipc",
+      "at": "2026-11-17T06:37:11.478Z",
+      "title": "Fine summary IPC reconciliation",
+      "check": "cargo test --offline --manifest-path src-tauri/Cargo.toml --test ipc",
+      "outcome": "passed",
+      "result": "8 IPC tests passed. The fine summary reconciled a 250-minor-unit fine with 125 paid and 125 waived, and rejected signed-out access."
+    },
+    {
+      "id": "fine-summary-frontend",
+      "at": "2026-11-17T06:37:11.478Z",
+      "title": "Fine summary frontend checks",
+      "check": "npm test -- --maxWorkers 2, npm run build, npm run lint",
+      "outcome": "passed",
+      "result": "90 tests passed. The report displayed two currencies and preserved an amount above the JavaScript safe-integer range. Build and lint passed."
+    },
+    {
+      "id": "monitor-checks",
+      "title": "Local progress monitor checks",
+      "at": "2026-11-17T03:24:17.555Z",
+      "check": "node --test tools/progress-monitor/monitor-checks.mjs",
+      "outcome": "passed",
+      "result": "Four checks passed: weighted scores and 100% endpoint, schema and evidence validation, loopback HTTP and error recovery, and DOM rendering with real three-second polling and retained filters."
+    },
+    {
+      "id": "monitor-visual",
+      "title": "Rendered dashboard layout and offline smoke",
+      "at": "2026-11-17T03:24:17.555Z",
+      "check": "Headless Edge startup and Chrome UI access",
+      "outcome": "incomplete",
+      "result": "Edge could not initialize its GPU process. The Chrome UI session stopped at the browser URL access check. Desktop and mobile visual review and an adapter-disabled browser run remain open. All monitor assets and data were served on loopback, and the DOM check allows only loopback data requests."
+    },
+    {
+      "id": "baseline-frontend",
+      "title": "Frontend baseline suite",
+      "at": "2026-11-17T03:24:17.555Z",
+      "check": "npm test and npm test -- --maxWorkers 2",
+      "outcome": "passed",
+      "result": "Both runs passed 90 tests across 15 files. This includes setup, configuration, catalogue and accession tests plus circulation, members and reports."
+    },
+    {
+      "id": "baseline-rust",
+      "title": "Rust and Tauri IPC baseline",
+      "at": "2026-11-17T03:24:17.555Z",
+      "check": "cargo test --offline --manifest-path src-tauri/Cargo.toml",
+      "outcome": "passed",
+      "result": "99 Rust unit tests and 8 Tauri command-layer IPC tests passed, including authentication, setup, settings permissions, migrations, catalogue search and accession."
+    },
+    {
+      "id": "baseline-build",
+      "title": "Production build and static checks",
+      "at": "2026-11-17T03:24:17.555Z",
+      "check": "npm run lint, npm run typecheck, npm run build, and production preview marker inspection",
+      "outcome": "passed",
+      "result": "ESLint, TypeScript and the Vite production build passed. The production bundle contained no design-gallery or synthetic preview markers."
+    },
+    {
+      "id": "windows-webview-retry",
+      "at": "2026-11-17T03:24:13.420Z",
+      "title": "Isolated Windows startup retry",
+      "check": "Launch the existing instrumented executable with a disposable database and GPU-compositing flags",
+      "outcome": "incomplete",
+      "result": "The process created the SQLite database and WebView2 profile. No page-load event was captured in 30 seconds, so the circulation walkthrough and native print checks remain open."
+    },
+    {
+      "id": "fine-receipt-inventory-ui",
+      "at": "2026-11-17T03:22:25.547Z",
+      "title": "Receipt and inventory tests",
+      "check": "npm test -- --maxWorkers 2",
+      "outcome": "passed",
+      "result": "90 frontend tests passed, including the recorded payment receipt, Print action and filtered inventory sheet contents."
+    },
+    {
+      "id": "batch-label-ui",
+      "title": "Frontend tests",
+      "at": "2026-11-17T03:16:34.442Z",
+      "check": "npm test -- --maxWorkers 2",
+      "outcome": "passed",
+      "result": "90 tests passed. The batch label test selects copies across two pages, checks the Code 128 SVG bars and text fallback, and verifies cleanup after printing."
+    },
+    {
+      "id": "batch-label-build",
+      "title": "Frontend build and lint",
+      "at": "2026-11-17T03:16:34.442Z",
+      "check": "npm run lint, npm run typecheck, npm run build",
+      "outcome": "passed",
+      "result": "Lint, TypeScript and the Vite production build passed."
+    },
+    {
+      "id": "phase5-rust-tests",
+      "title": "Rust and Tauri IPC tests",
+      "at": "2026-11-17T03:16:34.442Z",
+      "check": "cargo test --offline --manifest-path src-tauri/Cargo.toml",
+      "outcome": "passed",
+      "result": "99 Rust unit tests and 8 Tauri IPC tests passed. The circulation workflow asserts both the estimated and recorded overdue fine."
+    },
+    {
+      "id": "batch-label-browser",
+      "title": "Rendered label sheet check",
+      "at": "2026-11-17T03:16:34.442Z",
+      "check": "Open the Accession Register preview in headless Edge and render A4 output",
+      "outcome": "incomplete",
+      "result": "Edge failed to initialize its GPU or respond from the renderer. Pagination and physical scanning remain unverified."
+    },
+    {
+      "id": "audit",
+      "title": "Scope and code audit",
+      "at": "2026-11-17T03:02:30Z",
+      "check": "Local product specification, roadmap, route and command registration, test inventory, weighted task mapping",
+      "outcome": "passed",
+      "result": "Mapped all 19 documented REQ IDs to measurable v1 tasks and distinguished real routes from placeholders."
+    },
+    {
+      "id": "build",
+      "title": "Production frontend build",
+      "at": "2026-11-17T03:02:30Z",
+      "check": "npm run build and dist preview-marker inspection",
+      "outcome": "passed",
+      "result": "TypeScript and Vite production build succeeded. Dev preview and gallery markers were absent."
+    },
+    {
+      "id": "frontend-default",
+      "title": "Existing frontend suite (default)",
+      "at": "2026-11-17T03:02:30Z",
+      "check": "npm test",
+      "outcome": "failed",
+      "result": "88 passed, 1 failed. SetupWizard’s multi-step workflow exceeded the 5-second default timeout during the baseline run."
+    }
+  ],
+  "recentActivity": [
+    {
+      "kind": "progress",
+      "at": "2026-11-17T09:17:41.109Z",
+      "taskId": "BAK-CREATE",
+      "title": "Manual database backups added",
+      "detail": "Manual, integrity-checked database snapshots and saved backup listing are in testing. Scheduling and restore remain open."
+    },
+    {
+      "kind": "verification",
+      "at": "2026-11-17T09:17:41.109Z",
+      "taskId": "CIRC-RENEW",
+      "title": "Catalogue and circulation checks passed",
+      "detail": "91 frontend, 101 Rust unit and 8 Tauri IPC tests passed. Verified filtered CSV across pages, archive/restore audit and rollback, renewal due-date/history rollback, hold handover, and UDC/LCC round trips and label rendering."
+    },
+    {
+      "kind": "progress",
+      "at": "2026-11-17T09:17:41.109Z",
+      "taskId": "RPT-COVERAGE",
+      "title": "Members by category report added",
+      "detail": "Current, expired and archived member totals can be printed or exported to CSV."
+    },
+    {
+      "kind": "progress",
+      "at": "2026-11-17T08:48:49.305Z",
+      "taskId": "RPT-COVERAGE",
+      "title": "Catalogue growth report added",
+      "detail": "Counts titles and copies added by local calendar day, with date filtering, CSV export and printing. The report uses record creation dates."
+    },
+    {
+      "kind": "progress",
+      "at": "2026-11-17T06:35:44.569Z",
+      "taskId": "RPT-COVERAGE",
+      "title": "Fine summary report added",
+      "detail": "The fine summary displays all-time assessed, paid, waived and outstanding amounts by currency, with CSV export and the existing print action. Other operational reports are still open."
+    },
+    {
+      "kind": "completed",
+      "at": "2026-11-17T03:24:17.555Z",
+      "title": "Local progress monitor available",
+      "detail": "The dashboard reads the working directory every three seconds. Schema validation, weighted progress, HTTP recovery and live DOM updates passed their checks."
+    },
+    {
+      "kind": "progress",
+      "at": "2026-11-17T03:24:17.555Z",
+      "title": "Baseline updated with current test evidence",
+      "detail": "Verified setup, configuration, authentication, accession and catalogue search. Overall 25.8% to 28.9%."
+    },
+    {
+      "kind": "completed",
+      "at": "2026-11-17T03:22:25.547Z",
+      "taskId": "PRN-BATCH",
+      "title": "Fine receipts and inventory sheets implemented",
+      "detail": "Fine history can print a recorded payment receipt. The Accession Register can print a checklist for the current filtered page. Desktop print verification remains."
+    },
+    {
+      "kind": "progress",
+      "at": "2026-11-17T03:16:34.442Z",
+      "taskId": "PRN-BATCH",
+      "title": "Batch copy labels added to the Accession Register",
+      "detail": "Staff can select copies across pages and preview a two-column sheet. The UI test passed and a rendered print check remains open."
+    },
+    {
+      "kind": "progress",
+      "at": "2026-11-17T03:02:30Z",
+      "title": "Weighted v1 baseline established",
+      "detail": "Mapped product acceptance criteria, test gaps and release gates from the local working tree."
+    },
+    {
+      "kind": "completed",
+      "at": "2026-11-17T00:00:00Z",
+      "title": "Circulation, members and initial reports present",
+      "detail": "Source audit found copy reservations, fines and settlements, member photos/cards, Koha patron import, and stock-by-location CSV."
+    }
+  ]
+}

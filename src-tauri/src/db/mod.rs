@@ -3,13 +3,33 @@
 pub mod migrations;
 
 use crate::error::AppResult;
-use rusqlite::Connection;
+use rusqlite::{Connection, OptionalExtension};
 use std::path::Path;
 
 /// Opens (creating if needed) the database, applies PRAGMAs and runs pending migrations.
 pub fn open(path: &Path) -> AppResult<Connection> {
+    open_with_pre_upgrade(path, |_| Ok(()))
+}
+
+/// Takes a snapshot of an existing versioned library before applying newer migrations.
+pub fn open_with_pre_upgrade(
+    path: &Path,
+    snapshot: impl FnOnce(&Connection) -> AppResult<()>,
+) -> AppResult<Connection> {
     let mut conn = Connection::open(path)?;
     configure(&conn)?;
+    let has_history = conn.query_row(
+        "SELECT 1 FROM sqlite_schema WHERE type = 'table' AND name = 'schema_migrations'",
+        [], |_| Ok(()),
+    ).optional()?.is_some();
+    if has_history {
+        let version: i64 = conn.query_row(
+            "SELECT coalesce(max(version), 0) FROM schema_migrations", [], |row| row.get(0),
+        )?;
+        if version > 0 && version < migrations::latest_version() {
+            snapshot(&conn)?;
+        }
+    }
     migrations::run(&mut conn, migrations::MIGRATIONS)?;
     Ok(conn)
 }
@@ -26,6 +46,42 @@ pub fn configure(conn: &Connection) -> AppResult<()> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn startup_preserves_a_pre_upgrade_snapshot_and_stops_if_it_cannot_save_one() {
+        let tmp = tempfile::tempdir().unwrap();
+        let paths = crate::paths::AppPaths::ensure(tmp.path()).unwrap();
+        let previous = &migrations::MIGRATIONS[..migrations::MIGRATIONS.len() - 1];
+        let previous_version = previous.last().unwrap().version;
+        {
+            let mut conn = Connection::open(&paths.database).unwrap();
+            configure(&conn).unwrap();
+            migrations::run(&mut conn, previous).unwrap();
+            conn.execute("INSERT INTO application_settings (key, value) VALUES ('test', '17')", []).unwrap();
+        }
+        let result = open_with_pre_upgrade(&paths.database, |_| {
+            Err(crate::error::AppError::Validation("Backup location unavailable.".into()))
+        });
+        assert!(result.is_err());
+        {
+            let conn = Connection::open(&paths.database).unwrap();
+            let version: i64 = conn.query_row("SELECT max(version) FROM schema_migrations", [], |r| r.get(0)).unwrap();
+            assert_eq!(version, previous_version);
+        }
+        let upgraded = open_with_pre_upgrade(&paths.database, |conn| {
+            crate::services::backup::create(conn, &paths.backups)?;
+            Ok(())
+        }).unwrap();
+        let version: i64 = upgraded.query_row("SELECT max(version) FROM schema_migrations", [], |r| r.get(0)).unwrap();
+        assert_eq!(version, migrations::latest_version());
+        let saved = std::fs::read_dir(&paths.backups).unwrap().next().unwrap().unwrap().path();
+        let snapshot = Connection::open_with_flags(saved, rusqlite::OpenFlags::SQLITE_OPEN_READ_ONLY).unwrap();
+        let (version, value): (i64, String) = snapshot.query_row(
+            "SELECT (SELECT max(version) FROM schema_migrations), value FROM application_settings WHERE key = 'test'",
+            [], |r| Ok((r.get(0)?, r.get(1)?)),
+        ).unwrap();
+        assert_eq!((version, value.as_str()), (previous_version, "17"));
+    }
 
     #[test]
     fn open_sets_required_pragmas() {

@@ -76,11 +76,149 @@ fn setup_body() -> Value {
 }
 
 #[test]
+fn manual_backups_are_permission_checked_complete_and_retained() {
+    let h = Harness::new();
+    assert_eq!(h.code("backup_list", json!({})), "AUTH_FAILED");
+    assert_eq!(h.code("backup_create", json!({})), "AUTH_FAILED");
+    h.ok("complete_setup", setup_body());
+    let initial = h.ok("backup_list", json!({}));
+    assert_eq!(initial["files"], json!([]));
+    assert_eq!(initial["dailyEnabled"], false);
+    let folder = std::path::PathBuf::from(initial["folder"].as_str().unwrap());
+    let mut writer = {
+        let state = h.webview.state::<AppState>();
+        rusqlite::Connection::open(&state.paths.database).unwrap()
+    };
+    let tx = writer.transaction().unwrap();
+    tx.execute("UPDATE libraries SET name = 'Changed Library'", []).unwrap();
+    let first = h.ok("backup_create", json!({}));
+    tx.commit().unwrap();
+    drop(writer);
+    {
+        let state = h.webview.state::<AppState>();
+        let conn = state.db.lock().unwrap();
+        auth::create_user(&conn, "viewer", "Visitor", "visitor passphrase", "viewer").unwrap();
+    }
+    let second = h.ok("backup_create", json!({}));
+    assert_ne!(first["name"], second["name"]);
+    let files = h.ok("backup_list", json!({}));
+    assert_eq!(files["files"].as_array().unwrap().len(), 2);
+    assert_eq!(h.ok("backup_verify", json!({ "name": first["name"] })), db::migrations::latest_version());
+    for (backup, expected_name) in [(first, "Demo Library"), (second, "Changed Library")] {
+        let file = folder.join(backup["name"].as_str().unwrap());
+        assert_eq!(std::fs::metadata(&file).unwrap().len(), backup["sizeBytes"].as_u64().unwrap());
+        let conn = rusqlite::Connection::open_with_flags(&file, rusqlite::OpenFlags::SQLITE_OPEN_READ_ONLY).unwrap();
+        assert_eq!(conn.query_row("SELECT name FROM libraries", [], |row| row.get::<_, String>(0)).unwrap(), expected_name);
+        assert_eq!(conn.query_row("PRAGMA integrity_check", [], |row| row.get::<_, String>(0)).unwrap(), "ok");
+        assert_eq!(conn.query_row("SELECT max(version) FROM schema_migrations", [], |row| row.get::<_, i64>(0)).unwrap(),
+            db::migrations::MIGRATIONS.last().unwrap().version);
+    }
+    assert_eq!(std::fs::read_dir(&folder).unwrap().count(), 2, "only finalized database files remain");
+    assert_eq!(h.code("backup_verify", json!({ "name": "../pusthakam-old.sqlite3" })), "VALIDATION");
+    std::fs::write(folder.join("pusthakam-broken.sqlite3"), b"not a SQLite file").unwrap();
+    assert_eq!(h.code("backup_verify", json!({ "name": "pusthakam-broken.sqlite3" })), "DATABASE");
+    let run_daily = || {
+        let state = h.webview.state::<AppState>();
+        state.with_conn(|conn| pusthakam_lib::services::backup::run_daily(conn, &folder)).unwrap()
+    };
+    assert!(!run_daily());
+    h.ok("backup_set_daily", json!({ "enabled": true }));
+    assert_eq!(h.ok("backup_list", json!({}))["dailyEnabled"], true);
+    assert!(run_daily());
+    assert!(!run_daily());
+    let list = h.ok("backup_list", json!({}));
+    let daily = list["files"].as_array().unwrap().iter()
+        .find(|file| file["name"].as_str().unwrap().ends_with("-daily.sqlite3")).unwrap();
+    assert_eq!(h.ok("backup_verify", json!({ "name": daily["name"] })), db::migrations::latest_version());
+    h.ok("login", json!({ "username": "viewer", "password": "visitor passphrase" }));
+    assert_eq!(h.code("backup_list", json!({})), "PERMISSION_DENIED");
+    assert_eq!(h.code("backup_create", json!({})), "PERMISSION_DENIED");
+    assert_eq!(h.code("backup_set_daily", json!({ "enabled": false })), "PERMISSION_DENIED");
+}
+
+#[test]
+fn restore_waits_for_other_instances_and_preserves_the_previous_database() {
+    use pusthakam_lib::services::backup;
+    let h = Harness::new();
+    assert_eq!(h.code("backup_request_restore", json!({ "name": "pusthakam-test.sqlite3" })), "AUTH_FAILED");
+    h.ok("complete_setup", setup_body());
+    let config = h.ok("config_overview", json!({}));
+    let policy = &config["policies"][0];
+    let member = h.ok("members_save", json!({ "input": {
+        "memberNumber": "RESTORE-MEMBER", "name": "Restore Member", "categoryId": policy["memberCategoryId"]
+    }}));
+    let record = h.ok("catalogue_save_record", json!({ "input": {
+        "title": "Restore fixture", "contributors": [], "subjects": []
+    }}));
+    let copies = h.ok("catalogue_add_copies", json!({ "recordId": record, "input": {
+        "count": 1, "itemCategoryId": policy["itemCategoryId"], "acquisitionSource": "purchase"
+    }}));
+    let code = &copies[0]["barcode"];
+    let issue = h.ok("circulation_prepare_issue", json!({ "memberNumber": "RESTORE-MEMBER", "barcode": code }));
+    h.ok("circulation_issue", json!({
+        "memberNumber": "RESTORE-MEMBER", "barcode": code, "memberId": member,
+        "itemId": copies[0]["id"], "dueOn": issue["dueOn"]
+    }));
+    let loan = h.ok("circulation_prepare_return", json!({ "barcode": code }));
+    let saved = h.ok("backup_create", json!({}));
+    let name = saved["name"].as_str().unwrap();
+    let paths = h.webview.state::<AppState>().paths.clone();
+    let (session_lock, exclusive) = backup::startup_lock(&paths).unwrap();
+    assert!(!exclusive);
+    h.ok("backup_request_restore", json!({ "name": name }));
+    assert_eq!(h.ok("backup_list", json!({}))["pendingRestore"], name);
+    assert_eq!(h.code("backup_request_restore", json!({ "name": name })), "CONFLICT");
+    h.ok("backup_cancel_restore", json!({}));
+    assert!(h.ok("backup_list", json!({}))["pendingRestore"].is_null());
+
+    h.ok("backup_request_restore", json!({ "name": name }));
+    h.ok("circulation_return", json!({ "loanId": loan["loanId"] }));
+    {
+        let state = h.webview.state::<AppState>();
+        let conn = state.conn().unwrap();
+        conn.execute("UPDATE libraries SET name = 'After snapshot'", []).unwrap();
+        auth::create_user(&conn, "later", "Later Staff", "a later passphrase", "viewer").unwrap();
+    }
+    let (second_process, exclusive) = backup::startup_lock(&paths).unwrap();
+    assert!(!exclusive, "another open copy defers restore");
+    drop(second_process);
+    drop(session_lock);
+    let (restore_lock, exclusive) = backup::startup_lock(&paths).unwrap();
+    assert!(exclusive);
+    let mut conn = db::open(&paths.database).unwrap();
+    backup::apply_pending_restore(&mut conn, &paths).unwrap();
+    let _lock = backup::hold_library_lock(restore_lock, exclusive).unwrap();
+    assert_eq!(conn.query_row("SELECT name FROM libraries", [], |row| row.get::<_, String>(0)).unwrap(), "Demo Library");
+    assert_eq!(conn.query_row("SELECT count(*) FROM staff_users WHERE username = 'later'", [], |row| row.get::<_, i64>(0)).unwrap(), 0);
+    assert_eq!(conn.query_row("SELECT count(*) FROM bibliographic_records WHERE title = 'Restore fixture'", [], |row| row.get::<_, i64>(0)).unwrap(), 1);
+    assert_eq!(conn.query_row("SELECT count(*) FROM loans WHERE returned_at IS NULL", [], |row| row.get::<_, i64>(0)).unwrap(), 1);
+    let listed = h.ok("backup_list", json!({}));
+    assert!(listed["pendingRestore"].is_null());
+    assert!(listed["lastRestore"].as_str().unwrap().starts_with("Database restored"));
+    let recovery = listed["files"].as_array().unwrap().iter().find(|item| item["name"] != name).unwrap();
+    let recovery_conn = rusqlite::Connection::open_with_flags(
+        paths.backups.join(recovery["name"].as_str().unwrap()), rusqlite::OpenFlags::SQLITE_OPEN_READ_ONLY,
+    ).unwrap();
+    assert_eq!(recovery_conn.query_row("SELECT name FROM libraries", [], |row| row.get::<_, String>(0)).unwrap(), "After snapshot");
+    assert_eq!(recovery_conn.query_row("SELECT count(*) FROM staff_users WHERE username = 'later'", [], |row| row.get::<_, i64>(0)).unwrap(), 1);
+    assert_eq!(recovery_conn.query_row("SELECT count(*) FROM loans WHERE returned_at IS NOT NULL", [], |row| row.get::<_, i64>(0)).unwrap(), 1);
+
+    let tampered = "pusthakam-tampered.sqlite3";
+    std::fs::copy(paths.backups.join(name), paths.backups.join(tampered)).unwrap();
+    h.ok("backup_request_restore", json!({ "name": tampered }));
+    std::fs::write(paths.backups.join(tampered), b"corrupted after verification").unwrap();
+    backup::apply_pending_restore(&mut conn, &paths).unwrap();
+    assert_eq!(conn.query_row("SELECT name FROM libraries", [], |row| row.get::<_, String>(0)).unwrap(), "Demo Library");
+    assert!(h.ok("backup_list", json!({}))["lastRestore"].as_str().unwrap().starts_with("Restore failed"));
+}
+
+#[test]
 fn members_can_be_registered_found_updated_and_restored_through_ipc() {
     use base64::Engine;
     let h = Harness::new();
     let list = json!({ "search": "M%01", "page": 1, "archived": false });
     assert_eq!(h.code("members_list", list.clone()), "AUTH_FAILED");
+    assert_eq!(h.code("reports_member_summary", json!({})), "AUTH_FAILED");
     h.ok("complete_setup", setup_body());
     let config = h.ok("config_overview", json!({}));
     let mut input = json!({
@@ -119,11 +257,22 @@ fn members_can_be_registered_found_updated_and_restored_through_ipc() {
     input["name"] = json!("Asha Ravi");
     h.ok("members_save", json!({ "input": input.clone() }));
     h.ok("members_archive", json!({ "id": id, "archived": true }));
+    assert_eq!(h.ok("reports_member_summary", json!({}))[0]["archived"], 1);
     assert_eq!(h.ok("members_list", list.clone())["total"], 0);
     let archived = h.ok("members_list", json!({ "search": "Ravi", "page": 1, "archived": true }));
     assert_eq!(archived["rows"][0]["id"], id);
     h.ok("members_archive", json!({ "id": id, "archived": false }));
     assert_eq!(h.ok("members_list", list.clone())["total"], 1);
+    let mut expired = input.clone();
+    expired["id"] = Value::Null;
+    expired["memberNumber"] = json!("M-EXPIRED");
+    expired["expiresOn"] = json!("2000-01-01");
+    let expired_id = h.ok("members_save", json!({ "input": expired }));
+    assert_eq!(h.ok("reports_member_summary", json!({})), json!([{
+        "categoryId": input["categoryId"], "category": config["memberCategories"][0]["name"],
+        "archivedCategory": false, "current": 1, "expired": 1, "archived": 0, "total": 2
+    }]));
+    h.ok("members_archive", json!({ "id": expired_id, "archived": true }));
 
     {
         let state = h.webview.state::<AppState>();
@@ -318,6 +467,54 @@ fn catalogue_commands_accept_the_ui_payloads_and_enforce_permissions() {
     h.ok("catalogue_set_copy_status", json!({ "id": copy_id, "status": "damaged", "note": "torn cover" }));
     let register = h.ok("catalogue_list_copies", json!({ "query": { "status": "damaged", "page": 1, "pageSize": 25 } }));
     assert_eq!(register["total"], 1);
+    let exported = h.ok("catalogue_export_copies", json!({ "query": { "collectionId": collection, "page": 99, "pageSize": 1 } }));
+    let mut csv = csv::Reader::from_reader(exported.as_str().unwrap().as_bytes());
+    let rows = csv.records().collect::<Result<Vec<_>, _>>().unwrap();
+    assert_eq!(rows.len(), 2);
+    assert_eq!((&rows[0][0], &rows[0][4], &rows[0][9]), ("LIB-00100", "damaged", "25000"));
+    let exported = h.ok("catalogue_export_copies", json!({ "query": { "status": "available", "text": "LIB-00101" } }));
+    let mut csv = csv::Reader::from_reader(exported.as_str().unwrap().as_bytes());
+    let rows = csv.records().collect::<Result<Vec<_>, _>>().unwrap();
+    assert_eq!(rows.len(), 1);
+    assert_eq!(&rows[0][0], "LIB-00101");
+    {
+        let state = h.webview.state::<AppState>();
+        let conn = state.db.lock().unwrap();
+        conn.execute_batch("CREATE TEMP TRIGGER reject_archive_audit BEFORE INSERT ON audit_events
+            WHEN NEW.action = 'catalogue.record_archived'
+            BEGIN SELECT RAISE(ABORT, 'test audit failure'); END;").unwrap();
+    }
+    assert_eq!(h.code("catalogue_archive_record", json!({ "id": id, "archived": true })), "DATABASE");
+    assert_eq!(h.ok("catalogue_get_record", json!({ "id": id }))["archived"], false);
+    {
+        let state = h.webview.state::<AppState>();
+        let conn = state.db.lock().unwrap();
+        conn.execute_batch("DROP TRIGGER reject_archive_audit").unwrap();
+    }
+    h.ok("catalogue_archive_record", json!({ "id": id, "archived": true }));
+    assert_eq!(h.ok("catalogue_get_record", json!({ "id": id }))["archived"], true);
+    h.ok("catalogue_archive_record", json!({ "id": id, "archived": false }));
+    assert_eq!(h.ok("catalogue_get_record", json!({ "id": id }))["archived"], false);
+    let local_day: String = {
+        let state = h.webview.state::<AppState>();
+        let conn = state.conn().unwrap();
+        conn.query_row("SELECT date('now','localtime')", [], |row| row.get(0)).unwrap()
+    };
+    let log = h.ok("audit_search", json!({ "query": { "from": local_day, "to": local_day,
+        "actor": "head", "action": "record_restored", "page": 1 } }));
+    assert_eq!(log["total"], 1);
+    assert_eq!(log["rows"][0]["entityId"], id);
+    assert_eq!(log["rows"][0]["actor"], "Head Librarian");
+    assert_eq!(h.code("audit_search", json!({ "query": { "from": "2000-01-02", "to": "2000-01-01", "page": 1 } })), "VALIDATION");
+    {
+        let state = h.webview.state::<AppState>();
+        let conn = state.db.lock().unwrap();
+        let mut stmt = conn.prepare("SELECT action FROM audit_events WHERE entity_type = 'bibliographic_records'
+            AND entity_id = ?1 AND action IN ('catalogue.record_archived', 'catalogue.record_restored') ORDER BY id").unwrap();
+        let events = stmt.query_map([id.as_i64().unwrap()], |row| row.get::<_, String>(0))
+            .unwrap().collect::<Result<Vec<_>, _>>().unwrap();
+        assert_eq!(events, ["catalogue.record_archived", "catalogue.record_restored"]);
+    }
     assert_eq!(h.code("catalogue_set_copy_status", json!({ "id": copy_id, "status": "on_loan", "note": null })), "VALIDATION");
     assert_eq!(h.code("catalogue_add_copies", json!({ "recordId": id, "input": {
         "count": 1, "accessionNumbers": ["LIB-00100"], "barcodes": null, "itemCategoryId": category, "collectionId": null,
@@ -371,7 +568,37 @@ fn catalogue_commands_accept_the_ui_payloads_and_enforce_permissions() {
     let renewal = h.ok("circulation_prepare_renewal", barcode.clone());
     assert!(renewal["dueOn"].as_str().unwrap() > initial_renewal["dueOn"].as_str().unwrap());
     let confirm = json!({ "confirmation": renewal });
+    {
+        let state = h.webview.state::<AppState>();
+        let conn = state.db.lock().unwrap();
+        conn.execute_batch("CREATE TEMP TRIGGER reject_renewal_audit BEFORE INSERT ON audit_events
+            WHEN NEW.action = 'circulation.renew'
+            BEGIN SELECT RAISE(ABORT, 'test audit failure'); END;").unwrap();
+    }
+    assert_eq!(h.code("circulation_renew", confirm.clone()), "DATABASE");
+    {
+        let state = h.webview.state::<AppState>();
+        let conn = state.db.lock().unwrap();
+        let loan_id = renewal["loanId"].as_i64().unwrap();
+        let (due, history): (String, i64) = conn.query_row(
+            "SELECT due_on, (SELECT count(*) FROM loan_renewals WHERE loan_id = ?1) FROM loans WHERE id = ?1",
+            [loan_id], |row| Ok((row.get(0)?, row.get(1)?)),
+        ).unwrap();
+        assert_eq!(due, renewal["previousDueOn"].as_str().unwrap());
+        assert_eq!(history, 0);
+        conn.execute_batch("DROP TRIGGER reject_renewal_audit").unwrap();
+    }
     h.ok("circulation_renew", confirm.clone());
+    {
+        let state = h.webview.state::<AppState>();
+        let conn = state.db.lock().unwrap();
+        let (old, new): (String, String) = conn.query_row(
+            "SELECT previous_due_on, due_on FROM loan_renewals WHERE loan_id = ?1",
+            [renewal["loanId"].as_i64().unwrap()], |row| Ok((row.get(0)?, row.get(1)?)),
+        ).unwrap();
+        assert_eq!(old, renewal["previousDueOn"].as_str().unwrap());
+        assert_eq!(new, renewal["dueOn"].as_str().unwrap());
+    }
     assert_eq!(h.code("circulation_renew", confirm), "CONFLICT");
     assert_eq!(h.code("circulation_prepare_renewal", barcode.clone()), "CONFLICT");
     let loan = h.ok("circulation_prepare_return", barcode.clone());
@@ -440,6 +667,9 @@ fn catalogue_commands_accept_the_ui_payloads_and_enforce_permissions() {
     h.ok("logout", json!({}));
     h.ok("login", json!({ "username": "admin", "password": "a long passphrase" }));
     h.ok("circulation_settle_fine", waiver);
+    assert_eq!(h.ok("reports_fine_summary", json!({})), json!([{
+        "currency": "INR", "assessed": "250", "paid": "125", "waived": "125", "outstanding": "0"
+    }]));
     assert_eq!(h.ok("circulation_list_fines", outstanding)["total"], 0);
     let settled = h.ok("circulation_list_fines", json!({ "page": 1, "includeSettled": true }));
     assert_eq!(settled["rows"][0]["paidMinor"], 125);
@@ -455,6 +685,10 @@ fn catalogue_commands_accept_the_ui_payloads_and_enforce_permissions() {
     // Signed-out callers get nothing.
     h.ok("logout", json!({}));
     assert_eq!(h.code("circulation_list_overdue", first_page), "AUTH_FAILED");
+    assert_eq!(h.code("reports_fine_summary", json!({})), "AUTH_FAILED");
+    assert_eq!(h.code("audit_search", json!({ "query": { "page": 1 } })), "AUTH_FAILED");
+    assert_eq!(h.code("catalogue_export_copies", json!({ "query": {} })), "AUTH_FAILED");
+    assert_eq!(h.code("reports_catalogue_growth", json!({ "from": "2026-01-01", "to": "2026-01-01" })), "AUTH_FAILED");
     assert_eq!(h.code("members_list_loans", member_loans), "AUTH_FAILED");
     assert_eq!(h.code("dashboard_overview", json!({})), "AUTH_FAILED");
     assert_eq!(h.code("circulation_prepare_issue", lookup), "AUTH_FAILED");
@@ -560,7 +794,12 @@ fn reservation_queue_controls_issue_and_renewal_through_ipc() {
     assert_eq!(queue["total"], 1);
     assert_eq!(queue["rows"][0]["memberNumber"], "M-3");
     assert_eq!(queue["rows"][0]["status"], "ready");
+    h.ok("circulation_place_reservation", lookup("M-1"));
     h.ok("circulation_cancel_reservation", json!({ "id": queue["rows"][0]["id"] }));
+    let next = list();
+    assert_eq!(next["rows"][0]["memberNumber"], "M-1");
+    assert_eq!(next["rows"][0]["status"], "ready");
+    h.ok("circulation_cancel_reservation", json!({ "id": next["rows"][0]["id"] }));
     assert_eq!(list()["total"], 0);
     h.ok("circulation_place_reservation", lookup("M-2"));
     issue("M-2");
@@ -578,7 +817,7 @@ fn reservation_queue_controls_issue_and_renewal_through_ipc() {
     };
     let activity = h.ok("reports_circulation_activity", json!({ "from": today, "to": today }));
     assert_eq!(activity, json!([{
-        "date": today, "issued": 2, "returned": 1, "lost": 1, "renewed": 0, "reservations": 4
+        "date": today, "issued": 2, "returned": 1, "lost": 1, "renewed": 0, "reservations": 5
     }]));
     let popular = h.ok("reports_popular_titles", json!({ "from": today, "to": today }));
     assert_eq!(popular.as_array().unwrap().len(), 1);
@@ -588,12 +827,20 @@ fn reservation_queue_controls_issue_and_renewal_through_ipc() {
     assert_eq!(stock[0]["location"], Value::Null);
     assert_eq!(stock[0]["lost"], 1);
     assert_eq!(stock[0]["total"], 1);
+    assert_eq!(h.ok("reports_catalogue_growth", json!({ "from": today, "to": today })), json!([
+        { "date": today, "titlesAdded": 1, "copiesAdded": 1 }
+    ]));
+    assert_eq!(h.ok("reports_catalogue_growth", json!({ "from": "2000-01-01", "to": "2000-01-02" })), json!([
+        { "date": "2000-01-01", "titlesAdded": 0, "copiesAdded": 0 },
+        { "date": "2000-01-02", "titlesAdded": 0, "copiesAdded": 0 }
+    ]));
+    assert_eq!(h.code("reports_catalogue_growth", json!({ "from": "2000-01-02", "to": "2000-01-01" })), "VALIDATION");
     assert_eq!(h.code("reports_circulation_activity", json!({ "from": "2025-01-01", "to": "2027-01-01" })), "VALIDATION");
     let state = h.webview.state::<AppState>();
     let conn = state.db.lock().unwrap();
     let mut stmt = conn.prepare("SELECT status FROM reservations ORDER BY id").unwrap();
     let outcomes = stmt.query_map([], |row| row.get::<_, String>(0)).unwrap().collect::<Result<Vec<_>, _>>().unwrap();
-    assert_eq!(outcomes, ["expired", "cancelled", "fulfilled", "pending"]);
+    assert_eq!(outcomes, ["expired", "cancelled", "cancelled", "fulfilled", "pending"]);
 }
 
 #[test]

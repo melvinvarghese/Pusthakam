@@ -46,8 +46,8 @@ export const NAV_GROUPS: NavGroup[] = [
     items: [
       { path: "/staff", label: "Staff & Permissions", available: false, phase: 7, summary: "Staff accounts and role-based permissions." },
       { path: "/settings", label: "Library Settings", available: true, phase: 2, summary: "Library profile, collections, locations, member categories and circulation policies." },
-      { path: "/backup", label: "Backup & Restore", available: false, phase: 7, summary: "Scheduled backups, verified restore and data integrity checks." },
-      { path: "/audit", label: "Audit Log", available: false, phase: 7, summary: "A permanent record of important actions by staff." },
+      { path: "/backup", label: "Database Backups", available: true, phase: 7, summary: "Create checked database snapshots and review saved backups." },
+      { path: "/audit", label: "Audit Log", available: true, phase: 7, summary: "Search permanent staff and system events by date, staff name and action." },
     ],
   },
 ];

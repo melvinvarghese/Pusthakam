@@ -3,12 +3,12 @@ import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
-import type { ConfigOverview, CopyRecord, RecordDetail, Session } from "@/lib/api/types";
+import type { ConfigOverview, CopyQuery, CopyRecord, CopyRow, RecordDetail, Session } from "@/lib/api/types";
 
 const cat = vi.hoisted(() => ({
   search: vi.fn(), getRecord: vi.fn(), saveRecord: vi.fn(), findDuplicates: vi.fn(), archiveRecord: vi.fn(),
   addCopies: vi.fn(), updateCopy: vi.fn(), setCopyStatus: vi.fn(), listCopies: vi.fn(), accessionFormat: vi.fn(),
-  setAccessionFormat: vi.fn(),
+  setAccessionFormat: vi.fn(), exportCopies: vi.fn(),
 }));
 const cfg = vi.hoisted(() => ({ overview: vi.fn() }));
 vi.mock("@/lib/api", async (orig) => ({ ...(await orig<typeof import("@/lib/api")>()), catalogueApi: cat, configApi: cfg }));
@@ -267,5 +267,55 @@ describe("AccessionPage", () => {
     expect(screen.getByRole("link", { name: "Balyakalasakhi" })).toHaveAttribute("href", "/catalogue/1");
     await userEvent.selectOptions(screen.getByLabelText("Status"), "damaged");
     await waitFor(() => expect(cat.listCopies).toHaveBeenLastCalledWith(expect.objectContaining({ status: "damaged", page: 1 })));
+    await userEvent.click(screen.getByRole("button", { name: "Inventory sheet for this page" }));
+    const sheet = within(screen.getByRole("dialog", { name: "Inventory sheet" }));
+    expect(sheet.getByRole("cell", { name: "004217" })).toBeInTheDocument();
+    expect(sheet.getByRole("cell", { name: "Main Library / A1" })).toBeInTheDocument();
+    expect(sheet.getByRole("cell", { name: "Damaged" })).toBeInTheDocument();
+    await userEvent.click(sheet.getByRole("button", { name: "Close" }));
+    cat.exportCopies.mockRejectedValue(new ApiError({ code: "IO", message: "Export unavailable." }));
+    await userEvent.click(screen.getByRole("button", { name: "Export matching copies" }));
+    expect(cat.exportCopies).toHaveBeenCalledWith(expect.objectContaining({ status: "damaged" }));
+    expect(await screen.findByRole("alert")).toHaveTextContent("Export unavailable.");
+  });
+
+  it("prints selected copies across pages and clears the print sheet afterward", async () => {
+    const first: CopyRow = {
+      id: 1, recordId: 1, accessionNo: "004217", barcode: "004217", title: "Balyakalasakhi",
+      callNumber: "894.8123 BAS", status: "available", collection: null, location: null, shelf: null,
+      acquisitionDate: null, priceMinor: null,
+    };
+    const second = { ...first, id: 2, accessionNo: "004218", barcode: "പുസ്തകം", callNumber: null };
+    cat.listCopies.mockImplementation(async ({ page }: CopyQuery) => ({
+      total: 2, page, pageSize: 1, rows: [page === 1 ? first : second],
+    }));
+    const print = vi.spyOn(window, "print").mockImplementation(() => {
+      const printable = document.querySelector<HTMLDivElement>("body > .label-sheet-print");
+      if (!printable) throw new Error("Print sheet is missing.");
+      expect(within(printable).getByText("Accession 004217")).toBeInTheDocument();
+      expect(within(printable).getByText("Accession 004218")).toBeInTheDocument();
+      expect(within(printable).getByRole("img", { name: "Barcode 004217" }).querySelector("g rect")).not.toBeNull();
+      window.dispatchEvent(new Event("afterprint"));
+    });
+    try {
+      renderAt("/accession", CLERK);
+      await screen.findByRole("checkbox", { name: "Select copy 004217" });
+      expect(screen.getByRole("button", { name: "Preview labels" })).toBeDisabled();
+      await userEvent.click(screen.getByRole("checkbox", { name: "Select copies on this page" }));
+      await userEvent.click(screen.getByRole("button", { name: /next/i }));
+      await userEvent.click(await screen.findByRole("checkbox", { name: "Select copy 004218" }));
+      await userEvent.click(screen.getByRole("button", { name: "Preview labels (2)" }));
+      const preview = within(screen.getByRole("dialog", { name: "Copy label sheet" }));
+      expect(preview.getByRole("img", { name: "Barcode 004217" })).toBeInTheDocument();
+      expect(preview.getByText("Barcode പുസ്തകം (text only)")).toBeInTheDocument();
+      await userEvent.click(preview.getByRole("button", { name: "Print labels" }));
+      expect(print).toHaveBeenCalledOnce();
+      expect(document.querySelector(".label-sheet-print")).toBeNull();
+      await userEvent.click(preview.getByRole("button", { name: "Close" }));
+      await userEvent.click(screen.getByRole("button", { name: "Clear selection" }));
+      expect(screen.getByRole("button", { name: "Preview labels" })).toBeDisabled();
+    } finally {
+      print.mockRestore();
+    }
   });
 });

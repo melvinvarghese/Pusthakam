@@ -11,11 +11,11 @@ export interface ParsedCallNumber {
 
 const DEWEY = /^(\d{3})(\.\d+)?(?:\s+(.*))?$/;
 
-export function parseCallNumber(raw: string): ParsedCallNumber {
+export function parseCallNumber(raw: string, allowDewey = true): ParsedCallNumber {
   const text = raw.trim().replace(/\s+/g, " ");
   if (!text) return { lines: [], deweyClass: null };
 
-  const m = DEWEY.exec(text);
+  const m = allowDewey ? DEWEY.exec(text) : null;
   if (m) {
     const [, cls, decimal, rest] = m;
     const lines = [cls ?? "", ...(decimal ? [decimal] : []), ...(rest ? [rest] : [])];

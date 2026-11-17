@@ -41,6 +41,7 @@ macro_rules! app_handlers {
             $crate::commands::catalogue::catalogue_update_copy,
             $crate::commands::catalogue::catalogue_set_copy_status,
             $crate::commands::catalogue::catalogue_list_copies,
+            $crate::commands::catalogue::catalogue_export_copies,
             $crate::commands::catalogue::accession_format_get,
             $crate::commands::catalogue::accession_format_set,
             $crate::commands::import::import_preview,
@@ -70,6 +71,16 @@ macro_rules! app_handlers {
             $crate::commands::reports::reports_circulation_activity,
             $crate::commands::reports::reports_popular_titles,
             $crate::commands::reports::reports_stock_by_location,
+            $crate::commands::reports::reports_fine_summary,
+            $crate::commands::reports::reports_member_summary,
+            $crate::commands::reports::reports_catalogue_growth,
+            $crate::commands::backup::backup_list,
+            $crate::commands::backup::backup_create,
+            $crate::commands::backup::backup_set_daily,
+            $crate::commands::backup::backup_verify,
+            $crate::commands::backup::backup_request_restore,
+            $crate::commands::backup::backup_cancel_restore,
+            $crate::commands::audit::audit_search,
         ]
     };
 }
@@ -84,7 +95,16 @@ pub fn run() {
             let paths = paths::AppPaths::ensure(&root)?;
             let guard = logging::init(&paths.logs);
             tracing::info!(version = env!("CARGO_PKG_VERSION"), "Pusthakam starting");
-            let conn = db::open(&paths.database)?;
+            let (library_lock, exclusive) = services::backup::startup_lock(&paths)?;
+            let mut conn = db::open_with_pre_upgrade(&paths.database, |source| {
+                services::backup::create(source, &paths.backups)?;
+                tracing::info!("Created a database snapshot before upgrade");
+                Ok(())
+            })?;
+            if exclusive {
+                services::backup::apply_pending_restore(&mut conn, &paths)?;
+            }
+            app.manage(services::backup::hold_library_lock(library_lock, exclusive)?);
             app.manage(state::AppState {
                 paths,
                 db: Mutex::new(conn),
@@ -92,6 +112,18 @@ pub fn run() {
                 pending_import: Mutex::new(None),
                 _log_guard: guard,
             });
+            let handle = app.handle().clone();
+            if let Err(error) = std::thread::Builder::new().name("database-backup".into()).spawn(move || {
+                loop {
+                    let state = handle.state::<state::AppState>();
+                    if let Err(error) = state.with_conn(|conn| services::backup::run_daily(conn, &state.paths.backups)) {
+                        tracing::warn!(%error, "Scheduled database backup failed");
+                    }
+                    std::thread::sleep(std::time::Duration::from_secs(60));
+                }
+            }) {
+                tracing::warn!(%error, "Could not start the database backup scheduler");
+            }
             Ok(())
         })
         .invoke_handler(app_handlers!())

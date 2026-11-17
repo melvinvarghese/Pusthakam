@@ -144,7 +144,7 @@ export function RecordPage() {
       {dialog?.type === "add" && cfg && <AddCopiesDialog record={r} config={cfg} onClose={close} />}
       {dialog?.type === "copy" && cfg && <EditCopyDialog copy={dialog.copy} config={cfg} onClose={close} />}
       {dialog?.type === "status" && <StatusDialog copy={dialog.copy} onClose={close} />}
-      {dialog?.type === "label" && <LabelDialog copy={dialog.copy} title={r.title} onClose={close} />}
+      {dialog?.type === "label" && <LabelDialog copy={dialog.copy} title={r.title} schemeCode={scheme?.code} onClose={close} />}
     </div>
   );
 }

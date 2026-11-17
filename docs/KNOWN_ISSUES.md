@@ -21,4 +21,4 @@
 | KI-017 | Low | Publisher and author authority records, subject hierarchies and bulk edit/delete are not built (Phase 6). Subjects are flat headings; publishers are plain text. | Open |
 | KI-018 | Low | Import has not been benchmarked on very large files; the whole file is held in memory until confirmed (limit 100 MB). | Open |
 | KI-019 | Low | Imported locations, collections and item categories are named after the source codes (for example MAIN, BK); rename them in Library Settings. A code-to-name mapping step is not built. | Open |
-| KI-020 | Low | Only one copy label can be printed at a time; label sheets and the Printing centre come in Phase 5. | Open |
+| KI-020 | Low | The Accession Register supports batch label sheets on plain paper or full-sheet label stock. Preset die-cut layouts and physical printer and scanner checks remain. | Open |

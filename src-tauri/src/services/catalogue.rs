@@ -110,6 +110,7 @@ pub struct RecordSummary {
     pub publication_year: Option<i64>,
     pub isbn13: Option<String>,
     pub classification_number: Option<String>,
+    pub classification_scheme_id: Option<i64>,
     pub total_copies: i64,
     pub available_copies: i64,
     pub archived: bool,
@@ -642,7 +643,7 @@ pub fn search(conn: &Connection, q: &SearchQuery) -> AppResult<SearchResult> {
                 r.publisher, r.publication_year, r.isbn13, r.classification_number,
                 (SELECT count(*) FROM physical_items i WHERE i.record_id = r.id AND i.status <> 'withdrawn'),
                 (SELECT count(*) FROM physical_items i WHERE i.record_id = r.id AND i.status = 'available'),
-                r.archived_at IS NOT NULL
+                r.archived_at IS NOT NULL, r.classification_scheme_id
          FROM bibliographic_records r {join} {where_sql} ORDER BY {order} LIMIT :limit OFFSET :offset"
     );
     let sql_count = format!("SELECT count(*) FROM bibliographic_records r {join} {where_sql}");
@@ -668,6 +669,7 @@ pub fn search(conn: &Connection, q: &SearchQuery) -> AppResult<SearchResult> {
                 id: r.get(0)?, title: r.get(1)?, subtitle: r.get(2)?, authors: r.get(3)?, publisher: r.get(4)?,
                 publication_year: r.get(5)?, isbn13: r.get(6)?, classification_number: r.get(7)?,
                 total_copies: r.get(8)?, available_copies: r.get(9)?, archived: r.get(10)?,
+                classification_scheme_id: r.get(11)?,
             })
         })?
         .collect::<Result<Vec<_>, _>>()?;
@@ -859,13 +861,13 @@ pub fn set_copy_status(conn: &Connection, actor: Option<&Session>, id: i64, stat
     Ok(())
 }
 
-pub fn list_copies(conn: &Connection, q: &CopyQuery) -> AppResult<CopyPage> {
-    let page_size = if q.page_size <= 0 { 25 } else { q.page_size.min(100) };
-    let page = q.page.max(1);
-    let pattern = q.text.as_deref().map(str::trim).filter(|t| !t.is_empty()).map(|t| {
+fn copy_search_pattern(q: &CopyQuery) -> Option<String> {
+    q.text.as_deref().map(str::trim).filter(|t| !t.is_empty()).map(|t| {
         format!("%{}%", t.replace('\\', "\\\\").replace('%', "\\%").replace('_', "\\_"))
-    });
-    let from = "FROM physical_items i JOIN bibliographic_records r ON r.id = i.record_id
+    })
+}
+
+const COPY_SEARCH_FROM: &str = "FROM physical_items i JOIN bibliographic_records r ON r.id = i.record_id
                 LEFT JOIN collections c ON c.id = i.collection_id
                 LEFT JOIN locations l ON l.id = i.location_id
                 LEFT JOIN shelves s ON s.id = i.shelf_id
@@ -873,16 +875,22 @@ pub fn list_copies(conn: &Connection, q: &CopyQuery) -> AppResult<CopyPage> {
                        OR r.title LIKE :pattern ESCAPE '\\' OR i.call_number LIKE :pattern ESCAPE '\\')
                   AND (:status IS NULL OR i.status = :status)
                   AND (:collection IS NULL OR i.collection_id = :collection)";
-    let offset = (page - 1) * page_size;
+
+pub fn list_copies(conn: &Connection, q: &CopyQuery) -> AppResult<CopyPage> {
+    let page_size = if q.page_size <= 0 { 25 } else { q.page_size.min(100) };
+    let page = q.page.max(1);
+    let pattern = copy_search_pattern(q);
+    let offset = (page - 1).saturating_mul(page_size);
     let total: i64 = conn.query_row(
-        &format!("SELECT count(*) {from}"),
+        &format!("SELECT count(*) {COPY_SEARCH_FROM}"),
         named_params! { ":pattern": pattern, ":status": q.status, ":collection": q.collection_id },
         |r| r.get(0),
     )?;
     let rows = conn
         .prepare(&format!(
             "SELECT i.id, i.record_id, i.accession_no, i.barcode, r.title, i.call_number, i.status, c.name, l.name, s.code,
-                    i.acquisition_date, i.price_minor {from} ORDER BY i.accession_no COLLATE NOCASE LIMIT :limit OFFSET :offset"
+                    i.acquisition_date, i.price_minor {COPY_SEARCH_FROM}
+             ORDER BY i.accession_no COLLATE NOCASE, i.id LIMIT :limit OFFSET :offset"
         ))?
         .query_map(
             named_params! { ":pattern": pattern, ":status": q.status, ":collection": q.collection_id, ":limit": page_size, ":offset": offset },
@@ -898,11 +906,57 @@ pub fn list_copies(conn: &Connection, q: &CopyQuery) -> AppResult<CopyPage> {
     Ok(CopyPage { total, page, page_size, rows })
 }
 
+fn spreadsheet_text(value: String) -> String {
+    if value.starts_with(['\t', '\r', '\n'])
+        || value.trim_start().starts_with(['=', '+', '-', '@', '＝', '＋', '－', '＠'])
+    {
+        format!("'{value}")
+    } else {
+        value
+    }
+}
+
+pub fn export_copies_csv(conn: &Connection, query: &CopyQuery) -> AppResult<String> {
+    let mut statement = conn.prepare(&format!(
+        "SELECT i.accession_no, i.barcode, r.title, i.call_number, i.status,
+                c.name, l.name, s.code, i.acquisition_date, i.price_minor
+         {COPY_SEARCH_FROM} ORDER BY i.accession_no COLLATE NOCASE, i.id"
+    ))?;
+    let pattern = copy_search_pattern(query);
+    let mut rows = statement.query(named_params! {
+        ":pattern": pattern, ":status": query.status, ":collection": query.collection_id
+    })?;
+    let mut writer = csv::WriterBuilder::new().terminator(csv::Terminator::CRLF).from_writer(Vec::new());
+    let csv_error = |error: csv::Error| AppError::Internal(error.to_string());
+    writer.write_record([
+        "Accession number", "Barcode", "Title", "Call number", "Status", "Collection",
+        "Location", "Shelf", "Acquisition date", "Price (minor units)",
+    ]).map_err(csv_error)?;
+    while let Some(row) = rows.next()? {
+        let mut fields = Vec::with_capacity(10);
+        for column in 0..9 {
+            fields.push(spreadsheet_text(row.get::<_, Option<String>>(column)?.unwrap_or_default()));
+        }
+        fields.push(row.get::<_, Option<i64>>(9)?.map(|n| n.to_string()).unwrap_or_default());
+        writer.write_record(fields).map_err(csv_error)?;
+    }
+    let bytes = writer.into_inner().map_err(|error| AppError::Io(error.into_error()))?;
+    String::from_utf8(bytes).map_err(|error| AppError::Internal(error.to_string()))
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
     use crate::db;
     use crate::services::config::{self, NamedInput, NamedKind, ShelfInput};
+
+    #[test]
+    fn spreadsheet_text_neutralizes_formulas_and_preserves_plain_fields() {
+        for input in ["=SUM(1)", "  +1", "@SUM(1)", "\tplain", "＋1"] {
+            assert_eq!(spreadsheet_text(input.into()), format!("'{input}"));
+        }
+        assert_eq!(spreadsheet_text("004217".into()), "004217");
+    }
 
     struct Fx {
         _tmp: tempfile::TempDir,
@@ -952,6 +1006,29 @@ mod tests {
 
     fn titles(r: &SearchResult) -> Vec<&str> {
         r.rows.iter().map(|x| x.title.as_str()).collect()
+    }
+
+    #[test]
+    fn saves_udc_and_lcc_schemes_and_returns_them_in_search() {
+        let f = fx();
+        for (code, number, title) in [
+            ("udc", "004.42", "Programming"),
+            ("lcc", "PR9199.3 .R69", "Fiction"),
+        ] {
+            let scheme_id: i64 = f.c.query_row(
+                "SELECT id FROM classification_schemes WHERE code = ?1", [code], |row| row.get(0),
+            ).unwrap();
+            let mut input = rec(title);
+            input.classification_scheme_id = Some(scheme_id);
+            input.classification_number = Some(number.into());
+            let id = save_record(&f.c, None, &input).unwrap();
+            let record = get_record(&f.c, id).unwrap();
+            assert_eq!(record.classification_scheme_id, Some(scheme_id));
+            assert_eq!(record.classification_number.as_deref(), Some(number));
+            let summary = &search(&f.c, &q(title)).unwrap().rows[0];
+            assert_eq!(summary.classification_scheme_id, Some(scheme_id));
+            assert_eq!(summary.classification_number.as_deref(), Some(number));
+        }
     }
 
     #[test]

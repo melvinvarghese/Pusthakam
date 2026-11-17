@@ -10,7 +10,7 @@ import type {
   CopyRecord, CopyStatus, CopyUpdateInput, DashboardOverview, DuplicateHit, DuplicateProbe, FineAmount, FineHistoryPage, FinePage, FineSettlement, ImportOptions, ImportPreview,
   ImportPreviewRequest, ImportReport, IssuePreview, KohaPatronPreview, LibraryInput, MemberCategoryInput, MemberInput, MemberLoanPage, MemberPage, OverduePage, RenewalPreview, ReservationPage, ReturnCondition, ReturnPreview,
   NamedInput, NamedKind, PolicyInput, PopularTitle, RecordDetail, RecordInput, SearchQuery, SearchResult, Session, SetupInput,
-  SetupStatus, ShelfInput, StockRow,
+  SetupStatus, ShelfInput, StockRow, FineSummary, CatalogueGrowthDay, MemberSummary, BackupFile, BackupList, AuditPage, AuditQuery,
 } from "./types";
 
 export class ApiError extends Error {
@@ -73,6 +73,22 @@ export const reportsApi = {
   circulationActivity: (from: string, to: string) => call<CirculationDay[]>("reports_circulation_activity", { from, to }),
   popularTitles: (from: string, to: string) => call<PopularTitle[]>("reports_popular_titles", { from, to }),
   stockByLocation: () => call<StockRow[]>("reports_stock_by_location"),
+  fineSummary: () => call<FineSummary[]>("reports_fine_summary"),
+  memberSummary: () => call<MemberSummary[]>("reports_member_summary"),
+  catalogueGrowth: (from: string, to: string) => call<CatalogueGrowthDay[]>("reports_catalogue_growth", { from, to }),
+};
+
+export const backupApi = {
+  list: () => call<BackupList>("backup_list"),
+  create: () => call<BackupFile>("backup_create"),
+  setDaily: (enabled: boolean) => call<void>("backup_set_daily", { enabled }),
+  verify: (name: string) => call<number>("backup_verify", { name }),
+  requestRestore: (name: string) => call<void>("backup_request_restore", { name }),
+  cancelRestore: () => call<void>("backup_cancel_restore"),
+};
+
+export const auditApi = {
+  search: (query: AuditQuery) => call<AuditPage>("audit_search", { query }),
 };
 
 export const authApi = {
@@ -94,6 +110,7 @@ export const catalogueApi = {
   setCopyStatus: (id: number, status: CopyStatus, note: string | null) =>
     call<void>("catalogue_set_copy_status", { id, status, note }),
   listCopies: (query: CopyQuery) => call<CopyPage>("catalogue_list_copies", { query }),
+  exportCopies: (query: CopyQuery) => call<string>("catalogue_export_copies", { query }),
   accessionFormat: () => call<AccessionFormat>("accession_format_get"),
   setAccessionFormat: (format: AccessionFormat) => call<void>("accession_format_set", { format }),
 };
