@@ -23,6 +23,8 @@ pub const FIELDS: &[(&str, &[&str])] = &[
     ("subjects", &["subject", "subjects", "subjectheadings", "topic", "topics"]),
     ("keywords", &["keywords", "keyword", "tags"]),
     ("classification", &["ddc", "classification", "classificationnumber", "deweynumber", "dewey", "classno", "classnumber"]),
+    ("classificationScheme", &["classificationscheme"]),
+    ("physical", &["physicaldescription"]),
     ("callNumber", &["callnumber", "callno", "shelfmark", "callnum"]),
     ("barcode", &["barcode", "itembarcode", "bookbarcode"]),
     ("accession", &["accessionnumber", "accessionno", "accno", "accession", "accessionnum"]),
@@ -95,7 +97,14 @@ pub struct CsvResult {
 
 pub fn parse_csv(bytes: &[u8], mapping_override: Option<&HashMap<String, String>>) -> CsvResult {
     let text = decode(bytes);
-    let delimiter = detect_delimiter(&text);
+    parse_delimited(&text, detect_delimiter(&text), mapping_override)
+}
+
+pub(super) fn parse_table_csv(bytes: &[u8], mapping: Option<&HashMap<String, String>>) -> CsvResult {
+    parse_delimited(&decode(bytes), b',', mapping)
+}
+
+fn parse_delimited(text: &str, delimiter: u8, mapping_override: Option<&HashMap<String, String>>) -> CsvResult {
     let mut rdr = csv::ReaderBuilder::new().delimiter(delimiter).flexible(true).has_headers(true).from_reader(text.as_bytes());
     let headers: Vec<String> = match rdr.headers() {
         Ok(h) => h.iter().map(|s| s.trim().to_string()).collect(),
@@ -155,6 +164,8 @@ pub fn parse_csv(bytes: &[u8], mapping_override: Option<&HashMap<String, String>
         r.subjects = get("subjects").map(split_list).unwrap_or_default();
         r.keywords = get("keywords").map(String::from);
         r.classification = get("classification").map(String::from);
+        r.classification_scheme = get("classificationScheme").map(String::from);
+        r.physical = get("physical").map(String::from);
         r.abstract_text = get("abstract").map(String::from);
         r.notes = get("notes").map(String::from);
 
@@ -163,7 +174,7 @@ pub fn parse_csv(bytes: &[u8], mapping_override: Option<&HashMap<String, String>
         let accession = get("accession").map(String::from);
         let count = get("copies").and_then(|c| c.parse::<usize>().ok()).unwrap_or(1).clamp(1, 500);
         let has_copy_data = barcode.is_some() || accession.is_some() || get("copies").is_some() || get("callNumber").is_some() || get("location").is_some();
-        if has_copy_data {
+        if has_copy_data && get("copies") != Some("0") {
             let make = |barcode: Option<String>, accession: Option<String>| -> ImportCopy {
                 let mut c = ImportCopy { barcode, accession, ..Default::default() };
                 c.call_number = get("callNumber").map(String::from);

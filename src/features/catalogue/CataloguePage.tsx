@@ -12,6 +12,7 @@ import { Modal } from "@/components/ui/Modal";
 import { ApiError, catalogueApi, toApiError } from "@/lib/api";
 import type { SearchQuery } from "@/lib/api/types";
 import { can, useSession } from "@/lib/session";
+import { ExportDialog } from "./ExportDialog";
 import { ImportDialog } from "./ImportDialog";
 import { RecordFormDialog } from "./RecordFormDialog";
 import { useConfig } from "./shared";
@@ -36,6 +37,7 @@ export function CataloguePage() {
   const [page, setPage] = useState(1);
   const [searchRun, setSearchRun] = useState(0);
   const [adding, setAdding] = useState(false);
+  const [exporting, setExporting] = useState(false);
   const [importing, setImporting] = useState(false);
   const [selected, setSelected] = useState<number[]>([]);
   const [confirmArchive, setConfirmArchive] = useState<{ id: number; title: string }[] | null>(null);
@@ -67,10 +69,11 @@ export function CataloguePage() {
       <PageHeader
         title="Catalogue"
         description="Search every title, author, subject, ISBN, accession number or barcode."
-        actions={canWrite && (
+        actions={(
           <>
-            <Button onClick={() => setImporting(true)}>Import</Button>
-            <Button variant="primary" onClick={() => setAdding(true)}>Add record</Button>
+            <Button disabled={selected.length === 0} onClick={() => setExporting(true)}>Export selected ({selected.length})</Button>
+            {canWrite && <Button onClick={() => setImporting(true)}>Import</Button>}
+            {canWrite && <Button variant="primary" onClick={() => setAdding(true)}>Add record</Button>}
           </>
         )}
       />
@@ -161,7 +164,7 @@ export function CataloguePage() {
             <table className="w-full table-fixed border-collapse">
               <thead>
                 <tr className="h-8 text-left text-[11px] font-semibold uppercase tracking-wide text-muted">
-                  {canWrite && <th scope="col" className="w-12 border-b border-line"><span className="sr-only">Select records</span></th>}
+                  {<th scope="col" className="w-12 border-b border-line"><span className="sr-only">Select records</span></th>}
                   <th className="border-b border-line px-4">Title and author</th>
                   <th className="w-40 border-b border-line px-4">Publisher</th>
                   <th className="w-24 border-b border-line px-4">Class</th>
@@ -171,9 +174,9 @@ export function CataloguePage() {
               <tbody>
                 {rows.map((r) => (
                   <tr key={r.id} className={r.archived ? "text-muted" : "even:bg-band"}>
-                    {canWrite && <td className="border-b border-line px-4">
-                      <input type="checkbox" aria-label={`Select ${r.title}`} disabled={r.archived || result.isFetching || archive.isPending}
-                        checked={!r.archived && selected.includes(r.id)} onChange={(event) => {
+                    {<td className="border-b border-line px-4">
+                      <input type="checkbox" aria-label={`Select ${r.title}`} disabled={result.isFetching || archive.isPending || (!selected.includes(r.id) && selected.length >= 100)}
+                        checked={selected.includes(r.id)} onChange={(event) => {
                           const checked = event.target.checked;
                           setSelected((ids) => checked ? [...ids, r.id] : ids.filter((id) => id !== r.id));
                         }} />
@@ -204,6 +207,7 @@ export function CataloguePage() {
         {result.data && <Pager page={result.data.page} pageSize={result.data.pageSize} total={result.data.total} onPage={setPage} />}
       </Panel>
 
+      {exporting && <ExportDialog ids={selected} onClose={() => setExporting(false)} />}
       {importing && <ImportDialog onClose={() => setImporting(false)} />}
       {canWrite && confirmArchive && (
         <Modal title="Archive selected catalogue records" onClose={() => { if (!archive.isPending) setConfirmArchive(null); }}

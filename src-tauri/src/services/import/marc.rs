@@ -265,6 +265,13 @@ pub fn to_import_record(m: &MarcRecord, row: usize, koha: bool) -> ImportRecord 
         r.keywords = Some(kw.join("; "));
     }
     r.classification = m.first_sub("082", 'a').map(ddc).filter(|s| !s.is_empty());
+    if r.classification.is_some() { r.classification_scheme = Some("ddc".into()); }
+    else {
+        for (tag, scheme) in [("080", "udc"), ("050", "lcc")] {
+            if let Some(number) = m.first_sub(tag, 'a') { r.classification = Some(number.to_string()); r.classification_scheme = Some(scheme.into()); break; }
+        }
+    }
+
 
     // Language: 008 positions 35-37, else 041 $a.
     let lang = m
@@ -282,7 +289,7 @@ pub fn to_import_record(m: &MarcRecord, row: usize, koha: bool) -> ImportRecord 
             r.notes = Some(match r.notes.take() { Some(n) => format!("{n} {note}"), None => note });
         }
         for f in m.fields("952") {
-            let mut c = ImportCopy { barcode: f.sub('p').map(str::to_string), call_number: f.sub('o').map(str::to_string), ..Default::default() };
+            let mut c = ImportCopy { accession: f.sub('i').map(str::to_string), barcode: f.sub('p').map(str::to_string), call_number: f.sub('o').map(str::to_string), ..Default::default() };
             c.location = f.sub('b').or_else(|| f.sub('a')).map(str::to_string);
             c.shelf = f.sub('c').map(str::to_string);
             c.collection = f.sub('8').map(str::to_string);

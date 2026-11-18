@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/Button";
 import { Chip } from "@/components/ui/Chip";
 import { Panel, PanelHeader } from "@/components/ui/Panel";
 import { ApiError, catalogueApi, configApi } from "@/lib/api";
+import { LibraryCalendarPanel } from "./LibraryCalendarPanel";
 import { OptionalModules } from "./OptionalModules";
 import { LibraryCustomFields } from "./LibraryCustomFields";
 import type { AccessionFormat, ArchiveKind, ConfigOverview, Library, Named, Policy, Shelf } from "@/lib/api/types";
@@ -146,6 +147,7 @@ export function SettingsPage() {
       </Panel>
 
       <LibraryCustomFields canEdit={canEdit} />
+      <LibraryCalendarPanel canEdit={canEdit} />
       {listPanel("memberCategory", c.memberCategories)}
       {listPanel("itemCategory", c.itemCategories)}
 

@@ -5,8 +5,8 @@
 import { invoke } from "@tauri-apps/api/core";
 import { openUrl } from "@tauri-apps/plugin-opener";
 import { previewMode } from "@/lib/preview";
-import type {
-  AccessionFormat, AppErrorPayload, AppInfo, ArchiveKind, CirculationDay, ConfigOverview, CopyBatchInput, CopyPage, CopyQuery,
+import type { LibraryCalendar, Holiday,
+  CatalogueExportFormat, CatalogueExportFile, AccessionFormat, AppErrorPayload, AppInfo, ArchiveKind, CirculationDay, ConfigOverview, CopyBatchInput, CopyPage, CopyQuery,
   CopyRecord, CopyStatus, CopyUpdateInput, DashboardOverview, DuplicateHit, DuplicateProbe, FineAmount, FineHistoryPage, FinePage, FineSettlement, ImportOptions, ImportPreview,
   ImportPreviewRequest, ImportReport, IssuePreview, KohaPatronPreview, LibraryInput, MemberCategoryInput, MemberInput, MemberLoanPage, MemberPage, OverduePage, RenewalPreview, ReservationPage, ReturnCondition, ReturnPreview,
   NamedInput, NamedKind, PolicyInput, PopularTitle, RecordDetail, RecordInput, SearchQuery, SearchResult, Session, SetupInput,
@@ -127,6 +127,8 @@ export const authApi = {
 };
 
 export const catalogueApi = {
+  saveExport: (fileName: string, dataBase64: string) => call<{ native: boolean; path: string | null }>("catalogue_save_export", { fileName, dataBase64 }),
+  exportRecords: (ids: number[], format: CatalogueExportFormat) => call<CatalogueExportFile>("catalogue_export_records", { ids, format }),
   getCover: (id: number) => call<string | null>("catalogue_get_cover", { id }),
   setCover: (id: number, pngBase64: string | null) => call<void>("catalogue_set_cover", { id, pngBase64 }),
   search: (query: SearchQuery) => call<SearchResult>("catalogue_search", { query }),
@@ -186,6 +188,10 @@ export const circulationApi = {
 };
 
 export const configApi = {
+  calendar: () => call<LibraryCalendar>("config_calendar"),
+  saveClosedWeekdays: (days: number[]) => call<void>("config_save_closed_weekdays", { days }),
+  saveHoliday: (input: Omit<Holiday, "id"> & { id: number | null }) => call<number>("config_save_holiday", { input }),
+  removeHoliday: (id: number) => call<void>("config_remove_holiday", { id }),
   overview: () => call<ConfigOverview>("config_overview"),
   updateLibrary: (input: LibraryInput) => call<void>("config_update_library", { input }),
   saveNamed: (kind: NamedKind, input: NamedInput) => call<number>("config_save_named", { kind, input }),

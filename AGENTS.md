@@ -2,6 +2,8 @@
 
 Follow the project architecture, conventions, and release rules in `CLAUDE.md`. The local development monitor lives in `tools/progress-monitor/` and is independent of the desktop app.
 
+For work continued on another computer, also read `docs/SESSION_HANDOFF.md`. After every meaningful change, immediately update `PROGRESS.md`, `PROGRESS.json` and `docs/SESSION_HANDOFF.md`, plus affected feature documentation. Do not wait for the owner to announce a computer switch or for the end of a session. Record partial work, decisions, actual verification results (including failed/incomplete checks), blockers and the next exact step. Before ending a turn, check that these files agree with the working tree and each other. Source and documentation travel through Git commits/pushes/pulls; chat memory and temporary verification paths do not. Never commit library databases, backups or credentials.
+
 ## Maintain progress in every Codex session
 
 1. Before starting work, read `PROGRESS.json` and `PROGRESS.md`. Identify the current phase, the next milestone, and the roadmap task that the requested work advances.

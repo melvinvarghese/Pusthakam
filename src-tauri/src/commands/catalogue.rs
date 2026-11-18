@@ -134,3 +134,33 @@ pub fn accession_format_set(state: State<'_, AppState>, format: AccessionFormat)
     let who = state.require("admin.settings")?;
     state.with_conn(|c| catalogue::set_accession_format(c, Some(&who), &format))
 }
+
+#[tauri::command]
+pub fn catalogue_export_records(state: State<'_, AppState>, ids: Vec<i64>, format: String) -> AppResult<crate::services::catalogue_export::ExportFile> {
+    state.require("catalogue.read")?;
+    crate::services::catalogue_export::export(&mut *state.conn()?, &ids, &format)
+}
+
+#[tauri::command]
+pub async fn catalogue_save_export<R: tauri::Runtime>(window: tauri::WebviewWindow<R>, state: State<'_, AppState>, file_name: String, data_base64: String) -> AppResult<crate::services::export_save::SaveResult> {
+    use crate::services::export_save;
+    state.require("catalogue.read")?;
+    let payload = export_save::prepare(&file_name, &data_base64)?;
+    #[cfg(windows)]
+    {
+        let owner = window.hwnd().map_err(|_| crate::error::AppError::Validation("Could not open the save dialog for this window.".into()))?.0 as usize;
+        let (path, payload) = tauri::async_runtime::spawn_blocking(move || {
+            export_save::choose(&payload, owner).map(|path| (path, payload))
+        }).await.map_err(|_| crate::error::AppError::Internal("Save dialog task failed.".into()))??;
+        state.require("catalogue.read")?;
+        let private = state.paths.data_dir.clone();
+        let path = tauri::async_runtime::spawn_blocking(move || export_save::write_chosen(path, &payload, &private))
+            .await.map_err(|_| crate::error::AppError::Internal("Save file task failed.".into()))??;
+        Ok(export_save::SaveResult { native: true, path })
+    }
+    #[cfg(not(windows))]
+    {
+        let _ = (window, payload);
+        Ok(export_save::SaveResult { native: false, path: None })
+    }
+}

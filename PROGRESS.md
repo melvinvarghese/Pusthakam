@@ -4,7 +4,9 @@ _Last updated: 2026-11-18_
 
 ## Local progress monitor
 
-Pusthakam is **47.1% complete overall**, with 57.4% implemented, 38.9% verified and 10% release-ready. Next product milestone: Verify saved catalogue searches in Windows.
+For continuation on another computer, read [SESSION_HANDOFF.md](docs/SESSION_HANDOFF.md) and the current task in PROGRESS.json. Uncommitted changes remain local until Git sync.
+
+Pusthakam is **50.8% complete overall**, with 62.1% implemented, 41.8% verified and 10% release-ready. Next product milestone: verify member suggestions and tray behavior in Windows.
 
 Run `npm run progress:monitor` from this directory and open <http://127.0.0.1:4317/>. Keep the terminal open while using the dashboard. Run `npm run progress:validate` to check the task data and percentages.
 
@@ -13,8 +15,8 @@ Run `npm run progress:monitor` from this directory and open <http://127.0.0.1:43
 | 0 · Discovery and architecture | 100% | 100% |
 | 1 · Application foundation | 83.3% | 83.3% |
 | 2 · Setup and configuration | 100% | 100% |
-| 3 · Catalogue and accession | 72% | 40% |
-| 4 · Circulation and members | 78.2% | 30.4% |
+| 3 · Catalogue and accession | 92% | 50% |
+| 4 · Circulation and members | 84.7% | 36.9% |
 | 5 · Dashboard, reports and printing | 43.7% | 25% |
 | 6 · Collection operations | 18.1% | 18.1% |
 | 7 · Administration and recovery | 82.1% | 57.1% |
@@ -60,6 +62,8 @@ A verified new daily snapshot rotates older daily files. Manual backups and back
 The owner confirmed issue and return in the native Windows verification library. Issue, return, renewal and reservations accept a book barcode or accession number. Codes that match two copies require a unique identifier. The native overdue-list and name lookup walkthroughs remain open. Native printing, restore and a real Koha export remain open.
 
 ## Deferred changes
+
+- At application startup, show a loading screen for at least three seconds. Requested by the owner on 18 November 2026; implement later.
 
 - New passwords must have at least six characters and contain no spaces. Update setup, staff password screens and backend validation when implementing the rule.
 - Publish an illustrated Pusthakam user manual after feature completion, covering setup, daily workflows, migration, backups and troubleshooting.
@@ -205,3 +209,97 @@ Owner approved the previously blocked Visual Studio telemetry connection. Resume
 JSON verification after approval: real IPC JSON preview/commit test passed, including no preview writes, exact identifier/money/status preservation, malformed later-record rejection and unauthenticated/viewer denials. All 30 Rust import tests passed, including new strict JSON parsing tests. Production frontend build passed. Windows test build in progress; docs/examples/catalogue-import.json supplies one title and one available copy for the disposable library. MARCXML/XLSX and native walkthrough remain open.
 
 Windows JSON test executable built successfully: pusthakam-phase3-json-import.exe, using the existing disposable library and including saved-search clarity fixes. Sample docs/examples/catalogue-import.json has one Animal Farm title and one available copy (barcode/accession JSON-DEMO-001; price 12550 minor units). Check preview shows one record/one copy without a write, confirm, then inspect title/copy details. The standard repository build also passed. Remaining format work is MARCXML and XLSX; no full format-task completion credit yet.
+
+## Phase 3 continuation
+Owner confirmed JSON import worked in the Windows test. Current task: IMP-FORMATS, MARCXML followed by XLSX. LAN browser access and OPAC remain in Phase 7b.
+
+
+### MARCXML checkpoint
+
+MARCXML now supports a single MARC21 record or collection, namespace prefixes, standard entities, and Koha 952 holdings through the existing MARC mapping. Preview and confirmed commit share the established validation and transaction path. DTDs, custom entities and malformed XML are rejected. Sample and walkthrough: `docs/MARCXML_CATALOGUE_IMPORT.md` and `docs/examples/catalogue-import.xml`.
+
+Passed: 33 Rust import tests, 9 import dialog tests, lint and production build/typecheck. Initial parser API, encoding and source-count test failures were corrected and rerun successfully. JSON Windows success is owner-confirmed. Native MARCXML verification remains open. IMP-FORMATS remains in progress with no additional completion credit because XLSX is not implemented.
+
+XLSX blocker: `cargo add calamine --manifest-path src-tauri/Cargo.toml` failed because crates.io is unreachable and the reader is not cached. Next: native MARCXML walkthrough, obtain the spreadsheet reader, then implement XLSX. LAN browser access and OPAC stay Phase 7b.
+
+All 14 existing Tauri IPC tests passed. Progress recalculation and validation passed at 47.1% overall, 57.4% implemented, 38.9% verified and 10% release-ready. Timestamp precision was normalized after the initial validator failures. `git diff --check` passed.
+
+Windows debug compilation passed: `cargo build --offline --manifest-path src-tauri/Cargo.toml`. A standalone verification executable with bundled assets and the native MARCXML walkthrough remain open.
+
+## Continued MARCXML verification
+
+Current IMP-FORMATS work: real IPC coverage, parser edge cases and standalone Windows verification build using the existing disposable library. Retried XLSX reader download; crates.io remains unreachable. Phase 3 continues; LAN/OPAC stay Phase 7b.
+
+Focused continuation checks passed: `cargo test --offline --manifest-path src-tauri/Cargo.toml marcxml` ran three parser/service tests and one real command test. Verified no preview writes, Koha/titles-only profiles, exact identifier/money/call-number preservation, malformed rejection, and signed-out/viewer denials on preview and commit. Fixed silently ignored misplaced CDATA/entity content with regression coverage. The initial isolated fresh-target build was stopped to reuse the compiled target cache; replacement standalone build is in progress. XLSX dependency retry failed again.
+
+Standalone MARCXML Windows build passed with `tauri/custom-protocol` and embedded production assets. Ready: `C:\Users\Melvin\AppData\Local\Temp\pusthakam-native-verification-cea843fbd8cb4e9bbaf6c2274b98c468\pusthakam-phase3-marcxml-import.exe`. Uses the existing disposable library and a MARCXML test window title. Valid and deliberately malformed samples sit beside the executable. Native launch/walkthrough remains open. Next: preview the valid sample (one record, one copy), confirm and inspect XML-000123 / 020 XML / 125.50; the malformed sample must show an error without adding its title. XLSX reader remains unavailable after retry; no implementation credit added.
+
+## MARCXML Windows confirmation
+
+Owner reported the valid sample was okay and the malformed sample showed an error. Recorded the basic native walkthrough as passed. Detailed field reconciliation and titles-only native profile were not explicitly reported; automated checks cover those behaviors. Current Phase 3 task is XLSX catalogue import (IMP-FORMATS), pending spreadsheet-reader availability. No full format-task credit yet. LAN/OPAC stay Phase 7b.
+
+XLSX dependency retry encountered Windows TLS error `schannel: AcquireCredentialsHandle failed: SEC_E_NO_CREDENTIALS`. Certificate verification remains enabled. Next action: retry `cargo add calamine --manifest-path src-tauri/Cargo.toml` and `cargo fetch --manifest-path src-tauri/Cargo.toml` from interactive PowerShell in D:\Pusthakam. Progress totals remain 47.1% overall, 57.4% implemented, 38.9% verified and 10% release-ready.
+
+## XLSX implementation resumed
+
+Owner successfully installed calamine 0.30.1, compatible with declared Rust 1.80, and fetched all dependencies. The dependency blocker is cleared. Current IMP-FORMATS work: XLSX workbook validation, column mapping and shared preview/commit, automated checks and Windows verification build.
+
+XLSX parser and mapping UI implemented. The importer validates bounded ZIP expansion/cell coordinates before reading one worksheet, preserves text identifiers, rejects formulas and invalid workbook structures, and reuses the CSV mapping/grouping and staged transaction path. Added documented valid and negative fixtures. All 38 Rust import tests and 10 frontend dialog tests passed, with production build/typecheck and lint. Full IPC checks and standalone Windows verification build are in progress.
+
+Full Tauri IPC suite passed all 16 tests, including XLSX mapping, preview without writes, one-title/two-copy commit, exact identifier/money/call-number/status preservation, malformed/formula rejection without new titles, and signed-out/viewer denials. All three formats now meet implementation criteria; IMP-FORMATS is implemented, not verified. Native XLSX walkthrough and explicit remaining MARCXML checks are open.
+
+Standalone Windows XLSX build passed with embedded frontend and the existing disposable library: `C:\Users\Melvin\AppData\Local\Temp\pusthakam-native-verification-cea843fbd8cb4e9bbaf6c2274b98c468\pusthakam-phase3-xlsx-import.exe`. Samples are beside the executable. Native walkthrough: preview catalogue-import.xlsx (one title/two copies), confirm and inspect barcodes/accessions 000XLSX123/000XLSX124, call number 020 XLSX, price 125.50, and damaged second copy. Formula sample must show an error without additions. Overall is 48.2%, implementation 59.2%, verification 38.9%, release readiness 10%; Phase 3 is 82% implemented and 40% verified. Progress validation and whitespace checks passed after aligning currentTask status with implemented. Next is native XLSX acceptance, then Phase 3 catalogue/holdings export. LAN/OPAC remain Phase 7b.
+
+## Import formats verified in Windows
+
+Owner confirmed the XLSX walkthrough worked. With earlier JSON and MARCXML Windows confirmations and recorded parser, service, IPC and UI tests, IMP-FORMATS is verified. Next is EXP-CATALOGUE: catalogue and holdings export with supported-field round-trip checks, in Phase 3. LAN browser access and OPAC remain Phase 7b.
+
+## Catalogue and holdings export
+
+Current Phase 3 task EXP-CATALOGUE: selected-record exports with holdings in JSON, CSV, XLSX and MARC exchange formats, plus supported-field reimport checks. Existing accession CSV remains available. LAN/OPAC stay Phase 7b.
+
+Export checkpoint: all five formats implemented from an explicit selection and one database snapshot. Two real database round-trip service tests and 36 focused frontend tests passed, with build/typecheck and lint. Supported-field tests include UDC, Unicode, exact prices, leading-zero identifiers and title-only records. Initial IPC denial check used an ineffective cached-session mutation; changed the test to revoke database permission and reran the full Rust suite. Native save/open/repreview acceptance remains open.
+
+Catalogue exchange implementation checks passed: all 115 Rust unit tests, 17 IPC tests and 36 focused frontend tests, plus build/typecheck and lint. The corrected permission test revokes catalogue.read in the fixture database and confirms denial through real IPC. EXP-CATALOGUE is implemented; native save/open/repreview checks remain open. Standalone export verification build is running.
+
+Standalone catalogue export Windows build passed: `C:\Users\Melvin\AppData\Local\Temp\pusthakam-native-verification-cea843fbd8cb4e9bbaf6c2274b98c468\pusthakam-phase3-catalogue-export.exe`. Uses the existing disposable library with embedded frontend. Export walkthrough copied beside it. Native check: select the XLSX verification title, prepare/save each format, open the saved files and repreview through Import without committing duplicates. Expect one title/two copies with identifiers, price and damaged status intact; use Koha profile for MARC. EXP-CATALOGUE remains implemented pending this acceptance. Overall 49.8%, implementation 61%, verification 40.7%, release readiness 10%; Phase 3 92% implemented and 50% verified. Progress recalculation/validation and diff whitespace checks passed.
+
+## Export Save As destination
+
+Owner confirmed the export works and requested folder/filename selection when Save is clicked. Current EXP-CATALOGUE work adds Windows Save As, cancellation/error handling and saved-path feedback. Five-format native reconciliation remains separately open.
+
+Windows Save As checkpoint: added a read-permission-checked command that opens a native folder/filename picker, confirms overwrites and writes only the OS-selected destination. Frontend receives no general filesystem permission or arbitrary destination command. Cancel writes nothing and retains the export; success shows the path; errors allow retry. Two Rust service and three UI tests passed, plus build/typecheck and lint. Existing browser/non-Windows download behavior is retained. Native dialog/overwrite/cancel acceptance remains open.
+
+Save As IPC verification passed: the new command rejects signed-out users, revoked catalogue.read, invalid filenames and malformed bytes before a dialog is opened. All 18 IPC tests passed. Progress validation and whitespace checks passed; native Windows Save As/overwrite/cancel walkthrough remains open. The requested startup loading screen (minimum three seconds) is documented as deferred; startup code is unchanged.
+
+Standalone Save As test build passed: `C:\Users\Melvin\AppData\Local\Temp\pusthakam-native-verification-cea843fbd8cb4e9bbaf6c2274b98c468\pusthakam-phase3-save-as.exe`, using the existing disposable library. Native test: prepare/export, click Save file, choose folder/name and confirm Saved to path; cancel another save without writing; test overwrite confirmation. Automated service, IPC, UI, build/typecheck and lint checks passed. Native acceptance remains open; totals stay 49.8% overall, 61% implemented, 40.7% verified and 10% release-ready. The startup loading screen request remains deferred and documentation-only.
+
+## Windows Save As confirmed
+
+Owner reported the Save As build works following the folder/filename, cancellation and overwrite instructions. Recorded the walkthrough as passed. Save As is confirmed; specific five-format save/open/repreview reconciliation was not separately reported and remains the export acceptance check. Automated round trips already passed. Startup loading screen remains deferred; LAN/OPAC stay Phase 7b.
+
+## Phase 4: staff-managed calendar
+
+Phase 3 implementation is in place; real Koha acceptance remains blocked on a representative anonymised export, and recorded native checks remain open. Continue the next actionable task in normal order: CIRC-HOLIDAYS, holiday dates and weekly closed days in Library Settings, applied to new issue and renewal due dates. Existing loan due dates will not be rewritten. Startup delay remains deferred; LAN/OPAC remain Phase 7b.
+
+Calendar checkpoint: migration 17 adds recurring closed weekdays without altering existing holiday data or default loan behavior. Administrators can add/edit/remove audited holidays and configure weekly closures. Issue and renewal advance to an open due date and reject stale confirmations; existing loans and fine rules are not rewritten. Two calendar service tests, date validation, real IPC workflow and 14 settings UI tests passed, as did production build/typecheck and lint. Full Rust suite and Windows build are running.
+
+Full calendar regression suite passed: 119 Rust unit tests and 19 IPC tests, including schema 17 migration/upgrade/reopen and existing circulation/backups. The real calendar workflow confirms stale issue/renewal rejection and unchanged stored due dates after calendar changes. CIRC-HOLIDAYS is implemented, awaiting the native Windows walkthrough.
+
+Standalone calendar Windows build passed: `C:\Users\Melvin\AppData\Local\Temp\pusthakam-native-verification-cea843fbd8cb4e9bbaf6c2274b98c468\pusthakam-phase4-calendar.exe`. Uses the existing disposable library and embedded frontend; schema 17 upgrades at launch. Close older test apps first. `LIBRARY_CALENDAR.md` beside the executable explains holiday CRUD, weekly closure persistence after restart, and issue/renewal date checks. Automated checks passed; native walkthrough remains open.
+
+## Member suggestions and maximized startup
+
+Owner confirmed holidays work; CIRC-HOLIDAYS is verified. Current Phase 4 work: live member-name dropdown suggestions for Circulation and Reservations, plus maximized desktop startup. Existing member-number entry and permissions remain. Startup loading delay is still deferred.
+
+Cross-computer continuation: read `docs/SESSION_HANDOFF.md` together with the progress files and CLAUDE.md. Active work includes member suggestions in both circulation flows, maximized startup and close-to-tray/session-preserving restore. Commit/push/pull is needed to transfer local source/doc changes between computers; user databases and secrets are never Git content.
+
+Live lookup implementation passed 11 focused frontend tests, production build/typecheck and lint. Both Issue and Reservations use the same debounced dropdown with keyboard selection, duplicate-name member numbers, stale-response exclusion, pagination and retry. Maximized startup and close-to-tray/Open/Quit are implemented in source; Rust compile/native checks remain pending. `docs/DESKTOP_AND_MEMBER_LOOKUP.md` documents behavior. Session/deferred decisions and cross-computer Git handoff are in `docs/SESSION_HANDOFF.md`, now referenced by AGENTS.md.
+
+Tray-enabled Rust compile passed (`cargo check --offline --manifest-path src-tauri/Cargo.toml`). Close-to-tray is enabled only after tray creation succeeds; Open restores the existing window/session and explicit Quit ends the process. No password storage was added. Native lifecycle checks remain open. Refreshed Windows build is running.
+
+Standalone member lookup/tray Windows build passed: `C:\Users\Melvin\AppData\Local\Temp\pusthakam-native-verification-cea843fbd8cb4e9bbaf6c2274b98c468\pusthakam-phase4-members-tray.exe`. Starts maximized and uses the existing disposable library. Final member UI rerun passed all 11 tests; prior production build/typecheck/lint and Rust tray compile also passed. Native checks: Issue/Reservations live suggestions, X-to-tray, session-preserving Open, and explicit Quit followed by fresh sign-in. Handoff and feature walkthrough docs are current. These local source/doc changes must be committed, pushed and pulled to transfer development state between computers; no Git push was performed.
+
+## Standing progress and handoff rule
+
+Owner requires **PROGRESS.md and PROGRESS.json**, **docs/SESSION_HANDOFF.md**, and affected feature docs to be updated after every meaningful change, not just at session end or an announced computer switch. Record partial work, decisions, actual verification including failed/incomplete checks, blockers and the exact next step. Check consistency before ending each turn. This is also recorded in AGENTS.md for future work on any computer. Git commit/push/pull is still required to transfer local files. This documentation-only change does not alter implementation credit or the active product milestone.

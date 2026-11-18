@@ -33,7 +33,7 @@ it("returns keyboard focus to the member lookup button when dismissed", async ()
   const button = screen.getByRole("button", { name: "Find member by name" });
   button.focus();
   await user.keyboard("{Enter}");
-  expect(screen.getByRole("textbox", { name: "Member name" })).toHaveFocus();
+  expect(screen.getByRole("combobox", { name: "Member name" })).toHaveFocus();
   await user.keyboard("{Escape}");
   expect(button).toHaveFocus();
 });
@@ -47,9 +47,8 @@ it("looks up a borrower by name and fills the selected member number", async () 
   const user = userEvent.setup();
   await user.click(screen.getByRole("button", { name: "Find member by name" }));
   const dialog = within(screen.getByRole("dialog", { name: "Find member by name" }));
-  await user.type(dialog.getByRole("textbox", { name: "Member name" }), "Asha");
-  await user.click(dialog.getByRole("button", { name: "Search" }));
-  await user.click(await dialog.findByRole("button", { name: "Asha Nair (MEM-2)" }));
+  await user.type(dialog.getByRole("combobox", { name: "Member name" }), "Asha");
+  await user.click(await dialog.findByRole("option", { name: "Asha Nair (MEM-2)" }));
   expect(invoke).toHaveBeenCalledExactlyOnceWith("members_list", { search: "Asha", page: 1, archived: false });
   expect(screen.getByRole("textbox", { name: "Member number" })).toHaveValue("MEM-2");
 });
@@ -177,4 +176,23 @@ it("records a partial payment against the displayed balance", async () => {
   const print = vi.spyOn(window, "print").mockImplementation(() => {});
   await user.click(receipt.getByRole("button", { name: "Print receipt" }));
   expect(print).toHaveBeenCalledOnce();
+});
+
+it("selects a reservation member from live name suggestions and uses the chosen number", async () => {
+  vi.mocked(invoke).mockImplementation(async (command) => {
+    if (command === "circulation_list_reservations") return { rows: [], total: 0, page: 1, pageSize: 25 };
+    if (command === "members_list") return { rows: [{ id: 4, name: "Asha Nair", memberNumber: "MEM-004" }], total: 1, page: 1, pageSize: 25 };
+    return undefined;
+  });
+  renderCirculation();
+  const user = userEvent.setup();
+  await user.click(screen.getByRole("button", { name: "Reservations" }));
+  await screen.findByText("No active reservations.");
+  await user.click(screen.getByRole("button", { name: "Find member by name" }));
+  await user.type(screen.getByRole("combobox", { name: "Member name" }), "Ash");
+  await user.click(await screen.findByRole("option", { name: "Asha Nair (MEM-004)" }));
+  expect(screen.getByRole("textbox", { name: "Member number" })).toHaveValue("MEM-004");
+  await user.type(screen.getByRole("textbox", { name: "Book barcode or accession number" }), "BOOK-004");
+  await user.click(screen.getByRole("button", { name: "Place reservation" }));
+  expect(invoke).toHaveBeenCalledWith("circulation_place_reservation", { memberNumber: "MEM-004", barcode: "BOOK-004" });
 });

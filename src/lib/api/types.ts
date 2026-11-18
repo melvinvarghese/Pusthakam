@@ -271,7 +271,7 @@ export interface AccessionFormat { prefix: string; padding: number; next: number
 
 // ----- import -----
 
-export type ImportFormat = "marc" | "csv" | "json";
+export type ImportFormat = "marc" | "marcxml" | "csv" | "xlsx" | "json";
 export type ImportProfile = "koha" | "generic";
 
 export interface ImportCopy {
@@ -606,3 +606,11 @@ export interface FineHistoryPage {
   pageSize: number;
   total: number;
 }
+
+export type CatalogueExportFormat = "json" | "csv" | "xlsx" | "marc" | "marcxml";
+export interface CatalogueExportFile {
+  fileName: string; mimeType: string; dataBase64: string; records: number; copies: number; warnings: string[];
+}
+
+export interface Holiday { id: number; date: string; name: string }
+export interface LibraryCalendar { closedWeekdays: number[]; holidays: Holiday[] }

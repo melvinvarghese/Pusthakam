@@ -2,6 +2,11 @@
 
 ## [Unreleased]
 ### Added
+- Live member-name suggestions in Circulation and Reservations, maximized startup, and close-to-tray with explicit Open/Quit actions.
+- Library calendar settings for audited holiday dates and recurring closed weekdays, shared by issue and renewal due-date calculation.
+- Windows Save As destination selection for catalogue exports, with cancellation, overwrite confirmation and saved-path feedback.
+- Selected-title catalogue and holdings export in JSON, CSV, XLSX, MARC and MARCXML, with format warnings, permission checks and supported-field round-trip tests.
+- Classification scheme codes in JSON/tabular imports, UDC/LC MARC mapping and Koha 952 inventory/accession-number import.
 - Phase 1 foundation: Tauri 2 shell, Rust backend (SQLite WAL, migrations, settings, errors, logging), React UI shell, 17 Rust and 21 frontend tests.
 - Visual world "Spine Label": ink rail and top bar, call-number label component, light/dark themes, Ctrl+K navigation, bundled fonts.
 - `PRODUCT.md`, `DESIGN.md`, `.impeccable/` design records.
