@@ -1106,3 +1106,39 @@ fn app_info_works_before_sign_in_and_reports_the_current_schema() {
     assert_eq!(info["schemaVersion"], db::migrations::latest_version());
     assert!(info["databasePath"].as_str().unwrap().ends_with("pusthakam.db"));
 }
+
+#[test]
+fn json_catalogue_import_previews_commits_and_rejects_malformed_input() {
+    use base64::Engine;
+    let h = Harness::new();
+    h.ok("complete_setup", setup_body());
+    let config = h.ok("config_overview", json!({}));
+    let encode = |value: &str| base64::engine::general_purpose::STANDARD.encode(value);
+    let request = |value: &str| json!({"request": {"fileName":"books.json", "format":"json", "profile":"generic", "mapping":null, "dataBase64":encode(value)}});
+    let data = r#"[{"title":"Animal Farm","contributors":[{"name":"George Orwell","role":"author"}],"subjects":["Fiction"],"copies":[{"barcode":"000123","accession":"000045","priceMinor":12550,"location":"Reading room","status":"damaged"}]}]"#;
+    let preview = h.ok("import_preview", request(data));
+    assert_eq!(preview["totals"]["records"], 1);
+    assert_eq!(preview["totals"]["copies"], 1);
+    assert_eq!(h.ok("catalogue_search", json!({"query":{"page":1,"pageSize":25}}))["total"], 0);
+    let options = json!({"duplicatePolicy":"skip","createMissing":true,"defaultItemCategoryId":config["itemCategories"][0]["id"],"barcodeAsAccession":false});
+    let report = h.ok("import_commit", json!({"token":preview["token"],"options":options}));
+    assert_eq!(report["createdRecords"], 1);
+    assert_eq!(report["copiesAdded"], 1);
+    let found = h.ok("catalogue_search", json!({"query":{"text":"000123","page":1,"pageSize":25}}));
+    let record = h.ok("catalogue_get_record", json!({"id":found["rows"][0]["id"]}));
+    assert_eq!(record["title"], "Animal Farm");
+    assert_eq!(record["copies"][0]["accessionNo"], "000045");
+    assert_eq!(record["copies"][0]["priceMinor"], 12550);
+    assert_eq!(record["copies"][0]["status"], "damaged");
+    assert_eq!(h.code("import_preview", request(r#"[{"title":"Good"},{"title":"Bad","unknown":true}]"#)), "VALIDATION");
+    assert_eq!(h.ok("catalogue_search", json!({"query":{"page":1,"pageSize":25}}))["total"], 1);
+    {
+        let state = h.webview.state::<AppState>();
+        let conn = state.db.lock().unwrap();
+        auth::create_user(&conn, "jsonviewer", "Viewer", "viewer passphrase", "viewer").unwrap();
+    }
+    h.ok("logout", json!({}));
+    assert_eq!(h.code("import_preview", request(data)), "AUTH_FAILED");
+    h.ok("login", json!({"username":"jsonviewer","password":"viewer passphrase"}));
+    assert_eq!(h.code("import_preview", request(data)), "PERMISSION_DENIED");
+}
