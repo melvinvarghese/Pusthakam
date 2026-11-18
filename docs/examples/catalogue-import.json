@@ -1,0 +1,17 @@
+[
+  {
+    "title": "Animal Farm",
+    "contributors": [{ "name": "George Orwell", "role": "author" }],
+    "subjects": ["Fiction"],
+    "year": 1945,
+    "copies": [
+      {
+        "barcode": "JSON-DEMO-001",
+        "accession": "JSON-DEMO-001",
+        "location": "Reading room",
+        "priceMinor": 12550,
+        "status": "available"
+      }
+    ]
+  }
+]

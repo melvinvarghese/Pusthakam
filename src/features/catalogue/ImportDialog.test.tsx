@@ -50,6 +50,16 @@ beforeEach(() => {
 });
 
 describe("fileToBase64", () => {
+  it("recognises JSON and previews it before any commit", async () => {
+    imp.preview.mockResolvedValue({ ...PREVIEW, format: "json", profile: "generic", fileName: "books.json" });
+    renderDialog();
+    await userEvent.upload(screen.getByLabelText("File"), new File(['[{"title":"Animal Farm"}]'], "books.json"));
+    expect(screen.getByLabelText("Where is the data from?")).toHaveValue("json");
+    await userEvent.click(screen.getByRole("button", { name: "Preview" }));
+    await screen.findByText("Check before importing: books.json");
+    expect(imp.preview).toHaveBeenCalledWith(expect.objectContaining({ format: "json", profile: "generic", mapping: null }));
+    expect(imp.commit).not.toHaveBeenCalled();
+  });
   it("encodes bytes, including ones above 127", async () => {
     expect(await fileToBase64(new File([new Uint8Array([0, 1, 200, 255])], "x"))).toBe("AAHI/w==");
   });
@@ -60,7 +70,8 @@ describe("ImportDialog", () => {
     renderDialog();
     expect(screen.getByRole("dialog", { name: "Import records" })).toBeInTheDocument();
     expect(screen.getByText(/including items/i)).toBeInTheDocument();
-    expect(within(screen.getByLabelText("Where is the data from?")).getAllByRole("option")).toHaveLength(3);
+    expect(within(screen.getByLabelText("Where is the data from?")).getAllByRole("option")).toHaveLength(4);
+    expect(screen.getByRole("option", { name: "Catalogue records (JSON file)" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Preview" })).toBeDisabled();
   });
 

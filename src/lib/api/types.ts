@@ -271,7 +271,7 @@ export interface AccessionFormat { prefix: string; padding: number; next: number
 
 // ----- import -----
 
-export type ImportFormat = "marc" | "csv";
+export type ImportFormat = "marc" | "csv" | "json";
 export type ImportProfile = "koha" | "generic";
 
 export interface ImportCopy {
