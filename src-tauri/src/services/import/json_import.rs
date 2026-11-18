@@ -5,7 +5,7 @@ use serde_json::Value;
 
 const RECORD_FIELDS: &[&str] = &[
     "title", "subtitle", "contributors", "isbn", "publisher", "place", "year", "edition",
-    "language", "pagination", "physical", "series", "subjects", "classification", "abstractText",
+    "language", "pagination", "physical", "series", "subjects", "classification", "classificationScheme", "abstractText",
     "notes", "keywords", "copies",
 ];
 const COPY_FIELDS: &[&str] = &[

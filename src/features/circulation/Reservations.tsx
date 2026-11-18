@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from "react";
+import { useRef, useState, type FormEvent } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Pager } from "@/components/Pager";
 import { Button } from "@/components/ui/Button";
@@ -6,10 +6,15 @@ import { TextField } from "@/components/ui/Field";
 import { Modal } from "@/components/ui/Modal";
 import { Panel } from "@/components/ui/Panel";
 import { circulationApi, toApiError } from "@/lib/api";
+import { can, useSession } from "@/lib/session";
+import { FindMember } from "./FindMember";
 import type { Reservation } from "@/lib/api/types";
 
 export default function Reservations() {
   const client = useQueryClient();
+  const { session } = useSession();
+  const form = useRef<HTMLFormElement>(null);
+  const [findingMember, setFindingMember] = useState(false);
   const [page, setPage] = useState(1);
   const [barcode, setBarcode] = useState("");
   const [message, setMessage] = useState("");
@@ -55,7 +60,7 @@ export default function Reservations() {
   return (
     <>
       <Panel className="max-w-xl p-4">
-        <form onSubmit={submit} className="space-y-4">
+        <form ref={form} onSubmit={submit} className="space-y-4">
           <fieldset disabled={place.isPending} className="grid gap-3 sm:grid-cols-2">
             <TextField label="Member number" name="memberNumber" required maxLength={64} autoComplete="off"
               onKeyDown={(event) => {
@@ -66,10 +71,17 @@ export default function Reservations() {
             <TextField label="Book barcode or accession number" name="barcode" required maxLength={40} autoComplete="off"
               value={barcode} onChange={(event) => setBarcode(event.target.value)} />
           </fieldset>
+          {can(session, "members.read") && <Button type="button" size="sm" disabled={place.isPending} onClick={() => setFindingMember(true)}>Find member by name</Button>}
           <Button type="submit" variant="primary" disabled={place.isPending}>Place reservation</Button>
         </form>
         {place.error && <p role="alert" className="mt-3 text-danger">{toApiError(place.error).message}</p>}
       </Panel>
+      {findingMember && <FindMember onClose={() => setFindingMember(false)} onSelect={(number) => {
+        const input = form.current?.querySelector<HTMLInputElement>('input[name="memberNumber"]');
+        if (input) input.value = number;
+        setFindingMember(false);
+        requestAnimationFrame(() => form.current?.querySelector<HTMLInputElement>('input[name="barcode"]')?.focus());
+      }} />}
       {message && <p role="status">{message}</p>}
       {list.isPending && <p role="status" className="text-muted">Loading reservations.</p>}
       {list.isError && <p role="alert" className="text-danger">{toApiError(list.error).message}</p>}

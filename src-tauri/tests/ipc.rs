@@ -1142,3 +1142,195 @@ fn json_catalogue_import_previews_commits_and_rejects_malformed_input() {
     h.ok("login", json!({"username":"jsonviewer","password":"viewer passphrase"}));
     assert_eq!(h.code("import_preview", request(data)), "PERMISSION_DENIED");
 }
+
+#[test]
+fn marcxml_import_previews_commits_and_enforces_permissions() {
+    use base64::Engine;
+    let h = Harness::new();
+    h.ok("complete_setup", setup_body());
+    let config = h.ok("config_overview", json!({}));
+    let data = include_str!("../../docs/examples/catalogue-import.xml");
+    let request = |value: &str, profile: &str| json!({"request": {"fileName":"books.xml", "format":"marcxml", "profile":profile, "mapping":null, "dataBase64":base64::engine::general_purpose::STANDARD.encode(value)}});
+    let generic = h.ok("import_preview", request(data, "generic"));
+    assert_eq!(generic["totals"]["copies"], 0);
+    h.ok("import_cancel", json!({}));
+    let preview = h.ok("import_preview", request(data, "koha"));
+    assert_eq!(preview["totals"]["records"], 1);
+    assert_eq!(preview["totals"]["copies"], 1);
+    assert_eq!(h.ok("catalogue_search", json!({"query":{"page":1,"pageSize":25}}))["total"], 0);
+    let options = json!({"duplicatePolicy":"skip","createMissing":true,"defaultItemCategoryId":config["itemCategories"][0]["id"],"barcodeAsAccession":true});
+    let report = h.ok("import_commit", json!({"token":preview["token"],"options":options}));
+    assert_eq!(report["createdRecords"], 1);
+    assert_eq!(report["copiesAdded"], 1);
+    let found = h.ok("catalogue_search", json!({"query":{"text":"XML-000123","page":1,"pageSize":25}}));
+    let record = h.ok("catalogue_get_record", json!({"id":found["rows"][0]["id"]}));
+    assert_eq!(record["title"], "MARCXML verification book");
+    assert_eq!(record["copies"][0]["accessionNo"], "XML-000123");
+    assert_eq!(record["copies"][0]["priceMinor"], 12550);
+    assert_eq!(record["copies"][0]["callNumber"], "020 XML");
+    assert_eq!(h.code("import_preview", request(&format!("{data}<record>"), "koha")), "VALIDATION");
+    assert_eq!(h.ok("catalogue_search", json!({"query":{"page":1,"pageSize":25}}))["total"], 1);
+    {
+        let state = h.webview.state::<AppState>();
+        let conn = state.db.lock().unwrap();
+        auth::create_user(&conn, "xmlviewer", "Viewer", "viewer passphrase", "viewer").unwrap();
+    }
+    h.ok("logout", json!({}));
+    assert_eq!(h.code("import_preview", request(data, "koha")), "AUTH_FAILED");
+    assert_eq!(h.code("import_commit", json!({"token":"stale", "options":options})), "AUTH_FAILED");
+    h.ok("login", json!({"username":"xmlviewer","password":"viewer passphrase"}));
+    assert_eq!(h.code("import_preview", request(data, "koha")), "PERMISSION_DENIED");
+    assert_eq!(h.code("import_commit", json!({"token":"stale", "options":options})), "PERMISSION_DENIED");
+}
+
+#[test]
+fn xlsx_import_maps_previews_commits_and_rejects_unsafe_workbooks() {
+    use base64::Engine;
+    let h = Harness::new();
+    h.ok("complete_setup", setup_body());
+    let config = h.ok("config_overview", json!({}));
+    let data = include_bytes!("../../docs/examples/catalogue-import.xlsx");
+    let request = |bytes: &[u8]| json!({"request": {"fileName":"books.xlsx", "format":"xlsx", "profile":"generic", "mapping":null, "dataBase64":base64::engine::general_purpose::STANDARD.encode(bytes)}});
+    let preview = h.ok("import_preview", request(data));
+    assert_eq!(preview["totals"]["records"], 1);
+    assert_eq!(preview["totals"]["copies"], 2);
+    assert_eq!(preview["mapping"]["barcode"], "Barcode");
+    assert!(preview["mappingFields"].as_array().unwrap().iter().any(|v| v == "callNumber"));
+    assert_eq!(h.ok("catalogue_search", json!({"query":{"page":1,"pageSize":25}}))["total"], 0);
+    let options = json!({"duplicatePolicy":"skip","createMissing":true,"defaultItemCategoryId":config["itemCategories"][0]["id"],"barcodeAsAccession":true});
+    let report = h.ok("import_commit", json!({"token":preview["token"],"options":options}));
+    assert_eq!(report["createdRecords"], 1);
+    assert_eq!(report["copiesAdded"], 2);
+    let found = h.ok("catalogue_search", json!({"query":{"text":"000XLSX123","page":1,"pageSize":25}}));
+    let record = h.ok("catalogue_get_record", json!({"id":found["rows"][0]["id"]}));
+    assert_eq!(record["title"], "XLSX verification book");
+    let copies = record["copies"].as_array().unwrap();
+    let first = copies.iter().find(|c| c["barcode"] == "000XLSX123").unwrap();
+    assert_eq!(first["accessionNo"], "000XLSX123");
+    assert_eq!(first["priceMinor"], 12550);
+    assert_eq!(first["callNumber"], "020 XLSX");
+    assert!(copies.iter().any(|c| c["barcode"] == "000XLSX124" && c["status"] == "damaged"));
+    for bad in [b"not a workbook".as_slice(), include_bytes!("../../docs/examples/catalogue-import-formula.xlsx").as_slice()] {
+        assert_eq!(h.code("import_preview", request(bad)), "VALIDATION");
+    }
+    assert_eq!(h.ok("catalogue_search", json!({"query":{"page":1,"pageSize":25}}))["total"], 1);
+    {
+        let state = h.webview.state::<AppState>();
+        let conn = state.db.lock().unwrap();
+        auth::create_user(&conn, "xlsxviewer", "Viewer", "viewer passphrase", "viewer").unwrap();
+    }
+    h.ok("logout", json!({}));
+    assert_eq!(h.code("import_preview", request(data)), "AUTH_FAILED");
+    assert_eq!(h.code("import_commit", json!({"token":"stale", "options":options})), "AUTH_FAILED");
+    h.ok("login", json!({"username":"xlsxviewer","password":"viewer passphrase"}));
+    assert_eq!(h.code("import_preview", request(data)), "PERMISSION_DENIED");
+    assert_eq!(h.code("import_commit", json!({"token":"stale", "options":options})), "PERMISSION_DENIED");
+}
+
+#[test]
+fn selected_catalogue_export_supports_exchange_formats_and_read_permissions() {
+    use base64::Engine;
+    let h = Harness::new();
+    assert_eq!(h.code("catalogue_export_records", json!({"ids":[1],"format":"json"})), "AUTH_FAILED");
+    h.ok("complete_setup", setup_body());
+    let config = h.ok("config_overview", json!({}));
+    let preview = h.ok("import_preview", json!({"request":{"fileName":"sample.xlsx","format":"xlsx","profile":"generic","mapping":null,"dataBase64":base64::engine::general_purpose::STANDARD.encode(include_bytes!("../../docs/examples/catalogue-import.xlsx"))}}));
+    h.ok("import_commit", json!({"token":preview["token"],"options":{"duplicatePolicy":"new","createMissing":true,"defaultItemCategoryId":config["itemCategories"][0]["id"],"barcodeAsAccession":true}}));
+    let found = h.ok("catalogue_search", json!({"query":{"page":1,"pageSize":25}}));
+    let id = &found["rows"][0]["id"];
+    for format in ["json","csv","xlsx","marc","marcxml"] {
+        let file = h.ok("catalogue_export_records", json!({"ids":[id],"format":format}));
+        assert_eq!(file["records"],1);
+        assert_eq!(file["copies"],2);
+        let bytes = base64::engine::general_purpose::STANDARD.decode(file["dataBase64"].as_str().unwrap()).unwrap();
+        assert!(!bytes.is_empty());
+        let reimport = h.ok("import_preview", json!({"request":{"fileName":file["fileName"],"format":format,"profile":"koha","mapping":null,"dataBase64":file["dataBase64"]}}));
+        assert_eq!(reimport["totals"]["records"],1);
+        assert_eq!(reimport["totals"]["copies"],2);
+        h.ok("import_cancel",json!({}));
+    }
+    assert_eq!(h.code("catalogue_export_records", json!({"ids":[],"format":"json"})), "VALIDATION");
+    {
+        let state = h.webview.state::<AppState>();
+        let conn = state.db.lock().unwrap();
+        auth::create_user(&conn, "exportviewer", "Viewer", "viewer passphrase", "viewer").unwrap();
+    }
+    h.ok("logout",json!({}));
+    h.ok("login",json!({"username":"exportviewer","password":"viewer passphrase"}));
+    assert_eq!(h.ok("catalogue_export_records",json!({"ids":[id],"format":"json"}))["records"],1);
+    {
+        let state = h.webview.state::<AppState>();
+        let conn = state.db.lock().unwrap();
+        conn.execute("DELETE FROM role_permissions WHERE role_id=(SELECT id FROM roles WHERE code='viewer') AND permission_id=(SELECT id FROM permissions WHERE code='catalogue.read')", []).unwrap();
+    }
+    assert_eq!(h.code("catalogue_export_records",json!({"ids":[id],"format":"json"})), "PERMISSION_DENIED");
+}
+
+#[test]
+fn export_save_requires_catalogue_read_and_validates_before_showing_a_dialog() {
+    let h = Harness::new();
+    let body = json!({"fileName":"pusthakam-catalogue.json","dataBase64":"W10="});
+    assert_eq!(h.code("catalogue_save_export",body.clone()),"AUTH_FAILED");
+    h.ok("complete_setup",setup_body());
+    assert_eq!(h.code("catalogue_save_export",json!({"fileName":"../library.db","dataBase64":"W10="})),"VALIDATION");
+    assert_eq!(h.code("catalogue_save_export",json!({"fileName":"pusthakam-catalogue.json","dataBase64":"invalid"})),"VALIDATION");
+    {
+        let state = h.webview.state::<AppState>();
+        let conn = state.db.lock().unwrap();
+        conn.execute("DELETE FROM role_permissions WHERE role_id=(SELECT role_id FROM staff_users WHERE username='admin') AND permission_id=(SELECT id FROM permissions WHERE code='catalogue.read')",[]).unwrap();
+    }
+    assert_eq!(h.code("catalogue_save_export",body),"PERMISSION_DENIED");
+}
+
+#[test]
+fn library_calendar_configures_closures_and_rechecks_issue_and_renewal_dates() {
+    let h=Harness::new();
+    assert_eq!(h.code("config_calendar",json!({})),"AUTH_FAILED");
+    assert_eq!(h.code("config_save_closed_weekdays",json!({"days":[0]})),"AUTH_FAILED");
+    assert_eq!(h.code("config_save_holiday",json!({"input":{"id":null,"date":"2027-01-01","name":"New year"}})),"AUTH_FAILED");
+    assert_eq!(h.code("config_remove_holiday",json!({"id":1})),"AUTH_FAILED");
+    h.ok("complete_setup",setup_body());
+    let cfg=h.ok("config_overview",json!({}));
+    let policy=&cfg["policies"][0];
+    let member=h.ok("members_save",json!({"input":{"name":"Calendar reader","memberNumber":"CALENDAR-1","categoryId":policy["memberCategoryId"]}}));
+    let record=h.ok("catalogue_save_record",json!({"input":{"title":"Calendar test book","contributors":[],"subjects":[]}}));
+    let copies=h.ok("catalogue_add_copies",json!({"recordId":record,"input":{"count":1,"itemCategoryId":policy["itemCategoryId"],"acquisitionSource":"purchase"}}));
+    let barcode=&copies[0]["barcode"];
+    let initial=h.ok("circulation_prepare_issue",json!({"memberNumber":"CALENDAR-1","barcode":barcode}));
+    let (weekday, expected): (i64,String) = {
+        let state=h.webview.state::<AppState>(); let conn=state.db.lock().unwrap();
+        conn.query_row("SELECT CAST(strftime('%w',?1) AS INTEGER),date(?1,'+2 days')",[initial["dueOn"].as_str().unwrap()],|r|Ok((r.get(0)?,r.get(1)?))).unwrap()
+    };
+    h.ok("config_save_closed_weekdays",json!({"days":[weekday]}));
+    let tomorrow = {
+        let state=h.webview.state::<AppState>(); let conn=state.db.lock().unwrap();
+        conn.query_row("SELECT date(?1,'+1 day')",[initial["dueOn"].as_str().unwrap()],|r|r.get::<_,String>(0)).unwrap()
+    };
+    let holiday=h.ok("config_save_holiday",json!({"input":{"id":null,"date":tomorrow,"name":"Calendar closure"}}));
+    assert_eq!(h.code("config_save_holiday",json!({"input":{"id":null,"date":tomorrow,"name":"Duplicate"}})),"CONFLICT");
+    assert_eq!(h.code("config_save_closed_weekdays",json!({"days":[0,1,2,3,4,5,6]})),"VALIDATION");
+    let old_request=json!({"memberNumber":"CALENDAR-1","barcode":barcode,"memberId":member,"itemId":initial["itemId"],"dueOn":initial["dueOn"]});
+    assert_eq!(h.code("circulation_issue",old_request),"CONFLICT");
+    let issue=h.ok("circulation_prepare_issue",json!({"memberNumber":"CALENDAR-1","barcode":barcode}));
+    assert_eq!(issue["dueOn"],expected);
+    h.ok("circulation_issue",json!({"memberNumber":"CALENDAR-1","barcode":barcode,"memberId":member,"itemId":issue["itemId"],"dueOn":issue["dueOn"]}));
+    let renewal=h.ok("circulation_prepare_renewal",json!({"barcode":barcode}));
+    let renewal_holiday=h.ok("config_save_holiday",json!({"input":{"id":null,"date":renewal["dueOn"],"name":"Renewal closure"}}));
+    assert_eq!(h.code("circulation_renew",json!({"confirmation":renewal})),"CONFLICT");
+    let changed=h.ok("circulation_prepare_renewal",json!({"barcode":barcode}));
+    assert!(changed["dueOn"].as_str().unwrap()>renewal["dueOn"].as_str().unwrap());
+    h.ok("circulation_renew",json!({"confirmation":changed}));
+    h.ok("config_save_holiday",json!({"input":{"id":holiday,"date":"2028-02-29","name":"Edited closure"}}));
+    h.ok("config_remove_holiday",json!({"id":renewal_holiday}));
+    let cal=h.ok("config_calendar",json!({})); assert_eq!(cal["holidays"][0]["date"],"2028-02-29");
+    assert_eq!(h.ok("circulation_prepare_return",json!({"barcode":barcode}))["dueOn"],changed["dueOn"],"calendar edits do not rewrite existing loan dates");
+    {
+        let state=h.webview.state::<AppState>(); let conn=state.db.lock().unwrap();
+        auth::create_user(&conn,"calendarviewer","Viewer","viewer passphrase","viewer").unwrap();
+    }
+    h.ok("logout",json!({})); h.ok("login",json!({"username":"calendarviewer","password":"viewer passphrase"}));
+    h.ok("config_calendar",json!({}));
+    assert_eq!(h.code("config_save_closed_weekdays",json!({"days":[]})),"PERMISSION_DENIED");
+    assert_eq!(h.code("config_save_holiday",json!({"input":{"id":null,"date":"2027-01-01","name":"Denied"}})),"PERMISSION_DENIED");
+    assert_eq!(h.code("config_remove_holiday",json!({"id":holiday})),"PERMISSION_DENIED");
+}

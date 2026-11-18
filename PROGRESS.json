@@ -1,22 +1,22 @@
 {
   "schemaVersion": 1,
-  "lastUpdated": "2026-11-18T08:17:46.537Z",
-  "currentPhase": "3",
+  "lastUpdated": "2026-11-18T11:53:14.972Z",
+  "currentPhase": "4",
   "currentTask": {
-    "taskId": "IMP-FORMATS",
-    "title": "JSON catalogue import",
-    "status": "in-progress",
-    "detail": "JSON IPC and all 30 Rust import tests passed; 8 frontend tests, typecheck, lint and production build passed. Isolated Windows test executable ready: pusthakam-phase3-json-import.exe. Standard repository build also passed. Native JSON walkthrough and MARCXML/XLSX remain open."
+    "taskId": "CIRC-LOAN",
+    "title": "Typing member-name suggestions in circulation and reservations",
+    "status": "implemented",
+    "detail": "Maximized startup, live member-name suggestions in Issue and Reservations, and X-to-tray/Open/Quit are implemented. All 11 focused UI tests, build/typecheck/lint, Rust compile check and standalone Windows build passed. Native checks pending. Handoff/docs are saved in the repository; changes are local until Git commit/push/pull."
   },
   "nextMilestone": {
-    "nextTaskId": "IMP-FORMATS",
-    "title": "Check JSON import in Windows, then continue MARCXML/XLSX",
-    "detail": "Open pusthakam-phase3-json-import.exe in the existing test library. Preview docs/examples/catalogue-import.json, confirm one record/one copy, then verify imported title, barcode and price. MARCXML/XLSX follow in Phase 3."
+    "nextTaskId": "CIRC-LOAN",
+    "title": "Verify live member lookup and desktop tray behavior",
+    "detail": "Close older test apps; run pusthakam-phase4-members-tray.exe. Check maximized startup and typing member matches in Issue and Reservations. Sign in, X hides, tray icon/Open restores the same session; Quit exits and reopening requires sign-in. Read docs/SESSION_HANDOFF.md before switching computers; sync source/docs through Git."
   },
   "totals": {
-    "overall": 47.1,
-    "implementation": 57.4,
-    "verification": 38.9,
+    "overall": 50.8,
+    "implementation": 62.1,
+    "verification": 41.8,
     "releaseReadiness": 10
   },
   "phases": [
@@ -584,7 +584,7 @@
       "phase": "3",
       "module": "exchange",
       "weight": 5,
-      "status": "in-progress",
+      "status": "verified",
       "title": "MARCXML, XLSX and JSON catalogue import",
       "requirements": [
         "REQ-IMP"
@@ -594,24 +594,32 @@
         "Reject malformed data without partial writes."
       ],
       "sourceEvidence": [
-        "src-tauri/src/services/import/json_import.rs adds strict JSON parsing with nested copies using existing analysis/commit. ImportDialog supports JSON. docs/JSON_CATALOGUE_IMPORT.md documents the schema. MARCXML/XLSX are not implemented."
+        "src-tauri/src/services/import/{json_import,marcxml,xlsx_import}.rs; shared CSV mapping/grouping, MARC21/Koha mapping and transactional commit; ImportDialog source selection and XLSX column mapping; docs/{JSON,MARCXML,XLSX}_CATALOGUE_IMPORT.md and docs/examples fixtures."
       ],
       "verificationEvidence": [
         "json-import-frontend",
         "json-import-rust-verified",
-        "json-import-windows-native-build"
+        "json-import-windows-native-build",
+        "json-import-owner-windows",
+        "marcxml-import-checks",
+        "marcxml-ipc-progress",
+        "marcxml-windows-compile",
+        "marcxml-ipc-native-prep",
+        "marcxml-standalone-windows-build",
+        "marcxml-owner-windows",
+        "xlsx-import-unit-frontend",
+        "xlsx-import-ipc",
+        "xlsx-standalone-windows-build",
+        "xlsx-owner-windows"
       ],
-      "verificationNeeded": [
-        "Verify JSON preview/commit and malformed-file handling in native Windows wizard.",
-        "Implement and test MARCXML and XLSX preview/commit, valid and malformed samples."
-      ]
+      "verificationNeeded": []
     },
     {
       "id": "EXP-CATALOGUE",
       "phase": "3",
       "module": "exchange",
       "weight": 5,
-      "status": "in-progress",
+      "status": "implemented",
       "title": "Catalogue and holdings export",
       "requirements": [
         "REQ-CAT",
@@ -622,13 +630,23 @@
         "Reimport representative exports and retain supported record and copy fields."
       ],
       "sourceEvidence": [
-        "Accession Register exports all matching holdings to UTF-8 CSV through catalogue_export_copies."
+        "src-tauri/src/services/catalogue_export.rs and marc_export.rs; catalogue_export_records IPC; ExportDialog and catalogue selection; docs/CATALOGUE_EXCHANGE_EXPORT.md. JSON/CSV/XLSX support classification scheme codes; MARC 080/050 imports UDC/LC and 952$i imports accession.",
+        "src-tauri/src/services/export_save.rs and catalogue_save_export use Windows Save As and atomic selected-path publication; ExportDialog shows saved path and handles cancellation/errors."
       ],
       "verificationEvidence": [
-        "accession-circulation-classification"
+        "accession-circulation-classification",
+        "catalogue-export-roundtrip",
+        "catalogue-export-frontend",
+        "catalogue-export-full-rust",
+        "catalogue-export-windows-build",
+        "catalogue-export-owner-working",
+        "catalogue-save-as-unit-ui",
+        "catalogue-save-as-ipc",
+        "catalogue-save-as-windows-build",
+        "catalogue-save-as-owner-windows"
       ],
       "verificationNeeded": [
-        "Test data reconciliation and reopen exported files in appropriate readers."
+        "Complete native save/open/repreview reconciliation for JSON, CSV, XLSX, MARC and MARCXML if not already exercised; automated round trips passed."
       ]
     },
     {
@@ -682,12 +700,16 @@
         "windows-issue-return",
         "circulation-member-name-lookup",
         "windows-borrower-lookup-build",
-        "circulation-barcode-accession"
+        "circulation-barcode-accession",
+        "live-member-lookup-frontend",
+        "tray-rust-compile",
+        "members-tray-native-build"
       ],
       "verificationNeeded": [
         "Verify that returning an overdue loan removes it from the Windows overdue list and retains member loan history.",
         "Exercise borrower lookup by name in a fresh Windows build.",
-        "Exercise an accession number that differs from its barcode in a refreshed native Windows build."
+        "Exercise an accession number that differs from its barcode in a refreshed native Windows build.",
+        "Native Windows: type member names and choose matches in both Issue and Reservations; check maximized startup and close-to-tray/session restore/explicit Quit."
       ]
     },
     {
@@ -720,7 +742,7 @@
       "phase": "4",
       "module": "circulation",
       "weight": 3,
-      "status": "in-progress",
+      "status": "verified",
       "title": "Staff-managed calendar and closed-day policies",
       "requirements": [
         "REQ-CIRC",
@@ -731,12 +753,15 @@
         "Verify due dates skip closed dates for configured issue and renewal rules."
       ],
       "sourceEvidence": [
-        "Holiday-aware date calculation and SQLite holiday records exist. Settings exposes loan rules."
+        "src/features/settings/LibraryCalendarPanel.tsx; src-tauri/src/services/calendar.rs, config commands and migration 0017_calendar_closed_weekdays.sql. Issue and renewal share calendar::next_open_date; docs/LIBRARY_CALENDAR.md documents policy and walkthrough."
       ],
-      "verificationEvidence": [],
-      "verificationNeeded": [
-        "Test calendar edit/permission, date boundaries and saved policies in the desktop app."
-      ]
+      "verificationEvidence": [
+        "calendar-focused-service-ui",
+        "calendar-full-rust",
+        "calendar-windows-native-build",
+        "calendar-owner-windows"
+      ],
+      "verificationNeeded": []
     },
     {
       "id": "CIRC-HOLDS",
@@ -1628,6 +1653,294 @@
   ],
   "verificationRuns": [
     {
+      "id": "members-tray-native-build",
+      "title": "Standalone Windows member lookup and system tray build",
+      "at": "2026-11-18T11:51:41.807Z",
+      "check": "cargo build --offline --manifest-path <isolated>/src-tauri/Cargo.toml --features tauri/custom-protocol; npm test -- src/features/circulation/FindMember.test.tsx src/features/circulation/CirculationPage.test.tsx",
+      "outcome": "passed",
+      "result": "Standalone native build succeeded with tray-icon feature, maximized=true, embedded frontend and existing disposable library. Executable: C:\\Users\\Melvin\\AppData\\Local\\Temp\\pusthakam-native-verification-cea843fbd8cb4e9bbaf6c2274b98c468\\pusthakam-phase4-members-tray.exe. Final focused frontend rerun passed all 11 tests. Native maximization, dropdown behavior and tray/session/Quit checks remain open."
+    },
+    {
+      "id": "tray-rust-compile",
+      "title": "Rust compilation with system tray lifecycle",
+      "at": "2026-11-18T11:48:44.995Z",
+      "check": "cargo check --offline --manifest-path src-tauri/Cargo.toml",
+      "outcome": "passed",
+      "result": "Rust check passed with tray-icon feature enabled, Open/Quit menu, left-click restore, X-to-hide only when tray installation succeeded, and explicit Quit flag. Native window/tray behavior is not established by this compile check; owner walkthrough remains open."
+    },
+    {
+      "id": "live-member-lookup-frontend",
+      "title": "Live member suggestions in issue and reservations",
+      "at": "2026-11-18T11:47:30.357Z",
+      "check": "npm test -- src/features/circulation/FindMember.test.tsx src/features/circulation/CirculationPage.test.tsx; npm run build; npm run lint",
+      "outcome": "passed",
+      "result": "All 11 focused frontend tests passed, plus production build/typecheck and lint. Covered debounced automatic queries, empty/cleared searches, duplicate names distinguished by member number, keyboard selection, stale-response exclusion, retry/no-match, bounded pagination/reset, issue number fill and Reservations lookup feeding the chosen number to existing reservation command."
+    },
+    {
+      "id": "calendar-owner-windows",
+      "title": "Owner calendar Windows confirmation",
+      "at": "2026-11-18T11:38:15.121Z",
+      "check": "Owner tested holidays following the Windows calendar settings/restart/due-date instructions.",
+      "outcome": "passed",
+      "result": "Owner reported: yes. holidays working. Recorded as confirmation of the preceding calendar walkthrough, with automated persistence and issue/renewal tests providing detailed supporting evidence."
+    },
+    {
+      "id": "calendar-windows-native-build",
+      "title": "Standalone Windows library calendar verification build",
+      "at": "2026-11-18T11:29:46.511Z",
+      "check": "CARGO_TARGET_DIR=D:/Pusthakam/src-tauri/target; cargo build --offline --manifest-path <isolated>/src-tauri/Cargo.toml --features tauri/custom-protocol",
+      "outcome": "passed",
+      "result": "Standalone build passed: C:\\Users\\Melvin\\AppData\\Local\\Temp\\pusthakam-native-verification-cea843fbd8cb4e9bbaf6c2274b98c468\\pusthakam-phase4-calendar.exe. Uses existing disposable library, schema 17 and embedded frontend. Walkthrough copied beside executable. Close older verification apps before launching; actual native upgrade/persistence/due-date checks remain open."
+    },
+    {
+      "id": "calendar-full-rust",
+      "title": "Full Rust regression suite with schema 17 calendar",
+      "at": "2026-11-18T11:29:26.317Z",
+      "check": "cargo test --offline --manifest-path src-tauri/Cargo.toml",
+      "outcome": "passed",
+      "result": "119 unit tests and 19 IPC tests passed. Migration, upgrade/reopen, backup and existing circulation regressions passed. New calendar IPC checks cover all four commands, signed-out/viewer denials, duplicate and invalid configuration, weekly-plus-holiday issue dates, stale issue/renewal rejection, confirmed renewal, edits/removal and unchanged stored due dates."
+    },
+    {
+      "id": "calendar-focused-service-ui",
+      "title": "Calendar service, settings UI and build checks",
+      "at": "2026-11-18T11:28:35.449Z",
+      "check": "cargo test --offline --manifest-path src-tauri/Cargo.toml calendar --lib; cargo test --offline --manifest-path src-tauri/Cargo.toml --test ipc library_calendar; npm test -- src/features/settings/LibraryCalendarPanel.test.tsx src/features/settings/SettingsPage.test.tsx; npm run build; npm run lint",
+      "outcome": "passed",
+      "result": "Three filtered Rust tests (two calendar tests and date validation) and the new real IPC calendar workflow passed. All 14 settings UI tests passed, plus production build/typecheck and lint. Covered closure/holiday combination, leap/year boundaries, reopen persistence, audited rollback, validation, CRUD confirmation, read-only UI, denied writes and stale issue/renewal confirmation. Full Rust regression suite and native build are running."
+    },
+    {
+      "id": "catalogue-save-as-owner-windows",
+      "title": "Owner Windows Save As confirmation",
+      "at": "2026-11-18T11:17:24.890Z",
+      "check": "Owner tried the standalone Save As build following folder/filename, cancellation and overwrite test instructions.",
+      "outcome": "passed",
+      "result": "Owner reported: super good. working fine. Recorded as confirmation of the preceding Windows Save As walkthrough. Individual format save/open/repreview reconciliation was not separately enumerated."
+    },
+    {
+      "id": "catalogue-save-as-windows-build",
+      "title": "Windows Save As standalone verification build",
+      "at": "2026-11-18T11:13:28.540Z",
+      "check": "CARGO_TARGET_DIR=D:/Pusthakam/src-tauri/target; cargo build --offline --manifest-path <isolated>/src-tauri/Cargo.toml --features tauri/custom-protocol",
+      "outcome": "passed",
+      "result": "Built standalone executable with embedded frontend: C:\\Users\\Melvin\\AppData\\Local\\Temp\\pusthakam-native-verification-cea843fbd8cb4e9bbaf6c2274b98c468\\pusthakam-phase3-save-as.exe. Uses existing disposable library and Save As test window title. Native dialog, location/filename, cancellation and overwrite walkthrough remains open."
+    },
+    {
+      "id": "catalogue-save-as-ipc",
+      "title": "Save As permission checks and IPC regressions",
+      "at": "2026-11-18T11:12:03.932Z",
+      "check": "cargo test --offline --manifest-path src-tauri/Cargo.toml --test ipc export_save_requires; cargo test --offline --manifest-path src-tauri/Cargo.toml --test ipc; npm run progress:validate -- --write; npm run progress:validate; git diff --check",
+      "outcome": "passed",
+      "result": "New save command rejects signed-out users, missing catalogue.read, invalid filename and malformed bytes before displaying a dialog. All 18 IPC tests passed, including existing exchange formats/imports. Progress validation and whitespace checks passed; native dialog walkthrough is pending."
+    },
+    {
+      "id": "catalogue-save-as-unit-ui",
+      "title": "Native Save As service and frontend checks",
+      "at": "2026-11-18T11:09:46.301Z",
+      "check": "cargo test --offline --manifest-path src-tauri/Cargo.toml export_save --lib; npm test -- src/features/catalogue/ExportDialog.test.tsx; npm run build; npm run lint",
+      "outcome": "passed",
+      "result": "Two Rust service tests passed for binary integrity, selected Unicode destination, atomic replacement, cancellation, protected directory and invalid path/payload rejection. Three frontend tests passed for native save request, saved-path display, cancellation, error retry and format reset. Production build/typecheck and lint passed. Native dialog walkthrough remains open."
+    },
+    {
+      "id": "catalogue-export-owner-working",
+      "title": "Owner export workflow confirmation",
+      "at": "2026-11-18T11:05:35.844Z",
+      "check": "Owner clicked Save file and reported the export was working fine.",
+      "outcome": "passed",
+      "result": "Owner confirmed the export worked and requested destination selection. Specific five-format native reconciliation was not separately enumerated; keep detailed native format checks open."
+    },
+    {
+      "id": "catalogue-export-windows-build",
+      "title": "Standalone catalogue export Windows build",
+      "at": "2026-11-18T10:51:34.136Z",
+      "check": "cargo build --offline --manifest-path <isolated>/src-tauri/Cargo.toml --features tauri/custom-protocol; npm run progress:validate -- --write; npm run progress:validate; git diff --check",
+      "outcome": "passed",
+      "result": "Isolated executable with embedded production frontend built successfully: C:\\Users\\Melvin\\AppData\\Local\\Temp\\pusthakam-native-verification-cea843fbd8cb4e9bbaf6c2274b98c468\\pusthakam-phase3-catalogue-export.exe. Uses existing disposable library and distinct test window title. Format walkthrough copied beside it. Progress checks passed at 49.8% overall, 61% implemented, 40.7% verified and 10% release-ready; whitespace check passed. Native download, reader opening and repreview remain open."
+    },
+    {
+      "id": "catalogue-export-full-rust",
+      "title": "Full Rust suite after catalogue exchange exports",
+      "at": "2026-11-18T10:49:51.304Z",
+      "check": "cargo test --offline --manifest-path src-tauri/Cargo.toml",
+      "outcome": "passed",
+      "result": "All 115 unit tests and 17 IPC tests passed, including corrected real permission revocation. All five formats export and preview through actual IPC; viewer read access allowed, signed-out and revoked read permission denied. Existing imports, circulation, backups and other backend regressions passed."
+    },
+    {
+      "id": "catalogue-export-ipc-initial",
+      "title": "Initial export permission test setup",
+      "at": "2026-11-18T10:49:03.763Z",
+      "check": "cargo test --offline --manifest-path src-tauri/Cargo.toml --test ipc selected_catalogue_export",
+      "outcome": "failed",
+      "result": "All export/repreview paths succeeded, but final denial assertion failed because modifying cached session permissions does not override database permissions. Corrected test to revoke viewer catalogue.read in the fixture database; full Rust rerun pending."
+    },
+    {
+      "id": "catalogue-export-frontend",
+      "title": "Catalogue export frontend and build",
+      "at": "2026-11-18T10:49:03.763Z",
+      "check": "npm test -- src/features/catalogue/ExportDialog.test.tsx src/features/catalogue/catalogue.test.tsx src/features/catalogue/ImportDialog.test.tsx; npm run build; npm run lint",
+      "outcome": "passed",
+      "result": "36 tests passed. Verified selected IDs and format, warning review before save, binary-file download request, error retry, format-change reset, viewer export and hidden archive controls. Production build/typecheck and lint passed."
+    },
+    {
+      "id": "catalogue-export-roundtrip",
+      "title": "Five-format supported-field database round trips",
+      "at": "2026-11-18T10:49:03.763Z",
+      "check": "cargo test --offline --manifest-path src-tauri/Cargo.toml catalogue_export --lib",
+      "outcome": "passed",
+      "result": "Both export service tests passed. Exported and reimported all five formats into fresh databases, preserving supported title/copy fields, Unicode, leading-zero barcode/accession, exact price, UDC scheme, date, damaged status and titles without holdings. Checked deduplication, selection/format errors, warnings for live/archive states, CSV formula rejection and safe XLSX text cells."
+    },
+    {
+      "id": "import-formats-verification-credit-fix",
+      "title": "Verified evidence reference correction",
+      "at": "2026-11-18T10:38:44.857Z",
+      "check": "npm run progress:validate -- --write",
+      "outcome": "failed",
+      "result": "Initial verification promotion rejected a historical failed run in task evidence. Retained the failed run in verificationRuns and linked only passing evidence to the verified task."
+    },
+    {
+      "id": "xlsx-owner-windows",
+      "title": "Owner XLSX Windows acceptance",
+      "at": "2026-11-18T10:38:15.088Z",
+      "check": "Owner followed the Windows XLSX walkthrough: valid workbook preview/commit and copy checks; formula sample rejection.",
+      "outcome": "passed",
+      "result": "Owner reported: good. working fine. Accepted as confirmation of the preceding walkthrough instructions. Earlier JSON/MARCXML owner confirmations and 38 Rust import, 16 IPC and 10 frontend checks provide the remaining format evidence."
+    },
+    {
+      "id": "xlsx-standalone-windows-build",
+      "title": "Standalone isolated XLSX Windows build",
+      "at": "2026-11-18T10:30:58.733Z",
+      "check": "CARGO_TARGET_DIR=D:/Pusthakam/src-tauri/target; cargo build --offline --manifest-path <isolated>/src-tauri/Cargo.toml --features tauri/custom-protocol; npm run progress:validate -- --write; npm run progress:validate; git diff --check",
+      "outcome": "passed",
+      "result": "Standalone build passed with embedded production frontend and existing disposable library. Executable: C:\\Users\\Melvin\\AppData\\Local\\Temp\\pusthakam-native-verification-cea843fbd8cb4e9bbaf6c2274b98c468\\pusthakam-phase3-xlsx-import.exe. Valid, formula, numeric-identifier, sparse-range and multi-sheet samples copied beside it. Progress totals recalculated/validated at 48.2% overall, 59.2% implemented, 38.9% verified, 10% release-ready. Whitespace diff check passed. Native XLSX checks remain open."
+    },
+    {
+      "id": "xlsx-progress-status-correction",
+      "title": "Progress task status consistency correction",
+      "at": "2026-11-18T10:29:48.460Z",
+      "check": "npm run progress:validate -- --write; npm run progress:validate",
+      "outcome": "failed",
+      "result": "Initial recalculation rejected currentTask.status in-progress after linked IMP-FORMATS became implemented. Aligned currentTask.status with implemented and reran validator."
+    },
+    {
+      "id": "xlsx-import-ipc",
+      "title": "Full Tauri IPC suite with XLSX import",
+      "at": "2026-11-18T10:29:15.661Z",
+      "check": "cargo test --offline --manifest-path src-tauri/Cargo.toml --test ipc",
+      "outcome": "passed",
+      "result": "All 16 IPC tests passed, including XLSX preview mapping, no preview writes, transactional commit of one title/two copies, exact leading-zero barcodes/accessions, call number, price and damaged status. Invalid/formula workbooks rejected without adding titles. Signed-out/viewer preview and commit denied. JSON and MARCXML IPC regressions also passed."
+    },
+    {
+      "id": "xlsx-import-unit-frontend",
+      "title": "XLSX parser, table mapping and UI checks",
+      "at": "2026-11-18T10:27:38.751Z",
+      "check": "cargo test --offline --manifest-path src-tauri/Cargo.toml services::import --lib; npm test -- src/features/catalogue/ImportDialog.test.tsx; npm run build; npm run lint",
+      "outcome": "passed",
+      "result": "38 Rust import tests and 10 frontend import-dialog tests passed; build/typecheck and lint passed. Covered grouped copies, exact minor-unit price conversion, leading-zero identifiers, mapping, Unicode/quoted headings, and rejection of formulas, numeric IDs, sparse ranges, multiple sheets, duplicate headings, negative money and cell errors."
+    },
+    {
+      "id": "xlsx-download-windows-tls",
+      "title": "XLSX reader retry hit Windows TLS error",
+      "at": "2026-11-18T10:17:35.214Z",
+      "check": "cargo add calamine --manifest-path src-tauri/Cargo.toml",
+      "outcome": "failed",
+      "result": "Registry attempt reported schannel AcquireCredentialsHandle SEC_E_NO_CREDENTIALS on all retries. No certificate verification was disabled. XLSX implementation remains blocked pending a successful dependency download."
+    },
+    {
+      "id": "marcxml-owner-windows",
+      "title": "Owner MARCXML Windows walkthrough",
+      "at": "2026-11-18T10:17:03.964Z",
+      "check": "Owner tested valid and deliberately malformed XML samples in the standalone Windows verification build.",
+      "outcome": "passed",
+      "result": "Owner reported: malformed showed an error; other one was okay. Confirms basic native success and malformed-file error. Detailed field reconciliation and titles-only native profile were not explicitly reported."
+    },
+    {
+      "id": "marcxml-standalone-windows-build",
+      "title": "Standalone isolated MARCXML Windows build",
+      "at": "2026-11-18T09:35:35.319Z",
+      "check": "CARGO_TARGET_DIR=D:/Pusthakam/src-tauri/target; cargo build --offline --manifest-path <isolated>/src-tauri/Cargo.toml --features tauri/custom-protocol",
+      "outcome": "passed",
+      "result": "Built successfully with embedded frontend. Copied to C:\\Users\\Melvin\\AppData\\Local\\Temp\\pusthakam-native-verification-cea843fbd8cb4e9bbaf6c2274b98c468\\pusthakam-phase3-marcxml-import.exe. The isolated source uses the existing disposable library; repository app-data behavior unchanged. Valid and malformed XML samples copied beside executable. Native launch and walkthrough remain open."
+    },
+    {
+      "id": "marcxml-initial-isolated-build",
+      "title": "Initial isolated build attempt",
+      "at": "2026-11-18T09:31:52.619Z",
+      "check": "cargo build --offline --manifest-path <isolated>/src-tauri/Cargo.toml --features tauri/custom-protocol",
+      "outcome": "incomplete",
+      "result": "Stopped the fresh-target build to reuse the existing repository target cache. Standalone build resumed with CARGO_TARGET_DIR set explicitly."
+    },
+    {
+      "id": "xlsx-download-retry",
+      "title": "XLSX reader download retry",
+      "at": "2026-11-18T09:31:52.619Z",
+      "check": "cargo add calamine --manifest-path src-tauri/Cargo.toml",
+      "outcome": "failed",
+      "result": "Crates.io connection failed on all retries again. No XLSX dependency changes were made."
+    },
+    {
+      "id": "marcxml-ipc-native-prep",
+      "title": "MARCXML real command and edge case checks",
+      "at": "2026-11-18T09:31:52.619Z",
+      "check": "cargo test --offline --manifest-path src-tauri/Cargo.toml marcxml",
+      "outcome": "passed",
+      "result": "Three parser/service tests and the new MARCXML IPC test passed. Generic profile excludes copies; Koha preview writes nothing; commit preserves barcode/accession, price and call number; malformed later XML leaves counts unchanged; signed-out and viewer preview/commit are denied. Regression checks reject misplaced CDATA and entity content instead of silently discarding it."
+    },
+    {
+      "id": "marcxml-windows-compile",
+      "title": "Windows native compilation",
+      "at": "2026-11-18T09:11:32.120Z",
+      "check": "cargo build --offline --manifest-path src-tauri/Cargo.toml",
+      "outcome": "passed",
+      "result": "Windows debug build compiled successfully. This is a development build; standalone bundled-assets executable and native MARCXML walkthrough remain open."
+    },
+    {
+      "id": "marcxml-ipc-progress",
+      "title": "IPC and progress consistency checks",
+      "at": "2026-11-18T09:11:09.874Z",
+      "check": "cargo test --offline --manifest-path src-tauri/Cargo.toml --test ipc; npm run progress:validate -- --write; npm run progress:validate; git diff --check",
+      "outcome": "passed",
+      "result": "All 14 existing IPC tests passed. Progress recalculated and validated at 47.1% overall, 57.4% implementation, 38.9% verification and 10% release readiness. Timestamp precision normalized after initial progress validation failures. Diff whitespace check passed."
+    },
+    {
+      "id": "marcxml-progress-initial",
+      "title": "Initial progress validation",
+      "at": "2026-11-18T09:11:09.874Z",
+      "check": "npm run progress:validate -- --write; npm run progress:validate",
+      "outcome": "failed",
+      "result": "Timestamp serialization had shortened fractional seconds in existing evidence/activity entries. Normalized timestamps to three millisecond digits and reran both checks successfully."
+    },
+    {
+      "id": "xlsx-dependency-unavailable",
+      "title": "XLSX dependency unavailable",
+      "at": "2026-11-18T09:08:50.404Z",
+      "check": "cargo add calamine --manifest-path src-tauri/Cargo.toml",
+      "outcome": "failed",
+      "result": "Crates.io connection failed on all retries. calamine is not cached; no dependency or XLSX implementation added."
+    },
+    {
+      "id": "marcxml-import-initial-failures",
+      "title": "Initial MARCXML checks",
+      "at": "2026-11-18T09:08:50.404Z",
+      "check": "Initial cargo import tests and ImportDialog suite",
+      "outcome": "failed",
+      "result": "Initial parser API mismatch and file encoding/line ending errors corrected; source option count updated from four to six. Subsequent checks passed."
+    },
+    {
+      "id": "marcxml-import-checks",
+      "title": "MARCXML automated checks",
+      "at": "2026-11-18T09:08:50.404Z",
+      "check": "cargo test --offline --manifest-path src-tauri/Cargo.toml services::import --lib; npm test -- src/features/catalogue/ImportDialog.test.tsx; npm run lint; npm run build",
+      "outcome": "passed",
+      "result": "33 Rust import tests and 9 frontend tests passed. Lint and production build/typecheck passed. Tests cover Koha and generic mapping, entities, leading-zero barcode, exact price, preview without writes, commit and malformed-file rejection."
+    },
+    {
+      "id": "json-import-owner-windows",
+      "title": "JSON Windows owner confirmation",
+      "at": "2026-11-18T09:08:50.404Z",
+      "check": "Owner reported: JSON import worked in the Windows test.",
+      "outcome": "passed",
+      "result": "Owner confirmed native JSON import success; no further details inferred."
+    },
+    {
       "id": "json-import-windows-native-build",
       "title": "Windows JSON import verification executable",
       "at": "2026-11-18T08:16:59.918Z",
@@ -2318,7 +2631,7 @@
     {
       "id": "audit",
       "title": "Scope and code audit",
-      "at": "2026-11-17T03:02:30Z",
+      "at": "2026-11-17T03:02:30.000Z",
       "check": "Local product specification, roadmap, route and command registration, test inventory, weighted task mapping",
       "outcome": "passed",
       "result": "Mapped all 19 documented REQ IDs to measurable v1 tasks and distinguished real routes from placeholders."
@@ -2326,7 +2639,7 @@
     {
       "id": "build",
       "title": "Production frontend build",
-      "at": "2026-11-17T03:02:30Z",
+      "at": "2026-11-17T03:02:30.000Z",
       "check": "npm run build and dist preview-marker inspection",
       "outcome": "passed",
       "result": "TypeScript and Vite production build succeeded. Dev preview and gallery markers were absent."
@@ -2334,13 +2647,164 @@
     {
       "id": "frontend-default",
       "title": "Existing frontend suite (default)",
-      "at": "2026-11-17T03:02:30Z",
+      "at": "2026-11-17T03:02:30.000Z",
       "check": "npm test",
       "outcome": "failed",
       "result": "88 passed, 1 failed. SetupWizard’s multi-step workflow exceeded the 5-second default timeout during the baseline run."
     }
   ],
   "recentActivity": [
+    {
+      "kind": "progress",
+      "at": "2026-11-18T11:53:14.972Z",
+      "title": "Standing requirement: update progress and handoff after every change",
+      "detail": "Owner requires PROGRESS.md, PROGRESS.json, docs/SESSION_HANDOFF.md and affected feature docs to be updated after every meaningful change, including partial work, decisions, failed/incomplete checks, blockers and exact next steps. Do not wait for a computer switch; verify consistency before ending a turn. Persisted in AGENTS.md. Git sync remains required to transfer local changes."
+    },
+    {
+      "kind": "progress",
+      "at": "2026-11-18T11:51:41.807Z",
+      "taskId": "CIRC-LOAN",
+      "title": "Windows member suggestions and tray test build ready",
+      "detail": "Maximized startup, live member-name suggestions in Issue and Reservations, and X-to-tray/Open/Quit are implemented. All 11 focused UI tests, build/typecheck/lint, Rust compile check and standalone Windows build passed. Native checks pending. Handoff/docs are saved in the repository; changes are local until Git commit/push/pull."
+    },
+    {
+      "kind": "progress",
+      "at": "2026-11-18T11:47:30.357Z",
+      "taskId": "CIRC-LOAN",
+      "title": "Live member lookup tests passed; tray build in progress",
+      "detail": "Live lookup is shared by Circulation and Reservations; 11 focused tests, build/typecheck and lint passed. Maximized startup and X-to-tray/Open/Quit implementation added. Rust tray compilation running; native behavior remains unverified. Cross-computer resume instructions saved in docs/SESSION_HANDOFF.md and linked from AGENTS.md; all changes are still local until Git sync."
+    },
+    {
+      "kind": "progress",
+      "at": "2026-11-18T11:40:37.640Z",
+      "title": "Added cross-computer development handoff",
+      "detail": "docs/SESSION_HANDOFF.md records decisions, verified work, active requirements and deferred work. Source/docs sync through Git; chat memory and disposable test paths are not cross-computer state. Do not commit library data or credentials."
+    },
+    {
+      "kind": "completed",
+      "at": "2026-11-18T11:38:15.121Z",
+      "taskId": "CIRC-HOLIDAYS",
+      "title": "Owner confirmed calendar works in Windows",
+      "detail": "Holiday calendar walkthrough confirmed; marked CIRC-HOLIDAYS verified with supporting automated date/persistence and permission evidence."
+    },
+    {
+      "kind": "progress",
+      "at": "2026-11-18T11:29:46.511Z",
+      "taskId": "CIRC-HOLIDAYS",
+      "title": "Windows calendar test build ready",
+      "detail": "Calendar implementation and automated checks passed: 119 Rust unit, 19 IPC and 14 settings UI tests, production build/typecheck and lint. Standalone Windows calendar executable ready with embedded frontend and the existing disposable library; schema 17 upgrade occurs on launch. Native walkthrough pending."
+    },
+    {
+      "kind": "completed",
+      "at": "2026-11-18T11:29:26.317Z",
+      "taskId": "CIRC-HOLIDAYS",
+      "title": "Staff calendar implementation complete",
+      "detail": "Calendar implementation criteria met. All 119 Rust unit, 19 IPC and 14 settings UI tests passed, plus production build/typecheck and lint. Schema 17 migration and reopen checks passed. Standalone Windows calendar build running; native walkthrough remains open."
+    },
+    {
+      "kind": "progress",
+      "at": "2026-11-18T11:28:35.449Z",
+      "taskId": "CIRC-HOLIDAYS",
+      "title": "Calendar configuration and due-date checks passed",
+      "detail": "Calendar implementation and focused checks passed: 14 settings UI tests, two calendar service tests, date validation and real IPC workflow; production build/typecheck and lint passed. Full Rust suite and standalone Windows calendar build running. Phase 3 acceptance gaps stay recorded."
+    },
+    {
+      "kind": "verification",
+      "at": "2026-11-18T11:17:24.890Z",
+      "taskId": "EXP-CATALOGUE",
+      "title": "Owner confirmed Windows Save As works",
+      "detail": "Owner confirmed Windows Save As works following the location/filename, cancellation and overwrite instructions. Automated file-write, IPC and frontend checks and native build also passed. Export implementation remains complete; per-format native reconciliation is not separately reported."
+    },
+    {
+      "kind": "progress",
+      "at": "2026-11-18T11:13:28.540Z",
+      "taskId": "EXP-CATALOGUE",
+      "title": "Windows Save As test executable ready",
+      "detail": "Windows Save As implemented and standalone verification executable ready. Two Rust save-service tests, all 18 IPC tests, three UI tests, production build/typecheck and lint passed. Native location/filename, overwrite and cancellation checks remain open. Three-second startup loading screen documented for later; no startup code changed."
+    },
+    {
+      "kind": "progress",
+      "at": "2026-11-18T11:10:46.044Z",
+      "title": "Deferred three-second startup loading screen",
+      "detail": "Owner requested a loading screen visible for at least three seconds when the application opens. Documented for later implementation; no startup code, weights or phase order changed. Save As remains the current task."
+    },
+    {
+      "kind": "progress",
+      "at": "2026-11-18T11:09:46.301Z",
+      "taskId": "EXP-CATALOGUE",
+      "title": "Native Save As implemented for Windows catalogue exports",
+      "detail": "Windows Save As for catalogue exports implemented using the existing Windows API dependency. Service tests verify exact binary writes, Unicode path, overwrite, cancellation and protected/invalid paths. Three frontend tests, production build/typecheck and lint passed. IPC checks and native verification build pending."
+    },
+    {
+      "kind": "progress",
+      "at": "2026-11-18T10:51:34.136Z",
+      "taskId": "EXP-CATALOGUE",
+      "title": "Catalogue export Windows test build ready",
+      "detail": "Five export formats implemented with supported-field round trips. All 115 Rust unit, 17 IPC and 36 focused frontend tests passed, with build/typecheck and lint. Standalone Windows export executable is ready using the existing disposable library. Native save/open/repreview acceptance remains open."
+    },
+    {
+      "kind": "completed",
+      "at": "2026-11-18T10:49:51.304Z",
+      "taskId": "EXP-CATALOGUE",
+      "title": "Catalogue exchange formats implemented",
+      "detail": "Five catalogue exchange formats implemented. All 115 Rust unit, 17 IPC and 36 focused frontend tests passed, with build/typecheck and lint. Supported-field database round trips passed. Standalone Windows export test build running; native save/open/repreview verification pending."
+    },
+    {
+      "kind": "completed",
+      "at": "2026-11-18T10:38:15.088Z",
+      "taskId": "IMP-FORMATS",
+      "title": "Catalogue import formats verified",
+      "detail": "Owner confirmed XLSX Windows test instructions worked. Together with earlier JSON and MARCXML Windows confirmations and recorded automated parser/IPC/UI checks, all format acceptance criteria are satisfied."
+    },
+    {
+      "kind": "progress",
+      "at": "2026-11-18T10:30:58.733Z",
+      "taskId": "IMP-FORMATS",
+      "title": "Standalone XLSX Windows test build ready",
+      "detail": "XLSX implementation and automated checks passed: 38 Rust import, 16 IPC and 10 frontend tests, build/typecheck and lint. Standalone Windows build with embedded frontend is ready: pusthakam-phase3-xlsx-import.exe using the existing disposable library. Await native XLSX walkthrough."
+    },
+    {
+      "kind": "completed",
+      "at": "2026-11-18T10:29:15.661Z",
+      "taskId": "IMP-FORMATS",
+      "title": "JSON, MARCXML and XLSX import implementation complete",
+      "detail": "XLSX implementation criteria met: 38 Rust import, 16 IPC and 10 frontend tests passed, plus production build/typecheck and lint. IMP-FORMATS is implemented, awaiting native XLSX walkthrough; standalone Windows build running."
+    },
+    {
+      "kind": "progress",
+      "at": "2026-11-18T10:27:38.751Z",
+      "taskId": "IMP-FORMATS",
+      "title": "XLSX parser and mapping tests passed",
+      "detail": "XLSX parser and preview/mapping UI implemented using calamine and the shared CSV table path. All 38 Rust import tests, 10 import-dialog tests, production build/typecheck and lint passed. Full IPC checks and standalone Windows build running."
+    },
+    {
+      "kind": "verification",
+      "at": "2026-11-18T10:17:03.964Z",
+      "taskId": "IMP-FORMATS",
+      "title": "Owner confirmed MARCXML Windows sample checks",
+      "detail": "Owner reported valid MARCXML sample was okay and malformed sample showed an error in Windows. Native MARCXML basic walkthrough confirmed. Retrying XLSX reader dependency; Phase 3 continues."
+    },
+    {
+      "kind": "progress",
+      "at": "2026-11-18T09:35:35.319Z",
+      "taskId": "IMP-FORMATS",
+      "title": "Standalone MARCXML Windows verification build ready",
+      "detail": "MARCXML parser/service and real IPC checks passed. Standalone Windows verification executable built with embedded frontend and the existing disposable library. Await native walkthrough; XLSX download remains blocked by crates.io connectivity."
+    },
+    {
+      "kind": "verification",
+      "at": "2026-11-18T09:31:52.619Z",
+      "taskId": "IMP-FORMATS",
+      "title": "Verified MARCXML through the real commands",
+      "detail": "Three focused MARCXML parser/service tests and new real IPC test passed, including permissions and malformed rejection. Misplaced CDATA/entity content now rejected. Standalone isolated Windows build running; XLSX dependency retry failed."
+    },
+    {
+      "kind": "progress",
+      "at": "2026-11-18T09:08:50.404Z",
+      "taskId": "IMP-FORMATS",
+      "title": "MARCXML import implemented; JSON Windows success recorded",
+      "detail": "JSON Windows success confirmed by owner. MARCXML parser and preview/commit implemented; 33 Rust import tests, 9 frontend tests, lint and production build passed. Native MARCXML walkthrough pending. XLSX dependency download blocked by unavailable crates.io."
+    },
     {
       "kind": "progress",
       "at": "2026-11-18T08:16:10.796Z",
@@ -2756,13 +3220,13 @@
     },
     {
       "kind": "progress",
-      "at": "2026-11-17T03:02:30Z",
+      "at": "2026-11-17T03:02:30.000Z",
       "title": "Weighted v1 baseline established",
       "detail": "Mapped product acceptance criteria, test gaps and release gates from the local working tree."
     },
     {
       "kind": "completed",
-      "at": "2026-11-17T00:00:00Z",
+      "at": "2026-11-17T00:00:00.000Z",
       "title": "Circulation, members and initial reports present",
       "detail": "Source audit found copy reservations, fines and settlements, member photos/cards, Koha patron import, and stock-by-location CSV."
     }

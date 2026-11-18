@@ -153,20 +153,11 @@ fn issue_terms(conn: &Connection, member_number: &str, item_id: i64) -> AppResul
     if open >= max_loans {
         return Err(AppError::Conflict("This member has reached the loan limit for this type of copy.".into()));
     }
-    let due_on = advance_past_holidays(conn, due_on)?;
+    let due_on = crate::services::calendar::next_open_date(conn, &due_on)?;
     Ok(IssuePreview { member_id, item_id, member_name, title, due_on, item_category_id,
         reservation_id, member_category_id: category_id })
 }
 
-fn advance_past_holidays(conn: &Connection, mut due_on: String) -> AppResult<String> {
-    let mut next_day = conn.prepare(
-        "SELECT date(date, '+1 day') FROM holidays WHERE date = ?1",
-    )?;
-    while let Some(next) = next_day.query_row([&due_on], |r| r.get::<_, String>(0)).optional()? {
-        due_on = next;
-    }
-    Ok(due_on)
-}
 
 pub fn prepare_return(conn: &Connection, barcode: &str) -> AppResult<ReturnPreview> {
     let item_id = reservations::copy_id(conn, barcode)?;
@@ -218,7 +209,7 @@ fn renewal_terms(conn: &Connection, loan_id: i64) -> AppResult<RenewalPreview> {
         return Err(AppError::Conflict("Another member is waiting for this copy.".into()));
     }
     let due_on = due_on.ok_or_else(|| AppError::Validation("The renewal due date could not be calculated.".into()))?;
-    let due_on = advance_past_holidays(conn, due_on)?;
+    let due_on = crate::services::calendar::next_open_date(conn, &due_on)?;
     Ok(RenewalPreview { loan_id, member_name, title, previous_due_on, due_on })
 }
 

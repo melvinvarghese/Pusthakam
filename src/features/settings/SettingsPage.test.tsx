@@ -5,7 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import type { ConfigOverview, Session } from "@/lib/api/types";
 
 const api = vi.hoisted(() => ({
-  overview: vi.fn(), updateLibrary: vi.fn(), saveNamed: vi.fn(), saveMemberCategory: vi.fn(), saveShelf: vi.fn(),
+  calendar: vi.fn(), saveClosedWeekdays: vi.fn(), saveHoliday: vi.fn(), removeHoliday: vi.fn(), overview: vi.fn(), updateLibrary: vi.fn(), saveNamed: vi.fn(), saveMemberCategory: vi.fn(), saveShelf: vi.fn(),
   savePolicy: vi.fn(), deletePolicy: vi.fn(), setArchived: vi.fn(),
 }));
 vi.mock("@/lib/api", async (orig) => ({ ...(await orig<typeof import("@/lib/api")>()), configApi: api }));
@@ -45,6 +45,7 @@ function renderPage(session: Session) {
 beforeEach(() => {
   Object.values(api).forEach((f) => f.mockReset());
   api.overview.mockResolvedValue(CONFIG);
+  api.calendar.mockResolvedValue({ closedWeekdays: [], holidays: [] });
 });
 afterEach(() => vi.restoreAllMocks());
 

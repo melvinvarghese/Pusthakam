@@ -54,3 +54,11 @@ Libraries must be able to move their existing data into Pusthakam. Plan:
 
 ## Requirement tracking
 Requirements are tracked in `PROGRESS.md` with IDs (REQ-xxx) mapped to source files, tests and verification results.
+
+## Deferred startup presentation request
+
+Owner request (18 November 2026): when Pusthakam opens, display a startup loading screen for at least three seconds before showing the application. Implementation is deferred until a later agreed milestone; this documentation change adds no implementation credit and does not change phase order.
+
+## Phase 4 calendar checkpoint
+
+Holiday dates and recurring weekly closures are implemented in Library Settings. Issue and renewal use the same next-open-date rule. Schema 17, validation, permissions, audit rollback, persisted configuration and stale confirmations passed automated checks. Native Windows acceptance remains open; see LIBRARY_CALENDAR.md. Phase 3 real Koha acceptance remains blocked on a representative export, with native catalogue/printing checks recorded in PROGRESS.json.

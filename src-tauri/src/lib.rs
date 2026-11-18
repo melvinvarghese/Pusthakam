@@ -1,4 +1,5 @@
 pub mod commands;
+mod desktop_tray;
 pub mod db;
 pub mod domain;
 pub mod error;
@@ -25,6 +26,10 @@ macro_rules! app_handlers {
             $crate::commands::auth::logout,
             $crate::commands::auth::current_session,
             $crate::commands::config::config_overview,
+            $crate::commands::config::config_calendar,
+            $crate::commands::config::config_save_closed_weekdays,
+            $crate::commands::config::config_save_holiday,
+            $crate::commands::config::config_remove_holiday,
             $crate::commands::config::config_update_library,
             $crate::commands::config::config_save_named,
             $crate::commands::config::config_save_member_category,
@@ -45,6 +50,8 @@ macro_rules! app_handlers {
             $crate::commands::catalogue::catalogue_set_copy_status,
             $crate::commands::catalogue::catalogue_list_copies,
             $crate::commands::catalogue::catalogue_export_copies,
+            $crate::commands::catalogue::catalogue_export_records,
+            $crate::commands::catalogue::catalogue_save_export,
             $crate::commands::catalogue::accession_format_get,
             $crate::commands::catalogue::accession_format_set,
             $crate::commands::import::import_preview,
@@ -109,6 +116,7 @@ macro_rules! app_handlers {
 pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
+        .on_window_event(desktop_tray::on_window_event)
         .setup(|app| {
             // OS application-data directory, e.g. %APPDATA%\app.pusthakam.desktop on Windows.
             let root = app.path().app_data_dir()?;
@@ -132,6 +140,9 @@ pub fn run() {
                 pending_import: Mutex::new(None),
                 _log_guard: guard,
             });
+            if let Err(error) = desktop_tray::install(app.handle()) {
+                tracing::warn!(%error, "System tray unavailable; normal window close remains enabled");
+            }
             let handle = app.handle().clone();
             if let Err(error) = std::thread::Builder::new().name("database-backup".into()).spawn(move || {
                 loop {

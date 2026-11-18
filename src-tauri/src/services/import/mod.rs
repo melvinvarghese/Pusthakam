@@ -5,6 +5,8 @@
 pub mod csv_import;
 pub mod marc;
 pub mod json_import;
+pub mod marcxml;
+pub mod xlsx_import;
 
 use crate::domain::{accession, isbn};
 use crate::error::{AppError, AppResult};
@@ -55,6 +57,7 @@ pub struct ImportRecord {
     pub series: Option<String>,
     pub subjects: Vec<String>,
     pub classification: Option<String>,
+    pub classification_scheme: Option<String>,
     pub abstract_text: Option<String>,
     pub notes: Option<String>,
     pub keywords: Option<String>,
@@ -249,18 +252,21 @@ pub fn prepare(conn: &Connection, req: &PreviewRequest) -> AppResult<(Pending, P
         return Err(AppError::Validation("The file is larger than 100 MB. Split it into smaller files.".into()));
     }
     let (mut records, parse_errors, headers, mapping, mapping_fields) = match req.format.as_str() {
-        "marc" => {
+        "marc" | "marcxml" => {
             let koha = match req.profile.as_str() {
                 "koha" => true,
                 "generic" => false,
                 _ => return Err(AppError::Validation("Choose Koha or a generic MARC file.".into())),
             };
-            let (marc_records, errs) = marc::read_iso2709(&bytes);
+            let (marc_records, errs) = if req.format == "marcxml" {
+                (marcxml::parse(&bytes)?, Vec::new())
+            } else { marc::read_iso2709(&bytes) };
             let recs = marc_records.iter().enumerate().map(|(i, m)| marc::to_import_record(m, i + 1, koha)).collect::<Vec<_>>();
             (recs, errs, None, None, None)
         }
-        "csv" => {
-            let r = csv_import::parse_csv(&bytes, req.mapping.as_ref());
+        "csv" | "xlsx" => {
+            let r = if req.format == "xlsx" { xlsx_import::parse(&bytes, req.mapping.as_ref())? }
+                else { csv_import::parse_csv(&bytes, req.mapping.as_ref()) };
             let fields = csv_import::FIELDS.iter().map(|(k, _)| (*k).to_string()).collect::<Vec<_>>();
             (r.records, r.errors, Some(r.headers), Some(r.mapping), Some(fields))
         }
@@ -268,7 +274,7 @@ pub fn prepare(conn: &Connection, req: &PreviewRequest) -> AppResult<(Pending, P
             let records = json_import::parse(&bytes)?;
             (records, Vec::new(), None, None, None)
         }
-        _ => return Err(AppError::Validation("Unsupported file type. Use a MARC (.mrc), CSV or JSON file.".into())),
+        _ => return Err(AppError::Validation("Unsupported file type. Use a MARC (.mrc), MARCXML, XLSX, CSV or JSON file.".into())),
     };
     if records.is_empty() && parse_errors.is_empty() {
         return Err(AppError::Validation("No records were found in this file.".into()));
@@ -428,9 +434,14 @@ pub fn commit(conn: &mut Connection, actor: Option<&Session>, records: &[ImportR
         tx.execute_batch("SAVEPOINT import_record")?;
         let attempt = (|| -> AppResult<(i64, bool, usize, usize, usize)> {
             let mut created_lookups = 0usize;
+            let scheme_id = match r.classification_scheme.as_deref() {
+                Some(code) => Some(tx.query_row("SELECT id FROM classification_schemes WHERE code = ?1", [code], |row| row.get::<_, i64>(0))
+                    .map_err(|_| AppError::Validation("The imported classification scheme is not configured.".into()))?),
+                None => ddc_id,
+            };
             let (record_id, merged) = match (existing, opts.duplicate_policy) {
                 (Some(id), DuplicatePolicy::Merge) => (id, true),
-                _ => (catalogue::save_record(&tx, actor, &record_input(r, ddc_id))?, false),
+                _ => (catalogue::save_record(&tx, actor, &record_input(r, scheme_id))?, false),
             };
             let (mut added, mut skipped) = (0usize, 0usize);
             for c in &r.copies {
@@ -698,6 +709,26 @@ mod tests {
         let n: i64 = c.query_row("SELECT count(*) FROM locations", [], |r| r.get(0)).unwrap();
         assert_eq!(n, 0);
         assert_eq!(report.copies_added, 3, "copies fall back to the default category and no location");
+    }
+
+    #[test]
+    fn marcxml_preview_commit_and_malformed_rejection() {
+        use base64::Engine;
+        let (_t, mut c, cat) = open();
+        let xml = r#"<collection xmlns="http://www.loc.gov/MARC21/slim"><record><datafield tag="245"><subfield code="a">XML Book</subfield></datafield><datafield tag="952"><subfield code="p">000123</subfield><subfield code="g">125.50</subfield></datafield></record></collection>"#;
+        let mut req = PreviewRequest { file_name: "books.xml".into(), data_base64: base64::engine::general_purpose::STANDARD.encode(xml), format: "marcxml".into(), profile: "koha".into(), mapping: None };
+        let (pending, preview) = prepare(&c, &req).unwrap();
+        assert_eq!((preview.totals.records, preview.totals.copies), (1, 1));
+        let n: i64 = c.query_row("SELECT count(*) FROM bibliographic_records", [], |r| r.get(0)).unwrap();
+        assert_eq!(n, 0);
+        let report = commit(&mut c, None, &pending.records, &opts(Some(cat)), "books.xml").unwrap();
+        assert_eq!((report.created_records, report.copies_added), (1, 1));
+        let barcode: String = c.query_row("SELECT barcode FROM physical_items", [], |r| r.get(0)).unwrap();
+        assert_eq!(barcode, "000123");
+        req.data_base64 = base64::engine::general_purpose::STANDARD.encode(format!("{xml}<broken>"));
+        assert!(prepare(&c, &req).is_err());
+        let n: i64 = c.query_row("SELECT count(*) FROM bibliographic_records", [], |r| r.get(0)).unwrap();
+        assert_eq!(n, 1);
     }
 
     #[test]

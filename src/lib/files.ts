@@ -25,3 +25,13 @@ function downloadFile(content: string, filename: string, type: string) {
   link.remove();
   window.setTimeout(() => urls.revokeObjectURL(url), 1000);
 }
+
+export function downloadBase64File(data: string, filename: string, type: string) {
+  const binary = atob(data);
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+  const url = URL.createObjectURL(new Blob([bytes], { type }));
+  const link = document.createElement("a");
+  link.href = url; link.download = filename; document.body.append(link); link.click(); link.remove();
+  window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+}

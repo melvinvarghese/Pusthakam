@@ -9,14 +9,17 @@ import type { ImportFormat, ImportOptions, ImportPreview, ImportProfile, ImportR
 import { useConfig } from "./shared";
 
 const SOURCES = [
+  { id: "kohaxml", label: "Koha (MARCXML file with items)", format: "marcxml", profile: "koha" },
+  { id: "marcxml", label: "MARCXML (titles only)", format: "marcxml", profile: "generic" },
   { id: "koha", label: "Koha (MARC file with items)", format: "marc", profile: "koha" },
   { id: "marc", label: "Another library system (MARC file, titles only)", format: "marc", profile: "generic" },
+  { id: "xlsx", label: "Spreadsheet (Excel XLSX file)", format: "xlsx", profile: "generic" },
   { id: "csv", label: "Spreadsheet (CSV file)", format: "csv", profile: "generic" },
   { id: "json", label: "Catalogue records (JSON file)", format: "json", profile: "generic" },
 ] as const;
 
 const FIELD_LABELS: Record<string, string> = {
-  title: "Title", subtitle: "Subtitle", author: "Author", additionalAuthors: "Other authors", publisher: "Publisher",
+  classificationScheme: "Classification scheme", physical: "Physical description", title: "Title", subtitle: "Subtitle", author: "Author", additionalAuthors: "Other authors", publisher: "Publisher",
   place: "Place of publication", year: "Year", isbn: "ISBN", edition: "Edition", language: "Language", pagination: "Pages",
   series: "Series", subjects: "Subjects", keywords: "Keywords", classification: "Classification number", callNumber: "Call number",
   barcode: "Barcode", accession: "Accession number", price: "Price", location: "Location", shelf: "Shelf", collection: "Collection",
@@ -83,9 +86,11 @@ export function ImportDialog({ onClose }: { onClose: () => void }) {
     setData(null);
     setPreview(null);
     setError(null);
-    if (f && /\.csv$/i.test(f.name)) setSource("csv");
+    if (f && /\.xlsx$/i.test(f.name)) setSource("xlsx");
+    else if (f && /\.csv$/i.test(f.name)) setSource("csv");
+    else if (f && /\.(xml|marcxml)$/i.test(f.name)) setSource(source === "marcxml" ? "marcxml" : "kohaxml");
     else if (f && /\.json$/i.test(f.name)) setSource("json");
-    else if (f && /\.(mrc|marc|mrd)$/i.test(f.name) && (source === "csv" || source === "json")) setSource("koha");
+    else if (f && /\.(mrc|marc|mrd)$/i.test(f.name) && (source !== "koha" && source !== "marc")) setSource("koha");
   };
 
   const cancelAndClose = () => {
@@ -139,6 +144,7 @@ export function ImportDialog({ onClose }: { onClose: () => void }) {
         <SelectField label="Where is the data from?" value={source} onChange={(e) => setSource(e.target.value as typeof source)}>
           {SOURCES.map((s) => <option key={s.id} value={s.id}>{s.label}</option>)}
         </SelectField>
+        {(source === "kohaxml" || source === "marcxml") && <p className="text-xs text-muted">Choose MARC21 XML, either one record or a collection. The Koha profile reads field 952 as copies. Check the preview before importing.</p>}
         {source === "json" && <p className="text-xs text-muted">Choose a JSON array of catalogue records with optional nested copies. Identifiers must be text and prices must be integer minor units. Unsupported fields are rejected so they are not silently lost. Check the preview before importing.</p>}
         {source === "koha" && (
           <p className="text-xs text-muted">
@@ -147,13 +153,14 @@ export function ImportDialog({ onClose }: { onClose: () => void }) {
             saved until you have checked the preview.
           </p>
         )}
+        {source === "xlsx" && <p className="text-xs text-muted">Use one worksheet with column names in the first row. Store ISBNs, barcodes and accession numbers as text to preserve leading zeroes. Use values instead of formulas and dates as YYYY-MM-DD text. Prices use major currency units, such as 125.50.</p>}
         {source === "csv" && <p className="text-xs text-muted">The first row must contain column names. Pusthakam recognises common names (Title, Author, ISBN, Barcode…) and lets you fix the rest.</p>}
         <div className="space-y-1">
           <label htmlFor="import-file" className="block text-[13px] font-medium">File</label>
           <input
             id="import-file"
             type="file"
-            accept=".mrc,.marc,.mrd,.csv,.txt,.json"
+            accept=".mrc,.marc,.mrd,.csv,.txt,.json,.xml,.marcxml,.xlsx"
             onChange={(e) => pick(e.target.files?.[0] ?? null)}
             className="block w-full text-[13px] file:mr-3 file:h-8 file:rounded-md file:border file:border-line-strong file:bg-surface file:px-3"
           />
@@ -166,7 +173,7 @@ export function ImportDialog({ onClose }: { onClose: () => void }) {
   // ----- step 2: preview and options -----
   const t = preview.totals;
   const importable = t.records - t.withErrors;
-  const needsCategory = preview.sample.some((r) => r.copies.some((c) => !c.itemCategory)) || preview.format === "csv";
+  const needsCategory = preview.sample.some((r) => r.copies.some((c) => !c.itemCategory)) || (preview.format === "csv" || preview.format === "xlsx");
   return (
     <Modal
       title={`Check before importing: ${preview.fileName}`}
@@ -195,7 +202,7 @@ export function ImportDialog({ onClose }: { onClose: () => void }) {
         </div>
       )}
 
-      {preview.format === "csv" && preview.headers && preview.mappingFields && (
+      {(preview.format === "csv" || preview.format === "xlsx") && preview.headers && preview.mappingFields && (
         <div>
           <h3 className="mb-1 text-[13px] font-semibold">Columns</h3>
           <div className="grid max-h-48 grid-cols-3 gap-2 overflow-auto">

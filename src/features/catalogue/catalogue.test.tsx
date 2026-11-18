@@ -6,7 +6,7 @@ import { MemoryRouter, Route, Routes } from "react-router-dom";
 import type { ConfigOverview, CopyQuery, CopyRecord, CopyRow, RecordDetail, Session } from "@/lib/api/types";
 
 const cat = vi.hoisted(() => ({
-  getCover: vi.fn(), setCover: vi.fn(),
+  exportRecords: vi.fn(), getCover: vi.fn(), setCover: vi.fn(),
   search: vi.fn(), getRecord: vi.fn(), saveRecord: vi.fn(), findDuplicates: vi.fn(), archiveRecord: vi.fn(),
   addCopies: vi.fn(), updateCopy: vi.fn(), setCopyStatus: vi.fn(), listCopies: vi.fn(), accessionFormat: vi.fn(),
   setAccessionFormat: vi.fn(), exportCopies: vi.fn(), archiveRecords: vi.fn(),
@@ -184,6 +184,15 @@ describe("CataloguePage", () => {
     expect(await screen.findByText(/No records match/)).toBeInTheDocument();
   });
 
+  it("allows read-only staff to select a title for export without archive controls", async () => {
+    renderAt("/catalogue", CLERK);
+    await screen.findByRole("link", { name: "Balyakalasakhi" });
+    await userEvent.click(screen.getByRole("checkbox", { name: "Select Balyakalasakhi" }));
+    await userEvent.click(screen.getByRole("button", { name: "Export selected (1)" }));
+    expect(screen.getByRole("dialog", { name: "Export catalogue records" })).toBeInTheDocument();
+    expect(cat.exportRecords).not.toHaveBeenCalled();
+    expect(screen.queryByRole("button", { name: /Archive selected/ })).not.toBeInTheDocument();
+  });
   it("hides Add record from read-only staff", async () => {
     renderAt("/catalogue", CLERK);
     await screen.findByRole("link", { name: "Balyakalasakhi" });

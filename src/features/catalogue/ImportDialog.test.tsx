@@ -60,6 +60,28 @@ describe("fileToBase64", () => {
     expect(imp.preview).toHaveBeenCalledWith(expect.objectContaining({ format: "json", profile: "generic", mapping: null }));
     expect(imp.commit).not.toHaveBeenCalled();
   });
+  it("recognises MARCXML and keeps preview separate from commit", async () => {
+    imp.preview.mockResolvedValue({ ...PREVIEW, format: "marcxml", fileName: "books.xml" });
+    renderDialog();
+    await userEvent.upload(screen.getByLabelText("File"), new File(['<record/>'], "books.xml"));
+    expect(screen.getByLabelText("Where is the data from?")).toHaveValue("kohaxml");
+    await userEvent.click(screen.getByRole("button", { name: "Preview" }));
+    await screen.findByText("Check before importing: books.xml");
+    expect(imp.preview).toHaveBeenCalledWith(expect.objectContaining({ format: "marcxml", profile: "koha" }));
+    expect(imp.commit).not.toHaveBeenCalled();
+  });
+  it("recognises XLSX and exposes its column mapping", async () => {
+    imp.preview.mockResolvedValue({ ...PREVIEW, format: "xlsx", profile: "generic", fileName: "books.xlsx", headers: ["Title", "Shelfmark"], mappingFields: ["title", "callNumber"], mapping: { title: "Title" } });
+    renderDialog();
+    await userEvent.upload(screen.getByLabelText("File"), new File(["xlsx bytes"], "books.xlsx"));
+    expect(screen.getByLabelText("Where is the data from?")).toHaveValue("xlsx");
+    await userEvent.click(screen.getByRole("button", { name: "Preview" }));
+    await screen.findByText("Check before importing: books.xlsx");
+    expect(imp.preview).toHaveBeenCalledWith(expect.objectContaining({ format: "xlsx", profile: "generic" }));
+    expect(imp.commit).not.toHaveBeenCalled();
+    await userEvent.selectOptions(screen.getByLabelText("Column for Call number"), "Shelfmark");
+    await waitFor(() => expect(imp.preview).toHaveBeenLastCalledWith(expect.objectContaining({ mapping: { title: "Title", callNumber: "Shelfmark" } })));
+  });
   it("encodes bytes, including ones above 127", async () => {
     expect(await fileToBase64(new File([new Uint8Array([0, 1, 200, 255])], "x"))).toBe("AAHI/w==");
   });
@@ -70,7 +92,7 @@ describe("ImportDialog", () => {
     renderDialog();
     expect(screen.getByRole("dialog", { name: "Import records" })).toBeInTheDocument();
     expect(screen.getByText(/including items/i)).toBeInTheDocument();
-    expect(within(screen.getByLabelText("Where is the data from?")).getAllByRole("option")).toHaveLength(4);
+    expect(within(screen.getByLabelText("Where is the data from?")).getAllByRole("option")).toHaveLength(7);
     expect(screen.getByRole("option", { name: "Catalogue records (JSON file)" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Preview" })).toBeDisabled();
   });
