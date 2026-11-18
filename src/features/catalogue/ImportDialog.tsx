@@ -12,6 +12,7 @@ const SOURCES = [
   { id: "koha", label: "Koha (MARC file with items)", format: "marc", profile: "koha" },
   { id: "marc", label: "Another library system (MARC file, titles only)", format: "marc", profile: "generic" },
   { id: "csv", label: "Spreadsheet (CSV file)", format: "csv", profile: "generic" },
+  { id: "json", label: "Catalogue records (JSON file)", format: "json", profile: "generic" },
 ] as const;
 
 const FIELD_LABELS: Record<string, string> = {
@@ -83,7 +84,8 @@ export function ImportDialog({ onClose }: { onClose: () => void }) {
     setPreview(null);
     setError(null);
     if (f && /\.csv$/i.test(f.name)) setSource("csv");
-    else if (f && /\.(mrc|marc|mrd)$/i.test(f.name) && source === "csv") setSource("koha");
+    else if (f && /\.json$/i.test(f.name)) setSource("json");
+    else if (f && /\.(mrc|marc|mrd)$/i.test(f.name) && (source === "csv" || source === "json")) setSource("koha");
   };
 
   const cancelAndClose = () => {
@@ -137,6 +139,7 @@ export function ImportDialog({ onClose }: { onClose: () => void }) {
         <SelectField label="Where is the data from?" value={source} onChange={(e) => setSource(e.target.value as typeof source)}>
           {SOURCES.map((s) => <option key={s.id} value={s.id}>{s.label}</option>)}
         </SelectField>
+        {source === "json" && <p className="text-xs text-muted">Choose a JSON array of catalogue records with optional nested copies. Identifiers must be text and prices must be integer minor units. Unsupported fields are rejected so they are not silently lost. Check the preview before importing.</p>}
         {source === "koha" && (
           <p className="text-xs text-muted">
             In Koha, export your catalogue as a MARC file (ISO 2709, .mrc) <strong>including items</strong>. Pusthakam reads each item
@@ -150,7 +153,7 @@ export function ImportDialog({ onClose }: { onClose: () => void }) {
           <input
             id="import-file"
             type="file"
-            accept=".mrc,.marc,.mrd,.csv,.txt"
+            accept=".mrc,.marc,.mrd,.csv,.txt,.json"
             onChange={(e) => pick(e.target.files?.[0] ?? null)}
             className="block w-full text-[13px] file:mr-3 file:h-8 file:rounded-md file:border file:border-line-strong file:bg-surface file:px-3"
           />

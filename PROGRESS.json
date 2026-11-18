@@ -1,17 +1,17 @@
 {
   "schemaVersion": 1,
-  "lastUpdated": "2026-11-18T03:46:50.709Z",
+  "lastUpdated": "2026-11-18T08:17:46.537Z",
   "currentPhase": "3",
   "currentTask": {
-    "taskId": "SRCH-FILTERS",
-    "title": "Saved search clarity and validation checkpoint",
-    "status": "implemented",
-    "detail": "Owner confirmed corrected saved search works. Source control-order clarity, empty-save protection and explicit old-entry repair pass 27 focused tests plus typecheck/lint. Refreshed native build remains pending. Paused at owner request. Browser staff access and OPAC are recorded for Phase 7b only; continue normal phase order."
+    "taskId": "IMP-FORMATS",
+    "title": "JSON catalogue import",
+    "status": "in-progress",
+    "detail": "JSON IPC and all 30 Rust import tests passed; 8 frontend tests, typecheck, lint and production build passed. Isolated Windows test executable ready: pusthakam-phase3-json-import.exe. Standard repository build also passed. Native JSON walkthrough and MARCXML/XLSX remain open."
   },
   "nextMilestone": {
-    "nextTaskId": "SRCH-FILTERS",
-    "title": "Complete saved search Windows verification",
-    "detail": "Resume Phase 3 after the break: deliver/verify clearer save controls and existing-entry repair, then check saved searches after restart and update/removal. Browser staff access and OPAC wait for Phase 7b."
+    "nextTaskId": "IMP-FORMATS",
+    "title": "Check JSON import in Windows, then continue MARCXML/XLSX",
+    "detail": "Open pusthakam-phase3-json-import.exe in the existing test library. Preview docs/examples/catalogue-import.json, confirm one record/one copy, then verify imported title, barcode and price. MARCXML/XLSX follow in Phase 3."
   },
   "totals": {
     "overall": 47.1,
@@ -584,7 +584,7 @@
       "phase": "3",
       "module": "exchange",
       "weight": 5,
-      "status": "not-started",
+      "status": "in-progress",
       "title": "MARCXML, XLSX and JSON catalogue import",
       "requirements": [
         "REQ-IMP"
@@ -593,10 +593,17 @@
         "Preview and commit a representative file of each format with mapping and validation.",
         "Reject malformed data without partial writes."
       ],
-      "sourceEvidence": [],
-      "verificationEvidence": [],
+      "sourceEvidence": [
+        "src-tauri/src/services/import/json_import.rs adds strict JSON parsing with nested copies using existing analysis/commit. ImportDialog supports JSON. docs/JSON_CATALOGUE_IMPORT.md documents the schema. MARCXML/XLSX are not implemented."
+      ],
+      "verificationEvidence": [
+        "json-import-frontend",
+        "json-import-rust-verified",
+        "json-import-windows-native-build"
+      ],
       "verificationNeeded": [
-        "Test a valid and a malformed sample of every added format."
+        "Verify JSON preview/commit and malformed-file handling in native Windows wizard.",
+        "Implement and test MARCXML and XLSX preview/commit, valid and malformed samples."
       ]
     },
     {
@@ -1621,6 +1628,38 @@
   ],
   "verificationRuns": [
     {
+      "id": "json-import-windows-native-build",
+      "title": "Windows JSON import verification executable",
+      "at": "2026-11-18T08:16:59.918Z",
+      "check": "cargo build --offline with isolated verification manifest, target-dir and tauri/custom-protocol; copy executable to pusthakam-phase3-json-import.exe; cargo build --offline --manifest-path src-tauri/Cargo.toml --bin pusthakam",
+      "outcome": "passed",
+      "result": "Isolated Windows build passed and executable copied. Uses the existing disposable test library and includes saved-search clarity changes. Interactive JSON preview/commit verification remains open. Standard repository build passed too."
+    },
+    {
+      "id": "json-import-rust-verified",
+      "title": "JSON IPC and import backend regression checks",
+      "at": "2026-11-18T08:16:10.796Z",
+      "check": "cargo test --offline --manifest-path src-tauri/Cargo.toml json_catalogue_import --test ipc; cargo test --offline --manifest-path src-tauri/Cargo.toml --lib services::import::; npm.cmd run build",
+      "outcome": "passed",
+      "result": "Owner approved the previously blocked connection. Real IPC JSON test passed: preview writes nothing, record/copy commit preserves identifiers, amount and status, malformed later record is rejected, logged-out and viewer imports denied. All 30 Rust import tests passed, including strict JSON shapes/types/unsupported fields and Unicode. Production frontend build passed with an existing bundle-size warning."
+    },
+    {
+      "id": "json-import-frontend",
+      "title": "JSON import wizard and static checks",
+      "at": "2026-11-18T08:12:47.676Z",
+      "check": "npm.cmd test -- src/features/catalogue/ImportDialog.test.tsx; npm.cmd run typecheck; npm.cmd run lint",
+      "outcome": "passed",
+      "result": "All 8 import frontend tests, typecheck and lint passed. Initial run failed an existing three-option assertion after adding JSON; updated it to assert four choices including JSON. New test confirms extension detection and preview without commit."
+    },
+    {
+      "id": "json-import-backend-interrupted",
+      "title": "JSON import backend verification interrupted",
+      "at": "2026-11-18T08:12:47.676Z",
+      "check": "cargo test --offline --manifest-path src-tauri/Cargo.toml json_catalogue_import --test ipc",
+      "outcome": "incomplete",
+      "result": "Compilation began, but automatic review blocked an unexpected Visual Studio telemetry connection that could transmit unapproved environment/project metadata. No retry or workaround attempted. Rust parser and IPC tests were added; compilation and test outcomes remain unconfirmed. Subsequent parser guards and viewer-denial assertion are also unverified."
+    },
+    {
       "id": "lan-browser-opac-planning-review",
       "title": "Review existing LAN scope against browser and OPAC request",
       "at": "2026-11-18T03:46:24.178Z",
@@ -2302,6 +2341,20 @@
     }
   ],
   "recentActivity": [
+    {
+      "kind": "progress",
+      "at": "2026-11-18T08:16:10.796Z",
+      "taskId": "IMP-FORMATS",
+      "title": "Verified JSON importer through real Rust commands",
+      "detail": "30 import tests and 1 JSON IPC workflow test passed. Frontend build passed. Preparing the Windows test app with the existing verification library."
+    },
+    {
+      "kind": "progress",
+      "at": "2026-11-18T08:12:47.676Z",
+      "taskId": "IMP-FORMATS",
+      "title": "Added staged JSON catalogue import",
+      "detail": "JSON records and nested copies enter the existing preview/commit workflow. Strict field/type validation prevents silent loss. 8 frontend tests and static checks pass; Rust verification interrupted and MARCXML/XLSX remain open."
+    },
     {
       "kind": "progress",
       "at": "2026-11-18T03:46:24.178Z",
