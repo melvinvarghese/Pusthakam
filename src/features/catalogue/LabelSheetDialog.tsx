@@ -4,8 +4,10 @@ import { Modal } from "@/components/ui/Modal";
 import type { CopyRow } from "@/lib/api/types";
 import { BarcodeSvg } from "./shared";
 import "./LabelSheet.css";
+import { useLabelHeading } from "./LabelHeading";
 
 export function LabelSheetDialog({ copies, onClose }: { copies: CopyRow[]; onClose: () => void }) {
+  const { heading, field } = useLabelHeading();
   const sheet = useRef<HTMLDivElement>(null);
   const printCleanup = useRef<(() => void) | null>(null);
   useEffect(() => () => printCleanup.current?.(), []);
@@ -32,10 +34,12 @@ export function LabelSheetDialog({ copies, onClose }: { copies: CopyRow[]; onClo
       <Button variant="primary" onClick={printSheet}>Print labels</Button>
     </>}>
       <p className="text-sm text-muted">{copies.length} {copies.length === 1 ? "label" : "labels"}. Use plain paper or full-sheet label stock.</p>
+      {field}
       <div className="max-h-[50vh] overflow-auto">
         <div ref={sheet} className="label-sheet">
           {copies.map((copy) => (
             <div key={copy.id} className="copy-label">
+              {heading && <div className="break-words font-semibold">{heading}</div>}
               <div className="font-semibold">{copy.title}</div>
               {copy.callNumber && <div className="font-mono">{copy.callNumber}</div>}
               <div className="font-mono">Accession {copy.accessionNo}</div>

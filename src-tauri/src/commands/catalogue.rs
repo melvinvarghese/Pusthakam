@@ -11,6 +11,18 @@ use crate::state::AppState;
 use tauri::State;
 
 #[tauri::command]
+pub fn catalogue_get_cover(state: State<'_, AppState>, id: i64) -> AppResult<Option<String>> {
+    state.require("catalogue.read")?;
+    state.with_conn(|conn| crate::services::book_cover::get(conn, id))
+}
+
+#[tauri::command]
+pub fn catalogue_set_cover(state: State<'_, AppState>, id: i64, png_base64: Option<String>) -> AppResult<()> {
+    let actor = state.require("catalogue.write")?;
+    crate::services::book_cover::set(&mut *state.conn()?, &actor, id, png_base64.as_deref())
+}
+
+#[tauri::command]
 pub fn catalogue_search(state: State<'_, AppState>, query: SearchQuery) -> AppResult<SearchResult> {
     state.require("catalogue.read")?;
     let mut conn = state.conn()?;

@@ -1,21 +1,21 @@
 {
   "schemaVersion": 1,
-  "lastUpdated": "2026-11-17T14:56:27.479Z",
+  "lastUpdated": "2026-11-18T03:46:50.709Z",
   "currentPhase": "3",
   "currentTask": {
-    "taskId": "CAT-BULK",
-    "title": "Bulk catalogue operations and covers",
-    "status": "in-progress",
-    "detail": "Write-authorized staff can confirm and archive multiple titles from a catalogue results page. Updates and audit entries share one transaction. Local cover selection and the native walkthrough remain open."
+    "taskId": "SRCH-FILTERS",
+    "title": "Saved search clarity and validation checkpoint",
+    "status": "implemented",
+    "detail": "Owner confirmed corrected saved search works. Source control-order clarity, empty-save protection and explicit old-entry repair pass 27 focused tests plus typecheck/lint. Refreshed native build remains pending. Paused at owner request. Browser staff access and OPAC are recorded for Phase 7b only; continue normal phase order."
   },
   "nextMilestone": {
-    "nextTaskId": "CAT-BULK",
-    "title": "Implement Phase 3 bulk catalogue operations and covers",
-    "detail": "Add validated local cover selection and removal, then verify covers and bulk archiving in Windows."
+    "nextTaskId": "SRCH-FILTERS",
+    "title": "Complete saved search Windows verification",
+    "detail": "Resume Phase 3 after the break: deliver/verify clearer save controls and existing-entry repair, then check saved searches after restart and update/removal. Browser staff access and OPAC wait for Phase 7b."
   },
   "totals": {
-    "overall": 45.6,
-    "implementation": 54.9,
+    "overall": 47.1,
+    "implementation": 57.4,
     "verification": 38.9,
     "releaseReadiness": 10
   },
@@ -405,7 +405,7 @@
       "phase": "3",
       "module": "catalogue",
       "weight": 4,
-      "status": "in-progress",
+      "status": "implemented",
       "title": "Bulk catalogue operations and covers",
       "requirements": [
         "REQ-CAT"
@@ -415,13 +415,16 @@
         "Add or remove a validated local cover without exposing filesystem paths."
       ],
       "sourceEvidence": [
-        "CataloguePage.tsx and catalogue_archive_records implement confirmed atomic bulk archiving."
+        "CataloguePage.tsx and catalogue_archive_records implement confirmed atomic bulk archiving.",
+        "BookCover.tsx, book_cover.rs, image_upload.rs and schema 16 implement local cover selection and removal with shared member image validation."
       ],
       "verificationEvidence": [
-        "phase3-bulk-catalogue-archive"
+        "phase3-bulk-catalogue-archive",
+        "windows-local-cover-checks",
+        "isbn-cover-lookup"
       ],
       "verificationNeeded": [
-        "Test multi-record rollback, permission denial and malformed cover rejection."
+        "Verify local cover upload, persistence after restart and removal in Windows. Check bulk catalogue archiving in the native app."
       ]
     },
     {
@@ -501,7 +504,7 @@
       "phase": "3",
       "module": "search",
       "weight": 3,
-      "status": "not-started",
+      "status": "implemented",
       "title": "Saved searches and filters",
       "requirements": [
         "REQ-SRCH"
@@ -509,10 +512,22 @@
       "acceptanceCriteria": [
         "Save a named filter, reopen it after restart and edit or remove it."
       ],
-      "sourceEvidence": [],
-      "verificationEvidence": [],
+      "sourceEvidence": [
+        "SavedSearches.tsx and CataloguePage.tsx provide named searches saved per staff account in local browser storage."
+      ],
+      "verificationEvidence": [
+        "saved-searches-windows-frontend",
+        "saved-searches-build-typecheck-fix",
+        "saved-searches-native-build",
+        "saved-search-reapply-regression",
+        "labels-heading-and-search-execution",
+        "animal-farm-before-change-reproduction",
+        "saved-search-no-match-checks",
+        "empty-saved-query-screenshot-regression",
+        "owner-saved-search-works"
+      ],
       "verificationNeeded": [
-        "Test persisted filters, conflicting names and relevant staff visibility."
+        "Verify save, apply, update and removal after native Windows restart."
       ]
     },
     {
@@ -626,7 +641,9 @@
         "src/features/catalogue/CopyDialogs.tsx and src/features/catalogue/catalogue.test.tsx."
       ],
       "verificationEvidence": [
-        "baseline-frontend"
+        "baseline-frontend",
+        "labels-heading-and-search-execution",
+        "owner-label-print-confirmation"
       ],
       "verificationNeeded": [
         "Print and scan a saved copy label under PRN-HARDWARE."
@@ -1050,7 +1067,8 @@
       "verificationEvidence": [
         "batch-label-ui",
         "batch-label-build",
-        "fine-receipt-inventory-ui"
+        "fine-receipt-inventory-ui",
+        "labels-heading-and-search-execution"
       ],
       "verificationNeeded": [
         "Check label pagination on A4 and Letter and confirm printed barcodes scan.",
@@ -1352,20 +1370,27 @@
       "module": "lan",
       "weight": 7,
       "status": "not-started",
-      "title": "Shared live data and concurrent edit safety",
+      "title": "Shared data, browser staff access, public OPAC and concurrent edit safety",
       "requirements": [
-        "REQ-NET"
+        "REQ-NET",
+        "REQ-OPAC"
       ],
       "acceptanceCriteria": [
         "Synchronise catalogue and loans across clients using server permissions.",
         "Reject stale edits and competing issues.",
         "Keep SQLite and backups on the server.",
-        "Allow clients on the same LAN without an application-imposed count cap and document measured concurrency on representative hardware."
+        "Allow clients on the same LAN without an application-imposed count cap and document measured concurrency on representative hardware.",
+        "Serve staff UI to same-network phone and computer browsers without client installation; require independent staff sessions and server permissions.",
+        "Serve anonymous read-only OPAC with public book details, location and current availability; exclude all private staff/member, borrower, internal and financial data.",
+        "Verify OPAC no-match results, privacy and denied writes, plus live availability after issue/return."
       ],
-      "sourceEvidence": [],
+      "sourceEvidence": [
+        "docs/LAN_BROWSER_OPAC.md records the owner-approved browser/OPAC scope extension on 2026-11-18; implementation not started. Existing LAN weights retained; no implementation credit claimed."
+      ],
       "verificationEvidence": [],
       "verificationNeeded": [
-        "Test concurrency and recovery across at least three computers with internet access disabled."
+        "Test concurrency and recovery across at least three computers with internet access disabled.",
+        "Pilot phone browser staff access and anonymous OPAC with internet disconnected; inspect public responses and unauthorized writes."
       ]
     },
     {
@@ -1380,7 +1405,8 @@
       ],
       "acceptanceCriteria": [
         "Show server address, connected computers and explanations when disconnected.",
-        "Document firewall setup and exercise network loss and reconnection."
+        "Document firewall setup and exercise network loss and reconnection.",
+        "Show staff and OPAC browser addresses and QR codes, explain host running requirement, and document browser certificate trust and Wi-Fi client isolation."
       ],
       "sourceEvidence": [],
       "verificationEvidence": [],
@@ -1594,6 +1620,150 @@
     }
   ],
   "verificationRuns": [
+    {
+      "id": "lan-browser-opac-planning-review",
+      "title": "Review existing LAN scope against browser and OPAC request",
+      "at": "2026-11-18T03:46:24.178Z",
+      "check": "Read DEVELOPMENT_ROADMAP.md Phase 7b, PRODUCT_SPECIFICATION.md REQ-NET, DECISIONS.md D-026 and ARCHITECTURE.md session/transport notes",
+      "outcome": "passed",
+      "result": "Existing LAN plan assumes desktop clients and has no OPAC. Recorded browser transport, independent sessions, public read-only DTOs, host lifecycle and privacy/pilot criteria. Documentation review only; no runtime implementation or verification credit."
+    },
+    {
+      "id": "owner-saved-search-works",
+      "title": "Owner confirmed saved search results",
+      "at": "2026-11-18T03:39:40.254Z",
+      "check": "Owner corrected saved search words and ran the saved search in Windows",
+      "outcome": "passed",
+      "result": "Owner says now I get it, it works after instructions to enter words in the catalogue box and update the saved entry. Confirms actual saved-search use. Does not confirm the newly changed source build or complete restart/update/removal walkthrough."
+    },
+    {
+      "id": "empty-query-local-static-checks",
+      "title": "Standalone local static checks",
+      "at": "2026-11-18T03:34:36.549Z",
+      "check": "npm.cmd run typecheck; npm.cmd run lint",
+      "outcome": "passed",
+      "result": "Typecheck and lint passed separately after the build-sequence interruption."
+    },
+    {
+      "id": "empty-query-native-build-blocked",
+      "title": "Updated build verification interrupted by automatic review",
+      "at": "2026-11-18T03:34:08.118Z",
+      "check": "npm.cmd run build; npm.cmd run lint (build sequence output retrieval)",
+      "outcome": "incomplete",
+      "result": "Automatic review rejected a Visual Studio telemetry connection as an unrequested external destination. No retry or workaround attempted. Fresh Windows native executable was not built. Source changes and 27 tests are complete; standalone local typecheck/lint requested separately."
+    },
+    {
+      "id": "empty-saved-query-screenshot-regression",
+      "title": "Repair empty saved query from owner screenshots",
+      "at": "2026-11-18T03:33:37.081Z",
+      "check": "npm.cmd test -- src/features/catalogue/catalogue.test.tsx src/features/catalogue/SavedSearches.test.tsx",
+      "outcome": "passed",
+      "result": "27 tests pass. Exact screenshot-shaped empty Animal Farm entry is repaired explicitly, persists its new words and displays No records match in simulated one-book catalogue. Empty default saves rejected; filter-only searches still save. Owner native check pending."
+    },
+    {
+      "id": "saved-search-no-match-checks",
+      "title": "No-match saved search rendering and immediate apply",
+      "at": "2026-11-18T03:28:55.258Z",
+      "check": "npm.cmd test -- src/features/catalogue/catalogue.test.tsx src/features/catalogue/SavedSearches.test.tsx; npm.cmd run build; npm.cmd run lint; cargo build --offline (isolated verification and repository manifests)",
+      "outcome": "passed",
+      "result": "24 tests passed, including saving Animal Farm, remounting, selecting and rerunning with no matches. Frontend build/typecheck and lint passed. Tests use simulated search responses; owner native failure remains unresolved. Both Windows builds passed. Test executable: pusthakam-phase3-search-results.exe."
+    },
+    {
+      "id": "owner-label-print-confirmation",
+      "title": "Owner confirmed label printing",
+      "at": "2026-11-18T03:28:12.159Z",
+      "check": "Owner printed label using the updated Windows app",
+      "outcome": "passed",
+      "result": "Owner says print label works. Saved search result failure remains open."
+    },
+    {
+      "id": "animal-farm-before-change-reproduction",
+      "title": "Exact owner scenario with simulated search responses",
+      "at": "2026-11-18T03:28:12.159Z",
+      "check": "npm.cmd test -- src/features/catalogue/catalogue.test.tsx -t 'saved Animal Farm'",
+      "outcome": "passed",
+      "result": "The test shows no matches after saving Animal Farm, remounting, selecting and running it against a simulated single-book catalogue. Passed before further changes; this does not reproduce or resolve the owner native failure."
+    },
+    {
+      "id": "labels-heading-and-search-execution",
+      "title": "Label duplicate number, heading and saved search execution",
+      "at": "2026-11-18T03:21:18.444Z",
+      "check": "npm.cmd test -- src/features/catalogue/catalogue.test.tsx src/features/catalogue/SavedSearches.test.tsx; npm.cmd run build; npm.cmd run lint; cargo build --offline (isolated verification custom-protocol build and repository build)",
+      "outcome": "passed",
+      "result": "23 tests passed. Catalogue-level test confirms a fresh query on repeated saved-search execution and restoration after clearing text. Single-label test checks one matching number and custom heading. Batch print clone test checks custom heading on both labels. Build/typecheck and lint passed. Both Windows native builds passed. Created pusthakam-phase3-labels-search.exe using the existing test library."
+    },
+    {
+      "id": "saved-search-reapply-regression",
+      "title": "Rerun the selected saved search",
+      "at": "2026-11-18T03:16:08.821Z",
+      "check": "npm.cmd test -- src/features/catalogue/SavedSearches.test.tsx; npm.cmd run build; npm.cmd run lint; cargo build --offline (isolated custom-protocol Windows build and repository build)",
+      "outcome": "passed",
+      "result": "Both saved-search tests pass, including rerunning the stored filter after the current filters change and rerunning updated stored filters. Typecheck, frontend build and lint passed. Both native builds passed. Updated test executable: pusthakam-phase3-searches-fixed.exe."
+    },
+    {
+      "id": "saved-searches-native-build",
+      "title": "Saved searches Windows native build",
+      "at": "2026-11-18T03:06:59.761Z",
+      "check": "cargo build --offline with tauri/custom-protocol against isolated verification manifest; cargo build --offline --manifest-path src-tauri/Cargo.toml --bin pusthakam",
+      "outcome": "passed",
+      "result": "Both Windows native builds passed. Created pusthakam-phase3-searches.exe using the existing disposable verification library. Interactive save/apply/update/remove after restart remains open."
+    },
+    {
+      "id": "saved-searches-build-typecheck-fix",
+      "title": "Saved search build correction and focused checks",
+      "at": "2026-11-18T03:06:39.580Z",
+      "check": "npm.cmd run build (initial failure); npm.cmd test -- src/features/catalogue/SavedSearches.test.tsx src/features/catalogue/catalogue.test.tsx; npm.cmd run build; npm.cmd run lint",
+      "outcome": "passed",
+      "result": "Initial build found unsupported exact options in role queries in the new test. Corrected the queries. All 22 focused tests, production build/typecheck and lint now pass. Added persistence coverage for update and removal. Native Windows restart walkthrough remains open."
+    },
+    {
+      "id": "saved-searches-windows-frontend",
+      "title": "Saved search frontend verification",
+      "at": "2026-11-18T02:44:45.734Z",
+      "check": "npm run typecheck && npm run lint && npm test -- src/features/catalogue/catalogue.test.tsx; npm test -- src/features/catalogue/SavedSearches.test.tsx",
+      "outcome": "passed",
+      "result": "21 tests passed, including persistence on remount, duplicate-name handling and account isolation. Typecheck and lint passed."
+    },
+    {
+      "id": "windows-cover-offline-owner-confirmation",
+      "title": "Cover display while offline",
+      "at": "2026-11-18T02:44:45.734Z",
+      "check": "Owner tested the automatic cover Windows build after disconnecting",
+      "outcome": "passed",
+      "result": "The owner confirmed that the cover works offline. Bulk archive and local cover priority still need native verification."
+    },
+    {
+      "id": "automatic-isbn-cover-checks",
+      "title": "Automatic ISBN cover integration checks",
+      "at": "2026-11-18T01:38:44.265Z",
+      "check": "npm run typecheck; npm run lint; npm test -- src/lib/images.test.ts src/features/catalogue/catalogue.test.tsx; frontend and native Windows builds",
+      "outcome": "passed",
+      "result": "22 existing lookup and catalogue tests, typecheck, lint and builds passed. Live automatic fetching and reconnect behavior remain unverified in Windows."
+    },
+    {
+      "id": "isbn-cover-lookup",
+      "title": "Optional ISBN cover lookup",
+      "at": "2026-11-18T01:32:43.650Z",
+      "check": "npm run typecheck; npm run lint; catalogue tests; src/lib/images.test.ts; npm run build; isolated native Windows build",
+      "outcome": "passed",
+      "result": "20 catalogue tests and two lookup tests passed, including missing-cover handling and invalid-identifier rejection. Typecheck, lint and both frontend and isolated native builds passed. Live Windows network lookup remains unverified."
+    },
+    {
+      "id": "windows-local-cover-checks",
+      "title": "Local cover Windows command checks",
+      "at": "2026-11-18T01:27:35.576Z",
+      "check": "cargo test --offline --manifest-path src-tauri/Cargo.toml --test ipc; npm run typecheck; npm run lint; targeted catalogue frontend tests; npm run build; isolated native Windows build",
+      "outcome": "passed",
+      "result": "13 IPC and 20 frontend catalogue tests passed. IPC verified cover save and removal, malformed image rejection and read-only denial. Native build passed. Frontend build reported the existing bundle-size warning."
+    },
+    {
+      "id": "cover-ipc-initial-compile",
+      "title": "Initial cover IPC build",
+      "at": "2026-11-18T01:27:35.576Z",
+      "check": "cargo test --offline --manifest-path src-tauri/Cargo.toml --test ipc",
+      "outcome": "failed",
+      "result": "The new fixture lacked the base64 Engine trait in scope. Corrected the call to name the trait explicitly and reran successfully."
+    },
     {
       "id": "phase3-bulk-catalogue-archive",
       "title": "Bulk archive confirmation and rollback",
@@ -2132,6 +2302,83 @@
     }
   ],
   "recentActivity": [
+    {
+      "kind": "progress",
+      "at": "2026-11-18T03:46:24.178Z",
+      "taskId": "LAN-CLIENT",
+      "title": "Recorded browser staff access and public OPAC scope",
+      "detail": "Audited current LAN plan against owner idea. Documented one host, phone/computer browser staff login and public read-only OPAC. No feature completion claimed; pausing at owner request."
+    },
+    {
+      "kind": "progress",
+      "at": "2026-11-18T03:39:40.254Z",
+      "taskId": "SRCH-FILTERS",
+      "title": "Owner confirmed saved search works",
+      "detail": "Corrected saved query now works in Windows; clarified name versus search words. No additional task verification credit without remaining checks."
+    },
+    {
+      "kind": "progress",
+      "at": "2026-11-18T03:33:37.081Z",
+      "taskId": "SRCH-FILTERS",
+      "title": "Identified empty saved queries from screenshots",
+      "detail": "Saved names were present but search words were empty. Added explicit repair, empty-save validation and clearer control order. 27 tests pass."
+    },
+    {
+      "kind": "progress",
+      "at": "2026-11-18T03:28:55.258Z",
+      "taskId": "SRCH-FILTERS",
+      "title": "Added exact no-match result regression and visible saved words",
+      "detail": "24 tests pass. Saved search applies immediately and no longer retains previous-result placeholders. Native report still needs investigation; not marked verified."
+    },
+    {
+      "kind": "progress",
+      "at": "2026-11-18T03:21:18.444Z",
+      "taskId": "SRCH-FILTERS",
+      "title": "Made Run saved search execute a fresh query",
+      "detail": "Repeated runs now execute even with unchanged filters. Added catalogue-level regression coverage. Also removed duplicate matching numbers on single labels and added editable library-name headings to single and batch printing."
+    },
+    {
+      "kind": "progress",
+      "at": "2026-11-18T03:16:08.821Z",
+      "taskId": "SRCH-FILTERS",
+      "title": "Fixed rerunning a selected saved search",
+      "detail": "Added an explicit Run saved search action and clearer instructions. Regression tests passed. Native walkthrough remains open."
+    },
+    {
+      "kind": "progress",
+      "at": "2026-11-18T03:06:39.580Z",
+      "taskId": "SRCH-FILTERS",
+      "title": "Checked saved search updates and removal",
+      "detail": "22 catalogue tests passed, including saved filter replacement and persisted removal. Production frontend build and lint passed after correcting a test typing error."
+    },
+    {
+      "kind": "completed",
+      "at": "2026-11-18T02:44:45.734Z",
+      "taskId": "SRCH-FILTERS",
+      "title": "Added saved searches to the Windows working tree",
+      "detail": "Saved catalogue searches support names, text, filters and sort order, plus update and removal. Saved filters are scoped to the staff account on this computer. The Windows restart walkthrough remains open."
+    },
+    {
+      "kind": "progress",
+      "at": "2026-11-18T01:38:44.265Z",
+      "taskId": "CAT-BULK",
+      "title": "Made ISBN covers automatic",
+      "detail": "ISBN cover lookup now starts automatically when opening a record with an ISBN and no saved cover. It retries on reconnect, preserves local cover priority, and quietly tolerates absent covers. Authorized catalogue editors save the downloaded cover locally. Read-only sessions display the fetched image without writing."
+    },
+    {
+      "kind": "progress",
+      "at": "2026-11-18T01:32:43.650Z",
+      "taskId": "CAT-BULK",
+      "title": "Added optional ISBN cover lookup",
+      "detail": "Added Load cover by ISBN to records with an ISBN and no saved cover. The explicit Open Library lookup omits credentials and referrer, limits response size and time, converts the image and saves it locally. Existing saved covers take precedence."
+    },
+    {
+      "kind": "completed",
+      "at": "2026-11-18T01:27:35.576Z",
+      "taskId": "CAT-BULK",
+      "title": "Implemented local catalogue covers",
+      "detail": "Local JPG/PNG cover selection and removal compile on Windows. Covers are bounded, decoded and re-encoded as PNG and saved in the database. Bulk archiving and covers await their native walkthrough."
+    },
     {
       "kind": "progress",
       "at": "2026-11-17T14:56:27.479Z",

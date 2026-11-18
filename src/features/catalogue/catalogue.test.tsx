@@ -6,6 +6,7 @@ import { MemoryRouter, Route, Routes } from "react-router-dom";
 import type { ConfigOverview, CopyQuery, CopyRecord, CopyRow, RecordDetail, Session } from "@/lib/api/types";
 
 const cat = vi.hoisted(() => ({
+  getCover: vi.fn(), setCover: vi.fn(),
   search: vi.fn(), getRecord: vi.fn(), saveRecord: vi.fn(), findDuplicates: vi.fn(), archiveRecord: vi.fn(),
   addCopies: vi.fn(), updateCopy: vi.fn(), setCopyStatus: vi.fn(), listCopies: vi.fn(), accessionFormat: vi.fn(),
   setAccessionFormat: vi.fn(), exportCopies: vi.fn(), archiveRecords: vi.fn(),
@@ -71,6 +72,7 @@ function renderAt(path: string, session: Session = ADMIN) {
 beforeEach(() => {
   [...Object.values(cat), ...Object.values(cfg)].forEach((f) => f.mockReset());
   cfg.overview.mockResolvedValue(CONFIG);
+  cat.getCover.mockResolvedValue(null);
   cat.search.mockResolvedValue({ total: 1, page: 1, pageSize: 25, rows: [SUMMARY] });
   cat.getRecord.mockResolvedValue(RECORD);
   cat.findDuplicates.mockResolvedValue([]);
@@ -78,6 +80,64 @@ beforeEach(() => {
 });
 
 describe("CataloguePage", () => {
+  it("repairs the empty Animal Farm entry shown in the owner screenshot and displays no matches", async () => {
+    localStorage.setItem("pusthakam.saved-searches.1", JSON.stringify([{
+      name: "animal farm", filter: { text: "", collectionId: null, onlyAvailable: false, includeArchived: false, sort: "relevance" },
+    }]));
+    const title = "The Man Who Was Thursday";
+    cat.search.mockImplementation(async (query: { text?: string | null }) => ({
+      total: query.text?.trim() ? 0 : 1, page: 1, pageSize: 25,
+      rows: query.text?.trim() ? [] : [{ ...SUMMARY, title }],
+    }));
+    renderAt("/catalogue");
+    await screen.findByRole("link", { name: title });
+    await userEvent.selectOptions(screen.getByLabelText("Saved searches"), "animal farm");
+    await userEvent.click(screen.getByRole("button", { name: "Use saved name as search words" }));
+    await screen.findByText(/No records match/);
+    expect(screen.getByRole("searchbox")).toHaveValue("animal farm");
+    expect(screen.queryByRole("link", { name: title })).not.toBeInTheDocument();
+  });
+  it("shows no matches for a saved Animal Farm search when only Thursday exists", async () => {
+    const book = { ...SUMMARY, title: "The Man Who Was Thursday" };
+    cat.search.mockImplementation(async (query: { text?: string | null }) => ({
+      total: query.text?.trim() ? 0 : 1, page: 1, pageSize: 25,
+      rows: query.text?.trim() ? [] : [book],
+    }));
+    const first = renderAt("/catalogue");
+    await screen.findByRole("link", { name: book.title });
+    await userEvent.type(screen.getByRole("searchbox"), "Animal Farm");
+    await screen.findByText(/No records match/);
+    await userEvent.type(screen.getByLabelText("Search name"), "Orwell");
+    await userEvent.click(screen.getByRole("button", { name: "Save search" }));
+    first.unmount();
+    renderAt("/catalogue");
+    await screen.findByRole("link", { name: book.title });
+    await userEvent.selectOptions(screen.getByLabelText("Saved searches"), "Orwell");
+    await screen.findByText(/No records match/);
+    expect(screen.queryByRole("link", { name: book.title })).not.toBeInTheDocument();
+    expect(screen.getByRole("searchbox")).toHaveValue("Animal Farm");
+    await userEvent.clear(screen.getByRole("searchbox"));
+    await screen.findByRole("link", { name: book.title });
+    await userEvent.click(screen.getByRole("button", { name: "Run saved search" }));
+    await screen.findByText(/No records match/);
+    expect(screen.queryByRole("link", { name: book.title })).not.toBeInTheDocument();
+  });
+  it("runs a saved search again even when its filters are unchanged", async () => {
+    renderAt("/catalogue");
+    await screen.findByRole("link", { name: "Balyakalasakhi" });
+    await userEvent.type(screen.getByRole("searchbox"), "Basheer");
+    await waitFor(() => expect(cat.search).toHaveBeenLastCalledWith(expect.objectContaining({ text: "Basheer" })));
+    await userEvent.type(screen.getByLabelText("Search name"), "My fiction");
+    await userEvent.click(screen.getByRole("button", { name: "Save search" }));
+    cat.search.mockClear();
+    await userEvent.click(screen.getByRole("button", { name: "Run saved search" }));
+    await waitFor(() => expect(cat.search).toHaveBeenCalledWith(expect.objectContaining({ text: "Basheer", page: 1 })));
+    await userEvent.clear(screen.getByRole("searchbox"));
+    await waitFor(() => expect(cat.search).toHaveBeenLastCalledWith(expect.objectContaining({ text: "" })));
+    await userEvent.click(screen.getByRole("button", { name: "Run saved search" }));
+    await waitFor(() => expect(cat.search).toHaveBeenLastCalledWith(expect.objectContaining({ text: "Basheer" })));
+    expect(screen.getByRole("searchbox")).toHaveValue("Basheer");
+  });
   it("only archives the selected records after confirmation", async () => {
     cat.search.mockResolvedValue({ total: 2, page: 1, pageSize: 25, rows: [SUMMARY, { ...SUMMARY, id: 2, title: "Second title" }] });
     cat.archiveRecords.mockResolvedValue(undefined);
@@ -251,6 +311,14 @@ describe("RecordPage", () => {
     renderAt("/catalogue/1");
     await userEvent.click(await screen.findByRole("button", { name: "Label" }));
     const dialog = screen.getByRole("dialog", { name: "Label for 004217" });
+    const label = dialog.querySelector<HTMLElement>(".print-area")!;
+    expect(label.querySelectorAll("svg text")).toHaveLength(0);
+    expect(within(label).getAllByText("004217")).toHaveLength(1);
+    const heading = within(dialog).getByLabelText("Label heading");
+    expect(heading).toHaveValue(CONFIG.library!.name);
+    await userEvent.clear(heading);
+    await userEvent.type(heading, "Reading room");
+    expect(within(label).getByText("Reading room")).toBeInTheDocument();
     expect(within(dialog).getByRole("img", { name: "Barcode 004217" })).toBeInTheDocument();
     expect(within(dialog).getByRole("button", { name: "Print label" })).toBeInTheDocument();
   });
@@ -309,6 +377,7 @@ describe("AccessionPage", () => {
       if (!printable) throw new Error("Print sheet is missing.");
       expect(within(printable).getByText("Accession 004217")).toBeInTheDocument();
       expect(within(printable).getByText("Accession 004218")).toBeInTheDocument();
+      expect(within(printable).getAllByText("Reading room")).toHaveLength(2);
       expect(within(printable).getByRole("img", { name: "Barcode 004217" }).querySelector("g rect")).not.toBeNull();
       window.dispatchEvent(new Event("afterprint"));
     });
@@ -323,6 +392,8 @@ describe("AccessionPage", () => {
       const preview = within(screen.getByRole("dialog", { name: "Copy label sheet" }));
       expect(preview.getByRole("img", { name: "Barcode 004217" })).toBeInTheDocument();
       expect(preview.getByText("Barcode പുസ്തകം (text only)")).toBeInTheDocument();
+      await userEvent.clear(preview.getByLabelText("Label heading"));
+      await userEvent.type(preview.getByLabelText("Label heading"), "Reading room");
       await userEvent.click(preview.getByRole("button", { name: "Print labels" }));
       expect(print).toHaveBeenCalledOnce();
       expect(document.querySelector(".label-sheet-print")).toBeNull();

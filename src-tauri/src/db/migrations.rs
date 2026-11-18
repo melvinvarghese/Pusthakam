@@ -28,6 +28,7 @@ pub const MIGRATIONS: &[Migration] = &[
     Migration { version: 13, name: "administrator_recovery", sql: include_str!("../../migrations/0013_administrator_recovery.sql") },
     Migration { version: 14, name: "stock_checks", sql: include_str!("../../migrations/0014_stock_checks.sql") },
     Migration { version: 15, name: "stock_transfers", sql: include_str!("../../migrations/0015_stock_transfers.sql") },
+    Migration { version: 16, name: "book_covers", sql: include_str!("../../migrations/0016_book_covers.sql") },
 ];
 
 pub fn checksum(sql: &str) -> String {

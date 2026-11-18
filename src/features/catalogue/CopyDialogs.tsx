@@ -10,6 +10,7 @@ import { suggestCallNumber } from "@/lib/callNumber";
 import { localDate } from "@/lib/dates";
 import { minorToInput, parseMinor } from "@/lib/money";
 import { BarcodeSvg, MANUAL_STATUSES, SOURCE_LABELS, STATUS_LABELS } from "./shared";
+import { useLabelHeading } from "./LabelHeading";
 
 function useSave<T>(onClose: () => void, run: () => Promise<T>) {
   const qc = useQueryClient();
@@ -218,18 +219,22 @@ export function StatusDialog({ copy, onClose }: { copy: CopyRecord; onClose: () 
 export function LabelDialog({ copy, title, schemeCode, onClose }: {
   copy: CopyRecord; title: string; schemeCode?: string; onClose: () => void;
 }) {
+  const { heading, field } = useLabelHeading();
   return (
     <Modal
       title={`Label for ${copy.accessionNo}`}
       onClose={onClose}
       footer={<><Button onClick={onClose}>Close</Button><Button variant="primary" onClick={() => window.print()}>Print label</Button></>}
     >
+      {field}
       <div className="print-area flex items-center gap-4 rounded-md border border-line p-4">
         {copy.callNumber && <CallNumberLabel callNumber={copy.callNumber} schemeCode={schemeCode} size="lg" />}
         <div className="min-w-0">
+          {heading && <div className="break-words font-semibold">{heading}</div>}
           <div className="truncate font-semibold">{title}</div>
-          <BarcodeSvg value={copy.barcode} />
-          <div className="font-mono text-xs">{copy.accessionNo}</div>
+          <BarcodeSvg value={copy.barcode} displayValue={false} />
+          <div className="font-mono text-xs">{copy.barcode}</div>
+          {copy.accessionNo !== copy.barcode && <div className="font-mono text-xs">Accession {copy.accessionNo}</div>}
         </div>
       </div>
     </Modal>

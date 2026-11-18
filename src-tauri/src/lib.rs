@@ -38,6 +38,8 @@ macro_rules! app_handlers {
             $crate::commands::catalogue::catalogue_find_duplicates,
             $crate::commands::catalogue::catalogue_archive_record,
             $crate::commands::catalogue::catalogue_archive_records,
+            $crate::commands::catalogue::catalogue_get_cover,
+            $crate::commands::catalogue::catalogue_set_cover,
             $crate::commands::catalogue::catalogue_add_copies,
             $crate::commands::catalogue::catalogue_update_copy,
             $crate::commands::catalogue::catalogue_set_copy_status,

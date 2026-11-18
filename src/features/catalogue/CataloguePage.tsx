@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
+import { SavedSearches } from "./SavedSearches";
 import { Link, useNavigate } from "react-router-dom";
-import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { CallNumberLabel } from "@/components/CallNumberLabel";
 import { PageHeader } from "@/components/PageHeader";
 import { Pager } from "@/components/Pager";
@@ -13,7 +14,7 @@ import type { SearchQuery } from "@/lib/api/types";
 import { can, useSession } from "@/lib/session";
 import { ImportDialog } from "./ImportDialog";
 import { RecordFormDialog } from "./RecordFormDialog";
-import { useConfig, useDebounced } from "./shared";
+import { useConfig } from "./shared";
 
 const PAGE_SIZE = 25;
 
@@ -23,12 +24,17 @@ export function CataloguePage() {
   const navigate = useNavigate();
   const config = useConfig();
   const [text, setText] = useState("");
-  const debounced = useDebounced(text, 250);
+  const [debounced, setDebounced] = useState("");
+  useEffect(() => {
+    const timer = setTimeout(() => setDebounced(text), 250);
+    return () => clearTimeout(timer);
+  }, [text]);
   const [collectionId, setCollectionId] = useState<number | null>(null);
   const [onlyAvailable, setOnlyAvailable] = useState(false);
   const [includeArchived, setIncludeArchived] = useState(false);
   const [sort, setSort] = useState<NonNullable<SearchQuery["sort"]>>("relevance");
   const [page, setPage] = useState(1);
+  const [searchRun, setSearchRun] = useState(0);
   const [adding, setAdding] = useState(false);
   const [importing, setImporting] = useState(false);
   const [selected, setSelected] = useState<number[]>([]);
@@ -47,9 +53,8 @@ export function CataloguePage() {
 
   const query: SearchQuery = { text: debounced, collectionId, onlyAvailable, includeArchived, sort, page, pageSize: PAGE_SIZE };
   const result = useQuery({
-    queryKey: ["catalogue", "search", query],
+    queryKey: ["catalogue", "search", query, searchRun],
     queryFn: () => catalogueApi.search(query),
-    placeholderData: keepPreviousData,
     retry: false,
   });
 
@@ -71,6 +76,7 @@ export function CataloguePage() {
       />
 
       <Panel aria-label="Catalogue search">
+
         <div className="flex flex-wrap items-center gap-3 border-b border-line p-3">
           <input
             type="search"
@@ -117,12 +123,25 @@ export function CataloguePage() {
           </label>
         </div>
 
+        <SavedSearches key={session.userId} userId={session.userId}
+          filter={{ text, collectionId, onlyAvailable, includeArchived, sort }}
+          onApply={(filter) => {
+            setText(filter.text ?? "");
+            setDebounced(filter.text ?? "");
+            setCollectionId(filter.collectionId ?? null);
+            setOnlyAvailable(filter.onlyAvailable ?? false);
+            setIncludeArchived(filter.includeArchived ?? false);
+            setSort(filter.sort ?? "relevance");
+            setPage(1);
+            setSearchRun((run) => run + 1);
+          }} />
+
         {result.isError && (
           <p role="alert" className="px-4 py-6 text-danger">
             {result.error instanceof ApiError ? result.error.message : "Could not search the catalogue."}
           </p>
         )}
-        {result.isPending && <p role="status" className="px-4 py-6 text-muted">Searching…</p>}
+        {result.isFetching && <p role="status" className="px-4 py-6 text-muted">Searching…</p>}
 
         {canWrite && selectedRows.length > 0 && (
           <div className="px-4 py-2">

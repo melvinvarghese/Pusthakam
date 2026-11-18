@@ -632,6 +632,20 @@ fn catalogue_commands_accept_the_ui_payloads_and_enforce_permissions() {
     let id = h.ok("catalogue_save_record", record.clone());
     let got = h.ok("catalogue_get_record", json!({ "id": id }));
     assert_eq!(got["title"], "Balyakalasakhi");
+    assert_eq!(h.ok("catalogue_get_cover", json!({ "id": id })), Value::Null);
+    assert_eq!(h.code("catalogue_set_cover", json!({ "id": id, "pngBase64": "eA==" })), "VALIDATION");
+    let mut cover = Vec::new();
+    {
+        let mut encoder = png::Encoder::new(&mut cover, 1, 1);
+        encoder.set_color(png::ColorType::Rgb);
+        let mut writer = encoder.write_header().unwrap();
+        writer.write_image_data(&[10, 20, 30]).unwrap();
+    }
+    let cover = base64::Engine::encode(&base64::engine::general_purpose::STANDARD, cover);
+    h.ok("catalogue_set_cover", json!({ "id": id, "pngBase64": cover }));
+    assert!(h.ok("catalogue_get_cover", json!({ "id": id })).as_str().unwrap().starts_with("iVBOR"));
+    h.ok("catalogue_set_cover", json!({ "id": id, "pngBase64": null }));
+    assert_eq!(h.ok("catalogue_get_cover", json!({ "id": id })), Value::Null);
     assert_eq!(got["isbn13"], "9780306406157");
     assert_eq!(got["contributors"][0]["role"], "author");
     assert_eq!(got["abstract"], Value::Null);
@@ -744,6 +758,7 @@ fn catalogue_commands_accept_the_ui_payloads_and_enforce_permissions() {
     h.ok("catalogue_get_record", json!({ "id": id }));
     assert_eq!(h.code("catalogue_save_record", record), "PERMISSION_DENIED");
     assert_eq!(h.code("catalogue_archive_record", json!({ "id": id, "archived": true })), "PERMISSION_DENIED");
+    assert_eq!(h.code("catalogue_set_cover", json!({ "id": id, "pngBase64": null })), "PERMISSION_DENIED");
     assert_eq!(h.code("catalogue_archive_records", json!({ "ids": [id] })), "PERMISSION_DENIED");
     assert_eq!(h.code("catalogue_set_copy_status", json!({ "id": copy_id, "status": "available", "note": null })), "PERMISSION_DENIED");
     assert_eq!(h.code("accession_format_set", json!({ "format": { "prefix": "", "padding": 6, "next": 1 } })), "PERMISSION_DENIED");

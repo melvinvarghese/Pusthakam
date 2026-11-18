@@ -17,3 +17,6 @@ pub mod settings;
 pub mod setup;
 pub mod staff;
 pub mod transfers;
+
+pub mod image_upload;
+pub mod book_cover;
