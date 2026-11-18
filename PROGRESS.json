@@ -1,21 +1,21 @@
 {
   "schemaVersion": 1,
-  "lastUpdated": "2026-11-18T11:53:14.972Z",
+  "lastUpdated": "2026-11-18T15:09:51.441Z",
   "currentPhase": "4",
   "currentTask": {
-    "taskId": "CIRC-LOAN",
-    "title": "Typing member-name suggestions in circulation and reservations",
-    "status": "implemented",
-    "detail": "Maximized startup, live member-name suggestions in Issue and Reservations, and X-to-tray/Open/Quit are implemented. All 11 focused UI tests, build/typecheck/lint, Rust compile check and standalone Windows build passed. Native checks pending. Handoff/docs are saved in the repository; changes are local until Git commit/push/pull."
+    "taskId": "IMP-LOANS",
+    "title": "Circulation migration: renewal history",
+    "status": "in-progress",
+    "detail": "Session paused at owner request. Owner confirmed Windows loan and renewal imports/history work. Next: make Choose file look like a proper button (currently appears as random text), preferably in the shared file-input styling. Then resume Phase 4 reservation and financial migration. Existing automated/native build checks passed; full IMP-LOANS remains in progress."
   },
   "nextMilestone": {
-    "nextTaskId": "CIRC-LOAN",
-    "title": "Verify live member lookup and desktop tray behavior",
-    "detail": "Close older test apps; run pusthakam-phase4-members-tray.exe. Check maximized startup and typing member matches in Issue and Reservations. Sign in, X hides, tray icon/Open restores the same session; Quit exits and reopening requires sign-in. Read docs/SESSION_HANDOFF.md before switching computers; sync source/docs through Git."
+    "nextTaskId": "IMP-LOANS",
+    "title": "Style Choose file buttons, then reservation migration",
+    "detail": "First inspect shared TextField/file-input styling and make Choose file visibly a button, with keyboard focus, disabled, light/dark states; verify import screens and refresh native build. Owner requested documentation/checkpoint only tonight. Then continue Phase 4 reservation and financial migration; LAN/OPAC remain Phase 7b."
   },
   "totals": {
-    "overall": 50.8,
-    "implementation": 62.1,
+    "overall": 51.2,
+    "implementation": 62.9,
     "verification": 41.8,
     "releaseReadiness": 10
   },
@@ -871,7 +871,7 @@
       "phase": "4",
       "module": "members",
       "weight": 2,
-      "status": "in-progress",
+      "status": "implemented",
       "title": "Member fine history and balances",
       "requirements": [
         "REQ-MEM"
@@ -880,11 +880,16 @@
         "Open a member and reconcile their balance, settlements and waivers with the circulation fine ledger."
       ],
       "sourceEvidence": [
-        "Circulation has a separate fine ledger; members have a loan history view."
+        "src-tauri/src/services/fines.rs member_account/member_history share the circulation balance CTE and check ownership. members_fine_account/members_fine_history enforce members.read; waiver reason follows circulation.manage. src/features/members/MemberFines.tsx and MembersPage expose read-only accounts, and circulation invalidates member-fines after assessments/settlements. docs/MEMBER_FINE_ACCOUNTS.md."
       ],
-      "verificationEvidence": [],
+      "verificationEvidence": [
+        "member-fines-focused-checks",
+        "member-fines-full-rust",
+        "member-fines-native-build",
+        "member-fines-owner-empty"
+      ],
       "verificationNeeded": [
-        "Add and run a reconciliation test including a partially paid fine."
+        "Native Windows: compare a populated assessed/partially paid fine with Circulation, inspect settlement history and check archived/read-only access. Empty state owner-confirmed; no overdue copy currently available."
       ]
     },
     {
@@ -917,7 +922,7 @@
       "phase": "4",
       "module": "exchange",
       "weight": 5,
-      "status": "not-started",
+      "status": "in-progress",
       "title": "Migrate circulation and fine history",
       "requirements": [
         "REQ-IMP",
@@ -928,10 +933,27 @@
         "Preview invalid references, preserve due dates and amounts, and commit atomically.",
         "Reconcile available open and closed loans, renewals, reservations, and outstanding and historical fines and settlements against the source export."
       ],
-      "sourceEvidence": [],
-      "verificationEvidence": [],
+      "sourceEvidence": [
+        "services/loan_import.rs; migration 0018_loan_import_provenance.sql; commands/circulation.rs and app_handlers; LoanImport.tsx and circulationApi; member loan history displays preserved source labels. docs/CIRCULATION_MIGRATION.md. Open/closed loans only; remaining history types unimplemented.",
+        "services/renewal_import.rs, migration 0019_renewal_import_provenance.sql, permission-checked renewal-import commands, RenewalImport.tsx and member-history renewal counts. Source-linked complete chains; stock/current due dates unchanged."
+      ],
+      "verificationEvidence": [
+        "loan-import-analysis-tests",
+        "loan-import-preview-ipc-ui",
+        "loan-import-commit-focused",
+        "loan-import-commit-full",
+        "loan-import-native-build",
+        "loan-import-owner-closed",
+        "renewal-import-focused",
+        "renewal-import-full",
+        "renewal-import-native-build",
+        "renewal-import-owner-windows"
+      ],
       "verificationNeeded": [
-        "Reconcile a real anonymised dataset and verify rollback on conflicts."
+        "Style Choose file as an obvious accessible button in the shared file field, then check native Windows import screens.",
+        "Native repeated-renewal-file rejection and remaining loan invalid-reference/read-only/open-policy/stock checks. Loan and renewal basic import/history walkthroughs owner-confirmed.",
+        "Implement reservation and financial migration with reconciliation, plus historical-policy/return-condition format extensions.",
+        "Real source-specific mapping/reconciliation when representative anonymised exports become available."
       ]
     },
     {
@@ -1652,6 +1674,134 @@
     }
   ],
   "verificationRuns": [
+    {
+      "id": "renewal-import-owner-windows",
+      "title": "Owner confirmed Windows renewal-history import",
+      "at": "2026-11-18T15:09:51.441Z",
+      "check": "Owner tested the refreshed Windows renewal-import build and reported renewals working fine.",
+      "outcome": "passed",
+      "result": "Owner confirmed renewal import worked after the provided preview/confirm/member-history walkthrough. Repeat-file rejection was not explicitly reported and remains an open native check. Owner observed Choose file looks like plain text and requested button styling as the next step."
+    },
+    {
+      "id": "renewal-import-native-build",
+      "title": "Windows renewal-history import build",
+      "at": "2026-11-18T14:58:51.222Z",
+      "check": "cargo build --offline --manifest-path <temporary verification>/src-tauri/Cargo.toml --features tauri/custom-protocol",
+      "outcome": "passed",
+      "result": "C:\\Users\\Melvin\\AppData\\Local\\Temp\\pusthakam-native-verification-cea843fbd8cb4e9bbaf6c2274b98c468\\pusthakam-phase4-renewal-import.exe built with production assets, maximized/tray configuration and isolated existing verification app-data root. Synthetic renewal CSV/walkthrough prepared by read-only lookup of the prior imported test loan; no database writes or native walkthrough performed."
+    },
+    {
+      "id": "renewal-import-full",
+      "title": "Renewal migration full regression checks",
+      "at": "2026-11-18T14:56:46.404Z",
+      "check": "cargo test --offline --manifest-path src-tauri/Cargo.toml; npm test -- src/features/circulation/RenewalImport.test.tsx src/features/circulation/LoanImport.test.tsx src/features/circulation/CirculationPage.test.tsx src/features/members/MembersPage.test.tsx; npm run build; npm run lint",
+      "outcome": "passed",
+      "result": "122 unit tests, 23 IPC tests and 22 frontend tests passed. Build/typecheck/lint passed. Historical dates/staff labels and counts preserved; complete-chain validation, repeats, stale review, permissions and audit rollback tested. Native build/walkthrough pending."
+    },
+    {
+      "id": "renewal-import-focused",
+      "title": "Renewal import focused IPC and UI checks",
+      "at": "2026-11-18T14:55:28.433Z",
+      "check": "cargo test --offline --manifest-path src-tauri/Cargo.toml renewal_import; npm test -- src/features/circulation/RenewalImport.test.tsx src/features/circulation/LoanImport.test.tsx src/features/circulation/CirculationPage.test.tsx src/features/members/MembersPage.test.tsx",
+      "outcome": "passed",
+      "result": "1 comprehensive IPC test passed (22 filtered), plus all 22 focused frontend tests. Covers source references, chain chronology/gaps/final due, duplicates, stale source/data, rollback, original events/staff labels, unchanged stock/due/fines, member renewal counts and permission denial. Full regression/build/native checks pending."
+    },
+    {
+      "id": "loan-import-owner-closed",
+      "title": "Owner Windows closed-loan import walkthrough",
+      "at": "2026-11-18T14:46:55.517Z",
+      "check": "Owner followed the supplied Windows test: open loan-import build, preview loan-import-test-closed.csv, source Windows test, confirm and inspect Members > Loans.",
+      "outcome": "passed",
+      "result": "Owner reported working fine. Records native closed-loan import/history acceptance only. Repeat/invalid-file/read-only and open-loan native checks were not explicitly reported; remaining history types are not implemented."
+    },
+    {
+      "id": "loan-import-native-build",
+      "title": "Windows confirmed-loan import build",
+      "at": "2026-11-18T14:39:59.879Z",
+      "check": "cargo build --offline --manifest-path <temporary verification>/src-tauri/Cargo.toml --features tauri/custom-protocol",
+      "outcome": "passed",
+      "result": "C:\\Users\\Melvin\\AppData\\Local\\Temp\\pusthakam-native-verification-cea843fbd8cb4e9bbaf6c2274b98c468\\pusthakam-phase4-loan-import.exe built with embedded production assets and current maximized/tray configuration. Only staged app-data root changed to existing disposable verification directory. Closed-loan/invalid-reference CSVs prepared read-only from that library; not imported. No native walkthrough performed."
+    },
+    {
+      "id": "loan-import-commit-full",
+      "title": "Confirmed loan import final regression checks",
+      "at": "2026-11-18T14:38:58.084Z",
+      "check": "cargo test --offline --manifest-path src-tauri/Cargo.toml; npm test -- src/features/circulation/LoanImport.test.tsx src/features/circulation/CirculationPage.test.tsx src/features/members/MembersPage.test.tsx; npm run build; npm run lint",
+      "outcome": "passed",
+      "result": "122 Rust unit, 22 IPC and 17 frontend tests passed, plus production build/typecheck and lint. Includes source labels in member history, rollback after audit failure, policies, repeat import, stale data and overlaps. Earlier digest compilation and misplaced test-assertion failures were corrected and retained as historical evidence."
+    },
+    {
+      "id": "loan-import-full-initial",
+      "title": "Initial broad Rust run after loan import",
+      "at": "2026-11-18T14:36:30.994Z",
+      "check": "cargo test --offline --manifest-path src-tauri/Cargo.toml",
+      "outcome": "failed",
+      "result": "122 unit tests passed; 21/22 IPC passed. A text edit accidentally inserted loan-provenance assertions into the unrelated fine-settlement history test. Removed only those misplaced new assertions; original financial assertions retained and provenance assertions remain in loan-import test. Rerun pending."
+    },
+    {
+      "id": "loan-import-commit-focused",
+      "title": "Confirmed loan import focused checks",
+      "at": "2026-11-18T14:35:52.299Z",
+      "check": "cargo test --offline --manifest-path src-tauri/Cargo.toml loan_import; npm test -- src/features/circulation/LoanImport.test.tsx src/features/circulation/CirculationPage.test.tsx src/features/members/MembersPage.test.tsx",
+      "outcome": "passed",
+      "result": "3 service tests and 2 IPC tests passed after digest formatting fix; 17 final frontend tests passed, including imported-source display. Full Rust/final build/lint and native build pending."
+    },
+    {
+      "id": "loan-import-commit-initial-compile",
+      "title": "Loan import commit initial compile",
+      "at": "2026-11-18T14:31:12.621Z",
+      "check": "cargo test --offline --manifest-path src-tauri/Cargo.toml loan_import",
+      "outcome": "failed",
+      "result": "Digest output does not implement LowerHex. Changed to byte-wise hexadecimal formatting; rerun pending. No test weakened."
+    },
+    {
+      "id": "loan-import-preview-ipc-ui",
+      "title": "Loan import preview IPC and UI checks",
+      "at": "2026-11-18T14:24:56.793Z",
+      "check": "cargo test --offline --manifest-path src-tauri/Cargo.toml loan_import; npm test -- src/features/circulation/LoanImport.test.tsx src/features/circulation/CirculationPage.test.tsx; npm run build; npm run lint",
+      "outcome": "passed",
+      "result": "3 Rust service tests and 1 IPC test passed (admin access, malformed base64, no loan writes, viewer denied). Final focused frontend suite: 11 passed, including admin entry point and staff exclusion. Production build/typecheck, lint and final typecheck passed. No confirmed import or native build yet."
+    },
+    {
+      "id": "loan-import-analysis-tests",
+      "title": "Neutral loan CSV analysis tests",
+      "at": "2026-11-18T14:15:40.538Z",
+      "check": "cargo test --offline --manifest-path src-tauri/Cargo.toml services::loan_import --lib",
+      "outcome": "passed",
+      "result": "3 passed, 119 filtered out. Valid text identifiers, read-only behavior, date/chronology validation, missing references and duplicate/open conflicts. No UI or commit implemented."
+    },
+    {
+      "id": "member-fines-owner-empty",
+      "title": "Windows member fine empty state",
+      "at": "2026-11-18T14:12:09.581Z",
+      "check": "Owner opened Members > Fines in the Windows test build.",
+      "outcome": "passed",
+      "result": "Expected assessed-fines explanation and no-assessed-fines message displayed. Owner has no overdue copy. Native populated account, settlements and read-only checks remain open."
+    },
+    {
+      "id": "member-fines-native-build",
+      "title": "Standalone Windows member fine account build",
+      "at": "2026-11-18T13:41:18.121Z",
+      "check": "CARGO_TARGET_DIR=D:/Pusthakam/src-tauri/target; cargo build --offline --manifest-path <isolated>/src-tauri/Cargo.toml --features tauri/custom-protocol",
+      "outcome": "passed",
+      "result": "Standalone executable with embedded frontend built: C:\\Users\\Melvin\\AppData\\Local\\Temp\\pusthakam-native-verification-cea843fbd8cb4e9bbaf6c2274b98c468\\pusthakam-phase4-member-fines.exe. Uses existing disposable library, maximized startup and tray behavior. Member account walkthrough copied beside it. Native fine account/history/reconciliation and older tray/live lookup acceptance remain open."
+    },
+    {
+      "id": "member-fines-full-rust",
+      "title": "Full Rust suite after member fine accounts",
+      "at": "2026-11-18T13:39:19.668Z",
+      "check": "cargo test --offline --manifest-path src-tauri/Cargo.toml",
+      "outcome": "passed",
+      "result": "119 unit tests and 20 IPC tests passed, including account reconciliation and existing assessments, settlements, circulation, calendar, import/export and recovery checks."
+    },
+    {
+      "id": "member-fines-focused-checks",
+      "title": "Member fine account reconciliation and frontend checks",
+      "at": "2026-11-18T13:38:26.623Z",
+      "check": "cargo test --offline --manifest-path src-tauri/Cargo.toml --test ipc member_fine_accounts; npm test -- src/features/members/MemberFines.test.tsx src/features/members/MembersPage.test.tsx src/features/circulation/CirculationPage.test.tsx; npm run build; npm run lint",
+      "outcome": "passed",
+      "result": "New real IPC workflow passed: partial payment/waiver/final settlement match circulation ledger; per-currency totals span pages; settled fines retained; foreign-member fine rejected; archived member read allowed; reason redacted for viewer; missing read and settlement writes denied. All 14 focused frontend tests passed, with build/typecheck and lint. Member directory regression also passed. Full Rust suite is running."
+    },
     {
       "id": "members-tray-native-build",
       "title": "Standalone Windows member lookup and system tray build",
@@ -2654,6 +2804,104 @@
     }
   ],
   "recentActivity": [
+    {
+      "kind": "progress",
+      "at": "2026-11-18T15:09:51.441Z",
+      "taskId": "IMP-LOANS",
+      "title": "Owner accepted renewals; checkpoint saved for next session",
+      "detail": "Renewal import owner-confirmed. Choose file button styling queued as first next step, followed by reservation/financial migration. Owner leaving; no UI change implemented tonight."
+    },
+    {
+      "kind": "progress",
+      "at": "2026-11-18T14:58:51.222Z",
+      "taskId": "IMP-LOANS",
+      "title": "Windows renewal-history build ready",
+      "detail": "Renewal-history import ready in pusthakam-phase4-renewal-import.exe (schema 19). All 122 Rust unit, 23 IPC and 22 focused frontend tests, production build/typecheck/lint and native build passed. renewal-import-test.csv and RENEWAL_IMPORT_TEST.txt are beside it, linked to the previously imported historical test loan. Native acceptance pending; reservations/financial migration remain."
+    },
+    {
+      "kind": "progress",
+      "at": "2026-11-18T14:56:46.404Z",
+      "taskId": "IMP-LOANS",
+      "title": "Renewal migration regression checks passed",
+      "detail": "Renewal-history CSV preview/atomic commit implemented with schema 19 append-only source provenance, complete-chain and stale/repeat checks, admin-only UI and member renewal counts. All 122 Rust unit, 23 IPC and 22 frontend tests, production build/typecheck and lint passed. Native build running; reservation/financial migration remains pending."
+    },
+    {
+      "kind": "progress",
+      "at": "2026-11-18T14:55:28.433Z",
+      "taskId": "IMP-LOANS",
+      "title": "Renewal-history import focused checks passed",
+      "detail": "Renewal-history preview and atomic confirmed import implemented with schema 19 source provenance, complete-chain validation and admin UI. Focused IPC reconciliation and 22 frontend tests passed; full Rust suite and production build/lint running. Member history displays renewal counts. No full-task completion credit."
+    },
+    {
+      "kind": "progress",
+      "at": "2026-11-18T14:46:55.517Z",
+      "taskId": "IMP-LOANS",
+      "title": "Owner confirmed Windows closed-loan import",
+      "detail": "Closed-loan preview/confirmation and member-history walkthrough worked. Next: renewal-history migration; full migration task remains in progress."
+    },
+    {
+      "kind": "progress",
+      "at": "2026-11-18T14:39:59.879Z",
+      "taskId": "IMP-LOANS",
+      "title": "Windows confirmed-loan import build ready",
+      "detail": "Confirmed neutral open/closed loan import ready in pusthakam-phase4-loan-import.exe (schema 18). All 122 Rust unit, 22 IPC, 17 focused frontend tests, production build/typecheck/lint and native build passed. Closed-loan and invalid-reference examples are beside the executable. Native acceptance pending; renewals/reservations/financial history keep IMP-LOANS in progress."
+    },
+    {
+      "kind": "progress",
+      "at": "2026-11-18T14:38:58.084Z",
+      "taskId": "IMP-LOANS",
+      "title": "Confirmed loan import regression suite passed",
+      "detail": "Confirmed neutral open/closed loan import implemented. Schema 18 preserves source provenance; atomic commit enforces repeat/stale/overlap checks and explicit current-fine-policy consent. Member history displays source labels. Final checks passed: 122 Rust unit, 22 IPC and 17 focused frontend tests, production build/typecheck and lint. Native executable build is finishing; remaining history types keep IMP-LOANS in progress."
+    },
+    {
+      "kind": "progress",
+      "at": "2026-11-18T14:35:52.299Z",
+      "taskId": "IMP-LOANS",
+      "title": "Confirmed loan migration transaction passed focused tests",
+      "detail": "Confirmed neutral open/closed loan import implemented with schema 18 source provenance, atomic writes, repeat/stale/overlap rejection, explicit current-fine-policy consent and member-history source labels. Focused backend checks passed (3 service, 2 IPC); final frontend suite passed 17 tests. Full Rust suite and final production build/lint running; native build next. Remaining history types keep IMP-LOANS in progress."
+    },
+    {
+      "kind": "progress",
+      "at": "2026-11-18T14:24:40.991Z",
+      "taskId": "IMP-LOANS",
+      "title": "Admin loan CSV preview connected",
+      "detail": "Admin-only neutral loan CSV preview is connected through typed IPC and Circulation UI. Read-only snapshot, bounded decoding, counts/problems, retry and stale-result clearing implemented. Confirmed save, provenance schema and other history types remain unimplemented."
+    },
+    {
+      "kind": "progress",
+      "at": "2026-11-18T14:15:40.538Z",
+      "taskId": "IMP-LOANS",
+      "title": "Neutral loan-history analyzer implemented",
+      "detail": "Neutral loan CSV read-only analyzer implemented; 3 focused Rust tests passed. No IPC/UI or commit yet. Owner has no source export and authorized generic formats/test fixtures; Koha-specific mapping and real-data reconciliation remain pending."
+    },
+    {
+      "kind": "progress",
+      "at": "2026-11-18T14:12:09.581Z",
+      "taskId": "IMP-LOANS",
+      "title": "Circulation migration schema audit",
+      "detail": "Recorded member-fines native empty-state pass. Audited destination constraints; documented provenance, charge allocation and reservation mapping gaps. Awaiting representative source sample; importer not implemented."
+    },
+    {
+      "kind": "progress",
+      "at": "2026-11-18T13:41:18.121Z",
+      "taskId": "MEM-FINES",
+      "title": "Windows member fine account test build ready",
+      "detail": "Read-only member fine accounts implemented. All 119 Rust unit, 20 IPC and 14 focused frontend tests passed, plus build/typecheck/lint and standalone Windows build. Executable pusthakam-phase4-member-fines.exe is ready; native account/history checks pending. Progress and handoff docs updated."
+    },
+    {
+      "kind": "completed",
+      "at": "2026-11-18T13:39:19.668Z",
+      "taskId": "MEM-FINES",
+      "title": "Member fine account implementation complete",
+      "detail": "Member fine accounts implemented. All 119 Rust unit, 20 IPC and 14 focused frontend tests passed, plus production build/typecheck and lint. Read-only scoped history, currency-separated totals, partial/final settlements and ownership/permissions reconciled. Standalone native build running; native checks pending."
+    },
+    {
+      "kind": "progress",
+      "at": "2026-11-18T13:38:26.623Z",
+      "taskId": "MEM-FINES",
+      "title": "Member fine account reconciliation tests passed",
+      "detail": "Member fine accounts and settlement history implemented in source. Real IPC reconciliation and 14 focused UI tests passed; build/typecheck and lint passed. Currency-separated all-page totals, settled/archived history and ownership/reason permissions tested. Full Rust suite running; native acceptance pending."
+    },
     {
       "kind": "progress",
       "at": "2026-11-18T11:53:14.972Z",

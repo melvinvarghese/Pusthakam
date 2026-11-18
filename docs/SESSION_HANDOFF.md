@@ -1,48 +1,72 @@
 # Development handoff
 
-Use the repository files as the shared development memory between computers. Chat history is not the authoritative project state.
+Repository files are the shared development memory. Chat history and machine-local temporary builds are not authoritative state.
 
-## Resume on any computer
+## Standing owner requirement
 
-1. Commit and push the source changes and documentation from the computer where work finished. Pull those changes on the next computer before starting. Uncommitted files are local only.
-2. Read `CLAUDE.md`, `PROGRESS.json`, `PROGRESS.md` and this file. Follow `docs/DEVELOPMENT_ROADMAP.md` and the product specification.
-3. Check `git status` and preserve any local work. If two computers changed the same files, reconcile them before continuing; do not overwrite or force-push.
-4. Standing owner requirement: after every meaningful change, immediately update both `PROGRESS.md` and `PROGRESS.json`, this handoff and affected feature docs, including partial work and failed/incomplete checks. Do not wait for a computer switch or session end. Ensure these records agree before ending each turn. Run `npm run progress:validate -- --write`, then `npm run progress:validate`.
-5. Never put library databases, backups, passwords, recovery codes or staff/member data in Git. Moving development work does not move the library database.
+After every meaningful change, immediately update **PROGRESS.md**, **PROGRESS.json**, this handoff and affected feature docs. Record partial work, decisions, actual checks (including failures/incomplete checks), blockers and the exact next step. Do not wait for a session end or an announced computer switch. Check these files agree before ending each turn. AGENTS.md records the same instruction for work on any computer.
 
-The current working clone is `D:\Pusthakam` on the owner's Windows computer. Other computers may use another clone path. Temporary verification executables and their disposable database are machine-specific; rebuild from source rather than relying on those paths.
+## Resume and sync between computers
 
-## Current milestone — 18 November 2026
+1. Commit and push source/docs from the computer where work finished, then pull on the next computer before starting. Uncommitted changes are local only. No commit or push has been performed in this session.
+2. Read CLAUDE.md, PROGRESS.json, PROGRESS.md and this file. Inspect git status and preserve existing local work. Reconcile overlapping edits; do not overwrite or force-push.
+3. Follow the normal roadmap order. Use currentTask, verificationNeeded and blockers in PROGRESS.json for the current evidence and gaps.
+4. After updating progress, run `npm run progress:validate -- --write`, then `npm run progress:validate`, and update the percentages in PROGRESS.md in the same change.
+5. Never commit library databases, backups, passwords, recovery codes or staff/member data. Syncing development does not migrate a library database.
 
-Phase 4 is active. The owner confirmed the new holiday calendar works in Windows. Automated calendar checks passed: 119 Rust unit tests, 19 IPC tests, 14 settings UI tests, production build/typecheck and lint. Calendar verification is recorded in PROGRESS.json.
+The current clone is D:\Pusthakam. Other computers can use another path. Temporary verification executables and disposable databases are machine-specific: rebuild from source on another computer. Windows native builds require the documented Rust/MSVC/WebView2 toolchain.
 
-Current requested changes (implementation added; automated/native verification status is in PROGRESS.json):
+## Current task: IMP-LOANS, Phase 4 — paused for next session
 
-- Start the desktop app maximized so it fills the working screen.
-- Clicking Find member by name in Circulation must show matching names as staff type, without a separate Search click. Use a bounded, debounced dropdown; show member numbers to distinguish identical names; support keyboard selection and prevent stale results from selecting the wrong member.
-- Offer the same member-name lookup in Reservations. Keep member-number entry and backend permission/eligibility checks.
-- Clicking the window X should hide the app in the notification-area/system tray and keep the signed-in session in the running process. Add Open Pusthakam and Quit tray actions. A real quit must end the session; do not save passwords to bypass sign-in. The session resumes through the tray icon. Reopening via a second process is a separate behavior unless explicitly implemented and tested.
+Owner confirmed Windows loan and renewal imports/history work. Latest build: pusthakam-phase4-renewal-import.exe, schema 19. Tests passed: 122 Rust unit, 23 IPC and 22 focused frontend tests, production build/typecheck/lint and standalone native build. The full migration task remains in progress; no new completion credit.
 
-The live lookup has 11 passing focused frontend tests, with production build/typecheck/lint also passed. Tray-enabled Rust check and the standalone Windows build passed. The native test executable is `pusthakam-phase4-members-tray.exe` in the existing machine-specific verification folder. Maximize/live dropdown/tray/session/Quit acceptance remains open; do not infer native success from compilation. Current source and PROGRESS.json determine what has actually been tested.
+**FIRST next step:** make Choose file visibly a button. Owner says it currently looks like random text. Inspect shared TextField/file-input CSS and apply consistent button appearance across relevant screens, including keyboard focus, disabled and light/dark states. Verify affected import screens and prepare a fresh native build. This is requested for next session; no styling implementation was made tonight.
+
+Then resume normal Phase 4 order: reservation migration, then fines/settlements. Basic native renewal acceptance is recorded; repeated-file rejection and remaining loan invalid-reference/read-only/open-policy/stock checks were not explicitly confirmed. Keep them open. Generic implementation can proceed without a real Koha export; source-specific mapping/reconciliation remains unverified. LAN/browser access and OPAC stay Phase 7b. Deferred loading screen/password rule remain deferred.
+
+Test folder: %LOCALAPPDATA%\Temp\pusthakam-native-verification-cea843fbd8cb4e9bbaf6c2274b98c468. Owner pinned it in Explorer Quick access. It contains renewal-import-test.csv and RENEWAL_IMPORT_TEST.txt, linked to the prior historical test loan. Quit older builds from tray > Quit; X only hides them. Temporary files do not travel between computers. See docs/CIRCULATION_MIGRATION.md for format and provenance constraints.
+
+Owner is leaving and plans to resume tomorrow. All changes are local; no commit/push performed. Sync source/docs through Git before changing computers. No actual library data belongs in Git.
+
+## Member fine checkpoint
+
+Member fine accounts are implemented. In Members, Fines opens a read-only assessed-fine ledger for active or archived members. It shows all-page totals separated by currency and per-fine settlement history. It shares Circulation's balance calculation; settlement writes remain in Circulation. Fine/member ownership and read permissions are checked in Rust; waiver reasons require circulation-management permission. No migration was needed.
+
+Passed: **119 Rust unit tests, 20 IPC tests, 14 focused frontend tests, production build/typecheck and lint**. Reconciliation includes partial payment, waiver, final settlement, currency separation, pagination, settled/archived history, foreign-member exclusion and denied actions. Owner confirmed the native empty state; no overdue copy is available. Populated-account/history and archived/read-only native acceptance remain open. Standalone Windows build passed. The local test executable is `pusthakam-phase4-member-fines.exe` in the existing verification folder. See PROGRESS.json for the exact local path.
+
+When populated test data becomes available: quit an older tray-enabled test app via its tray menu (X only hides it). Open the refreshed build, go to Members > Fines, inspect an account or empty state, compare an assessed/partially paid fine with Circulation and inspect settlement history. Check archived/read-only access. Walkthrough: docs/MEMBER_FINE_ACCOUNTS.md.
+
+## Earlier work and remaining native checks
+
+- JSON, MARCXML and XLSX catalogue imports are implemented and owner-confirmed in Windows. Koha MARCXML 952 holdings and shared preview/commit are covered by tests.
+- Catalogue/holdings export exists in JSON, CSV, XLSX, MARC and MARCXML. Automated fresh-database supported-field round trips passed. Owner confirmed exports and Windows Save As work. Detailed native per-format save/open/repreview reconciliation remains recorded as open.
+- Calendar holidays/weekly closures are implemented in Library Settings and owner-confirmed. Schema 17 adds closed weekdays. Issue/renewal move to the next open due date; existing loan dates and fine rules stay unchanged.
+- Maximized startup, live member-name dropdowns in both Issue and Reservations, and X-to-system-tray/Open/Quit are built. Eleven focused tests and the standalone member/tray build passed. Native maximize/dropdown/tray/session/Quit acceptance remains open. Restore via the tray to retain the in-memory session. Explicit Quit ends it. Passwords are not saved. Launching a second executable is not a single-instance restore feature.
+- Phase 3 real Koha acceptance requires a representative anonymised export. Catalogue cover/bulk archive/saved search and physical print/scan checks still have recorded native gaps. Read PROGRESS.json rather than assuming all prior implementation is fully verified.
 
 ## Decisions and deferred work
 
-- Normal phase order remains in force. Phase 3 implementation exists, but representative Koha acceptance and some native catalogue/printing checks remain open.
-- LAN browser staff access and anonymous OPAC remain Phase 7b. One designated host holds the database. No application-imposed client count cap.
-- A startup loading screen visible for at least three seconds was requested and explicitly deferred. It is documented in the roadmap and progress notes; do not implement it as part of the current work.
-- New passwords should eventually be at least six characters and contain no spaces. Keep this deferred until aligned across setup, staff screens and backend validation.
+- Continue normal phase order; do not jump ahead to LAN/OPAC.
+- LAN browser staff access and anonymous OPAC remain Phase 7b: one designated host, server-enforced permissions and public-data allowlists, no application-imposed client count cap.
+- The startup loading screen must remain visible for at least three seconds when implemented; the owner explicitly deferred it. Do not implement it as part of unrelated work.
+- New passwords should eventually be at least six characters and contain no spaces; align setup, staff screens and backend validation when that deferred rule is implemented.
 - Write the illustrated user manual after feature completion.
-- No attribution/signatures/watermarks in deliverables. Keep the name Pusthakam.
+- Do not add attribution/signatures/watermarks to deliverables. Keep the product name Pusthakam.
 
-## Completed work in this session
+## Feature documentation
 
-- JSON, MARCXML and XLSX staged catalogue import, including Koha MARCXML holdings; owner Windows confirmations recorded.
-- Catalogue/holdings export in JSON, CSV, XLSX, MARC and MARCXML. Supported-field fresh-database round trips passed. Export limitations are documented; exchange files are not database backups.
-- Windows Save As for catalogue exports, with chosen folder/filename, overwrite confirmation, cancellation, saved-path feedback and atomic file publication. Owner confirmed it works.
-- Library calendar with holiday CRUD, recurring weekly closed days, schema 17, audit transactions and shared issue/renewal next-open-date calculation. Existing loan due dates and fine rules are unchanged. Owner confirmed holidays work.
+- docs/CIRCULATION_MIGRATION.md
 
-Feature docs: `DESKTOP_AND_MEMBER_LOOKUP.md`, `JSON_CATALOGUE_IMPORT.md`, `MARCXML_CATALOGUE_IMPORT.md`, `XLSX_CATALOGUE_IMPORT.md`, `CATALOGUE_EXCHANGE_EXPORT.md`, `LIBRARY_CALENDAR.md` and `LAN_BROWSER_OPAC.md`.
+- docs/MEMBER_FINE_ACCOUNTS.md
+- docs/DESKTOP_AND_MEMBER_LOOKUP.md
+- docs/LIBRARY_CALENDAR.md
+- docs/CATALOGUE_EXCHANGE_EXPORT.md
+- docs/JSON_CATALOGUE_IMPORT.md
+- docs/MARCXML_CATALOGUE_IMPORT.md
+- docs/XLSX_CATALOGUE_IMPORT.md
+- docs/LAN_BROWSER_OPAC.md
+- docs/SUGGESTIONS.md
 
-Read `verificationNeeded` and blockers in PROGRESS.json before granting completion credit. Real anonymised Koha data and physical print/scan checks remain external acceptance requirements.
+Current weighted totals: **51.2% overall, 62.9% implemented, 41.8% verified and 10% release-ready**. Recalculate from PROGRESS.json after any status change; partial work gets no full implementation credit.
 
-Latest checkpoint: owner confirmed the holiday calendar. Current weighted totals are 50.8% overall, 62.1% implemented, 41.8% verified and 10% release-ready. No source/documentation commit or push was performed during this session; sync the current working tree before changing computers.
+Source-sample absence blocks real-source verification only. Generic loan/renewal development is authorized and continues.

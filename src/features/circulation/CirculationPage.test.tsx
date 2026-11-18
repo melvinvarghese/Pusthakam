@@ -13,12 +13,12 @@ afterEach(() => {
   vi.mocked(invoke).mockReset();
 });
 
-function renderCirculation() {
+function renderCirculation(admin = false) {
   vi.stubGlobal("__TAURI_INTERNALS__", {});
   render(
     <QueryClientProvider client={new QueryClient()}>
       <SessionContext.Provider value={{
-        session: { userId: 1, username: "clerk", displayName: "Clerk", role: "circulation", permissions: ["circulation.issue", "members.read"] },
+        session: { userId: 1, username: "clerk", displayName: "Clerk", role: "circulation", permissions: ["circulation.issue", "members.read", ...(admin ? ["admin.settings"] : [])] },
         signOut: async () => {},
       }}>
         <CirculationPage />
@@ -195,4 +195,25 @@ it("selects a reservation member from live name suggestions and uses the chosen 
   await user.type(screen.getByRole("textbox", { name: "Book barcode or accession number" }), "BOOK-004");
   await user.click(screen.getByRole("button", { name: "Place reservation" }));
   expect(invoke).toHaveBeenCalledWith("circulation_place_reservation", { memberNumber: "MEM-004", barcode: "BOOK-004" });
+});
+
+it("opens the admin loan preview and keeps it hidden for circulation staff", async () => {
+  renderCirculation();
+  expect(screen.queryByRole("button", { name: "Preview loan import" })).not.toBeInTheDocument();
+});
+
+it("opens the loan CSV preview for an administrator", async () => {
+  renderCirculation(true);
+  await userEvent.setup().click(screen.getByRole("button", { name: "Preview loan import" }));
+  expect(await screen.findByRole("dialog", { name: "Preview loan import" })).toBeInTheDocument();
+});
+
+it("keeps renewal import hidden for circulation-only staff", () => {
+  renderCirculation();
+  expect(screen.queryByRole("button", { name: "Import renewal history" })).not.toBeInTheDocument();
+});
+it("opens the administrator renewal import", async () => {
+  renderCirculation(true);
+  await userEvent.setup().click(screen.getByRole("button", { name: "Import renewal history" }));
+  expect(await screen.findByRole("dialog", { name: "Import renewal history" })).toBeInTheDocument();
 });

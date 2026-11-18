@@ -6,7 +6,7 @@ _Last updated: 2026-11-18_
 
 For continuation on another computer, read [SESSION_HANDOFF.md](docs/SESSION_HANDOFF.md) and the current task in PROGRESS.json. Uncommitted changes remain local until Git sync.
 
-Pusthakam is **50.8% complete overall**, with 62.1% implemented, 41.8% verified and 10% release-ready. Next product milestone: verify member suggestions and tray behavior in Windows.
+Pusthakam is **51.2% complete overall**, with 62.9% implemented, 41.8% verified and 10% release-ready. Next product milestone: style Choose file as a button, then reservations and financial history (Phase 4).
 
 Run `npm run progress:monitor` from this directory and open <http://127.0.0.1:4317/>. Keep the terminal open while using the dashboard. Run `npm run progress:validate` to check the task data and percentages.
 
@@ -16,7 +16,7 @@ Run `npm run progress:monitor` from this directory and open <http://127.0.0.1:43
 | 1 · Application foundation | 83.3% | 83.3% |
 | 2 · Setup and configuration | 100% | 100% |
 | 3 · Catalogue and accession | 92% | 50% |
-| 4 · Circulation and members | 84.7% | 36.9% |
+| 4 · Circulation and members | 89.1% | 36.9% |
 | 5 · Dashboard, reports and printing | 43.7% | 25% |
 | 6 · Collection operations | 18.1% | 18.1% |
 | 7 · Administration and recovery | 82.1% | 57.1% |
@@ -75,6 +75,7 @@ The owner confirmed issue and return in the native Windows verification library.
 - For loss of the primary recovery code, evaluate a recovery credential scoped to a single library and held by its authorized recovery contact.
 
 - Add a configurable off-device backup destination and restore from a saved file on a fresh installation. Keep the previous copy until the replacement passes integrity checks.
+- Future architectural proposals and workflow suggestions are compiled in [docs/SUGGESTIONS.md](docs/SUGGESTIONS.md).
 
 ## What exists
 - **Inventory:** save a location or shelf check, scan barcodes and review matched, missing and unexpected copies. Send, receive and cancel tracked copy transfers between locations or shelves.
@@ -303,3 +304,63 @@ Standalone member lookup/tray Windows build passed: `C:\Users\Melvin\AppData\Loc
 ## Standing progress and handoff rule
 
 Owner requires **PROGRESS.md and PROGRESS.json**, **docs/SESSION_HANDOFF.md**, and affected feature docs to be updated after every meaningful change, not just at session end or an announced computer switch. Record partial work, decisions, actual verification including failed/incomplete checks, blockers and the exact next step. Check consistency before ending each turn. This is also recorded in AGENTS.md for future work on any computer. Git commit/push/pull is still required to transfer local files. This documentation-only change does not alter implementation credit or the active product milestone.
+
+## Phase 4: member fine accounts
+
+Current MEM-FINES work adds read-only member-scoped assessed fines, payments, waivers, per-currency balances and settlement history. Existing circulation settlement permissions stay in force. Prior native maximize/live lookup/tray checks remain open; startup delay and Phase 7b stay deferred.
+
+Member fine account source checkpoint: added scoped account/history commands with member-read checks, fine/member ownership validation and existing waiver-reason access rules. UI shows assessed, paid, waived and outstanding values per currency across all pages, including settled fines and archived members. Settlement writes stay in Circulation. Reconciliation tests and UI checks are in progress; no completion credit yet.
+
+Member fine reconciliation passed through real IPC: partial payment, waiver and final settlement match the circulation ledger; currency-separated totals span all pages; settled and archived history remains visible; foreign-member fine and denied read/write requests are blocked; viewer waiver reasons are redacted. All 14 focused frontend tests, build/typecheck and lint passed. Full Rust suite is running.
+
+Full member-account regression checks passed: 119 Rust unit tests and 20 IPC tests. Together with 14 focused frontend tests, build/typecheck and lint, MEM-FINES implementation criteria are met; marked implemented. Native account/history/reconciliation checks remain open. Standalone test build is running.
+
+Standalone member fine account Windows build passed: `C:\Users\Melvin\AppData\Local\Temp\pusthakam-native-verification-cea843fbd8cb4e9bbaf6c2274b98c468\pusthakam-phase4-member-fines.exe`. Uses the existing disposable library, maximized window and tray behavior. Quit older tray builds before opening it. Native walkthrough: Members > Fines, compare assessed/paid/waived/outstanding values with Circulation and inspect settlement history, including archived/read-only access. Walkthrough copied beside the executable. Native acceptance remains open. Totals are 51.2% overall, 62.9% implemented, 41.8% verified and 10% release-ready.
+
+## Circulation migration audit
+
+Owner confirmed the member Fines empty state; no overdue copy is currently available. Populated account/history and archived/read-only native checks remain open. IMP-LOANS is now in progress: destination schema audit and import boundaries are documented in docs/CIRCULATION_MIGRATION.md. No importer exists yet and no implementation credit was added. Source mapping requires a representative anonymised export and source version per roadmap. Historical staff provenance, non-loan/multiple charges and title-level reservations need explicit handling before commit code is built. Next: inspect source sample, verify official field mappings and design new provenance migrations.
+
+## Neutral loan-history analysis
+
+Owner has no source export and authorized continuing with neutral formats and synthetic tests. Added a read-only CSV analyzer in services/loan_import.rs; 3 focused Rust tests passed (119 filtered out). Preserves text identifiers, validates dates and references, detects open-loan conflicts, reports bounded problems and writes nothing. No IPC/UI/commit yet; task remains in progress with no implementation credit. Format and limitations are documented in CIRCULATION_MIGRATION.md. Next: permission-checked preview UI, historical provenance and atomic repeat-safe commit, then remaining history types. Real Koha mapping/reconciliation stays pending without blocking generic development.
+
+## Loan import preview screen
+
+Admin-only neutral loan CSV preview is connected through typed IPC and Circulation UI. Read-only snapshot, bounded decoding, counts/problems, retry and stale-result clearing implemented. Confirmed save, provenance schema and other history types remain unimplemented. Three service tests, one real IPC test and eleven frontend tests passed, plus production build/typecheck and lint. Final frontend entry-point tests and typecheck passed. Added an empty CSV template and documented preview-only limitations. No schema change or new native executable; task remains in progress and totals unchanged. Next: provenance, repeat/stale protection and atomic confirmed commit.
+
+Confirmed import implementation in progress: schema 18 provenance, atomic commit, repeat/stale checks and current-policy confirmation added. Initial Rust compile failed on sha2 digest hexadecimal formatting; corrected byte-wise conversion, rerun pending. UI checks running. No completion credit.
+
+## Confirmed loan migration checkpoint
+
+Confirmed neutral open/closed loan import implemented with schema 18 source provenance, atomic writes, repeat/stale/overlap rejection, explicit current-fine-policy consent and member-history source labels. Focused backend checks passed (3 service, 2 IPC); final frontend suite passed 17 tests. Full Rust suite and final production build/lint running; native build next. Remaining history types keep IMP-LOANS in progress. Initial digest-format compilation failure was corrected without weakening tests. Schema 18 adds append-only provenance; no existing migrations were edited. No full task completion credit.
+
+Broad run: 122 unit tests passed; 21/22 IPC passed. New loan-source assertions were accidentally also inserted into the unrelated fine-history test by a text edit. Removed those misplaced additions, preserving original financial assertions and correct loan-provenance coverage. Rerun pending. Final frontend suite passed 17 tests.
+
+## Confirmed loan migration regression results
+
+Confirmed neutral open/closed loan import implemented. Schema 18 preserves source provenance; atomic commit enforces repeat/stale/overlap checks and explicit current-fine-policy consent. Member history displays source labels. Final checks passed: 122 Rust unit, 22 IPC and 17 focused frontend tests, production build/typecheck and lint. Native executable build is finishing; remaining history types keep IMP-LOANS in progress. Both earlier failures are recorded in PROGRESS.json. No tests were weakened. Local test CSV examples do not change library data until explicitly confirmed.
+
+## Windows confirmed-loan import build ready
+
+Native standalone build passed. pusthakam-phase4-loan-import.exe is ready in the existing temporary verification folder with closed-loan and invalid-reference CSV examples. No test data was imported automatically. Owner walkthrough remains open; see handoff and CIRCULATION_MIGRATION.md. Final checks: 122 Rust unit, 22 IPC, 17 frontend tests, build/typecheck/lint and native build passed. IMP-LOANS remains in progress for remaining history types; weighted totals unchanged.
+
+## Owner confirmed closed-loan import
+
+Owner reported the supplied Windows closed-loan preview/confirmation and member-history walkthrough worked. Native acceptance recorded for that path only. Repeat/invalid-file/read-only and open-loan native checks remain open, with automated coverage already recorded. IMP-LOANS stays in progress for remaining history types; next is source-linked renewal history, then reservations and financial records. Totals unchanged.
+
+Renewal-history work in progress: schema 19 provenance, source-linked CSV complete-chain validation, atomic commit and admin UI added. Final due dates/stock remain unchanged; imported events count toward future renewal limits. Tests pending; no full-task credit. Next: focused IPC/UI validation, broader checks and native build.
+
+Renewal import focused checks passed: 1 comprehensive IPC test and all 22 focused frontend tests. Full Rust regression, build/typecheck/lint and native build pending. Schema 19 and source-linked complete chains implemented; member history displays counts. Current due dates/stock/fines remain unchanged.
+
+## Renewal-history migration regression checkpoint
+
+Renewal-history CSV preview/atomic commit implemented with schema 19 append-only source provenance, complete-chain and stale/repeat checks, admin-only UI and member renewal counts. All 122 Rust unit, 23 IPC and 22 frontend tests, production build/typecheck and lint passed. Native build running; reservation/financial migration remains pending. No existing migration was changed. IMP-LOANS remains in progress because reservation/financial history and native/real-source checks are outstanding; weighted totals unchanged.
+
+## Windows renewal-history build ready
+
+Renewal-history import ready in pusthakam-phase4-renewal-import.exe (schema 19). All 122 Rust unit, 23 IPC and 22 focused frontend tests, production build/typecheck/lint and native build passed. renewal-import-test.csv and RENEWAL_IMPORT_TEST.txt are beside it, linked to the previously imported historical test loan. Native acceptance pending; reservations/financial migration remain. The test CSV is synthetic, uses the previously imported test loan and does not require an overdue copy or Koha export. Source provenance and event counts are preserved; no changes were made to the test database by preparation. Current task remains in progress; totals unchanged. Next: native acceptance, then reservation and financial migration.
+
+## End-of-session checkpoint: owner confirmed renewals
+
+Owner confirmed Windows renewal import/history works. The Choose file control currently looks like random text: make it visibly a button as the FIRST next step, preferably through shared file-input styling, with clear focus/disabled/light/dark states. This is queued only; no styling change made tonight. Then continue Phase 4 reservation and financial migration. Repeat-file and other recorded native checks remain open. Automated baseline: 122 Rust unit, 23 IPC and 22 focused frontend tests, production build/typecheck/lint and native build passed. Owner is leaving and will resume tomorrow. PROGRESS.json, handoff and feature docs updated; source/docs remain local and require Git commit/push/pull to travel to another computer. Totals unchanged.

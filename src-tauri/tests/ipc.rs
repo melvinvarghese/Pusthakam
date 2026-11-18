@@ -76,6 +76,27 @@ fn setup_body() -> Value {
 }
 
 #[test]
+fn loan_import_preview_is_admin_only_and_read_only() {
+    use base64::{engine::general_purpose::STANDARD, Engine};
+    let h = Harness::new();
+    let data = STANDARD.encode("source_id,member_number,barcode,issued_at,due_on,returned_at,source_staff\na,missing,0002,2026-11-01T10:00:00Z,2026-11-30,,Historical staff\n");
+    h.ok("complete_setup", setup_body());
+    let p = h.ok("circulation_preview_import", json!({"dataBase64":data}));
+    assert_eq!(p["total"],1);
+    assert_eq!(p["invalid"],1);
+    assert_eq!(h.code("circulation_preview_import",json!({"dataBase64":"!"})),"VALIDATION");
+    {
+        let state=h.webview.state::<AppState>();
+        let conn=state.conn().unwrap();
+        assert_eq!(conn.query_row("SELECT count(*) FROM loans",[],|r|r.get::<_,i64>(0)).unwrap(),0);
+        auth::create_user(&conn,"migrationviewer","Viewer","viewer passphrase","viewer").unwrap();
+    }
+    h.ok("logout",json!({}));
+    h.ok("login",json!({"username":"migrationviewer","password":"viewer passphrase"}));
+    assert_eq!(h.code("circulation_preview_import",json!({"dataBase64":data})),"PERMISSION_DENIED");
+}
+
+#[test]
 fn member_directory_paginates_and_uses_the_selected_category_expiry() {
     let h = Harness::new();
     h.ok("complete_setup", setup_body());
@@ -1333,4 +1354,210 @@ fn library_calendar_configures_closures_and_rechecks_issue_and_renewal_dates() {
     assert_eq!(h.code("config_save_closed_weekdays",json!({"days":[]})),"PERMISSION_DENIED");
     assert_eq!(h.code("config_save_holiday",json!({"input":{"id":null,"date":"2027-01-01","name":"Denied"}})),"PERMISSION_DENIED");
     assert_eq!(h.code("config_remove_holiday",json!({"id":holiday})),"PERMISSION_DENIED");
+}
+
+#[test]
+fn member_fine_accounts_reconcile_payments_waivers_currencies_and_read_permissions() {
+    let h=Harness::new();
+    assert_eq!(h.code("members_fine_account",json!({"memberId":1,"page":1})),"AUTH_FAILED");
+    assert_eq!(h.code("members_fine_history",json!({"memberId":1,"fineId":1,"page":1})),"AUTH_FAILED");
+    h.ok("complete_setup",setup_body());
+    let cfg=h.ok("config_overview",json!({}));
+    let member=h.ok("members_save",json!({"input":{"name":"Account reader","memberNumber":"FINE-A","categoryId":cfg["memberCategories"][0]["id"]}}));
+    let other=h.ok("members_save",json!({"input":{"name":"Other reader","memberNumber":"FINE-B","categoryId":cfg["memberCategories"][0]["id"]}}));
+    assert_eq!(h.ok("members_fine_account",json!({"memberId":other,"page":1}))["total"],0);
+    let record=h.ok("catalogue_save_record",json!({"input":{"title":"Fine account test","contributors":[],"subjects":[]}}));
+    let copies=h.ok("catalogue_add_copies",json!({"recordId":record,"input":{"count":1,"itemCategoryId":cfg["itemCategories"][0]["id"],"acquisitionSource":"purchase"}}));
+    let first_fine: i64 = {
+        let state=h.webview.state::<AppState>(); let conn=state.db.lock().unwrap();
+        let staff:i64=conn.query_row("SELECT id FROM staff_users WHERE username='admin'",[],|r|r.get(0)).unwrap();
+        let mut first=0;
+        for i in 0..27 {
+            let mid=if i==26 {other.as_i64().unwrap()} else {member.as_i64().unwrap()};
+            conn.execute("INSERT INTO loans (item_id,member_id,item_category_id,issued_by,due_on,returned_at,returned_by) VALUES (?1,?2,?3,?4,'2026-01-01','2026-01-03T00:00:00Z',?4)",rusqlite::params![copies[0]["id"].as_i64().unwrap(),mid,cfg["itemCategories"][0]["id"].as_i64().unwrap(),staff]).unwrap();
+            let loan=conn.last_insert_rowid();
+            conn.execute("INSERT INTO fines (loan_id,amount_minor,currency) VALUES (?1,?2,?3)",rusqlite::params![loan,if i==25 {500} else if i==26 {900} else {100},if i==25 {"USD"} else {"INR"}]).unwrap();
+            if i==0 {first=conn.last_insert_rowid();}
+        }
+        first
+    };
+    let request=json!({"memberId":member,"page":1});
+    let initial=h.ok("members_fine_account",request.clone());
+    assert_eq!(initial["total"],26); assert_eq!(initial["rows"].as_array().unwrap().len(),25);
+    assert_eq!(initial["balances"],json!([
+        {"currency":"INR","assessedMinor":2500,"paidMinor":0,"waivedMinor":0,"outstandingMinor":2500},
+        {"currency":"USD","assessedMinor":500,"paidMinor":0,"waivedMinor":0,"outstandingMinor":500}]));
+    h.ok("circulation_settle_fine",json!({"fineId":first_fine,"amountMinor":40,"expectedBalance":100,"entry":{"kind":"payment","method":"cash"}}));
+    assert_eq!(h.ok("members_fine_account",request.clone())["balances"][0]["outstandingMinor"],2460);
+    h.ok("circulation_settle_fine",json!({"fineId":first_fine,"amountMinor":10,"expectedBalance":60,"entry":{"kind":"waiver","reason":"Approved adjustment"}}));
+    let partial=h.ok("members_fine_account",json!({"memberId":member,"page":2}));
+    assert_eq!(partial["rows"][0]["outstandingMinor"],50); assert_eq!(partial["balances"][0]["paidMinor"],40);
+    assert_eq!(partial["balances"][0]["waivedMinor"],10); assert_eq!(partial["balances"][0]["outstandingMinor"],2450);
+    let ledger=h.ok("circulation_list_fines",json!({"page":2,"includeSettled":true}));
+    let matched=ledger["rows"].as_array().unwrap().iter().find(|f| f["id"]==first_fine).unwrap();
+    assert_eq!(matched["outstandingMinor"],partial["rows"][0]["outstandingMinor"]);
+    let history=h.ok("members_fine_history",json!({"memberId":member,"fineId":first_fine,"page":1}));
+    assert_eq!(history["total"],2);
+ assert_eq!(history["rows"][0]["reason"],"Approved adjustment");
+    assert_eq!(h.code("members_fine_history",json!({"memberId":other,"fineId":first_fine,"page":1})),"NOT_FOUND");
+    assert_eq!(h.code("members_fine_account",json!({"memberId":999999,"page":1})),"NOT_FOUND");
+    h.ok("circulation_settle_fine",json!({"fineId":first_fine,"amountMinor":50,"expectedBalance":50,"entry":{"kind":"payment","method":"card"}}));
+    let settled=h.ok("members_fine_account",json!({"memberId":member,"page":999}));
+    assert_eq!(settled["page"],2); assert_eq!(settled["rows"][0]["outstandingMinor"],0);
+    assert_eq!(settled["balances"][0]["paidMinor"],90); assert_eq!(settled["balances"][0]["outstandingMinor"],2400);
+    h.ok("members_archive",json!({"id":member,"archived":true}));
+    assert_eq!(h.ok("members_fine_account",request.clone())["total"],26);
+    {
+        let state=h.webview.state::<AppState>(); let conn=state.db.lock().unwrap();
+        auth::create_user(&conn,"fineviewer","Viewer","viewer passphrase","viewer").unwrap();
+    }
+    h.ok("logout",json!({}));h.ok("login",json!({"username":"fineviewer","password":"viewer passphrase"}));
+    assert_eq!(h.ok("members_fine_account",request.clone())["total"],26);
+    let redacted=h.ok("members_fine_history",json!({"memberId":member,"fineId":first_fine,"page":1}));
+    assert!(redacted["rows"].as_array().unwrap().iter().filter(|r|r["kind"]=="waiver").all(|r|r["reason"].is_null()));
+    assert_eq!(h.code("circulation_settle_fine",json!({"fineId":first_fine,"amountMinor":1,"expectedBalance":0,"entry":{"kind":"payment","method":"cash"}})),"PERMISSION_DENIED");
+    {
+        let state=h.webview.state::<AppState>(); let conn=state.db.lock().unwrap();
+        conn.execute("DELETE FROM role_permissions WHERE role_id=(SELECT id FROM roles WHERE code='viewer') AND permission_id=(SELECT id FROM permissions WHERE code='members.read')",[]).unwrap();
+    }
+    assert_eq!(h.code("members_fine_account",request),"PERMISSION_DENIED");
+    assert_eq!(h.code("members_fine_history",json!({"memberId":member,"fineId":first_fine,"page":1})),"PERMISSION_DENIED");
+}
+
+#[test]
+fn loan_import_commit_preserves_history_and_rolls_back_conflicts() {
+    use base64::{engine::general_purpose::STANDARD, Engine};
+    let h=Harness::new();
+    h.ok("complete_setup",setup_body());
+    let cfg=h.ok("config_overview",json!({}));
+    let policy=&cfg["policies"][0];
+    let member=h.ok("members_save",json!({"input":{"name":"Migration reader","memberNumber":"0001","categoryId":policy["memberCategoryId"]}}));
+    let record=h.ok("catalogue_save_record",json!({"input":{"title":"Migration fixture","contributors":[],"subjects":[]}}));
+    let copies=h.ok("catalogue_add_copies",json!({"recordId":record,"input":{"count":1,"itemCategoryId":policy["itemCategoryId"],"acquisitionSource":"purchase"}}));
+    let barcode=copies[0]["barcode"].as_str().unwrap();
+    let file=|rows:String| STANDARD.encode(format!("source_id,member_number,barcode,issued_at,due_on,returned_at,source_staff\n{rows}"));
+    let request=|data:&str, fp:&Value, terms:bool|json!({"dataBase64":data,"sourceSystem":"Old library","expectedFingerprint":fp,"useCurrentTerms":terms});
+    let data=file(format!("old,0001,{barcode},2020-01-01T10:00:00Z,2020-01-20,2020-01-10T11:00:00Z,Former librarian\nactive,0001,{barcode},2026-11-01T10:00:00Z,2026-11-30,,Former librarian\n"));
+    let p=h.ok("circulation_preview_import",json!({"dataBase64":data}));
+    assert_eq!(h.code("circulation_commit_import",request(&data,&p["fingerprint"],false)),"VALIDATION");
+    // Policy edits invalidate the review, even when row counts stay unchanged.
+    {
+        let state=h.webview.state::<AppState>();let conn=state.conn().unwrap();
+        conn.execute("UPDATE circulation_policies SET fine_per_day_minor=fine_per_day_minor+1",[]).unwrap();
+    }
+    assert_eq!(h.code("circulation_commit_import",request(&data,&p["fingerprint"],true)),"VALIDATION");
+    let p=h.ok("circulation_preview_import",json!({"dataBase64":data}));
+    // Fail the audit after loan, provenance, terms and stock writes; all must roll back.
+    {
+        let state=h.webview.state::<AppState>();let conn=state.conn().unwrap();
+        conn.execute_batch("CREATE TRIGGER fail_import_audit BEFORE INSERT ON audit_events WHEN NEW.action='circulation.import' BEGIN SELECT RAISE(ABORT,'test failure'); END;").unwrap();
+    }
+    assert!(h.call("circulation_commit_import",request(&data,&p["fingerprint"],true)).is_err());
+    {
+        let state=h.webview.state::<AppState>();let conn=state.conn().unwrap();
+        for table in ["loans","loan_import_batches","loan_import_sources","loan_fine_terms"] {
+            assert_eq!(conn.query_row(&format!("SELECT count(*) FROM {table}"),[],|r|r.get::<_,i64>(0)).unwrap(),0);
+        }
+        assert_eq!(conn.query_row("SELECT status FROM physical_items",[],|r|r.get::<_,String>(0)).unwrap(),"available");
+        conn.execute_batch("DROP TRIGGER fail_import_audit").unwrap();
+    }
+    assert_eq!(h.ok("circulation_commit_import",request(&data,&p["fingerprint"],true)),2);
+    let history=h.ok("members_list_loans",json!({"memberId":member,"page":1}));
+    assert_eq!(history["total"],2);
+    assert_eq!(history["rows"][0]["importSource"],"Old library");
+    assert_eq!(history["rows"][0]["sourceStaff"],"Former librarian");
+    {
+        let state=h.webview.state::<AppState>();let conn=state.conn().unwrap();
+        let saved:(String,String,String)=conn.query_row("SELECT l.issued_at,l.returned_at,s.source_staff FROM loans l JOIN loan_import_sources s ON s.loan_id=l.id WHERE s.source_id='old'",[],|r|Ok((r.get(0)?,r.get(1)?,r.get(2)?))).unwrap();
+        assert_eq!(saved,("2020-01-01T10:00:00Z".into(),"2020-01-10T11:00:00Z".into(),"Former librarian".into()));
+        assert_eq!(conn.query_row("SELECT status FROM physical_items",[],|r|r.get::<_,String>(0)).unwrap(),"on_loan");
+        assert_eq!(conn.query_row("SELECT count(*) FROM fines",[],|r|r.get::<_,i64>(0)).unwrap(),0);
+        assert_eq!(conn.query_row("SELECT count(*) FROM loan_fine_terms",[],|r|r.get::<_,i64>(0)).unwrap(),1);
+        assert!(conn.execute("DELETE FROM loan_import_sources",[]).is_err());
+    }
+    assert_eq!(h.code("circulation_commit_import",request(&data,&p["fingerprint"],true)),"VALIDATION");
+    // A new file with an existing source ID also fails without retaining its batch.
+    let repeat=file(format!("old,0001,{barcode},2019-01-01T10:00:00Z,2019-01-20,2019-01-10T11:00:00Z,Former librarian\n"));
+    let p=h.ok("circulation_preview_import",json!({"dataBase64":repeat}));
+    assert_eq!(h.code("circulation_commit_import",request(&repeat,&p["fingerprint"],false)),"VALIDATION");
+    // Overlapping closed history must fail, even with a fresh source ID.
+    let overlap=file(format!("overlap,0001,{barcode},2020-01-02T10:00:00Z,2020-01-20,2020-01-03T11:00:00Z,Former librarian\n"));
+    let p=h.ok("circulation_preview_import",json!({"dataBase64":overlap}));
+    assert_eq!(h.code("circulation_commit_import",request(&overlap,&p["fingerprint"],false)),"VALIDATION");
+    {
+        let state=h.webview.state::<AppState>();let conn=state.conn().unwrap();
+        assert_eq!(conn.query_row("SELECT count(*) FROM loan_import_batches",[],|r|r.get::<_,i64>(0)).unwrap(),1);
+        auth::create_user(&conn,"loanviewer","Viewer","viewer passphrase","viewer").unwrap();
+    }
+    h.ok("login",json!({"username":"loanviewer","password":"viewer passphrase"}));
+    assert_eq!(h.code("circulation_commit_import",request(&overlap,&p["fingerprint"],true)),"PERMISSION_DENIED");
+}
+
+#[test]
+fn renewal_import_validates_chains_preserves_events_and_rolls_back() {
+    use base64::{engine::general_purpose::STANDARD, Engine};
+    let h=Harness::new();h.ok("complete_setup",setup_body());
+    let cfg=h.ok("config_overview",json!({}));let policy=&cfg["policies"][0];
+    let member=h.ok("members_save",json!({"input":{"name":"Renewal migration reader","memberNumber":"0001","categoryId":policy["memberCategoryId"]}}));
+    let record=h.ok("catalogue_save_record",json!({"input":{"title":"Renewal migration fixture","contributors":[],"subjects":[]}}));
+    let copies=h.ok("catalogue_add_copies",json!({"recordId":record,"input":{"count":1,"itemCategoryId":policy["itemCategoryId"],"acquisitionSource":"purchase"}}));
+    let barcode=copies[0]["barcode"].as_str().unwrap();
+    let loans=STANDARD.encode(format!("source_id,member_number,barcode,issued_at,due_on,returned_at,source_staff\nloan-001,0001,{barcode},2020-01-01T10:00:00Z,2020-01-20,2020-01-25T11:00:00Z,Original staff\n"));
+    let p=h.ok("circulation_preview_import",json!({"dataBase64":loans}));
+    h.ok("circulation_commit_import",json!({"dataBase64":loans,"sourceSystem":"Legacy","expectedFingerprint":p["fingerprint"],"useCurrentTerms":false}));
+    let csv=|rows:&str|STANDARD.encode(format!("source_id,loan_source_id,renewed_at,previous_due_on,due_on,source_staff\n{rows}"));
+    let data=csv("r2,loan-001,2020-01-12T10:00:00Z,2020-01-15,2020-01-20,Old staff B\nr1,loan-001,2020-01-05T10:00:00Z,2020-01-10,2020-01-15,Old staff A\n");
+    let preview=|data:&str,source:&str|json!({"dataBase64":data,"sourceSystem":source});
+    let commit=|data:&str,p:&Value,source:&str|json!({"dataBase64":data,"sourceSystem":source,"expectedFingerprint":p["fingerprint"]});
+    for invalid in [
+        "bad,missing,2020-01-05T10:00:00Z,2020-01-10,2020-01-20,Staff\n",
+        "bad,loan-001,2019-01-05T10:00:00Z,2020-01-10,2020-01-20,Staff\n",
+        "bad,loan-001,2020-02-05T10:00:00Z,2020-01-10,2020-01-20,Staff\n",
+        "bad,loan-001,2020-01-05T10:00:00Z,2020-01-10,2020-01-15,Staff\n",
+        "a,loan-001,2020-01-05T10:00:00Z,2020-01-10,2020-01-15,Staff\nb,loan-001,2020-01-12T10:00:00Z,2020-01-16,2020-01-20,Staff\n",
+        "a,loan-001,2020-01-05T10:00:00Z,2020-01-10,2020-01-15,Staff\nb,loan-001,2020-01-05T10:00:00Z,2020-01-15,2020-01-20,Staff\n",
+        "a,loan-001,2020-01-05T10:00:00Z,2020-01-10,2020-01-15,Staff\na,loan-001,2020-01-12T10:00:00Z,2020-01-15,2020-01-20,Staff\n"
+    ] {
+        let bad=csv(invalid);let p=h.ok("circulation_preview_renewal_import",preview(&bad,"Legacy"));
+        assert!(p["invalid"].as_u64().unwrap()>0);
+        assert_eq!(h.code("circulation_commit_renewal_import",commit(&bad,&p,"Legacy")),"VALIDATION");
+    }
+    assert_eq!(h.code("circulation_preview_renewal_import",preview("!","Legacy")),"VALIDATION");
+    let wrong=h.ok("circulation_preview_renewal_import",preview(&data,"Other source"));assert_eq!(wrong["invalid"],2);
+    let p=h.ok("circulation_preview_renewal_import",preview(&data,"Legacy"));
+    assert_eq!(p["invalid"],0);assert_eq!(p["total"],2);assert_eq!(p["loans"],1);
+    assert_eq!(h.code("circulation_commit_renewal_import",commit(&data,&p,"Other source")),"VALIDATION");
+    {
+        let state=h.webview.state::<AppState>();let conn=state.conn().unwrap();
+        conn.execute_batch("CREATE TRIGGER fail_renewal_import_audit BEFORE INSERT ON audit_events WHEN NEW.action='circulation.import_renewals' BEGIN SELECT RAISE(ABORT,'test failure'); END;").unwrap();
+    }
+    assert!(h.call("circulation_commit_renewal_import",commit(&data,&p,"Legacy")).is_err());
+    {
+        let state=h.webview.state::<AppState>();let conn=state.conn().unwrap();
+        for table in ["loan_renewals","renewal_import_batches","renewal_import_sources"] {assert_eq!(conn.query_row(&format!("SELECT count(*) FROM {table}"),[],|r|r.get::<_,i64>(0)).unwrap(),0);}
+        conn.execute_batch("DROP TRIGGER fail_renewal_import_audit").unwrap();
+        conn.execute("UPDATE loans SET due_on='2020-01-21'",[]).unwrap();
+    }
+    assert_eq!(h.code("circulation_commit_renewal_import",commit(&data,&p,"Legacy")),"VALIDATION");
+    {
+        let state=h.webview.state::<AppState>();let conn=state.conn().unwrap();conn.execute("UPDATE loans SET due_on='2020-01-20'",[]).unwrap();
+    }
+    let p=h.ok("circulation_preview_renewal_import",preview(&data,"Legacy"));
+    assert_eq!(h.ok("circulation_commit_renewal_import",commit(&data,&p,"Legacy")),2);
+    let history=h.ok("members_list_loans",json!({"memberId":member,"page":1}));assert_eq!(history["rows"][0]["renewalCount"],2);assert_eq!(history["rows"][0]["dueOn"],"2020-01-20");
+    {
+        let state=h.webview.state::<AppState>();let conn=state.conn().unwrap();
+        let events=conn.prepare("SELECT n.renewed_at,n.previous_due_on,n.due_on,s.source_staff FROM loan_renewals n JOIN renewal_import_sources s ON s.renewal_id=n.id ORDER BY n.id").unwrap().query_map([],|r|Ok((r.get::<_,String>(0)?,r.get::<_,String>(1)?,r.get::<_,String>(2)?,r.get::<_,String>(3)?))).unwrap().collect::<Result<Vec<_>,_>>().unwrap();
+        assert_eq!(events[0],("2020-01-05T10:00:00Z".into(),"2020-01-10".into(),"2020-01-15".into(),"Old staff A".into()));
+        assert_eq!(events[1].3,"Old staff B");
+        assert_eq!(conn.query_row("SELECT status FROM physical_items",[],|r|r.get::<_,String>(0)).unwrap(),"available");
+        assert_eq!(conn.query_row("SELECT count(*) FROM fines",[],|r|r.get::<_,i64>(0)).unwrap(),0);
+        assert!(conn.execute("DELETE FROM renewal_import_sources",[]).is_err());
+        auth::create_user(&conn,"renewalviewer","Viewer","viewer passphrase","viewer").unwrap();
+    }
+    let repeat=h.ok("circulation_preview_renewal_import",preview(&data,"Legacy"));assert!(repeat["invalid"].as_u64().unwrap()>0);
+    assert_eq!(h.code("circulation_commit_renewal_import",commit(&data,&repeat,"Legacy")),"VALIDATION");
+    h.ok("login",json!({"username":"renewalviewer","password":"viewer passphrase"}));
+    assert_eq!(h.code("circulation_preview_renewal_import",preview(&data,"Legacy")),"PERMISSION_DENIED");
+    assert_eq!(h.code("circulation_commit_renewal_import",commit(&data,&p,"Legacy")),"PERMISSION_DENIED");
 }

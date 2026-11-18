@@ -23,7 +23,7 @@ it("opens loan history for an archived member with read-only access", async () =
     }] })
     .mockResolvedValueOnce({ ...page, total: 1, rows: [{
       id: 9, title: "Balyakalasakhi", barcode: "LIB-00101", issuedOn: "2026-10-10",
-      dueOn: "2026-10-20", returnedOn: "2026-10-22", overdue: false,
+      dueOn: "2026-10-20", returnedOn: "2026-10-22", overdue: false, importSource: "Old library", sourceStaff: "Former librarian", renewalCount: 2,
     }] });
 
   render(
@@ -44,6 +44,8 @@ it("opens loan history for an archived member with read-only access", async () =
   const dialog = within(screen.getByRole("dialog", { name: "Loans for Asha Nair" }));
   expect(await dialog.findByText("Balyakalasakhi")).toBeInTheDocument();
   expect(dialog.getByText("Returned 2026-10-22")).toBeInTheDocument();
+  expect(dialog.getByText("Imported from Old library. Source staff label: Former librarian.")).toBeInTheDocument();
+  expect(dialog.getByText("Renewals: 2")).toBeInTheDocument();
   expect(invoke).toHaveBeenLastCalledWith("members_list_loans", { memberId: 4, page: 1 });
 });
 
@@ -122,4 +124,19 @@ it("requires category mapping before committing a Koha patron CSV", async () => 
   expect(invoke).toHaveBeenCalledWith("members_import_koha", {
     dataBase64: btoa(csv), mappings: { STU: 3 }, expectedReady: 1,
   });
+});
+
+it("opens an archived member fine account using member-read permission", async () => {
+  vi.stubGlobal("__TAURI_INTERNALS__", {});
+  vi.mocked(invoke).mockImplementation(async (command) => {
+    if (command === "members_fine_account") return { rows: [], balances: [], page: 1, pageSize: 25, total: 0 };
+    return { rows: [{ id: 4, name: "Asha Nair", memberNumber: "MEM-101", categoryName: "Student", expiresOn: "2026-01-01" }], total: 1, page: 1, pageSize: 25 };
+  });
+  render(<QueryClientProvider client={new QueryClient()}><SessionContext.Provider value={{ session: { userId: 1, username: "viewer", displayName: "Viewer", role: "viewer", permissions: ["members.read"] }, signOut: async () => {} }}><MembersPage /></SessionContext.Provider></QueryClientProvider>);
+  const user=userEvent.setup();
+  await user.selectOptions(screen.getByRole("combobox", {name:"Status"}),"archived");
+  await user.click(await screen.findByRole("button", {name:"Fines for Asha Nair (MEM-101)"}));
+  await screen.findByText("This member has no assessed fines.");
+  expect(invoke).toHaveBeenCalledWith("members_fine_account",{memberId:4,page:1});
+  expect(screen.queryByRole("button",{name:"Register member"})).not.toBeInTheDocument();
 });

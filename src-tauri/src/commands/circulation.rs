@@ -6,6 +6,30 @@ use crate::state::AppState;
 use tauri::State;
 
 #[tauri::command]
+pub fn circulation_preview_renewal_import(state: State<'_, AppState>, data_base64: String, source_system: String) -> AppResult<crate::services::renewal_import::Preview> {
+    state.require("admin.settings")?;
+    state.with_conn(|conn| crate::services::renewal_import::preview(conn, &data_base64, &source_system))
+}
+
+#[tauri::command]
+pub fn circulation_commit_renewal_import(state: State<'_, AppState>, data_base64: String, source_system: String, expected_fingerprint: String) -> AppResult<usize> {
+    let actor=state.require("admin.settings")?;
+    crate::services::renewal_import::commit(&mut *state.conn()?, &actor, &data_base64, &source_system, &expected_fingerprint)
+}
+
+#[tauri::command]
+pub fn circulation_preview_import(state: State<'_, AppState>, data_base64: String) -> AppResult<crate::services::loan_import::Preview> {
+    state.require("admin.settings")?;
+    state.with_conn(|conn| crate::services::loan_import::preview_base64(conn, &data_base64))
+}
+
+#[tauri::command]
+pub fn circulation_commit_import(state: State<'_, AppState>, data_base64: String, source_system: String, expected_fingerprint: String, use_current_terms: bool) -> AppResult<usize> {
+    let actor = state.require("admin.settings")?;
+    crate::services::loan_import::commit(&mut *state.conn()?, &actor, &data_base64, &source_system, &expected_fingerprint, use_current_terms)
+}
+
+#[tauri::command]
 pub fn circulation_list_overdue(state: State<'_, AppState>, page: i64) -> AppResult<OverduePage> {
     state.require("circulation.issue")?;
     state.with_conn(|conn| circulation::list_overdue(conn, page))

@@ -370,6 +370,9 @@ export interface MemberPage {
 }
 
 export interface MemberLoan {
+  renewalCount?: number;
+  importSource?: string | null;
+  sourceStaff?: string | null;
   id: number;
   title: string;
   barcode: string;
@@ -614,3 +617,25 @@ export interface CatalogueExportFile {
 
 export interface Holiday { id: number; date: string; name: string }
 export interface LibraryCalendar { closedWeekdays: number[]; holidays: Holiday[] }
+
+export interface MemberFineAccount {
+  rows: (Fine & { barcode: string; assessedAt: string })[];
+  balances: { currency: string; assessedMinor: number; paidMinor: number; waivedMinor: number; outstandingMinor: number }[];
+  page: number; pageSize: number; total: number;
+}
+export interface LoanImportPreview {
+  fingerprint: string;
+  total: number;
+  open: number;
+  closed: number;
+  invalid: number;
+  problems: string[];
+}
+
+export interface RenewalImportPreview {
+  total: number;
+  loans: number;
+  invalid: number;
+  problems: string[];
+  fingerprint: string;
+}
