@@ -37,3 +37,7 @@
 - Barcodes are drawn by the JsBarcode library (Code 128, bundled locally) instead of hand-written Rust, because it is widely tested; the data (barcode text) is still owned by the backend.
 - The brief prohibits online dependencies; the Online Tools menu is an explicit, owner-approved optional exception (D-020), links only.
 None so far.
+
+## LAN browser and OPAC extension, 2026-11-18
+
+Owner requested phone/computer browser access for staff and anonymous OPAC for people on the same reachable local network. Extend Phase 7b: one host database, browser staff sessions with server permissions, separate read-only public catalogue contract, locally served assets, host enable controls and certificate trust guidance. Desktop Tauri invoke and single in-memory session are not a browser API. No cloud dependency or public-internet hosting implied. Implementation remains not started.

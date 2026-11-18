@@ -39,6 +39,10 @@ Each requirement is tracked in `PROGRESS.md`.
 ## UX principles
 Search-first; keyboard-friendly (Ctrl/Cmd+K palette, scanner-ready fields); dense but calm layouts; honest empty/loading/error states; destructive actions confirmed; no decorative motion. Palette: deep charcoal, warm ivory, muted sand, sage green, soft grey.
 
+## LAN browser extension (owner request 2026-11-18)
+
+REQ-NET includes staff browser access from same-network phones, tablets and computers while the designated host PC runs Pusthakam. REQ-OPAC adds anonymous public catalogue search, public book details and availability on the same reachable LAN. Staff functions require server-validated staff sessions and permissions. OPAC exposes no member, borrower, internal-note, financial or administrative data and no write actions. See DEVELOPMENT_ROADMAP Phase 7b and LAN_BROWSER_OPAC.md. Browser access is planned; native mobile apps remain out of scope.
+
 ## Out of scope for v1
 Cloud sync, online ISBN/metadata lookup, multi-site libraries, custom cryptography, mobile apps.
 
