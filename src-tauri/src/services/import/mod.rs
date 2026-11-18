@@ -4,6 +4,7 @@
 
 pub mod csv_import;
 pub mod marc;
+pub mod json_import;
 
 use crate::domain::{accession, isbn};
 use crate::error::{AppError, AppResult};
@@ -15,8 +16,8 @@ use std::collections::{HashMap, HashSet};
 
 pub const MAX_FILE_BYTES: usize = 100 * 1024 * 1024;
 
-#[derive(Debug, Clone, Default, Serialize)]
-#[serde(rename_all = "camelCase")]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase", default)]
 pub struct ImportCopy {
     pub barcode: Option<String>,
     pub accession: Option<String>,
@@ -35,8 +36,8 @@ pub struct ImportCopy {
     pub skip_reason: Option<String>,
 }
 
-#[derive(Debug, Clone, Default, Serialize)]
-#[serde(rename_all = "camelCase")]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase", default)]
 pub struct ImportRecord {
     /// Position in the source (record number for MARC, line number for CSV).
     pub row: usize,
@@ -263,7 +264,11 @@ pub fn prepare(conn: &Connection, req: &PreviewRequest) -> AppResult<(Pending, P
             let fields = csv_import::FIELDS.iter().map(|(k, _)| (*k).to_string()).collect::<Vec<_>>();
             (r.records, r.errors, Some(r.headers), Some(r.mapping), Some(fields))
         }
-        _ => return Err(AppError::Validation("Unsupported file type. Use a MARC (.mrc) or CSV file.".into())),
+        "json" => {
+            let records = json_import::parse(&bytes)?;
+            (records, Vec::new(), None, None, None)
+        }
+        _ => return Err(AppError::Validation("Unsupported file type. Use a MARC (.mrc), CSV or JSON file.".into())),
     };
     if records.is_empty() && parse_errors.is_empty() {
         return Err(AppError::Validation("No records were found in this file.".into()));
