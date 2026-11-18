@@ -91,6 +91,7 @@ function SettlementDialog({ fine, kind, onClose, onSaved }: Selection & {
     onSuccess: onSaved,
     onError: (error) => {
       if (toApiError(error).code === "CONFLICT") void client.invalidateQueries({ queryKey: ["circulation", "fines"] });
+      void client.invalidateQueries({ queryKey: ["member-fines"] });
     },
   });
 
@@ -201,6 +202,7 @@ export default function Fines() {
         setMessage(selection.kind === "payment" ? "Payment recorded." : "Waiver recorded.");
         setSelection(null);
         void client.invalidateQueries({ queryKey: ["circulation", "fines"] });
+        void client.invalidateQueries({ queryKey: ["member-fines"] });
       }} />}
       {history && <FineHistory fine={history} onClose={() => setHistory(null)} />}
     </>

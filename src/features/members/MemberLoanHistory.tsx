@@ -44,6 +44,8 @@ export function MemberLoanHistory({ member, onClose }: { member: Member; onClose
                     <td className="px-2 py-2">
                       <div>{loan.title}</div>
                       <div className="font-mono text-xs text-muted">{loan.barcode}</div>
+                      {loan.importSource && <div className="text-xs text-muted">Imported from {loan.importSource}. Source staff label: {loan.sourceStaff}.</div>}
+                      {Boolean(loan.renewalCount) && <div className="text-xs text-muted">Renewals: {loan.renewalCount}</div>}
                     </td>
                     <td className="whitespace-nowrap px-2 py-2">{loan.issuedOn}</td>
                     <td className="whitespace-nowrap px-2 py-2">{loan.dueOn}</td>

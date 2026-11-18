@@ -2,6 +2,7 @@
 
 ## [Unreleased]
 ### Added
+- Read-only member fine accounts with currency-separated balances, assessed fine history and permission-scoped payment/waiver history for active and archived members.
 - Live member-name suggestions in Circulation and Reservations, maximized startup, and close-to-tray with explicit Open/Quit actions.
 - Library calendar settings for audited holiday dates and recurring closed weekdays, shared by issue and renewal due-date calculation.
 - Windows Save As destination selection for catalogue exports, with cancellation, overwrite confirmation and saved-path feedback.
@@ -21,3 +22,15 @@
 - Replaced the original ivory/sage Inter UI (rejected as generic) with Spine Label. Removed the Malayalam word from the UI at the owner's request.
 - Phase 0 documentation: product specification, architecture, database design, roadmap, testing strategy, decisions, known issues.
 - `CLAUDE.md` persistent project instructions; `PROGRESS.md` status tracking.
+
+### Confirmed loan-history import
+
+- Added administrator-only neutral CSV confirmation for open and closed loans, preserving source history in schema 18.
+- Added atomic rollback, source/file repeat protection, stale-preview and date-overlap checks. Open loans require explicit current-policy consent; closed history does not alter stock or assess fines.
+- Member loan history identifies imported source and original staff label. Renewals, reservations and financial history remain pending in Phase 4.
+
+### Renewal-history import
+
+- Added administrator-only source-linked renewal CSV preview and atomic confirmed import with schema 19 provenance.
+- Validate complete chronological due-date chains, source references, repeat imports and stale previews. Preserve historical event dates/staff labels without changing current due dates, stock or fines.
+- Member loan history now shows renewal counts, including imported events; these count toward subsequent normal renewal limits.

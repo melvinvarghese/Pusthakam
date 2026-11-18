@@ -15,6 +15,8 @@ import { FindMember } from "./FindMember";
 
 const Reservations = lazy(() => import("./Reservations"));
 const Fines = lazy(() => import("./Fines"));
+const LoanImport = lazy(() => import("./LoanImport"));
+const RenewalImport = lazy(() => import("./RenewalImport"));
 
 const ACTIONS = {
   issue: { label: "Issue", review: "Review loan", title: "Confirm issue", confirm: "Issue copy" },
@@ -40,6 +42,8 @@ export function CirculationPage() {
   const [completedLoan, setCompletedLoan] = useState<Extract<Review, { mode: "issue" | "renew" }> | null>(null);
   const [slipOpen, setSlipOpen] = useState(false);
   const [findingMember, setFindingMember] = useState(false);
+  const [importOpen, setImportOpen] = useState(false);
+  const [renewalImportOpen, setRenewalImportOpen] = useState(false);
   const prepare = useMutation({
     mutationFn: async ({ mode, memberNumber, barcode }: { mode: Mode; memberNumber: string; barcode: string }): Promise<Review> => {
       switch (mode) {
@@ -62,7 +66,10 @@ export function CirculationPage() {
       void client.invalidateQueries({ queryKey: ["catalogue"] });
       void client.invalidateQueries({ queryKey: ["circulation", "overdue"] });
       void client.invalidateQueries({ queryKey: ["circulation", "reservations"] });
-      if (fine) void client.invalidateQueries({ queryKey: ["circulation", "fines"] });
+      if (fine) {
+        void client.invalidateQueries({ queryKey: ["circulation", "fines"] });
+        void client.invalidateQueries({ queryKey: ["member-fines"] });
+      }
       void client.invalidateQueries({ queryKey: ["member-loans"] });
       const { title, dueOn } = value.details;
       const messages = {
@@ -110,7 +117,9 @@ export function CirculationPage() {
   return (
     <div className="mx-auto max-w-[1100px] space-y-4 p-6">
       <PageHeader title="Circulation" />
-      <div ref={actionGroup} className="flex gap-2" role="group" aria-label="Circulation action">
+      <div ref={actionGroup} className="flex flex-wrap gap-2" role="group" aria-label="Circulation action">
+        {can(session, "admin.settings") && <Button onClick={() => setImportOpen(true)}>Preview loan import</Button>}
+        {can(session, "admin.settings") && <Button onClick={() => setRenewalImportOpen(true)}>Import renewal history</Button>}
         {(["issue", "return", "renew"] as const).map((action) => (
           <Button key={action} aria-pressed={mode === action} variant={mode === action ? "primary" : "secondary"}
             disabled={prepare.isPending} onClick={() => selectMode(action)}>{ACTIONS[action].label}</Button>
@@ -122,6 +131,8 @@ export function CirculationPage() {
         <Button aria-pressed={mode === "fines"} variant={mode === "fines" ? "primary" : "secondary"}
           disabled={prepare.isPending} onClick={() => selectMode("fines")}>Fines</Button>
       </div>
+      {importOpen && <Suspense fallback={<p role="status">Loading import preview.</p>}><LoanImport onClose={() => setImportOpen(false)} /></Suspense>}
+      {renewalImportOpen && <Suspense fallback={<p role="status">Loading renewal import.</p>}><RenewalImport onClose={() => setRenewalImportOpen(false)} /></Suspense>}
       {mode === "fines" ? (
         <Suspense fallback={<p role="status" className="text-muted">Loading fines.</p>}>
           <Fines />

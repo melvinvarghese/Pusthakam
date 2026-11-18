@@ -10,6 +10,7 @@ import { Panel } from "@/components/ui/Panel";
 import { configApi, membersApi, toApiError } from "@/lib/api";
 import type { Member, MemberInput, Named } from "@/lib/api/types";
 import { can, useSession } from "@/lib/session";
+import { MemberFines } from "./MemberFines";
 import { MemberLoanHistory } from "./MemberLoanHistory";
 import { MemberCard } from "./MemberCard";
 
@@ -79,6 +80,7 @@ export function MembersPage() {
   const [filter, setFilter] = useState({ search: "", page: 1, archived: false });
   const deferred = useDeferredValue(filter);
   const [form, setForm] = useState<{ member?: Member } | null>(null);
+  const [fineMember, setFineMember] = useState<Member | null>(null);
   const [loanHistory, setLoanHistory] = useState<Member | null>(null);
   const [card, setCard] = useState<Member | null>(null);
   const [importOpen, setImportOpen] = useState(false);
@@ -149,6 +151,7 @@ export function MembersPage() {
                     <td className="whitespace-nowrap px-4 py-2">
                       <Button size="sm" variant="ghost" aria-label={`Loans for ${member.name} (${member.memberNumber})`}
                         onClick={() => setLoanHistory(member)}>Loans</Button>
+                      <Button size="sm" variant="ghost" aria-label={`Fines for ${member.name} (${member.memberNumber})`} onClick={() => setFineMember(member)}>Fines</Button>
                       {canEdit && <>
                         {!deferred.archived && <>
                           <Button size="sm" variant="ghost" disabled={!config.data?.library}
@@ -175,6 +178,7 @@ export function MembersPage() {
         </Panel>
       )}
       {form && <MemberForm member={form.member} categories={categories} onClose={() => setForm(null)} />}
+      {fineMember && <MemberFines member={fineMember} onClose={() => setFineMember(null)} />}
       {loanHistory && <MemberLoanHistory member={loanHistory} onClose={() => setLoanHistory(null)} />}
       {card && config.data?.library && (
         <MemberCard member={card} libraryName={config.data.library.name} onClose={() => setCard(null)} />

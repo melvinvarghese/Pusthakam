@@ -27,3 +27,5 @@ pub mod marc_export;
 pub mod export_save;
 
 pub mod calendar;
+pub mod loan_import;
+pub mod renewal_import;

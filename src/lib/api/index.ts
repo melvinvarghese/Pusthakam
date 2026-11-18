@@ -5,7 +5,7 @@
 import { invoke } from "@tauri-apps/api/core";
 import { openUrl } from "@tauri-apps/plugin-opener";
 import { previewMode } from "@/lib/preview";
-import type { LibraryCalendar, Holiday,
+import type { RenewalImportPreview, LoanImportPreview, MemberFineAccount, LibraryCalendar, Holiday,
   CatalogueExportFormat, CatalogueExportFile, AccessionFormat, AppErrorPayload, AppInfo, ArchiveKind, CirculationDay, ConfigOverview, CopyBatchInput, CopyPage, CopyQuery,
   CopyRecord, CopyStatus, CopyUpdateInput, DashboardOverview, DuplicateHit, DuplicateProbe, FineAmount, FineHistoryPage, FinePage, FineSettlement, ImportOptions, ImportPreview,
   ImportPreviewRequest, ImportReport, IssuePreview, KohaPatronPreview, LibraryInput, MemberCategoryInput, MemberInput, MemberLoanPage, MemberPage, OverduePage, RenewalPreview, ReservationPage, ReturnCondition, ReturnPreview,
@@ -154,6 +154,8 @@ export const importApi = {
 };
 
 export const membersApi = {
+  fineAccount: (memberId: number, page: number) => call<MemberFineAccount>("members_fine_account", { memberId, page }),
+  fineHistory: (memberId: number, fineId: number, page: number) => call<FineHistoryPage>("members_fine_history", { memberId, fineId, page }),
   list: (search: string, page: number, archived: boolean) => call<MemberPage>("members_list", { search, page, archived }),
   save: (input: MemberInput) => call<number>("members_save", { input }),
   archive: (id: number, archived: boolean) => call<void>("members_archive", { id, archived }),
@@ -166,6 +168,11 @@ export const membersApi = {
 };
 
 export const circulationApi = {
+  previewRenewalImport: (dataBase64: string, sourceSystem: string) => call<RenewalImportPreview>("circulation_preview_renewal_import", { dataBase64, sourceSystem }),
+  commitRenewalImport: (dataBase64: string, sourceSystem: string, expectedFingerprint: string) => call<number>("circulation_commit_renewal_import", { dataBase64, sourceSystem, expectedFingerprint }),
+  commitImport: (dataBase64: string, sourceSystem: string, expectedFingerprint: string, useCurrentTerms: boolean) =>
+    call<number>("circulation_commit_import", { dataBase64, sourceSystem, expectedFingerprint, useCurrentTerms }),
+  previewImport: (dataBase64: string) => call<LoanImportPreview>("circulation_preview_import", { dataBase64 }),
   prepareIssue: (memberNumber: string, barcode: string) =>
     call<IssuePreview>("circulation_prepare_issue", { memberNumber, barcode }),
   prepareReturn: (barcode: string) => call<ReturnPreview>("circulation_prepare_return", { barcode }),

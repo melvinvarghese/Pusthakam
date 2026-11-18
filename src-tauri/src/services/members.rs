@@ -54,6 +54,9 @@ struct MemberLoan {
     returned_on: Option<String>,
     overdue: bool,
     return_condition: Option<String>,
+    import_source: Option<String>,
+    source_staff: Option<String>,
+    renewal_count: i64,
 }
 
 #[derive(Serialize)]
@@ -73,9 +76,11 @@ pub fn loans(conn: &Connection, member_id: i64, page: i64) -> AppResult<MemberLo
     let page = page.clamp(1, (total + PAGE_SIZE - 1).div_euclid(PAGE_SIZE).max(1));
     let mut stmt = conn.prepare(
         "SELECT l.id, r.title, i.barcode, date(l.issued_at,'localtime'), l.due_on,
-                date(l.returned_at,'localtime'), l.returned_at IS NULL AND l.due_on < date('now','localtime'), l.return_condition
+                date(l.returned_at,'localtime'), l.returned_at IS NULL AND l.due_on < date('now','localtime'), l.return_condition, s.source_system, s.source_staff,
+                (SELECT count(*) FROM loan_renewals n WHERE n.loan_id=l.id)
          FROM loans l JOIN physical_items i ON i.id = l.item_id
          JOIN bibliographic_records r ON r.id = i.record_id
+         LEFT JOIN loan_import_sources s ON s.loan_id = l.id
          WHERE l.member_id = ?1
          ORDER BY l.returned_at IS NOT NULL, l.issued_at DESC, l.id DESC
          LIMIT ?2 OFFSET ?3",
@@ -85,6 +90,8 @@ pub fn loans(conn: &Connection, member_id: i64, page: i64) -> AppResult<MemberLo
             id: r.get(0)?, title: r.get(1)?, barcode: r.get(2)?, issued_on: r.get(3)?,
             due_on: r.get(4)?, returned_on: r.get(5)?, overdue: r.get(6)?,
             return_condition: r.get(7)?,
+            import_source: r.get(8)?, source_staff: r.get(9)?,
+            renewal_count: r.get(10)?,
         })
     })?.collect::<Result<Vec<_>, _>>()?;
     Ok(MemberLoanPage { rows, total, page, page_size: PAGE_SIZE })
