@@ -1,10 +1,10 @@
 # PROGRESS
 
-_Last updated: 2026-11-17_
+_Last updated: 2026-11-18_
 
 ## Local progress monitor
 
-Pusthakam is **45.6% complete overall**, with 54.9% implemented, 38.9% verified and 10% release-ready. Next product milestone: Implement Phase 3 bulk catalogue operations and covers.
+Pusthakam is **47.1% complete overall**, with 57.4% implemented, 38.9% verified and 10% release-ready. Next product milestone: Verify saved catalogue searches in Windows.
 
 Run `npm run progress:monitor` from this directory and open <http://127.0.0.1:4317/>. Keep the terminal open while using the dashboard. Run `npm run progress:validate` to check the task data and percentages.
 
@@ -13,7 +13,7 @@ Run `npm run progress:monitor` from this directory and open <http://127.0.0.1:43
 | 0 · Discovery and architecture | 100% | 100% |
 | 1 · Application foundation | 83.3% | 83.3% |
 | 2 · Setup and configuration | 100% | 100% |
-| 3 · Catalogue and accession | 58% | 40% |
+| 3 · Catalogue and accession | 72% | 40% |
 | 4 · Circulation and members | 78.2% | 30.4% |
 | 5 · Dashboard, reports and printing | 43.7% | 25% |
 | 6 · Collection operations | 18.1% | 18.1% |
@@ -29,6 +29,18 @@ Monitor verification passed for the data schema, weighted calculations, loopback
 - **Phase 3 in progress:** bulk catalogue archiving is implemented. The catalogue frontend suite passed all 20 tests. The targeted Tauri IPC test passed rollback and permission checks. A native bulk archive walkthrough remains open.
 - **Start here:** add and remove a validated local book cover, then build a Windows verification executable and check both covers and bulk archiving in the disposable test library. Phase 3 completion credit for this task is pending.
 - **Keep on the roadmap:** the owner deferred Windows Narrator. New passwords must eventually require at least six characters and contain no spaces. Write the illustrated user manual after feature completion.
+
+## Work on 18 November 2026
+
+Local JPG/PNG cover selection and removal compile on Windows. Covers are bounded, decoded and re-encoded as PNG and saved in the database. Bulk archiving and covers await their native walkthrough. All 13 IPC tests and 20 catalogue frontend tests passed, as did typecheck and lint. The native cover executable is ready. Added Load cover by ISBN to records with an ISBN and no saved cover. The explicit Open Library lookup omits credentials and referrer, limits response size and time, converts the image and saves it locally. Existing saved covers take precedence. The combined covers and ISBN Windows executable is ready. Live lookup and offline persistence still need a walkthrough.
+
+## Automatic ISBN covers
+
+ISBN cover lookup now starts automatically when opening a record with an ISBN and no saved cover. It retries on reconnect, preserves local cover priority, and quietly tolerates absent covers. Authorized catalogue editors save the downloaded cover locally. Read-only sessions display the fetched image without writing. The combined Windows build compiled. Live network and reconnect verification remains open.
+
+## Saved search checkpoint
+
+Saved catalogue searches support names, text, filters and sort order, plus update and removal. Saved filters are scoped to the staff account on this computer. The Windows restart walkthrough remains open. All 22 focused tests, production build/typecheck and lint passed. An initial build failure from unsupported test query options was corrected. Update and removal now have persistence tests. The owner confirmed fetched covers work offline. Both Windows native builds passed; `pusthakam-phase3-searches.exe` is ready using the existing verification library.
 
 ## Current phase
 Write-authorized staff can confirm and archive multiple titles from a catalogue results page. Updates and audit entries share one transaction. Local cover selection and the native walkthrough remain open.
@@ -153,3 +165,31 @@ The owner confirmed issue and return in the native Windows verification library.
 
 ## Next milestone
 Run the circulation and printing walkthrough on an interactive Windows desktop and validate a real Koha export. Continue with additional reports and exports. Open questions: past circulation history in a Koha migration, or only current loans? Which computer will be the library server (Phase 7b)?
+
+## Saved search reapplication fix
+
+Owner reported that saving a search did not reflect as a search. The selected dropdown could not rerun its already selected value after filters changed. Added Run saved search and instructions distinguishing the name from catalogue search words. Both regression tests, frontend build/typecheck, lint and both Windows native builds passed. Updated executable: `pusthakam-phase3-searches-fixed.exe`. Interactive verification remains open.
+
+## Saved search execution and label correction
+
+Owner reported Run saved search did not run a query. Applying unchanged filters did not change the query key, so added an explicit run counter to execute a fresh search on every run. Checking catalogue-level regression tests. Single labels now show matching barcode/accession numbers once; both label formats have a heading defaulting to the library name with custom text or blank allowed for each print job. All 23 focused tests, frontend build/typecheck, lint and both Windows native builds passed. Updated executable: `pusthakam-phase3-labels-search.exe`. Interactive saved-search and print checks remain open.
+
+## Saved search no-match investigation
+
+Owner confirms label printing works. Saved Animal Farm search reportedly leaves The Man Who Was Thursday visible. The exact catalogue-level test with simulated responses passes before changes, so the native cause is unresolved. Added visible saved search words, immediate application without typing debounce, and removed previous-result placeholders. Follow-up native observation required; no verification credit added.
+
+No-match checkpoint: all 24 focused tests, frontend build/typecheck, lint and both Windows native builds passed. `pusthakam-phase3-search-results.exe` shows the stored words and applies a saved search immediately without old-result placeholders. Native cause remains unconfirmed. Progress stays 47.1%; no new verification credit.
+
+## Saved search screenshot diagnosis
+
+Owner screenshots show Animal Farm and Thursday entries both saved with empty search text: All titles (no search words saved). This establishes the cause of the observed all-title results; earlier query-rerun fixes did not address it. Save controls now follow the main search box, the name field explains it is a label, empty default searches are rejected, and existing entries can explicitly use their saved name as search words. Filter-only searches remain supported. Regression checks and refreshed native build are in progress.
+
+Empty-query checkpoint: 27 focused tests pass. Build output verification was interrupted by automatic review rejecting a Visual Studio telemetry connection to an unrequested external endpoint. No retry or workaround attempted and no new native executable built. Existing app workaround: select saved entry, enter actual words in main search box, Update saved search. Standalone typecheck and lint passed.
+
+Owner confirmation: after understanding saved names versus catalogue search words and correcting the entry, the owner confirmed saved search works. New control clarity/validation build remains pending, as do remaining restart/update/removal checks.
+
+## Pause handoff: LAN browser and public OPAC idea
+
+Owner requested staff use via same-network phone/computer browsers and anonymous OPAC. Reviewed existing Phase 7b plan: one-host database already planned, but clients assumed desktop installations and OPAC was absent. Added browser/OPAC scope and acceptance checks to the roadmap, specification, decisions and LAN_BROWSER_OPAC.md. LAN-CLIENT/OPS criteria expanded; original weights retained and no implementation credit claimed. LAN remains not started. Host must run and be reachable; server enforces staff permissions and exposes only public catalogue fields to visitors.
+
+Pause requested. Resume previous phase order, preserving saved search and label confirmations and pending refreshed native build. The active phase remains Phase 3. Browser staff access and OPAC are queued for Phase 7b; normal phase order continues and LAN implementation has not started.

@@ -127,6 +127,8 @@ export const authApi = {
 };
 
 export const catalogueApi = {
+  getCover: (id: number) => call<string | null>("catalogue_get_cover", { id }),
+  setCover: (id: number, pngBase64: string | null) => call<void>("catalogue_set_cover", { id, pngBase64 }),
   search: (query: SearchQuery) => call<SearchResult>("catalogue_search", { query }),
   getRecord: (id: number) => call<RecordDetail>("catalogue_get_record", { id }),
   saveRecord: (input: RecordInput) => call<number>("catalogue_save_record", { input }),

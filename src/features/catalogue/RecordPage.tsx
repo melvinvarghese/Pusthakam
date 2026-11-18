@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { BookCover } from "./BookCover";
 import { Link, useParams } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { PageHeader } from "@/components/PageHeader";
@@ -82,6 +83,7 @@ export function RecordPage() {
       {r.archived && <p><Chip>Archived</Chip> <span className="text-muted">This record is hidden from search.</span></p>}
       {archive.isError && <p role="alert" className="text-danger">{archive.error instanceof ApiError ? archive.error.message : "Could not update."}</p>}
 
+      <BookCover key={id} id={id} title={r.title} isbn={r.isbn13 ?? r.isbn10} editable={canWrite && !r.archived} />
       <Panel aria-labelledby="details-h">
         <PanelHeader id="details-h" title="Details" />
         <dl className="grid grid-cols-[11rem_1fr] gap-x-4 gap-y-2 p-4">

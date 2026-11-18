@@ -4,28 +4,10 @@ import { Button } from "@/components/ui/Button";
 import { TextField } from "@/components/ui/Field";
 import { Modal } from "@/components/ui/Modal";
 import { BarcodeSvg } from "@/features/catalogue/shared";
-import { ApiError, membersApi, toApiError } from "@/lib/api";
+import { membersApi, toApiError } from "@/lib/api";
 import type { Member } from "@/lib/api/types";
 
-async function preparePhoto(file: File): Promise<string> {
-  const invalid = new ApiError({ code: "VALIDATION", message: "Choose a JPG or PNG photo up to 10 MB." });
-  if (file.size > 10 * 1024 * 1024 || !/\.(jpe?g|png)$/i.test(file.name)) throw invalid;
-  let bitmap: ImageBitmap;
-  try { bitmap = await createImageBitmap(file); }
-  catch { throw invalid; }
-  try {
-    const scale = Math.min(1, 512 / Math.max(bitmap.width, bitmap.height));
-    const canvas = document.createElement("canvas");
-    canvas.width = Math.max(1, Math.round(bitmap.width * scale));
-    canvas.height = Math.max(1, Math.round(bitmap.height * scale));
-    const context = canvas.getContext("2d");
-    if (!context) throw invalid;
-    context.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
-    return canvas.toDataURL("image/png").slice("data:image/png;base64,".length);
-  } finally {
-    bitmap.close();
-  }
-}
+import { prepareImage as preparePhoto } from "@/lib/images";
 
 export function MemberCard({ member, libraryName, onClose }: {
   member: Member;
