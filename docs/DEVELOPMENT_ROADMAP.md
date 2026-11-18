@@ -24,6 +24,18 @@ Was **not** in the original plan (the brief describes one local database per ins
 - **To avoid rework, from now on:** new commands stay thin and put logic in `services/`; no new global state that assumes a single user.
 - **Hosting and capacity:** each library designates one PC to host its database. Other computers on the same LAN connect as clients. There is no fixed client-count limit in Pusthakam. Measure concurrent capacity on representative host hardware and networks during Phase 7b.
 
+## Browser staff access and public OPAC (owner request 2026-11-18)
+
+Extend Phase 7b beyond desktop clients. When the owner enables LAN hosting and Pusthakam is running on the designated main PC, serve locally bundled browser pages from that PC. Staff use a phone, tablet or computer browser without installing Pusthakam; sign-in and permissions are enforced on the server. Keep desktop-client support planned, with a shared service layer and transport adapter rather than browser calls to Tauri IPC.
+
+Provide a separate public OPAC entry page without staff login. Visitors on a reachable local network can search titles, authors, subjects and ISBN, view public bibliographic details, covers, call number/location and current availability. Public responses must use an allowlist and exclude member details, borrower identities, staff details, internal notes, finance, audit logs and administrative data. The public endpoint exposes no catalogue or circulation writes. Public access must not inherit a host desktop session or unlock staff functions.
+
+Host settings should expose the staff and OPAC addresses and QR codes, LAN/OPAC enable controls, and connection/revocation status. Host-on availability, IP changes, firewall rules and Wi-Fi client isolation must be documented. Same Wi-Fi does not by itself guarantee that devices can reach each other. Closing or sleeping the host makes browser access unavailable; no cloud or router port forwarding is required.
+
+Browser staff sign-in needs per-session authentication, expiry/revocation, transport encryption with a documented certificate trust workflow, and request forgery/origin protections. Do not assume the existing desktop session or desktop pairing/certificate UI can be reused unchanged in phone browsers. Native OS functions such as file dialogs, printing and exports need browser-compatible paths. Measure capacity; keep no application-imposed client count cap.
+
+Acceptance: test staff sign-in and allowed/denied actions from a phone browser; anonymous OPAC search and no-match results; availability after issue/return; privacy of every public response; blocked unauthenticated writes; concurrency and stale edits; session revocation; network loss, host restart and reconnect. Run the pilot with internet disconnected. See LAN_BROWSER_OPAC.md for the handoff. This is planned work, not implemented.
+
 ## Migration from other systems (e.g. Koha), owner request 2026-11-15
 Libraries must be able to move their existing data into Pusthakam. Plan:
 - **Moved earlier:** MARC21 / ISO 2709 / MARCXML import is built together with the catalogue in **Phase 3** (it was Phase 6), because Koha and most library systems export catalogues in MARC.
