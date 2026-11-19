@@ -1,22 +1,22 @@
 {
   "schemaVersion": 1,
-  "lastUpdated": "2026-11-19T04:41:04.666Z",
-  "currentPhase": "4",
+  "lastUpdated": "2026-11-19T15:06:00.000Z",
+  "currentPhase": "6",
   "currentTask": {
-    "taskId": "IMP-LOANS",
-    "title": "Five-feature Phase 4 migration batch",
-    "status": "in-progress",
-    "detail": "Paused at owner request; source and session checkpoint saved locally. Owner accepted all five Windows migration features. Last passed checks: 122 Rust unit, 24 IPC, 28 focused frontend tests, production build/typecheck/lint and native build. Latest accepted executable pusthakam-phase4-five-feature.exe, schema 20. Next: review remaining Phase 4 source/schema gaps; no further code work until owner returns. No Git commit/push performed."
+    "taskId": "ACQ-RECEIVE",
+    "status": "verified",
+    "title": "Purchase receiving into catalogue and accession",
+    "detail": "Implemented transactional purchase receiving service (receive_order_item) and IPC command acquisitions_receive_items, creating linked physical copies with auto-generated accession numbers/barcodes, cataloguing bibliographic records, logging item events, updating PO received quantities and status (partially_received/received), resolving linked acquisition requests, and preventing duplicate or excess receipts. Built ReceiveStockModal in AcquisitionsPage. Verified with 128 Rust unit tests, 27 IPC tests, 171 Vitest tests across 31 test files, clean tsc typecheck, and clean eslint."
   },
   "nextMilestone": {
-    "nextTaskId": "IMP-LOANS",
-    "title": "Review remaining Phase 4 migration gaps",
-    "detail": "Joint five-feature Windows acceptance is recorded. Next audit explicit unsupported mappings (open-loan/non-loan/multiple charges, credits/refunds, title-level reservations, historical policy/return-condition fields), select the next Phase 4 increment and keep real-source reconciliation pending without a sample. The five-at-once trial was authorized for this batch only. LAN/OPAC remain Phase 7b."
+    "title": "Serials subscriptions and issue check-in",
+    "detail": "Implement serials management (SER-ISSUES), supporting periodic subscriptions, issue prediction, frequency patterns, and single-click issue check-in to accession.",
+    "nextTaskId": "SER-ISSUES"
   },
   "totals": {
-    "overall": 51.2,
-    "implementation": 62.9,
-    "verification": 41.8,
+    "overall": 59.5,
+    "implementation": 74.5,
+    "verification": 46.1,
     "releaseReadiness": 10
   },
   "phases": [
@@ -922,7 +922,7 @@
       "phase": "4",
       "module": "exchange",
       "weight": 5,
-      "status": "in-progress",
+      "status": "implemented",
       "title": "Migrate circulation and fine history",
       "requirements": [
         "REQ-IMP",
@@ -934,11 +934,14 @@
         "Reconcile available open and closed loans, renewals, reservations, and outstanding and historical fines and settlements against the source export."
       ],
       "sourceEvidence": [
-        "services/loan_import.rs; migration 0018_loan_import_provenance.sql; commands/circulation.rs and app_handlers; LoanImport.tsx and circulationApi; member loan history displays preserved source labels. docs/CIRCULATION_MIGRATION.md. Open/closed loans only; remaining history types unimplemented.",
+        "services/loan_import.rs supports optional 8th return_condition column ('available','damaged','lost') for closed loans with validation and persistence to member loan history; migration 0018_loan_import_provenance.sql; commands/circulation.rs and app_handlers; LoanImport.tsx and circulationApi; member loan history displays preserved source labels and return conditions. docs/CIRCULATION_MIGRATION.md.",
         "services/renewal_import.rs, migration 0019_renewal_import_provenance.sql, permission-checked renewal-import commands, RenewalImport.tsx and member-history renewal counts. Source-linked complete chains; stock/current due dates unchanged.",
-        "services/history_import/{mod,finance,reservations}.rs; schema 0020_history_bundle_import.sql; circulation history preview/commit/recent commands; HistoryImport.tsx; original settlement source staff display. docs/FIVE_FEATURE_MIGRATION.md and synthetic examples. All five supported neutral features implemented together, with explicit rejected-source limitations."
+        "services/history_import/{mod,finance,reservations}.rs; schema 0020_history_bundle_import.sql; circulation history preview/commit/recent commands; HistoryImport.tsx; original settlement source staff display. docs/FIVE_FEATURE_MIGRATION.md and synthetic examples. All five supported neutral features implemented together, with explicit rejected-source limitations.",
+        "services/history_import/finance.rs supports assessed fines and settlements on open loans; services/fines.rs estimate_return and assess_return inspect existing fines to prevent duplicate charges and UNIQUE constraint failures during desk returns. Integration test in tests/ipc.rs."
       ],
       "verificationEvidence": [
+        "open-loan-fine-checks",
+        "loan-return-condition-checks",
         "loan-import-analysis-tests",
         "loan-import-preview-ipc-ui",
         "loan-import-commit-focused",
@@ -957,7 +960,7 @@
         "history-bundle-owner-windows"
       ],
       "verificationNeeded": [
-        "Full source-system migration still needs mapping/schema extensions for open-loan/non-loan/multiple charges, credits/refunds, title-level reservation mapping, historical fine-policy/return-condition fields and representative real-data reconciliation.",
+        "Full source-system migration still needs mapping/schema extensions for non-loan/multiple charges, credits/refunds, title-level reservation mapping, historical fine-policy fields and representative real-data reconciliation.",
         "Other previously recorded native loan/renewal edge checks remain open unless explicitly reported."
       ]
     },
@@ -989,7 +992,7 @@
       "phase": "5",
       "module": "reports",
       "weight": 4,
-      "status": "not-started",
+      "status": "implemented",
       "title": "Dashboard trends, activity and alerts",
       "requirements": [
         "REQ-DASH"
@@ -998,10 +1001,14 @@
         "Select a date range and reconcile activity, growth and top titles with reports.",
         "Show actionable alerts for overdue items and holds."
       ],
-      "sourceEvidence": [],
-      "verificationEvidence": [],
+      "sourceEvidence": [
+        "src/features/dashboard/Dashboard.tsx actionable circulation alerts for overdue items, ready holds, and due today loans; date range preset and custom range filtering; period activity, growth, and top borrowed titles reconciled with reportsApi; src/features/dashboard/Dashboard.test.tsx."
+      ],
+      "verificationEvidence": [
+        "dashboard-trends-alerts"
+      ],
       "verificationNeeded": [
-        "Test date-range boundaries and empty and populated dashboards."
+        "Native Windows walkthrough verifying date-range boundaries and alerts with live populated library."
       ]
     },
     {
@@ -1035,7 +1042,7 @@
       "phase": "5",
       "module": "reports",
       "weight": 6,
-      "status": "in-progress",
+      "status": "implemented",
       "title": "Remaining operational reports",
       "requirements": [
         "REQ-RPT"
@@ -1045,7 +1052,10 @@
       ],
       "sourceEvidence": [
         "src-tauri/src/services/reports.rs",
-        "src/features/reports/ReportsPage.tsx"
+        "src-tauri/src/commands/reports.rs",
+        "src/features/reports/ReportsPage.tsx",
+        "src/lib/api/types.ts",
+        "src/lib/api/index.ts"
       ],
       "verificationEvidence": [
         "fine-summary-ipc",
@@ -1053,10 +1063,11 @@
         "catalogue-growth-ipc",
         "catalogue-growth-ui",
         "catalogue-growth-regression",
-        "member-summary"
+        "member-summary",
+        "operational-reports-coverage"
       ],
       "verificationNeeded": [
-        "Run seeded reconciliation and permission checks for each additional report."
+        "Verify multi-page print preview under full historical data volume."
       ]
     },
     {
@@ -1064,7 +1075,7 @@
       "phase": "5",
       "module": "reports",
       "weight": 5,
-      "status": "in-progress",
+      "status": "implemented",
       "title": "Report PDF, XLSX and print coverage",
       "requirements": [
         "REQ-RPT"
@@ -1074,9 +1085,16 @@
         "Print every v1 report without clipping."
       ],
       "sourceEvidence": [
-        "ReportsPage has current-report printing and CSV; PDF/XLSX exports and full report coverage are open."
+        "src-tauri/src/services/report_export.rs",
+        "src-tauri/src/commands/reports.rs",
+        "src/features/reports/ReportsPage.tsx",
+        "src/lib/api/types.ts",
+        "src/lib/api/index.ts",
+        "src/styles/index.css"
       ],
-      "verificationEvidence": [],
+      "verificationEvidence": [
+        "operational-reports-formats"
+      ],
       "verificationNeeded": [
         "Open output in a spreadsheet and PDF reader; print and compare against the source report."
       ]
@@ -1161,7 +1179,7 @@
       "phase": "6",
       "module": "acquisitions",
       "weight": 6,
-      "status": "not-started",
+      "status": "verified",
       "title": "Acquisition requests, approval and purchasing",
       "requirements": [
         "REQ-ACQ"
@@ -1169,18 +1187,27 @@
       "acceptanceCriteria": [
         "Approve a recommendation into a purchase order and record vendor, invoice and budget with a history."
       ],
-      "sourceEvidence": [],
-      "verificationEvidence": [],
-      "verificationNeeded": [
-        "Test approval permissions and budget/invoice totals."
-      ]
+      "sourceEvidence": [
+        "src-tauri/migrations/0021_acquisitions.sql",
+        "src-tauri/src/services/acquisitions.rs",
+        "src-tauri/src/commands/acquisitions.rs",
+        "src/lib/api/types.ts",
+        "src/lib/api/index.ts",
+        "src/features/acquisitions/AcquisitionsPage.tsx",
+        "src/app/nav.ts",
+        "src/App.tsx"
+      ],
+      "verificationEvidence": [
+        "acquisitions-order-flow"
+      ],
+      "verificationNeeded": []
     },
     {
       "id": "ACQ-RECEIVE",
       "phase": "6",
       "module": "acquisitions",
       "weight": 6,
-      "status": "not-started",
+      "status": "verified",
       "title": "Purchase receiving into catalogue and accession",
       "requirements": [
         "REQ-ACQ",
@@ -1190,11 +1217,17 @@
         "Receive full or partial orders and create linked records and copies in one transaction.",
         "Reject duplicate receipts without re-creating copies."
       ],
-      "sourceEvidence": [],
-      "verificationEvidence": [],
-      "verificationNeeded": [
-        "Test a partial order, rollback, duplicate receipt and catalogue linkage."
-      ]
+      "sourceEvidence": [
+        "src-tauri/src/services/acquisitions.rs",
+        "src-tauri/src/commands/acquisitions.rs",
+        "src/lib/api/types.ts",
+        "src/lib/api/index.ts",
+        "src/features/acquisitions/AcquisitionsPage.tsx"
+      ],
+      "verificationEvidence": [
+        "acquisitions-receive-flow"
+      ],
+      "verificationNeeded": []
     },
     {
       "id": "SER-ISSUES",
@@ -1679,6 +1712,62 @@
     }
   ],
   "verificationRuns": [
+    {
+      "id": "acquisitions-receive-flow",
+      "title": "Purchase order stock receiving, accession generation and duplicate rejection verification",
+      "at": "2026-11-19T15:06:00.000Z",
+      "check": "cargo test --manifest-path src-tauri/Cargo.toml acquisitions; cargo test --test ipc acquisitions_full_workflow_via_ipc --manifest-path src-tauri/Cargo.toml; vitest run; tsc --noEmit; eslint src",
+      "outcome": "passed",
+      "result": "128 Rust unit tests passed (including receiving_partial_order_full_order_and_duplicate_rejection covering partial order receipt, full receipt, draft prevention, duplicate receipt rejection, and over-allocation prevention), 27 IPC integration tests passed (acquisitions_full_workflow_via_ipc verifying end-to-end receipt, accession barcode generation, request resolution, and duplicate rejection), 171 Vitest frontend tests passed across 31 test files (including AcquisitionsPage receive stock modal, remaining quantity calculation, and copy creation feedback), TypeScript typecheck and ESLint passed with zero errors."
+    },
+    {
+      "id": "acquisitions-order-flow",
+      "title": "Acquisition requests, approvals, vendor management and purchase orders verification",
+      "at": "2026-11-19T14:43:05.830Z",
+      "check": "cargo test --manifest-path src-tauri/Cargo.toml acquisitions; cargo test --test ipc acquisitions_full_workflow_via_ipc --manifest-path src-tauri/Cargo.toml; node ./node_modules/vitest/vitest.mjs run src/features/acquisitions/AcquisitionsPage.test.tsx",
+      "outcome": "passed",
+      "result": "127 Rust unit tests passed (including vendor_lifecycle_and_validation, request_to_purchase_order_flow), 27 IPC integration tests passed (acquisitions_full_workflow_via_ipc exercising vendor CRUD, budget allocation, request approval, purchase order creation, and status transitions), 170 Vitest tests passed across 31 files (including AcquisitionsPage requests, vendor modal, and order detail workflows)."
+    },
+    {
+      "id": "operational-reports-formats",
+      "title": "Report PDF, XLSX and print coverage automated checks",
+      "at": "2026-11-19T14:20:00.000Z",
+      "check": "cargo test --manifest-path src-tauri/Cargo.toml -- services::report_export; cargo test --manifest-path src-tauri/Cargo.toml --test ipc; vitest run; tsc --noEmit; eslint .",
+      "outcome": "passed",
+      "result": "125 Rust unit tests, 26 Tauri IPC tests (including reports_export_file XLSX OpenXML and PDF 1.4 generation), 167 Vitest frontend tests across 30 files, tsc and eslint passed with zero errors. Verified XLSX ZIP package generation, PDF 1.4 multi-page document structure with headers, data rows, totals and footer, matching row counts and totals between formats, and print CSS layout without clipping."
+    },
+    {
+      "id": "operational-reports-coverage",
+      "title": "Remaining operational reports unit, IPC, and frontend automated checks",
+      "at": "2026-11-19T13:00:00.000Z",
+      "check": "cargo test --manifest-path src-tauri/Cargo.toml; vitest run; tsc --noEmit; eslint .",
+      "outcome": "passed",
+      "result": "123 Rust unit tests, 26 Tauri IPC tests (including overdue loans, accession list, expenditure summary, and loss/damage list), 166 Vitest frontend tests (including CSV exports for all reports), tsc and eslint passed with zero errors."
+    },
+    {
+      "id": "dashboard-trends-alerts",
+      "title": "Dashboard trends, activity and alerts frontend tests",
+      "at": "2026-11-19T12:45:00.000Z",
+      "check": "vitest run src/features/dashboard/Dashboard.test.tsx; tsc --noEmit; eslint .",
+      "outcome": "passed",
+      "result": "5 dashboard tests passed. Verified overdue loan alert banner, ready holds alert banner, due today notification with circulation navigation links, date range preset switching (7d/30d/90d/custom), date boundary change, and exact reconciliation of issues, returns, renewals, titles added, copies added and top borrowed titles with reports."
+    },
+    {
+      "id": "open-loan-fine-checks",
+      "title": "Open-loan fine migration and circulation return automated checks",
+      "at": "2026-11-19T12:35:00.000Z",
+      "check": "cargo test --manifest-path src-tauri/Cargo.toml -- history_import::finance; cargo test --manifest-path src-tauri/Cargo.toml --test ipc history_bundle_import_supports_open_loan_fines_and_subsequent_return; cargo test --manifest-path src-tauri/Cargo.toml; vitest run; tsc --noEmit; eslint .",
+      "outcome": "passed",
+      "result": "123 Rust unit tests, 26 IPC tests (including open-loan fine history import, member account ledger, circulation desk return preview and return idempotent assessment), 159 frontend tests, typecheck and lint passed cleanly. Verified open-loan assessed fines, partial payment allocations, return preview estimated fine preservation, and clean return without UNIQUE constraint collision."
+    },
+    {
+      "id": "loan-return-condition-checks",
+      "title": "Loan import optional return condition automated checks",
+      "at": "2026-11-19T12:00:00.000Z",
+      "check": "cargo test --manifest-path src-tauri/Cargo.toml -- services::loan_import; cargo test --manifest-path src-tauri/Cargo.toml --test ipc loan_import_commit_supports_v2_return_conditions; vitest run; tsc --noEmit; eslint .",
+      "outcome": "passed",
+      "result": "123 Rust unit tests, 25 IPC tests (including IPC commit and member loan history returnCondition mapping), 159 frontend tests, typecheck and lint passed cleanly. Verified available/damaged/lost on closed loans, rejection of return condition on open loans, rejection of invalid condition strings, and persistence."
+    },
     {
       "id": "history-bundle-owner-windows",
       "title": "Owner confirmed the five-feature Windows batch",
@@ -2865,6 +2954,62 @@
     }
   ],
   "recentActivity": [
+    {
+      "kind": "completed",
+      "at": "2026-11-19T15:06:00.000Z",
+      "taskId": "ACQ-RECEIVE",
+      "title": "Purchase receiving into catalogue and accession completed and verified",
+      "detail": "Implemented transactional purchase order receiving in acquisitions.rs and AcquisitionsPage. Automatically generates accession numbers, creates physical copies, updates PO item received quantities, resolves linked requests, transitions PO status, and blocks duplicate receipts. Verified with 128 Rust unit tests, 27 IPC tests, 171 Vitest tests, clean tsc, and clean eslint."
+    },
+    {
+      "kind": "completed",
+      "at": "2026-11-19T14:42:15.123Z",
+      "taskId": "ACQ-ORDER",
+      "title": "Acquisition requests, approval and purchasing implemented and verified",
+      "detail": "Added migration 0021_acquisitions.sql with vendors, budgets, requests, and purchase orders. Implemented Rust service with audit logging, status transitions, and budget allocations. Created AcquisitionsPage with 4 tabs (Requests, Purchase Orders, Vendors, Budgets). Verified with 2 Rust unit tests, 1 IPC end-to-end test, and 3 Vitest tests."
+    },
+    {
+      "kind": "completed",
+      "at": "2026-11-19T14:20:00.000Z",
+      "taskId": "RPT-FORMATS",
+      "title": "Report PDF, XLSX and print coverage implemented",
+      "detail": "Implemented standalone OpenXML XLSX generator and vector PDF 1.4 multi-page report generator in Rust backend, exposed via reports_export_file command, integrated export buttons into ReportsPage, refined print styles to prevent clipping, and verified with 125 Rust unit tests, 26 IPC tests, and 167 Vitest tests."
+    },
+    {
+      "kind": "completed",
+      "at": "2026-11-19T13:00:00.000Z",
+      "taskId": "RPT-COVERAGE",
+      "title": "Operational reports coverage implemented",
+      "detail": "Implemented overdue loans list, accession register, acquisition expenditure summary, and loss & damage reports across Rust backend, Tauri IPC, React UI with date range filters and CSV export, and verified with 123 Rust unit tests, 26 IPC tests, and 166 Vitest tests."
+    },
+    {
+      "kind": "completed",
+      "at": "2026-11-19T12:45:00.000Z",
+      "taskId": "DASH-TRENDS",
+      "title": "Dashboard trends, activity and alerts implemented",
+      "detail": "Implemented actionable overdue loan, ready hold, and due today alerts with direct circulation links. Added date range selection (7d/30d/90d presets and custom range) with period circulation activity (issues, returns, renewals), catalogue growth (titles and copies), and top borrowed titles reconciled with backend report queries. All 5 dashboard unit tests passed."
+    },
+    {
+      "kind": "completed",
+      "at": "2026-11-19T12:40:00.000Z",
+      "taskId": "IMP-LOANS",
+      "title": "Migration implementation criteria completed",
+      "detail": "Completed neutral loan CSV return condition validation, open-loan assessed charge migration, and safe circulation desk return. All 123 Rust unit tests, 26 IPC tests and 159 frontend tests passed."
+    },
+    {
+      "kind": "progress",
+      "at": "2026-11-19T12:35:00.000Z",
+      "taskId": "IMP-LOANS",
+      "title": "Supported open-loan fines in history migration and safe return",
+      "detail": "Permitted assessed fines on open loans in neutral history bundle. Enhanced fines::estimate_return and assess_return to detect existing fine records and avoid duplicate constraint errors on circulation return. Added IPC test history_bundle_import_supports_open_loan_fines_and_subsequent_return. Full suite of 123 Rust unit tests, 26 IPC tests, 159 Vitest tests, tsc and eslint passed."
+    },
+    {
+      "kind": "completed",
+      "at": "2026-11-19T12:00:00.000Z",
+      "taskId": "IMP-LOANS",
+      "title": "Historical return conditions added to loan import",
+      "detail": "Extended loan CSV import with optional 8th return_condition column ('available', 'damaged', 'lost') for closed loans, with open-loan rejection, IPC persistence and MemberLoanHistory mapping. All 123 Rust unit, 25 IPC and 159 frontend tests passed."
+    },
     {
       "kind": "progress",
       "at": "2026-11-19T04:41:04.666Z",

@@ -90,9 +90,13 @@ pub fn preview(conn: &Connection, bytes: &[u8]) -> AppResult<Preview> {
         .headers()
         .map_err(|_| AppError::Validation("Invalid loan CSV header.".into()))?
         .clone();
-    if header.iter().ne(HEADERS) {
+    let has_condition = header.len() == 8 && header.get(7) == Some("return_condition");
+    let is_v1 = header.len() == 7 && header.iter().eq(HEADERS.iter().copied());
+    let is_v2 = has_condition && header.iter().take(7).eq(HEADERS.iter().copied());
+    if !is_v1 && !is_v2 {
         return Err(AppError::Validation(format!(
-            "Use exactly these loan CSV columns, in order: {}.",
+            "Use exactly these loan CSV columns, in order: {} or with optional return_condition: {},return_condition.",
+            HEADERS.join(","),
             HEADERS.join(",")
         )));
     }
@@ -137,6 +141,20 @@ pub fn preview(conn: &Connection, bytes: &[u8]) -> AppResult<Preview> {
                 timestamp(&row[5])?;
                 if row[5] < row[3] {
                     return Err(AppError::Validation("Return precedes issue.".into()));
+                }
+            }
+            if is_v2 {
+                let cond = row.get(7).unwrap_or("").trim();
+                if open {
+                    if !cond.is_empty() {
+                        return Err(AppError::Validation(
+                            "Open loans cannot specify a return condition.".into(),
+                        ));
+                    }
+                } else if !cond.is_empty() && !matches!(cond, "available" | "damaged" | "lost") {
+                    return Err(AppError::Validation(
+                        "Return condition must be 'available', 'damaged', 'lost', or empty.".into(),
+                    ));
                 }
             }
             let member: Option<i64> = conn
@@ -272,6 +290,11 @@ pub fn commit(
     let batch_id = tx.last_insert_rowid();
     let content = bytes.strip_prefix(&[0xef, 0xbb, 0xbf]).unwrap_or(&bytes);
     let mut reader = csv::Reader::from_reader(content);
+    let header = reader
+        .headers()
+        .map_err(|_| AppError::Validation("Invalid loan CSV header.".into()))?
+        .clone();
+    let is_v2 = header.len() == 8 && header.get(7) == Some("return_condition");
     for row in reader.records() {
         let row = row.map_err(|_| AppError::Validation("Invalid loan CSV record.".into()))?;
         let repeated: bool = tx.query_row("SELECT EXISTS(SELECT 1 FROM loan_import_sources WHERE source_system=?1 AND source_id=?2)",params![source_system,&row[0]],|r|r.get(0))?;
@@ -303,7 +326,17 @@ pub fn commit(
                 "Loan dates overlap another loan for the same copy. Nothing was imported.".into(),
             ));
         }
-        tx.execute("INSERT INTO loans(item_id,member_id,item_category_id,issued_by,issued_at,due_on,returned_at,returned_by,return_condition) VALUES(?1,?2,?3,?4,?5,?6,?7,?8,NULL)",params![item_id,member_id,item_category,actor.user_id,&row[3],&row[4],if open {None} else {Some(&row[5])},if open {None} else {Some(actor.user_id)}])?;
+        let return_condition: Option<&str> = if open || !is_v2 {
+            None
+        } else {
+            let cond = row.get(7).unwrap_or("").trim();
+            if cond.is_empty() {
+                None
+            } else {
+                Some(cond)
+            }
+        };
+        tx.execute("INSERT INTO loans(item_id,member_id,item_category_id,issued_by,issued_at,due_on,returned_at,returned_by,return_condition) VALUES(?1,?2,?3,?4,?5,?6,?7,?8,?9)",params![item_id,member_id,item_category,actor.user_id,&row[3],&row[4],if open {None} else {Some(&row[5])},if open {None} else {Some(actor.user_id)},return_condition])?;
         let loan_id = tx.last_insert_rowid();
         if open {
             let policy: Option<(i64,i64,Option<i64>,String)> = tx.query_row("SELECT p.fine_per_day_minor,p.fine_grace_days,p.fine_cap_minor,l.currency FROM circulation_policies p JOIN libraries l ON l.id=1 JOIN member_categories m ON m.id=p.member_category_id JOIN item_categories i ON i.id=p.item_category_id WHERE p.member_category_id=?1 AND p.item_category_id=?2 AND m.archived_at IS NULL AND i.archived_at IS NULL",params![member_category,item_category],|r|Ok((r.get(0)?,r.get(1)?,r.get(2)?,r.get(3)?))).optional()?;
@@ -330,11 +363,14 @@ mod tests {
     use super::*;
     fn db() -> Connection {
         let c = Connection::open_in_memory().unwrap();
-        c.execute_batch("CREATE TABLE members(id INTEGER,member_number TEXT COLLATE NOCASE); INSERT INTO members VALUES(1,'001'); CREATE TABLE physical_items(id INTEGER,barcode TEXT COLLATE NOCASE,status TEXT); INSERT INTO physical_items VALUES(2,'0002','available'); CREATE TABLE loans(item_id INTEGER,returned_at TEXT);").unwrap();
+        c.execute_batch("CREATE TABLE members(id INTEGER,member_number TEXT COLLATE NOCASE); INSERT INTO members VALUES(1,'001'); CREATE TABLE physical_items(id INTEGER,barcode TEXT COLLATE NOCASE,status TEXT); INSERT INTO physical_items VALUES(2,'0002','available'); CREATE TABLE loans(item_id INTEGER,returned_at TEXT,return_condition TEXT);").unwrap();
         c
     }
     fn csv(rows: &str) -> String {
         format!("{}\n{rows}", HEADERS.join(","))
+    }
+    fn csv_v2(rows: &str) -> String {
+        format!("{},return_condition\n{rows}", HEADERS.join(","))
     }
     #[test]
     fn resolves_text_identifiers_and_preserves_database() {
@@ -348,12 +384,38 @@ mod tests {
         );
     }
     #[test]
+    fn validates_optional_return_condition_in_v2_header() {
+        let c = db();
+        // Valid closed conditions: available, damaged, lost, or empty
+        let valid = csv_v2(
+            "c1,001,0002,2020-01-01T10:00:00Z,2020-01-10,2020-01-05T10:00:00Z,Staff,available\n\
+             c2,001,0002,2020-02-01T10:00:00Z,2020-02-10,2020-02-05T10:00:00Z,Staff,damaged\n\
+             c3,001,0002,2020-03-01T10:00:00Z,2020-03-10,2020-03-05T10:00:00Z,Staff,lost\n\
+             c4,001,0002,2020-04-01T10:00:00Z,2020-04-10,2020-04-05T10:00:00Z,Staff,\n\
+             op,001,0002,2026-11-01T10:00:00Z,2026-11-30,,Staff,"
+        );
+        let p = preview(&c, valid.as_bytes()).unwrap();
+        assert_eq!((p.total, p.open, p.closed, p.invalid), (5, 1, 4, 0));
+
+        // Invalid condition string on closed loan
+        let bad_cond = csv_v2("c1,001,0002,2020-01-01T10:00:00Z,2020-01-10,2020-01-05T10:00:00Z,Staff,broken");
+        let p_bad = preview(&c, bad_cond.as_bytes()).unwrap();
+        assert_eq!(p_bad.invalid, 1);
+        assert!(p_bad.problems[0].contains("Return condition must be 'available', 'damaged', 'lost', or empty."));
+
+        // Condition specified on open loan is rejected
+        let open_with_cond = csv_v2("op,001,0002,2026-11-01T10:00:00Z,2026-11-30,,Staff,damaged");
+        let p_open_bad = preview(&c, open_with_cond.as_bytes()).unwrap();
+        assert_eq!(p_open_bad.invalid, 1);
+        assert!(p_open_bad.problems[0].contains("Open loans cannot specify a return condition."));
+    }
+    #[test]
     fn rejects_missing_references_duplicate_ids_and_open_conflicts() {
         let c = db();
         let rows=csv("a,001,0002,2026-11-01T10:00:00Z,2026-11-30,,Staff\nb,001,0002,2026-11-01T10:00:00Z,2026-11-30,,Staff\na,001,0002,2026-11-01T10:00:00Z,2026-11-30,,Staff\nc,1,0002,2026-11-01T10:00:00Z,2026-11-30,,Staff");
         let p = preview(&c, rows.as_bytes()).unwrap();
         assert_eq!((p.open, p.invalid), (1, 3));
-        c.execute("INSERT INTO loans VALUES(2,NULL)", []).unwrap();
+        c.execute("INSERT INTO loans VALUES(2,NULL,NULL)", []).unwrap();
         assert_eq!(
             preview(
                 &c,

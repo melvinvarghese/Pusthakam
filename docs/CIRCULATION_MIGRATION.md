@@ -7,10 +7,12 @@ Phase 4 task IMP-LOANS remains **in progress**. The neutral loan CSV preview and
 UTF-8 CSV, optional BOM, at most 10 MB and 25,000 records. Exact header order:
 
 ```csv
-source_id,member_number,barcode,issued_at,due_on,returned_at,source_staff
+source_id,member_number,barcode,issued_at,due_on,returned_at,source_staff[,return_condition]
 ```
 
-Use docs/examples/loan-history-template.csv as an empty template. Every column is required. source_id must be unique in the source system; member_number and barcode resolve existing records, with case-insensitive matching and leading zeros preserved. Accession fallback is not inferred. Required identifiers and source_staff must have no surrounding whitespace. Timestamps are UTC YYYY-MM-DDTHH:MM:SSZ; due dates are YYYY-MM-DD. Leave returned_at empty for an open loan.
+Use docs/examples/loan-history-template.csv as an empty template. Columns 1–7 are required; column 8 (`return_condition`) is optional. source_id must be unique in the source system; member_number and barcode resolve existing records, with case-insensitive matching and leading zeros preserved. Accession fallback is not inferred. Required identifiers and source_staff must have no surrounding whitespace. Timestamps are UTC YYYY-MM-DDTHH:MM:SSZ; due dates are YYYY-MM-DD. Leave returned_at empty for an open loan.
+
+For closed loans with the 8-column format, `return_condition` accepts `available`, `damaged`, `lost`, or empty if unspecified. Open loans must leave `return_condition` empty. Unspecified historical return conditions default to null. Mapped return conditions display on member loan history cards.
 
 Import catalogue copies and members first. Source database IDs are never treated as Pusthakam IDs. Use a stable source-system/library name across later batches.
 

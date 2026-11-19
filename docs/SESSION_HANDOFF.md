@@ -16,13 +16,35 @@ After every meaningful change, immediately update **PROGRESS.md**, **PROGRESS.js
 
 The current clone is D:\Pusthakam. Other computers can use another path. Temporary verification executables and disposable databases are machine-specific: rebuild from source on another computer. Windows native builds require the documented Rust/MSVC/WebView2 toolchain.
 
-## Current task: saved and paused / Phase 4 IMP-LOANS
+## Current task: Phase 6 ACQ-RECEIVE Completed & Verified (Purchase receiving into catalogue and accession)
 
-Owner asked to save everything and pause until returning. All source files are saved locally; no Git commit or push performed. Resume by reading PROGRESS.md/PROGRESS.json, inspecting Git status and continuing the next step below.
+1. **Phase 6 Purchase Receiving (ACQ-RECEIVE):**
+   - **Backend Service (`src-tauri/src/services/acquisitions.rs`):** Implemented `receive_order_item` in a single atomic SQLite transaction:
+     - Validates order state (`ordered` or `partially_received`), rejects duplicate/excess receipts.
+     - Resolves or auto-creates bibliographic records (`bibliographic_records`, `record_contributors`, search index `records_fts`).
+     - Auto-generates accession numbers and barcodes via `catalogue::next_accession`.
+     - Creates physical copies in `physical_items` with vendor name, invoice reference, and purchase source.
+     - Appends lifecycle creation entries to `item_events`.
+     - Updates received quantities on purchase order items and transitions order status to `partially_received` or `received`.
+     - Transitions linked acquisition recommendations to `received` once full quantity is received.
+     - Appends audit log event `order.receive`.
+   - **Command Layer (`src-tauri/src/commands/acquisitions.rs`):** Registered `acquisitions_receive_items` with `acquisitions.write` session requirement.
+   - **Frontend Types, API & UI (`types.ts`, `api/index.ts`, `AcquisitionsPage.tsx`):** Added `ReceiveItemInput`, `ReceiveResult`, `CreatedCopyInfo`, `acquisitionsApi.receiveItems`, and built `ReceiveStockModal` with category/location picker, remaining quantity feedback, and accession summary display.
+   - **Verification:**
+     - 128 Rust unit tests passed (`receiving_partial_order_full_order_and_duplicate_rejection`).
+     - 27 Tauri IPC end-to-end integration tests passed (`acquisitions_full_workflow_via_ipc` testing partial, full, and duplicate receipt rejection).
+     - 171 Vitest frontend tests passed across 31 test files (4 tests in `AcquisitionsPage.test.tsx`).
+     - Clean `tsc --noEmit` and clean `eslint src` with zero errors.
+     - Progress totals: **59.5% overall complete, 74.5% implemented, 46.1% verified, 10% release readiness**. Phase 6 is 54.5% implemented and 54.5% verified.
 
-Owner confirmed the joint five-feature Windows batch works fine: reservation history, assessed fines, allocated payments, waivers and saved currency reconciliation. The supplied synthetic walkthrough is native-accepted. All 122 Rust unit, 24 IPC and 28 focused frontend tests plus production build/typecheck/lint and native build passed. Full IMP-LOANS remains in progress because broader source/schema gaps and representative real-data reconciliation are outstanding; no full-task credit was awarded.
+2. **Phase 6 Acquisitions Requests, Approvals and Purchase Orders (ACQ-ORDER):**
+   - Implemented 0021_acquisitions.sql migration, vendor management, budget allocations, request approvals, and purchase orders. Verified.
 
-Next: audit remaining explicit limitations and select the next Phase 4 increment: open-loan/non-loan/multiple charges, credits/refunds, title-level reservation mapping, historical policy/return-condition fields. No real Koha sample is available; generic development remains authorized. Do not misrepresent synthetic acceptance as real source compatibility. The owner requested five-at-once once for this batch only; do not assume all future work must be grouped by five.
+3. **Next Milestone:** Phase 6 task `SER-ISSUES` ("Serials subscriptions and issue check-in", weight 6), supporting periodicals subscriptions, frequency patterns, expected issue prediction, and single-click check-in into the accession register.
+
+3. **Previous Milestone (Phase 5):**
+   - `RPT-FORMATS`: standalone OpenXML XLSX generator and vector PDF 1.4 multi-page document generator in Rust without external dependencies; export buttons and non-clipping print CSS.
+   - `RPT-COVERAGE`: Overdue loans list, accession register, acquisition expenditure summary, and loss & damage reports.
 
 Latest accepted executable: pusthakam-phase4-five-feature.exe, schema 20. Pinned test folder: %LOCALAPPDATA%\Temp\pusthakam-native-verification-cea843fbd8cb4e9bbaf6c2274b98c468. It contains prerequisite loan CSV, valid/mismatch history JSON and FIVE_FEATURE_TEST.txt. The native example is now imported by the owner; source IDs must not be reused. Inspect actual disposable DB read-only before preparing future fixtures. Tray > Quit older apps (X hides). Temporary files and test-library records do not travel through Git.
 

@@ -35,8 +35,8 @@ export default function LoanImport({ onClose }: { onClose: () => void }) {
     <p>Review this loan-history CSV before confirming. All records are imported together; an error rolls back the entire batch.</p>
     <p className="text-sm text-muted">Use the Pusthakam loan CSV format, not a raw Koha export. Import members and catalogue copies first.</p>
     <details className="text-sm"><summary>Required CSV format</summary>
-      <p className="break-words font-mono">source_id,member_number,barcode,issued_at,due_on,returned_at,source_staff</p>
-      <p>Use UTF-8 with these columns in order. Timestamps: YYYY-MM-DDTHH:MM:SSZ (UTC). Due dates: YYYY-MM-DD. Leave returned_at empty for an open loan. Keep member numbers and barcodes as text, including leading zeros. Maximum 10 MB and 25,000 records.</p>
+      <p className="break-words font-mono">source_id,member_number,barcode,issued_at,due_on,returned_at,source_staff[,return_condition]</p>
+      <p>Use UTF-8 with these columns in order. Timestamps: YYYY-MM-DDTHH:MM:SSZ (UTC). Due dates: YYYY-MM-DD. Leave returned_at empty for an open loan. Optional return_condition on closed loans: &apos;available&apos;, &apos;damaged&apos;, &apos;lost&apos;, or empty. Keep member numbers and barcodes as text, including leading zeros. Maximum 10 MB and 25,000 records.</p>
     </details>
     <TextField label="Loan history CSV" type="file" accept=".csv,text/csv" disabled={busy}
       onChange={(event) => { setFile(event.target.files?.[0] ?? null); load.reset(); commit.reset(); setUseCurrentTerms(false); }} />

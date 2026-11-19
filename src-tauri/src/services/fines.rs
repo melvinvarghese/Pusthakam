@@ -36,6 +36,19 @@ pub(super) fn snapshot(
 }
 
 pub(super) fn estimate_return(conn: &Connection, loan_id: i64) -> AppResult<Option<FineAmount>> {
+    let existing: Option<(i64, String)> = conn
+        .query_row(
+            "SELECT amount_minor, currency FROM fines WHERE loan_id = ?1",
+            [loan_id],
+            |r| Ok((r.get(0)?, r.get(1)?)),
+        )
+        .optional()?;
+    if let Some((amount_minor, currency)) = existing {
+        return Ok((amount_minor > 0).then_some(FineAmount {
+            amount_minor,
+            currency,
+        }));
+    }
     let terms: Option<(i64, i64, Option<i64>, String)> = conn.query_row(
         "SELECT CAST(julianday(COALESCE(date(l.returned_at,'localtime'), date('now','localtime'))) - julianday(l.due_on) AS INTEGER) - t.grace_days,
                 t.rate_minor, t.cap_minor, t.currency
@@ -61,6 +74,19 @@ pub(super) fn assess_return(
     actor: &Session,
     loan_id: i64,
 ) -> AppResult<Option<FineAmount>> {
+    let existing: Option<(i64, String)> = conn
+        .query_row(
+            "SELECT amount_minor, currency FROM fines WHERE loan_id = ?1",
+            [loan_id],
+            |r| Ok((r.get(0)?, r.get(1)?)),
+        )
+        .optional()?;
+    if let Some((amount_minor, currency)) = existing {
+        return Ok((amount_minor > 0).then_some(FineAmount {
+            amount_minor,
+            currency,
+        }));
+    }
     let Some(fine) = estimate_return(conn, loan_id)? else {
         return Ok(None);
     };

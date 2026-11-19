@@ -6,7 +6,7 @@ _Last updated: 2026-11-19_
 
 For continuation on another computer, read [SESSION_HANDOFF.md](docs/SESSION_HANDOFF.md) and the current task in PROGRESS.json. Uncommitted changes remain local until Git sync.
 
-Pusthakam is **51.2% complete overall**, with 62.9% implemented, 41.8% verified and 10% release-ready. Next product milestone: review remaining Phase 4 migration gaps after the accepted five-feature batch.
+Pusthakam is **59.5% complete overall**, with 74.5% implemented, 46.1% verified and 10% release-ready. Next product milestone: serials subscriptions and issue check-in in Phase 6 (SER-ISSUES).
 
 Run `npm run progress:monitor` from this directory and open <http://127.0.0.1:4317/>. Keep the terminal open while using the dashboard. Run `npm run progress:validate` to check the task data and percentages.
 
@@ -16,9 +16,9 @@ Run `npm run progress:monitor` from this directory and open <http://127.0.0.1:43
 | 1 · Application foundation | 83.3% | 83.3% |
 | 2 · Setup and configuration | 100% | 100% |
 | 3 · Catalogue and accession | 92% | 50% |
-| 4 · Circulation and members | 89.1% | 36.9% |
-| 5 · Dashboard, reports and printing | 43.7% | 25% |
-| 6 · Collection operations | 18.1% | 18.1% |
+| 4 · Circulation and members | 100% | 36.9% |
+| 5 · Dashboard, reports and printing | 90.6% | 25% |
+| 6 · Collection operations | 54.5% | 54.5% |
 | 7 · Administration and recovery | 82.1% | 57.1% |
 | 7b · LAN mode | 0% | 0% |
 | 8 · Release and distribution | 12% | 12% |
@@ -31,6 +31,30 @@ Monitor verification passed for the data schema, weighted calculations, loopback
 - **Phase 3 in progress:** bulk catalogue archiving is implemented. The catalogue frontend suite passed all 20 tests. The targeted Tauri IPC test passed rollback and permission checks. A native bulk archive walkthrough remains open.
 - **Start here:** add and remove a validated local book cover, then build a Windows verification executable and check both covers and bulk archiving in the disposable test library. Phase 3 completion credit for this task is pending.
 - **Keep on the roadmap:** the owner deferred Windows Narrator. New passwords must eventually require at least six characters and contain no spaces. Write the illustrated user manual after feature completion.
+
+## Work on 19 November 2026: Purchase Receiving (ACQ-RECEIVE)
+
+Implemented transactional purchase receiving into catalogue and accession register:
+- **Backend Service (`services/acquisitions.rs`):** Implemented `receive_order_item` executing in a single atomic SQLite transaction:
+  - Validates order state (`ordered` or `partially_received`), rejects duplicate/excess receipts.
+  - Links or automatically creates bibliographic records (`bibliographic_records`, `record_contributors`, search index `records_fts`).
+  - Auto-allocates accession numbers and barcodes via `catalogue::next_accession`.
+  - Inserts physical copies (`physical_items`) with provenance, vendor info, invoice reference, and price.
+  - Records creation lifecycle events in `item_events`.
+  - Increments `received_quantity` on PO items, transitions PO status to `partially_received` or `received`.
+  - Transitions linked acquisition recommendations to `received` once all ordered copies are accounted for.
+  - Emits immutable audit log entry `order.receive`.
+- **Command Layer (`commands/acquisitions.rs`):** Exposed `acquisitions_receive_items` with strict `acquisitions.write` session permission check.
+- **Frontend UI (`AcquisitionsPage.tsx`):** Added `ReceiveStockModal` with remaining quantity calculation, item category & location assignment, and copy creation summary with generated accession numbers.
+- **Verification:** 128 Rust unit tests, 27 Tauri IPC tests, 171 Vitest tests across 31 test files, clean TypeScript typecheck (`tsc --noEmit`), and clean ESLint pass with zero errors.
+
+## Work on 19 November 2026: Acquisitions (ACQ-ORDER)
+
+Implemented acquisition requests, vendor management, budget allocations, and purchase orders:
+- **Schema Migration (`0021_acquisitions.sql`):** Added tables `vendors`, `acquisition_budgets`, `acquisition_requests`, `purchase_orders`, `purchase_order_items`, and permissions `acquisitions.read`, `acquisitions.write`.
+- **Rust Services & Commands (`services/acquisitions.rs`, `commands/acquisitions.rs`):** Implemented vendor and budget management, request submission, review (approval with optional budget link, rejection with reason), purchase order creation with line items and status tracking (`draft`, `ordered`, `partially_received`, `received`, `cancelled`), budget allocation tracking, and audit logging.
+- **Frontend UI (`AcquisitionsPage.tsx`):** Four dedicated tabs ("Requests & Recommendations", "Purchase Orders", "Vendors", "Budgets"), modal dialogs for all operations, enabled `/acquisitions` route in navigation and `App.tsx`.
+- **Verification:** 127 Rust unit tests (including `vendor_lifecycle_and_validation` and `request_to_purchase_order_flow`), 27 Tauri IPC tests (including `acquisitions_full_workflow_via_ipc`), and 170 Vitest tests (including `AcquisitionsPage.test.tsx`) pass with 100% success.
 
 ## Work on 18 November 2026
 
@@ -400,3 +424,18 @@ Owner reported the combined Windows walkthrough works fine: reservation history,
 ## Saved and paused at owner request
 
 All working source files and documentation are saved locally. Owner accepted the five-feature Windows batch. Last passed checks: 122 unit, 24 IPC, 28 focused frontend tests, production build/typecheck/lint and native build. Latest executable: pusthakam-phase4-five-feature.exe, schema 20. Resume by reading this file, PROGRESS.json and SESSION_HANDOFF.md, inspecting Git status and reviewing remaining Phase 4 migration gaps. No further code work requested tonight; no commit/push performed. Use Git sync before moving to another computer. Full task remains in progress; totals unchanged.
+
+## Work resumed: loan return condition support — 19 November
+
+Work resumed at owner instruction. Extended neutral loan CSV import (`loan_import.rs`) with an optional 8th column `return_condition` (`available`, `damaged`, `lost`) for closed loans. Open loans must omit return conditions; invalid condition strings are rejected. Validated condition is stored in `loans.return_condition` and displayed in `MemberLoanHistory.tsx`. Automated verification passed: 123 Rust unit tests, 25 IPC tests, 159 frontend tests, typecheck and lint.
+
+## Open-loan assessed fine support — 19 November
+
+Implemented support for importing assessed fines and partial settlements on open loans within the neutral history bundle (`history_import/finance.rs`). Removed the restriction limiting fines to closed loans. Updated `fines::estimate_return` and `fines::assess_return` in `services/fines.rs` to detect existing assessed fines on target loans, returning the existing fine amount in return preview and avoiding duplicate fine insertion or SQLite `UNIQUE constraint failed: fines.loan_id` conflicts during desk return. Added integration test `history_bundle_import_supports_open_loan_fines_and_subsequent_return` in `tests/ipc.rs`. All 123 Rust unit tests, 26 IPC tests, 159 frontend tests, `tsc --noEmit`, and `eslint .` passed. IMP-LOANS implementation criteria completed; full verification remains open for representative real-source export reconciliation.
+
+## Dashboard trends, activity and alerts (DASH-TRENDS) — 19 November
+
+Implemented `DASH-TRENDS` in `src/features/dashboard/Dashboard.tsx` to satisfy `REQ-DASH`:
+1. **Actionable alerts:** Added overdue loan banner, ready hold pickup notification, and due today notification directly linked to circulation actions (`/circulation`).
+2. **Activity & growth trends:** Added date range filtering with preset options (7d, 30d default, 90d, and custom start/end dates). Computes period circulation metrics (issues, returns, renewals), period catalogue growth (new titles and copies added), and top 5 borrowed titles with borrow counts, reconciling directly with backend reports queries (`reports_circulation_activity`, `reports_popular_titles`, `reports_catalogue_growth`).
+3. **Automated verification:** 5 focused dashboard unit tests in `src/features/dashboard/Dashboard.test.tsx` passed, along with full test suite (162 Vitest frontend tests), `tsc --noEmit`, and `eslint .`. Next: produce remaining operational reports in Phase 5 (`RPT-COVERAGE`).

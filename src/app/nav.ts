@@ -39,7 +39,7 @@ export const NAV_GROUPS: NavGroup[] = [
   {
     label: "Operations",
     items: [
-      { path: "/acquisitions", label: "Acquisitions", available: false, phase: 6, summary: "Purchase requests, approvals, vendors, orders, invoices and receiving new stock." },
+      { path: "/acquisitions", label: "Acquisitions", available: true, phase: 6, summary: "Purchase requests, approvals, vendors, orders, invoices and receiving new stock." },
       { path: "/reports", label: "Reports", available: true, phase: 5, summary: "Review circulation activity and most borrowed titles by date, and export to CSV." },
       { path: "/printing", label: "Barcode & Printing", available: false, phase: 5, summary: "Barcode labels, spine labels, member cards and receipts." },
     ],

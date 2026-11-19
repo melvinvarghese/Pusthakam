@@ -11,8 +11,11 @@ import type { HistoryBatchSummary, HistorySummary, HistoryPreview, RenewalImport
   ImportPreviewRequest, ImportReport, IssuePreview, KohaPatronPreview, LibraryInput, MemberCategoryInput, MemberInput, MemberLoanPage, MemberPage, OverduePage, RenewalPreview, ReservationPage, ReturnCondition, ReturnPreview,
   NamedInput, NamedKind, PolicyInput, PopularTitle, RecordDetail, RecordInput, SearchQuery, SearchResult, Session, SetupInput,
   SetupStatus, ShelfInput, StockRow, FineSummary, CatalogueGrowthDay, MemberSummary, BackupFile, BackupList, AuditPage, AuditQuery,
+  OverdueRow, AccessionRow, ExpenditureRow, LossDamageRow, ReportExportFile,
   NewStaff, StaffChanges, StaffDirectory,
   ScanOutcome, StockCheck, StockCheckPage, StockCheckReview, StockCheckView, StockTransfer,
+  Vendor, VendorInput, AcquisitionBudget, BudgetInput, AcquisitionRequest, CreateRequestInput,
+  PurchaseOrderSummary, PurchaseOrderDetail, CreateOrderInput, ReceiveItemInput, ReceiveResult,
 } from "./types";
 
 export class ApiError extends Error {
@@ -80,6 +83,12 @@ export const reportsApi = {
   fineSummary: () => call<FineSummary[]>("reports_fine_summary"),
   memberSummary: () => call<MemberSummary[]>("reports_member_summary"),
   catalogueGrowth: (from: string, to: string) => call<CatalogueGrowthDay[]>("reports_catalogue_growth", { from, to }),
+  overdueLoansList: (from: string, to: string) => call<OverdueRow[]>("reports_overdues_list", { from, to }),
+  accessionList: (from: string, to: string) => call<AccessionRow[]>("reports_accession_list", { from, to }),
+  expenditureSummary: (from: string, to: string) => call<ExpenditureRow[]>("reports_expenditure_summary", { from, to }),
+  lossDamageList: (from: string, to: string) => call<LossDamageRow[]>("reports_loss_damage_list", { from, to }),
+  exportReport: (format: "xlsx" | "pdf", fileName: string, title: string, subtitle: string, headers: string[], rows: string[][], alignments?: string[]) =>
+    call<ReportExportFile>("reports_export_file", { format, fileName, title, subtitle, headers, rows, alignments: alignments ?? [] }),
 };
 
 export const backupApi = {
@@ -211,6 +220,25 @@ export const configApi = {
   deletePolicy: (id: number) => call<void>("config_delete_policy", { id }),
   setArchived: (kind: ArchiveKind, id: number, archived: boolean) =>
     call<void>("config_set_archived", { kind, id, archived }),
+};
+
+export const acquisitionsApi = {
+  listVendors: (includeArchived = false) => call<Vendor[]>("acquisitions_list_vendors", { includeArchived }),
+  saveVendor: (input: VendorInput) => call<number>("acquisitions_save_vendor", { input }),
+  archiveVendor: (id: number, archive: boolean) => call<void>("acquisitions_archive_vendor", { id, archive }),
+  listBudgets: (includeArchived = false) => call<AcquisitionBudget[]>("acquisitions_list_budgets", { includeArchived }),
+  saveBudget: (input: BudgetInput) => call<number>("acquisitions_save_budget", { input }),
+  archiveBudget: (id: number, archive: boolean) => call<void>("acquisitions_archive_budget", { id, archive }),
+  listRequests: (status?: string | null) => call<AcquisitionRequest[]>("acquisitions_list_requests", { status: status ?? null }),
+  createRequest: (input: CreateRequestInput) => call<number>("acquisitions_create_request", { input }),
+  approveRequest: (id: number, budgetId?: number | null) => call<void>("acquisitions_approve_request", { id, budgetId: budgetId ?? null }),
+  rejectRequest: (id: number, reason?: string | null) => call<void>("acquisitions_reject_request", { id, reason: reason ?? null }),
+  listOrders: (status?: string | null) => call<PurchaseOrderSummary[]>("acquisitions_list_orders", { status: status ?? null }),
+  getOrder: (id: number) => call<PurchaseOrderDetail>("acquisitions_get_order", { id }),
+  createOrder: (input: CreateOrderInput) => call<number>("acquisitions_create_order", { input }),
+  updateOrderStatus: (id: number, status: string, invoiceRef?: string | null) =>
+    call<void>("acquisitions_update_order_status", { id, status, invoiceRef: invoiceRef ?? null }),
+  receiveItems: (input: ReceiveItemInput) => call<ReceiveResult>("acquisitions_receive_items", { input }),
 };
 
 /**
