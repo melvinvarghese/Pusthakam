@@ -206,7 +206,7 @@ pub(super) fn fingerprint(conn: &Connection, bytes: &[u8]) -> AppResult<String> 
         "libraries",
         "loans",
         "loan_import_sources",
-        "loan_import_batches", "loan_renewals", "renewal_import_batches", "renewal_import_sources",
+        "loan_import_batches", "loan_renewals", "renewal_import_batches", "renewal_import_sources", "reservations", "fines", "fine_settlements", "history_import_batches", "history_import_sources",
     ] {
         hash.update(table.as_bytes());
         let mut stmt = conn.prepare(&format!("SELECT * FROM {table} ORDER BY rowid"))?;

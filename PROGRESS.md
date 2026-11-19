@@ -1,12 +1,12 @@
 # PROGRESS
 
-_Last updated: 2026-11-18_
+_Last updated: 2026-11-19_
 
 ## Local progress monitor
 
 For continuation on another computer, read [SESSION_HANDOFF.md](docs/SESSION_HANDOFF.md) and the current task in PROGRESS.json. Uncommitted changes remain local until Git sync.
 
-Pusthakam is **51.2% complete overall**, with 62.9% implemented, 41.8% verified and 10% release-ready. Next product milestone: style Choose file as a button, then reservations and financial history (Phase 4).
+Pusthakam is **51.2% complete overall**, with 62.9% implemented, 41.8% verified and 10% release-ready. Next product milestone: review remaining Phase 4 migration gaps after the accepted five-feature batch.
 
 Run `npm run progress:monitor` from this directory and open <http://127.0.0.1:4317/>. Keep the terminal open while using the dashboard. Run `npm run progress:validate` to check the task data and percentages.
 
@@ -364,3 +364,39 @@ Renewal-history import ready in pusthakam-phase4-renewal-import.exe (schema 19).
 ## End-of-session checkpoint: owner confirmed renewals
 
 Owner confirmed Windows renewal import/history works. The Choose file control currently looks like random text: make it visibly a button as the FIRST next step, preferably through shared file-input styling, with clear focus/disabled/light/dark states. This is queued only; no styling change made tonight. Then continue Phase 4 reservation and financial migration. Repeat-file and other recorded native checks remain open. Automated baseline: 122 Rust unit, 23 IPC and 22 focused frontend tests, production build/typecheck/lint and native build passed. Owner is leaving and will resume tomorrow. PROGRESS.json, handoff and feature docs updated; source/docs remain local and require Git commit/push/pull to travel to another computer. Totals unchanged.
+
+19 November: Choose file styling implemented in shared TextField/native selector CSS, retaining native upload behavior and keyboard focus. All six current file fields share it. Regression/build/lint running. Browser visual check timed out before any surface was inspected; native appearance check remains open. Next: finish checks and refreshed Windows build, then Phase 4 reservation migration.
+
+## Choose file button fix — 19 November
+
+Shared Choose file styling implemented with theme-token filled native buttons, hover/disabled states and retained keyboard focus. Catalogue import now uses shared TextField, so all six file fields are consistent. 19 focused frontend tests, production build/typecheck and lint passed. Native packaging running; browser inspection timed out, so native appearance acceptance remains open. Native selector behavior is retained, without extra hidden controls. Catalogue import was moved to the shared TextField. Automated checks do not establish rendered appearance; owner Windows light/dark/focus/chooser check is still open. No schema or Rust business changes; task weights/totals unchanged.
+
+## File-picker Windows test ready
+
+Standalone native build passed: pusthakam-phase4-file-picker.exe is in the existing pinned test folder, schema 19. All 19 focused frontend tests, production build/typecheck and lint passed. Quit the older app via tray > Quit, then inspect Choose file button appearance, light/dark, Tab focus and opening/canceling the chooser. No library data import is necessary. Native appearance remains open; next Phase 4 work is reservation then financial migration. Progress totals unchanged.
+
+## Owner confirmed file-picker button
+
+Owner confirmed Choose file now looks like a button in Windows. Visible appearance acceptance recorded; unreported light/dark/keyboard/open-cancel checks are not inferred. No further code changes. Next: source-linked reservation migration with preview, queue/status validation, provenance and atomic commit, then financial history. Docs/handoff and JSON updated; totals unchanged because full IMP-LOANS is still in progress.
+
+## Five-feature batch authorized — 19 November
+
+Owner requested this batch once: reservation history, assessed-fine history, payments, waivers and a currency-separated reconciliation summary. Implement/test together, then one native build and checklist. Neutral JSON bundle planned for atomic cross-record validation; source-specific mappings remain unverified. Work starting, no completion credit.
+
+Five-feature implementation checkpoint: schema 20 append-only provenance and one strict JSON bundle for reservations, assessed fines, payments and waivers. Expected counts/currency totals gate atomic commit; destination records are reread before finalizing. Admin preview/confirmation UI added. cargo check passed before the post-write reconciliation addition; focused tests next. Explicitly reject unsupported non-loan/multiple/open-loan charges and conflicting queues. No completion credit.
+
+## Five-feature migration batch automated results
+
+All five batch features implemented in one strict history JSON bundle: reservations, assessed fines, allocated payments, waivers and saved currency reconciliation. Schema 20 provenance; admin preview/atomic commit, source/queue/balance validation, repeat/stale checks and post-write rereconciliation. 122 Rust unit, 24 IPC and 28 focused frontend tests plus production build/typecheck/lint passed. One native build/test package in progress. Full IMP-LOANS remains in progress for broader unsupported source mappings and acceptance. The complete supported bundle is transactional, and saved destination counts/balances are reread before commit. One native test package is being prepared without inserting test-library records. No real Koha mapping or unsupported charge conversion is claimed. Full roadmap task stays in progress; weighted totals unchanged.
+
+## Single five-feature Windows test package ready
+
+All five supported neutral features are ready together in pusthakam-phase4-five-feature.exe (schema 20): reservations, assessed fines, payments, waivers and saved reconciliation. 122 Rust unit, 24 IPC, 28 focused frontend tests, production build/typecheck/lint and native build passed. One checklist and prerequisite/valid/mismatch files are beside it. No test-library records inserted automatically. Joint owner acceptance pending; full source-migration gaps remain explicit. Owner follows FIVE_FEATURE_TEST.txt in the pinned verification folder, including source Five-feature test for the prerequisite closed-loan CSV. Expected new counts 1 reservation, 2 fines, 2 payments, 1 waiver; outstanding INR 5.00 and USD 4.00, kept separate. Source counts and destination balances must agree before commit; persisted destination is reread and summary can be reopened. No owner acceptance is claimed yet. Totals unchanged because broader source/schema gaps remain on IMP-LOANS.
+
+## Owner accepted the five-feature batch
+
+Owner reported the combined Windows walkthrough works fine: reservation history, assessed fines, payments, waivers and saved currency reconciliation. Native acceptance recorded for the supplied synthetic package. Real-source reconciliation and unsupported source/schema mappings remain open; full IMP-LOANS stays in progress and totals unchanged. The five-at-once experiment applied to this batch only. Next: review remaining Phase 4 migration gaps and select the next increment. Progress JSON, handoff and feature docs synchronized.
+
+## Saved and paused at owner request
+
+All working source files and documentation are saved locally. Owner accepted the five-feature Windows batch. Last passed checks: 122 unit, 24 IPC, 28 focused frontend tests, production build/typecheck/lint and native build. Latest executable: pusthakam-phase4-five-feature.exe, schema 20. Resume by reading this file, PROGRESS.json and SESSION_HANDOFF.md, inspecting Git status and reviewing remaining Phase 4 migration gaps. No further code work requested tonight; no commit/push performed. Use Git sync before moving to another computer. Full task remains in progress; totals unchanged.

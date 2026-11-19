@@ -6,6 +6,23 @@ use crate::state::AppState;
 use tauri::State;
 
 #[tauri::command]
+pub fn circulation_history_imports(state: State<'_, AppState>) -> AppResult<Vec<crate::services::history_import::BatchSummary>> {
+    state.require("admin.settings")?;
+    state.with_conn(crate::services::history_import::recent)
+}
+
+#[tauri::command]
+pub fn circulation_preview_history(state: State<'_, AppState>, data_base64: String) -> AppResult<crate::services::history_import::Preview> {
+    state.require("admin.settings")?;
+    state.with_conn(|conn| crate::services::history_import::preview(conn,&data_base64))
+}
+#[tauri::command]
+pub fn circulation_commit_history(state: State<'_, AppState>, data_base64: String, expected_fingerprint: String) -> AppResult<crate::services::history_import::Summary> {
+    let actor=state.require("admin.settings")?;
+    crate::services::history_import::commit(&mut *state.conn()?,&actor,&data_base64,&expected_fingerprint)
+}
+
+#[tauri::command]
 pub fn circulation_preview_renewal_import(state: State<'_, AppState>, data_base64: String, source_system: String) -> AppResult<crate::services::renewal_import::Preview> {
     state.require("admin.settings")?;
     state.with_conn(|conn| crate::services::renewal_import::preview(conn, &data_base64, &source_system))

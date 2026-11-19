@@ -1561,3 +1561,112 @@ fn renewal_import_validates_chains_preserves_events_and_rolls_back() {
     assert_eq!(h.code("circulation_preview_renewal_import",preview(&data,"Legacy")),"PERMISSION_DENIED");
     assert_eq!(h.code("circulation_commit_renewal_import",commit(&data,&p,"Legacy")),"PERMISSION_DENIED");
 }
+
+#[test]
+fn history_bundle_import_reconciles_all_five_parts_and_rolls_back() {
+    use base64::{engine::general_purpose::STANDARD, Engine};
+    let h=Harness::new();h.ok("complete_setup",setup_body());
+    let cfg=h.ok("config_overview",json!({}));let policy=&cfg["policies"][0];
+    let member=h.ok("members_save",json!({"input":{"name":"Bundle reader","memberNumber":"0001","categoryId":policy["memberCategoryId"]}}));
+    h.ok("members_save",json!({"input":{"name":"Second queue reader","memberNumber":"0002","categoryId":policy["memberCategoryId"]}}));
+    let record=h.ok("catalogue_save_record",json!({"input":{"title":"Five part migration","contributors":[],"subjects":[]}}));
+    let copies=h.ok("catalogue_add_copies",json!({"recordId":record,"input":{"count":1,"itemCategoryId":policy["itemCategoryId"],"acquisitionSource":"purchase"}}));
+    let barcode=copies[0]["barcode"].as_str().unwrap();
+    let loans=STANDARD.encode(format!("source_id,member_number,barcode,issued_at,due_on,returned_at,source_staff\na,0001,{barcode},2018-01-01T10:00:00Z,2018-01-10,2018-01-20T10:00:00Z,Original staff\nb,0001,{barcode},2019-01-01T10:00:00Z,2019-01-10,2019-01-20T10:00:00Z,Original staff\n"));
+    let p=h.ok("circulation_preview_import",json!({"dataBase64":loans}));
+    h.ok("circulation_commit_import",json!({"dataBase64":loans,"sourceSystem":"Legacy","expectedFingerprint":p["fingerprint"],"useCurrentTerms":false}));
+    let (now,expiry):(String,String)={let state=h.webview.state::<AppState>();let conn=state.conn().unwrap();conn.query_row("SELECT strftime('%Y-%m-%dT%H:%M:%SZ','now'),strftime('%Y-%m-%dT%H:%M:%SZ','now','+7 days')",[],|r|Ok((r.get(0)?,r.get(1)?))).unwrap()};
+    let bundle=json!({"version":1,"sourceSystem":"Legacy",
+      "reservations":[
+        {"sourceId":"q2","memberNumber":"0002","barcode":barcode,"placedAt":now,"status":"pending","expiresAt":null,"closedAt":null,"queuePosition":2,"sourceStaff":"Source queue staff"},
+        {"sourceId":"oldq","memberNumber":"0001","barcode":barcode,"placedAt":"2017-01-01T10:00:00Z","status":"cancelled","expiresAt":null,"closedAt":"2017-01-02T10:00:00Z","queuePosition":null,"sourceStaff":"Source queue staff"},
+        {"sourceId":"q1","memberNumber":"0001","barcode":barcode,"placedAt":now,"status":"ready","expiresAt":expiry,"closedAt":null,"queuePosition":1,"sourceStaff":"Source queue staff"}],
+      "fines":[
+        {"sourceId":"f1","loanSourceId":"a","amountMinor":1000,"currency":"INR","assessedAt":"2018-01-20T10:00:00Z","sourceStaff":"Assessor A"},
+        {"sourceId":"f2","loanSourceId":"b","amountMinor":500,"currency":"USD","assessedAt":"2019-01-20T10:00:00Z","sourceStaff":"Assessor B"}],
+      "payments":[
+        {"sourceId":"p1","fineSourceId":"f1","amountMinor":300,"currency":"INR","recordedAt":"2018-01-21T10:00:00Z","method":"cash","sourceStaff":"Original cashier"},
+        {"sourceId":"p2","fineSourceId":"f2","amountMinor":100,"currency":"USD","recordedAt":"2019-01-21T10:00:00Z","method":"bank_transfer","sourceStaff":"Original cashier"}],
+      "waivers":[{"sourceId":"w1","fineSourceId":"f1","amountMinor":200,"currency":"INR","recordedAt":"2018-01-22T10:00:00Z","reason":"Historical approved adjustment","sourceStaff":"Original approver"}],
+      "expected":{"counts":{"reservations":3,"fines":2,"payments":2,"waivers":1},"balances":[
+        {"currency":"INR","assessedMinor":1000,"paidMinor":300,"waivedMinor":200,"outstandingMinor":500},
+        {"currency":"USD","assessedMinor":500,"paidMinor":100,"waivedMinor":0,"outstandingMinor":400}]}});
+    let encoded=|b:&Value|STANDARD.encode(serde_json::to_vec(b).unwrap());
+    let preview=|b:&Value|h.ok("circulation_preview_history",json!({"dataBase64":encoded(b)}));
+    let request=|b:&Value,p:&Value|json!({"dataBase64":encoded(b),"expectedFingerprint":p["fingerprint"]});
+    for kind in 0..17 {
+      let mut bad=bundle.clone();
+      match kind {
+        0=>bad["expected"]["balances"][0]["outstandingMinor"]=json!(501),
+        1=>bad["payments"][0]["amountMinor"]=json!(900),
+        2=>bad["payments"][0]["currency"]=json!("USD"),
+        3=>bad["waivers"][0]["reason"]=json!(""),
+        4=>bad["fines"][0]["loanSourceId"]=json!("missing"),
+        5=>bad["reservations"][0]["queuePosition"]=json!(1),
+        6=>bad["reservations"][2]["expiresAt"]=json!("2020-01-01T00:00:00Z"),
+        7=>bad["reservations"][0]["memberNumber"]=json!("missing"),
+        8=>bad["payments"][0]["recordedAt"]=json!("2010-01-01T00:00:00Z"),
+        9=>bad["payments"][0]["sourceId"]=json!("w1"),
+        10=>bad["fines"][1]["loanSourceId"]=json!("a"),
+        11=>bad["payments"][0]["fineSourceId"]=json!("missing"),
+        12=>bad["payments"][0]["method"]=json!("unknown"),
+        13=>bad["fines"][0]["amountMinor"]=json!(9007199254740992_i64),
+        14=>bad["waivers"][0]["method"]=json!("cash"),
+        15=>bad["fines"][0]["amountMinor"]=json!(0),
+        _=>bad["fines"][0]["currency"]=json!("inr")
+      }
+      let p=preview(&bad);assert_eq!(p["canCommit"],false,"bad variant {kind}");
+      assert_eq!(h.code("circulation_commit_history",request(&bad,&p)),"VALIDATION");
+    }
+    let mut unknown=bundle.clone();unknown["fines"][0]["ignoredField"]=json!("not allowed");
+    assert_eq!(h.code("circulation_preview_history",json!({"dataBase64":encoded(&unknown)})),"VALIDATION");
+    let p=preview(&bundle);assert_eq!(p["canCommit"],true);assert_eq!(p["summary"],bundle["expected"]);
+    // Changed member data invalidates the exact preview even when counts remain equal.
+    {let state=h.webview.state::<AppState>();let conn=state.conn().unwrap();conn.execute("UPDATE members SET name='Changed' WHERE member_number='0001'",[]).unwrap();}
+    assert_eq!(h.code("circulation_commit_history",request(&bundle,&p)),"VALIDATION");
+    let p=preview(&bundle);
+    // Failure after all five parts were inserted must roll every table and stock change back.
+    {let state=h.webview.state::<AppState>();let conn=state.conn().unwrap();conn.execute_batch("CREATE TRIGGER fail_history_audit BEFORE INSERT ON audit_events WHEN NEW.action='circulation.import_history' BEGIN SELECT RAISE(ABORT,'test failure'); END;").unwrap();}
+    assert!(h.call("circulation_commit_history",request(&bundle,&p)).is_err());
+    {let state=h.webview.state::<AppState>();let conn=state.conn().unwrap();
+      for table in ["reservations","fines","fine_settlements","history_import_sources","history_import_batches"]{assert_eq!(conn.query_row(&format!("SELECT count(*) FROM {table}"),[],|r|r.get::<_,i64>(0)).unwrap(),0);}
+      assert_eq!(conn.query_row("SELECT status FROM physical_items",[],|r|r.get::<_,String>(0)).unwrap(),"available");conn.execute_batch("DROP TRIGGER fail_history_audit").unwrap();}
+    // Re-read destination balances before committing: even an unexpected trigger change rolls back.
+    {let state=h.webview.state::<AppState>();let conn=state.conn().unwrap();conn.execute_batch("CREATE TRIGGER alter_imported_fine AFTER INSERT ON fines BEGIN UPDATE fines SET amount_minor=amount_minor+1 WHERE id=NEW.id; END;").unwrap();}
+    assert_eq!(h.code("circulation_commit_history",request(&bundle,&p)),"VALIDATION");
+    {let state=h.webview.state::<AppState>();let conn=state.conn().unwrap();assert_eq!(conn.query_row("SELECT count(*) FROM fines",[],|r|r.get::<_,i64>(0)).unwrap(),0);conn.execute_batch("DROP TRIGGER alter_imported_fine").unwrap();}
+    let saved=h.ok("circulation_commit_history",request(&bundle,&p));assert_eq!(saved,bundle["expected"]);
+    assert_eq!(h.ok("circulation_history_imports",json!({}))[0]["summary"],saved);
+    let account=h.ok("members_fine_account",json!({"memberId":member,"page":1}));assert_eq!(account["balances"][0]["outstandingMinor"],500);assert_eq!(account["balances"][1]["outstandingMinor"],400);
+    let fine=account["rows"].as_array().unwrap().iter().find(|r|r["currency"]=="INR").unwrap()["id"].clone();
+    let history=h.ok("members_fine_history",json!({"memberId":member,"fineId":fine,"page":1}));assert_eq!(history["rows"][0]["staffName"],"Original approver (imported source)");assert_eq!(history["rows"][0]["reason"],"Historical approved adjustment");
+    let queue=h.ok("circulation_list_reservations",json!({"page":1}));assert_eq!(queue["total"],2);assert_eq!(queue["rows"][0]["memberNumber"],"0001");
+    {let state=h.webview.state::<AppState>();let conn=state.conn().unwrap();
+      assert_eq!(conn.query_row("SELECT status FROM physical_items",[],|r|r.get::<_,String>(0)).unwrap(),"reserved_hold");
+      let summary:String=conn.query_row("SELECT summary_json FROM history_import_batches",[],|r|r.get(0)).unwrap();assert_eq!(serde_json::from_str::<Value>(&summary).unwrap(),saved);
+      assert!(conn.execute("DELETE FROM history_import_sources",[]).is_err());
+    }
+    // Imported queue order is used by normal cancellation/promotion, not just stored metadata.
+    h.ok("circulation_cancel_reservation",json!({"id":queue["rows"][0]["id"]}));
+    let promoted=h.ok("circulation_list_reservations",json!({"page":1}));assert_eq!(promoted["rows"][0]["memberNumber"],"0002");assert_eq!(promoted["rows"][0]["status"],"ready");
+    let repeat=preview(&bundle);assert_eq!(repeat["canCommit"],false);assert_eq!(h.code("circulation_commit_history",request(&bundle,&repeat)),"VALIDATION");
+    // Follow-up payment-only batch must reconcile the full affected fine, including prior entries.
+    let follow=json!({"version":1,"sourceSystem":"Legacy","reservations":[],"fines":[],"payments":[{"sourceId":"p3","fineSourceId":"f1","amountMinor":500,"currency":"INR","recordedAt":"2018-01-23T10:00:00Z","method":"card","sourceStaff":"Original cashier"}],"waivers":[],"expected":{"counts":{"reservations":0,"fines":0,"payments":1,"waivers":0},"balances":[{"currency":"INR","assessedMinor":1000,"paidMinor":800,"waivedMinor":200,"outstandingMinor":0}]}});
+    let p=preview(&follow);assert_eq!(p["canCommit"],true);h.ok("circulation_commit_history",request(&follow,&p));
+    // A wholly pending imported queue on an on-loan copy survives until the normal return promotes it.
+    h.ok("circulation_cancel_reservation",json!({"id":promoted["rows"][0]["id"]}));
+    let issue=h.ok("circulation_prepare_issue",json!({"memberNumber":"0001","barcode":barcode}));
+    h.ok("circulation_issue",json!({"memberNumber":"0001","barcode":barcode,"memberId":issue["memberId"],"itemId":issue["itemId"],"dueOn":issue["dueOn"]}));
+    let mut pending=json!({"version":1,"sourceSystem":"Legacy","reservations":[{"sourceId":"pending-new","memberNumber":"0002","barcode":barcode,"placedAt":now,"status":"pending","expiresAt":null,"closedAt":null,"queuePosition":1,"sourceStaff":"Queue staff"}],"fines":[],"payments":[],"waivers":[],"expected":{"counts":{"reservations":1,"fines":0,"payments":0,"waivers":0},"balances":[]}});
+    let mut wrong=pending.clone();wrong["reservations"][0]["memberNumber"]=json!("0001");assert_eq!(preview(&wrong)["canCommit"],false);
+    let p_pending=preview(&pending);assert_eq!(p_pending["canCommit"],true);h.ok("circulation_commit_history",request(&pending,&p_pending));
+    assert_eq!(h.ok("circulation_list_reservations",json!({"page":1}))["rows"][0]["status"],"pending");
+    let ret=h.ok("circulation_prepare_return",json!({"barcode":barcode}));h.ok("circulation_return",json!({"loanId":ret["loanId"],"condition":"available"}));
+    assert_eq!(h.ok("circulation_list_reservations",json!({"page":1}))["rows"][0]["status"],"ready");
+    pending["reservations"][0]["sourceId"]=json!("attempted-queue-merge");assert_eq!(preview(&pending)["canCommit"],false);
+    {let state=h.webview.state::<AppState>();let conn=state.conn().unwrap();auth::create_user(&conn,"bundleviewer","Viewer","viewer passphrase","viewer").unwrap();}
+    h.ok("login",json!({"username":"bundleviewer","password":"viewer passphrase"}));
+    assert_eq!(h.code("circulation_preview_history",json!({"dataBase64":encoded(&bundle)})),"PERMISSION_DENIED");assert_eq!(h.code("circulation_commit_history",request(&bundle,&p)),"PERMISSION_DENIED");
+    assert_eq!(h.code("circulation_history_imports",json!({})),"PERMISSION_DENIED");
+    let redacted=h.ok("members_fine_history",json!({"memberId":member,"fineId":fine,"page":1}));assert!(redacted["rows"].as_array().unwrap().iter().all(|r|r["reason"].is_null()));
+}

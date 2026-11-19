@@ -217,3 +217,12 @@ it("opens the administrator renewal import", async () => {
   await userEvent.setup().click(screen.getByRole("button", { name: "Import renewal history" }));
   expect(await screen.findByRole("dialog", { name: "Import renewal history" })).toBeInTheDocument();
 });
+
+it("hides financial-history import from circulation-only staff",()=>{
+  renderCirculation();expect(screen.queryByRole("button",{name:"Import reservations and fines"})).not.toBeInTheDocument();
+});
+it("opens the five-part migration dialog for an administrator",async()=>{
+  vi.mocked(invoke).mockResolvedValueOnce([]);
+  renderCirculation(true);await userEvent.setup().click(screen.getByRole("button",{name:"Import reservations and fines"}));
+  expect(await screen.findByRole("dialog",{name:"Import reservations and financial history"})).toBeInTheDocument();
+});

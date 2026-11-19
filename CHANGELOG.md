@@ -34,3 +34,13 @@
 - Added administrator-only source-linked renewal CSV preview and atomic confirmed import with schema 19 provenance.
 - Validate complete chronological due-date chains, source references, repeat imports and stale previews. Preserve historical event dates/staff labels without changing current due dates, stock or fines.
 - Member loan history now shows renewal counts, including imported events; these count toward subsequent normal renewal limits.
+
+### File chooser appearance
+
+- Made native Choose file controls clearly button-shaped using shared light/dark theme colors, with hover, disabled and keyboard-focus behavior retained. Catalogue import now shares the same file-field component as the other upload screens.
+
+### Five-feature history migration batch
+
+- Added one administrator preview/confirmed transaction for reservation history, assessed fines, allocated payments, waivers and currency-separated source/destination reconciliation.
+- Preserve source provenance in schema 20; enforce queue order, reference/date/money constraints, duplicates, stale reviews and full rollback. Reread saved records before commit and retain recent reconciliation summaries.
+- Imported settlement history shows original source staff labels and recorded timestamps; existing waiver-reason permissions remain enforced. Unsupported charge/queue mappings are explicitly rejected.

@@ -632,6 +632,20 @@ export interface LoanImportPreview {
   problems: string[];
 }
 
+export interface HistorySummary {
+  counts: { reservations: number; fines: number; payments: number; waivers: number };
+  balances: { currency: string; assessedMinor: number; paidMinor: number; waivedMinor: number; outstandingMinor: number }[];
+}
+export interface HistoryPreview {
+  sourceSystem: string;
+  summary: HistorySummary;
+  expected: HistorySummary;
+  problems: string[];
+  canCommit: boolean;
+  fingerprint: string;
+}
+export interface HistoryBatchSummary { id: number; sourceSystem: string; importedAt: string; summary: HistorySummary }
+
 export interface RenewalImportPreview {
   total: number;
   loans: number;

@@ -17,6 +17,7 @@ const Reservations = lazy(() => import("./Reservations"));
 const Fines = lazy(() => import("./Fines"));
 const LoanImport = lazy(() => import("./LoanImport"));
 const RenewalImport = lazy(() => import("./RenewalImport"));
+const HistoryImport = lazy(() => import("./HistoryImport"));
 
 const ACTIONS = {
   issue: { label: "Issue", review: "Review loan", title: "Confirm issue", confirm: "Issue copy" },
@@ -44,6 +45,7 @@ export function CirculationPage() {
   const [findingMember, setFindingMember] = useState(false);
   const [importOpen, setImportOpen] = useState(false);
   const [renewalImportOpen, setRenewalImportOpen] = useState(false);
+  const [historyImportOpen, setHistoryImportOpen] = useState(false);
   const prepare = useMutation({
     mutationFn: async ({ mode, memberNumber, barcode }: { mode: Mode; memberNumber: string; barcode: string }): Promise<Review> => {
       switch (mode) {
@@ -120,6 +122,7 @@ export function CirculationPage() {
       <div ref={actionGroup} className="flex flex-wrap gap-2" role="group" aria-label="Circulation action">
         {can(session, "admin.settings") && <Button onClick={() => setImportOpen(true)}>Preview loan import</Button>}
         {can(session, "admin.settings") && <Button onClick={() => setRenewalImportOpen(true)}>Import renewal history</Button>}
+        {can(session, "admin.settings") && <Button onClick={() => setHistoryImportOpen(true)}>Import reservations and fines</Button>}
         {(["issue", "return", "renew"] as const).map((action) => (
           <Button key={action} aria-pressed={mode === action} variant={mode === action ? "primary" : "secondary"}
             disabled={prepare.isPending} onClick={() => selectMode(action)}>{ACTIONS[action].label}</Button>
@@ -133,6 +136,7 @@ export function CirculationPage() {
       </div>
       {importOpen && <Suspense fallback={<p role="status">Loading import preview.</p>}><LoanImport onClose={() => setImportOpen(false)} /></Suspense>}
       {renewalImportOpen && <Suspense fallback={<p role="status">Loading renewal import.</p>}><RenewalImport onClose={() => setRenewalImportOpen(false)} /></Suspense>}
+      {historyImportOpen && <Suspense fallback={<p role="status">Loading history import.</p>}><HistoryImport onClose={() => setHistoryImportOpen(false)} /></Suspense>}
       {mode === "fines" ? (
         <Suspense fallback={<p role="status" className="text-muted">Loading fines.</p>}>
           <Fines />

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/Button";
-import { CheckField, SelectField } from "@/components/ui/Field";
+import { CheckField, SelectField, TextField } from "@/components/ui/Field";
 import { Modal } from "@/components/ui/Modal";
 import { ApiError, importApi } from "@/lib/api";
 import { fileToBase64 } from "@/lib/files";
@@ -155,16 +155,12 @@ export function ImportDialog({ onClose }: { onClose: () => void }) {
         )}
         {source === "xlsx" && <p className="text-xs text-muted">Use one worksheet with column names in the first row. Store ISBNs, barcodes and accession numbers as text to preserve leading zeroes. Use values instead of formulas and dates as YYYY-MM-DD text. Prices use major currency units, such as 125.50.</p>}
         {source === "csv" && <p className="text-xs text-muted">The first row must contain column names. Pusthakam recognises common names (Title, Author, ISBN, Barcode…) and lets you fix the rest.</p>}
-        <div className="space-y-1">
-          <label htmlFor="import-file" className="block text-[13px] font-medium">File</label>
-          <input
-            id="import-file"
+        <TextField
+            label="File"
             type="file"
             accept=".mrc,.marc,.mrd,.csv,.txt,.json,.xml,.marcxml,.xlsx"
             onChange={(e) => pick(e.target.files?.[0] ?? null)}
-            className="block w-full text-[13px] file:mr-3 file:h-8 file:rounded-md file:border file:border-line-strong file:bg-surface file:px-3"
           />
-        </div>
         {error && <p role="alert" className="text-xs text-danger">{error}</p>}
       </Modal>
     );
