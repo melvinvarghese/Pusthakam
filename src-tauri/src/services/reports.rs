@@ -214,3 +214,151 @@ pub fn catalogue_growth(conn: &Connection, from: &str, to: &str) -> AppResult<Ve
     }))?.collect::<Result<_, _>>()?;
     Ok(rows)
 }
+
+#[derive(Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct OverdueRow {
+    loan_id: i64,
+    member_id: i64,
+    member_name: String,
+    member_barcode: String,
+    item_id: i64,
+    accession_no: String,
+    barcode: String,
+    title: String,
+    due_date: String,
+    days_overdue: i64,
+}
+
+pub fn overdues_list(conn: &Connection, from: &str, to: &str) -> AppResult<Vec<OverdueRow>> {
+    let (from, to) = date_range(conn, from, to)?;
+    let mut stmt = conn.prepare(
+        "SELECT l.id, m.id, m.name, m.member_number, i.id, i.accession_no, i.barcode, r.title,
+                l.due_on,
+                CAST(julianday('now') - julianday(l.due_on) AS INTEGER)
+         FROM loans l
+         JOIN members m ON m.id = l.member_id
+         JOIN physical_items i ON i.id = l.item_id
+         JOIN bibliographic_records r ON r.id = i.record_id
+         WHERE l.returned_at IS NULL
+           AND date(l.due_on,'localtime') BETWEEN ?1 AND ?2
+         ORDER BY l.due_on, r.title COLLATE NOCASE",
+    )?;
+    let rows = stmt.query_map(params![from, to], |r| Ok(OverdueRow {
+        loan_id: r.get(0)?,
+        member_id: r.get(1)?,
+        member_name: r.get(2)?,
+        member_barcode: r.get(3)?,
+        item_id: r.get(4)?,
+        accession_no: r.get(5)?,
+        barcode: r.get(6)?,
+        title: r.get(7)?,
+        due_date: r.get(8)?,
+        days_overdue: r.get(9)?,
+    }))?.collect::<Result<_, _>>()?;
+    Ok(rows)
+}
+
+#[derive(Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct AccessionRow {
+    item_id: i64,
+    accession_no: String,
+    barcode: String,
+    title: String,
+    acquisition_date: Option<String>,
+    acquisition_source: String,
+    price_minor: Option<i64>,
+    location: Option<String>,
+    status: String,
+}
+
+pub fn accession_list(conn: &Connection, from: &str, to: &str) -> AppResult<Vec<AccessionRow>> {
+    let (from, to) = date_range(conn, from, to)?;
+    let mut stmt = conn.prepare(
+        "SELECT i.id, i.accession_no, i.barcode, r.title,
+                i.acquisition_date, i.acquisition_source, i.price_minor,
+                l.name, i.status
+         FROM physical_items i
+         JOIN bibliographic_records r ON r.id = i.record_id
+         LEFT JOIN locations l ON l.id = i.location_id
+         WHERE COALESCE(i.acquisition_date, date(i.created_at,'localtime')) BETWEEN ?1 AND ?2
+         ORDER BY COALESCE(i.acquisition_date, date(i.created_at,'localtime')), i.accession_no COLLATE NOCASE",
+    )?;
+    let rows = stmt.query_map(params![from, to], |r| Ok(AccessionRow {
+        item_id: r.get(0)?,
+        accession_no: r.get(1)?,
+        barcode: r.get(2)?,
+        title: r.get(3)?,
+        acquisition_date: r.get(4)?,
+        acquisition_source: r.get(5)?,
+        price_minor: r.get(6)?,
+        location: r.get(7)?,
+        status: r.get(8)?,
+    }))?.collect::<Result<_, _>>()?;
+    Ok(rows)
+}
+
+#[derive(Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ExpenditureRow {
+    acquisition_source: String,
+    copies: i64,
+    total_minor: i64,
+}
+
+pub fn expenditure_summary(conn: &Connection, from: &str, to: &str) -> AppResult<Vec<ExpenditureRow>> {
+    let (from, to) = date_range(conn, from, to)?;
+    let mut stmt = conn.prepare(
+        "SELECT i.acquisition_source, count(*) AS copies, coalesce(sum(i.price_minor), 0) AS total_minor
+         FROM physical_items i
+         WHERE COALESCE(i.acquisition_date, date(i.created_at,'localtime')) BETWEEN ?1 AND ?2
+         GROUP BY i.acquisition_source
+         ORDER BY total_minor DESC, copies DESC, i.acquisition_source",
+    )?;
+    let rows = stmt.query_map(params![from, to], |r| Ok(ExpenditureRow {
+        acquisition_source: r.get(0)?,
+        copies: r.get(1)?,
+        total_minor: r.get(2)?,
+    }))?.collect::<Result<_, _>>()?;
+    Ok(rows)
+}
+
+#[derive(Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct LossDamageRow {
+    loan_id: i64,
+    return_condition: String,
+    returned_date: String,
+    member_id: i64,
+    member_name: String,
+    item_id: i64,
+    accession_no: String,
+    title: String,
+}
+
+pub fn loss_damage_list(conn: &Connection, from: &str, to: &str) -> AppResult<Vec<LossDamageRow>> {
+    let (from, to) = date_range(conn, from, to)?;
+    let mut stmt = conn.prepare(
+        "SELECT l.id, l.return_condition, date(l.returned_at,'localtime'),
+                m.id, m.name, i.id, i.accession_no, r.title
+         FROM loans l
+         JOIN members m ON m.id = l.member_id
+         JOIN physical_items i ON i.id = l.item_id
+         JOIN bibliographic_records r ON r.id = i.record_id
+         WHERE l.return_condition IN ('lost','damaged')
+           AND date(l.returned_at,'localtime') BETWEEN ?1 AND ?2
+         ORDER BY date(l.returned_at,'localtime'), r.title COLLATE NOCASE",
+    )?;
+    let rows = stmt.query_map(params![from, to], |r| Ok(LossDamageRow {
+        loan_id: r.get(0)?,
+        return_condition: r.get(1)?,
+        returned_date: r.get(2)?,
+        member_id: r.get(3)?,
+        member_name: r.get(4)?,
+        item_id: r.get(5)?,
+        accession_no: r.get(6)?,
+        title: r.get(7)?,
+    }))?.collect::<Result<_, _>>()?;
+    Ok(rows)
+}

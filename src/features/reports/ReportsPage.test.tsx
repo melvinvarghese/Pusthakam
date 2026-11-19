@@ -151,10 +151,75 @@ it.each([
     ],
     expected: "Category,Category status,Current,Expired,Archived,Total\r\n\"'@Students\",Active,3,2,1,6\r\n\"Former staff\",Archived,0,0,2,2\r\nAll categories,,3,2,3,8\r\n",
   },
+  {
+    kind: "overdues", table: /Overdue loans/, filename: /^overdue-loans-.*\.csv$/,
+    rows: [{ loanId: 1, memberId: 2, memberName: "Alice", memberBarcode: "M001", itemId: 3, accessionNo: "A001", barcode: "B001", title: "Hamlet", dueDate: "2026-11-01", daysOverdue: 18 }],
+    expected: "Due date,Days overdue,Member,Member barcode,Accession no,Barcode,Title\r\n2026-11-01,18,\"Alice\",\"M001\",\"A001\",\"B001\",\"Hamlet\"\r\n",
+  },
+  {
+    kind: "accession", table: /Accession list/, filename: /^accession-list-.*\.csv$/,
+    rows: [{ itemId: 1, accessionNo: "A001", barcode: "B001", title: "Hamlet", acquisitionDate: "2026-11-10", acquisitionSource: "purchase", priceMinor: 1500, location: "Main", status: "available" }],
+    expected: "Accession no,Barcode,Title,Acquisition date,Source,Price,Location,Status\r\n\"A001\",\"B001\",\"Hamlet\",2026-11-10,\"purchase\",15.00,\"Main\",\"available\"\r\n",
+  },
+  {
+    kind: "expenditure", table: /Expenditure by acquisition source/, filename: /^expenditure-.*\.csv$/,
+    rows: [
+      { acquisitionSource: "purchase", copies: 5, totalMinor: 7500 },
+      { acquisitionSource: "donation", copies: 2, totalMinor: 0 },
+    ],
+    expected: "Acquisition source,Copies,Total cost\r\n\"purchase\",5,75.00\r\n\"donation\",2,0.00\r\nAll sources,7,75.00\r\n",
+  },
+  {
+    kind: "loss", table: /Loss and damage/, filename: /^loss-damage-.*\.csv$/,
+    rows: [{ loanId: 1, returnCondition: "lost", returnedDate: "2026-11-15", memberId: 2, memberName: "Bob", itemId: 3, accessionNo: "A002", title: "Othello" }],
+    expected: "Returned date,Condition,Member,Accession no,Title\r\n2026-11-15,\"lost\",\"Bob\",\"A002\",\"Othello\"\r\n",
+  },
 ])("exports the $kind report", async ({ kind, table, filename, rows, expected }) => {
   vi.mocked(invoke).mockResolvedValueOnce([]).mockResolvedValue(rows);
   renderReports();
   await userEvent.selectOptions(screen.getByRole("combobox", { name: "Report" }), kind);
   expect(await screen.findByRole("table", { name: table })).toBeInTheDocument();
   expect(await exportCsv(filename)).toBe(expected);
+});
+
+it("exports report to XLSX and PDF matching row counts and totals", async () => {
+  vi.mocked(invoke).mockImplementation(async (cmd, args) => {
+    if (cmd === "reports_circulation_activity") {
+      return [
+        { date: "2026-11-16", issued: 3, returned: 2, lost: 0, renewed: 1, reservations: 4 },
+        { date: "2026-11-17", issued: 2, returned: 1, lost: 1, renewed: 0, reservations: 0 },
+      ];
+    }
+    if (cmd === "reports_export_file") {
+      const a = args as { format: string; fileName: string; rows: string[][] };
+      expect(a.rows).toHaveLength(3); // 2 data rows + 1 totals row
+      expect(a.rows[2]?.[0]).toBe("Total");
+      return {
+        fileName: a.fileName,
+        mimeType: a.format === "xlsx" ? "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" : "application/pdf",
+        dataBase64: "UEsD",
+      };
+    }
+    return [];
+  });
+
+  const createObjectURL = vi.fn((_blob: Blob) => "blob:test");
+  vi.stubGlobal("URL", Object.assign(class extends URL {}, { createObjectURL, revokeObjectURL: vi.fn() }));
+  const downloads: string[] = [];
+  vi.spyOn(HTMLAnchorElement.prototype, "click").mockImplementation(function (this: HTMLAnchorElement) {
+    downloads.push(this.download);
+  });
+
+  renderReports();
+  expect(await screen.findByRole("rowheader", { name: "2026-11-16" })).toBeInTheDocument();
+
+  // Export XLSX
+  await userEvent.click(screen.getByRole("button", { name: "Export XLSX" }));
+  expect(downloads).toHaveLength(1);
+  expect(downloads[0]).toMatch(/^circulation-.*\.xlsx$/);
+
+  // Export PDF
+  await userEvent.click(screen.getByRole("button", { name: "Export PDF" }));
+  expect(downloads).toHaveLength(2);
+  expect(downloads[1]).toMatch(/^circulation-.*\.pdf$/);
 });

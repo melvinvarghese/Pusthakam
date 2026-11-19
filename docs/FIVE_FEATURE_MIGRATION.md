@@ -35,9 +35,9 @@ A queue headed by ready requires an available copy, changed atomically to reserv
 
 ## 2. Assessed fines
 
-Fines link to already imported **closed** loans using loanSourceId under the same sourceSystem. Preserve the assessment timestamp and amount; do not recalculate historical charges. Assessment must not precede issue or be in the future.
+Fines link to already imported loans (both closed and open) using loanSourceId under the same sourceSystem. Preserve the assessment timestamp and amount; do not recalculate historical charges. Assessment must not precede issue or be in the future. For open loans with an imported fine, returning the item via circulation desk respects the imported charge, reflects it in return estimation, and avoids duplicate assessment.
 
-The current schema supports one assessed fine per loan. Open-loan charges, non-loan charges, multiple charge types on one loan, credits and refunds require a separate mapping/schema extension. They are explicitly rejected, not merged, converted or lost. Existing fines on a target loan also block importing another fine. The neutral format does not claim full Koha financial compatibility.
+The current schema supports one assessed fine per loan. Non-loan charges, multiple charge types on one loan, credits and refunds require a separate mapping/schema extension. They are explicitly rejected, not merged, converted or lost. Existing fines on a target loan also block importing another fine. The neutral format does not claim full Koha financial compatibility.
 
 ## 3. Payment history
 

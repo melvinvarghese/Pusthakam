@@ -53,6 +53,225 @@ export interface StockRow {
   total: number;
 }
 
+export interface OverdueRow {
+  loanId: number;
+  memberId: number;
+  memberName: string;
+  memberBarcode: string;
+  itemId: number;
+  accessionNo: string;
+  barcode: string;
+  title: string;
+  dueDate: string;
+  daysOverdue: number;
+}
+
+export interface AccessionRow {
+  itemId: number;
+  accessionNo: string;
+  barcode: string;
+  title: string;
+  acquisitionDate: string | null;
+  acquisitionSource: string;
+  priceMinor: number | null;
+  location: string | null;
+  status: string;
+}
+
+export interface ExpenditureRow {
+  acquisitionSource: string;
+  copies: number;
+  totalMinor: number;
+}
+
+export interface LossDamageRow {
+  loanId: number;
+  returnCondition: string;
+  returnedDate: string;
+  memberId: number;
+  memberName: string;
+  itemId: number;
+  accessionNo: string;
+  title: string;
+}
+
+export interface ReportExportFile {
+  fileName: string;
+  mimeType: string;
+  dataBase64: string;
+}
+
+// ----- Acquisitions -----
+
+export interface Vendor {
+  id: number;
+  name: string;
+  code: string | null;
+  contactName: string | null;
+  email: string | null;
+  phone: string | null;
+  address: string | null;
+  notes: string | null;
+  archived: boolean;
+  createdAt: string;
+}
+
+export interface VendorInput {
+  id?: number | null;
+  name: string;
+  code?: string | null;
+  contactName?: string | null;
+  email?: string | null;
+  phone?: string | null;
+  address?: string | null;
+  notes?: string | null;
+}
+
+export interface AcquisitionBudget {
+  id: number;
+  name: string;
+  code: string | null;
+  amountMinor: number;
+  currency: string;
+  fiscalYear: string | null;
+  allocatedMinor: number;
+  archived: boolean;
+  createdAt: string;
+}
+
+export interface BudgetInput {
+  id?: number | null;
+  name: string;
+  code?: string | null;
+  amountMinor: number;
+  currency: string;
+  fiscalYear?: string | null;
+}
+
+export interface AcquisitionRequest {
+  id: number;
+  title: string;
+  author: string | null;
+  isbn: string | null;
+  publisher: string | null;
+  publicationYear: number | null;
+  estimatedPriceMinor: number | null;
+  currency: string;
+  copies: number;
+  requestedBy: string;
+  requestReason: string | null;
+  status: "pending" | "approved" | "rejected" | "ordered" | "received";
+  rejectionReason: string | null;
+  budgetId: number | null;
+  budgetName: string | null;
+  createdAt: string;
+}
+
+export interface CreateRequestInput {
+  title: string;
+  author?: string | null;
+  isbn?: string | null;
+  publisher?: string | null;
+  publicationYear?: number | null;
+  estimatedPriceMinor?: number | null;
+  currency?: string | null;
+  copies?: number | null;
+  requestedBy: string;
+  requestReason?: string | null;
+}
+
+export interface PurchaseOrderItem {
+  id: number;
+  orderId: number;
+  requestId: number | null;
+  title: string;
+  author: string | null;
+  isbn: string | null;
+  quantity: number;
+  unitPriceMinor: number;
+  receivedQuantity: number;
+  notes: string | null;
+}
+
+export interface PurchaseOrderItemInput {
+  requestId?: number | null;
+  title: string;
+  author?: string | null;
+  isbn?: string | null;
+  quantity: number;
+  unitPriceMinor: number;
+  notes?: string | null;
+}
+
+export interface PurchaseOrderSummary {
+  id: number;
+  orderNumber: string;
+  vendorId: number;
+  vendorName: string;
+  budgetId: number | null;
+  budgetName: string | null;
+  status: "draft" | "ordered" | "partially_received" | "received" | "cancelled";
+  invoiceRef: string | null;
+  orderedAt: string | null;
+  itemsCount: number;
+  totalMinor: number;
+  createdAt: string;
+}
+
+export interface PurchaseOrderDetail {
+  id: number;
+  orderNumber: string;
+  vendorId: number;
+  vendorName: string;
+  budgetId: number | null;
+  budgetName: string | null;
+  status: "draft" | "ordered" | "partially_received" | "received" | "cancelled";
+  invoiceRef: string | null;
+  orderedAt: string | null;
+  expectedAt: string | null;
+  notes: string | null;
+  items: PurchaseOrderItem[];
+  totalMinor: number;
+  createdAt: string;
+}
+
+export interface CreateOrderInput {
+  orderNumber: string;
+  vendorId: number;
+  budgetId?: number | null;
+  invoiceRef?: string | null;
+  expectedAt?: string | null;
+  notes?: string | null;
+  items: PurchaseOrderItemInput[];
+}
+
+export interface ReceiveItemInput {
+  orderId: number;
+  itemId: number;
+  quantity: number;
+  recordId?: number | null;
+  itemCategoryId?: number | null;
+  locationId?: number | null;
+  collectionId?: number | null;
+  shelfId?: number | null;
+  callNumber?: string | null;
+}
+
+export interface CreatedCopyInfo {
+  copyId: number;
+  accessionNo: string;
+  barcode: string;
+}
+
+export interface ReceiveResult {
+  orderId: number;
+  itemId: number;
+  recordId: number;
+  receivedQuantity: number;
+  orderStatus: string;
+  createdCopies: CreatedCopyInfo[];
+}
+
 // ----- sign-in and setup -----
 
 export interface Session {

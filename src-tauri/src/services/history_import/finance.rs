@@ -28,13 +28,16 @@ pub(super) fn prepare(
         money(f.amount_minor)?;
         currency(&f.currency)?;
         loan_import::timestamp(&f.assessed_at)?;
-        let loan:Option<(i64,String,Option<String>)>=conn.query_row("SELECT l.id,l.issued_at,l.returned_at FROM loans l JOIN loan_import_sources s ON s.loan_id=l.id WHERE s.source_system=?1 AND s.source_id=?2",params![b.source_system,f.loan_source_id],|r|Ok((r.get(0)?,r.get(1)?,r.get(2)?))).optional()?;
-        let (loan, issued, returned) = loan.ok_or_else(|| {
+        let loan: Option<(i64, String)> = conn
+            .query_row(
+                "SELECT l.id,l.issued_at FROM loans l JOIN loan_import_sources s ON s.loan_id=l.id WHERE s.source_system=?1 AND s.source_id=?2",
+                params![b.source_system, f.loan_source_id],
+                |r| Ok((r.get(0)?, r.get(1)?)),
+            )
+            .optional()?;
+        let (loan, issued) = loan.ok_or_else(|| {
             invalid("Fine refers to a loan not imported under this source system.")
         })?;
-        if returned.is_none() {
-            return Err(invalid("This format supports assessed fines on closed imported loans only. Open-loan charges need a separate mapping; they are not discarded or converted."));
-        }
         if f.assessed_at < issued || f.assessed_at > now {
             return Err(invalid(
                 "Fine assessment precedes issue or is in the future.",

@@ -30,3 +30,5 @@ pub mod calendar;
 pub mod loan_import;
 pub mod renewal_import;
 pub mod history_import;
+pub mod report_export;
+pub mod acquisitions;

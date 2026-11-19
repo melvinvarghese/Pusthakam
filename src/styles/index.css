@@ -180,6 +180,7 @@ input, textarea { caret-color: var(--ring); }
 
 /* Print only the requested label or card. */
 .report-print { display: none; }
+@page { margin: 10mm; size: auto; }
 @media print {
   body * { visibility: hidden; }
   .print-area, .print-area * { visibility: visible; }
@@ -187,12 +188,14 @@ input, textarea { caret-color: var(--ring); }
   body:has(> .report-print) { height: auto; background: #fff; }
   body:has(> .report-print) > #root { display: none; }
   .report-print, .report-print * { visibility: visible; }
-  .report-print { display: block; color: #000; color-scheme: light; }
-  .report-print section { background: #fff; border: 0; }
-  .report-print .overflow-x-auto { overflow: visible; }
+  .report-print { display: block; color: #000; color-scheme: light; width: 100%; max-width: 100%; }
+  .report-print section { background: #fff; border: 0; padding: 0; }
+  .report-print .overflow-x-auto { overflow: visible !important; }
+  .report-print table { width: 100%; border-collapse: collapse; font-size: 11px; table-layout: auto; }
   .report-print thead { display: table-header-group; color: #000; }
   .report-print tfoot { display: table-row-group; background: #fff; }
-  .report-print tr { break-inside: avoid; border-color: #ddd; }
+  .report-print tr { break-inside: avoid; page-break-inside: avoid; border-color: #ddd; }
+  .report-print th, .report-print td { padding: 4px 6px; word-break: break-word; }
   .report-print a { color: inherit; text-decoration: none; }
 }
 

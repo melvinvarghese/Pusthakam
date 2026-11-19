@@ -1075,6 +1075,56 @@ fn reservation_queue_controls_issue_and_renewal_through_ipc() {
     ]));
     assert_eq!(h.code("reports_catalogue_growth", json!({ "from": "2000-01-02", "to": "2000-01-01" })), "VALIDATION");
     assert_eq!(h.code("reports_circulation_activity", json!({ "from": "2025-01-01", "to": "2027-01-01" })), "VALIDATION");
+    let loss_report = h.ok("reports_loss_damage_list", json!({ "from": today, "to": today }));
+    assert_eq!(loss_report.as_array().unwrap().len(), 1);
+    assert_eq!(loss_report[0]["returnCondition"], "lost");
+    assert_eq!(loss_report[0]["title"], "Reservation test");
+    let accession_report = h.ok("reports_accession_list", json!({ "from": today, "to": today }));
+    assert_eq!(accession_report.as_array().unwrap().len(), 1);
+    assert_eq!(accession_report[0]["barcode"], "COPY-1");
+    assert_eq!(accession_report[0]["status"], "lost");
+    let exp_report = h.ok("reports_expenditure_summary", json!({ "from": today, "to": today }));
+    assert_eq!(exp_report.as_array().unwrap().len(), 1);
+    assert_eq!(exp_report[0]["copies"], 1);
+    let overdue_report = h.ok("reports_overdues_list", json!({ "from": today, "to": today }));
+    assert_eq!(overdue_report.as_array().unwrap().len(), 0);
+    assert_eq!(h.code("reports_overdues_list", json!({ "from": "2000-01-02", "to": "2000-01-01" })), "VALIDATION");
+    assert_eq!(h.code("reports_accession_list", json!({ "from": "2000-01-02", "to": "2000-01-01" })), "VALIDATION");
+    let xlsx_export = h.ok("reports_export_file", json!({
+        "format": "xlsx",
+        "fileName": "test.xlsx",
+        "title": "Circulation",
+        "subtitle": "2026-11-19",
+        "headers": ["Date", "Issues"],
+        "rows": [["2026-11-19", "5"], ["Total", "5"]],
+        "alignments": ["left", "right"]
+    }));
+    assert_eq!(xlsx_export["fileName"], "test.xlsx");
+    assert_eq!(xlsx_export["mimeType"], "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+    assert!(!xlsx_export["dataBase64"].as_str().unwrap().is_empty());
+
+    let pdf_export = h.ok("reports_export_file", json!({
+        "format": "pdf",
+        "fileName": "test.pdf",
+        "title": "Circulation",
+        "subtitle": "2026-11-19",
+        "headers": ["Date", "Issues"],
+        "rows": [["2026-11-19", "5"], ["Total", "5"]],
+        "alignments": ["left", "right"]
+    }));
+    assert_eq!(pdf_export["fileName"], "test.pdf");
+    assert_eq!(pdf_export["mimeType"], "application/pdf");
+    assert!(!pdf_export["dataBase64"].as_str().unwrap().is_empty());
+
+    assert_eq!(h.code("reports_export_file", json!({
+        "format": "unknown",
+        "fileName": "test.bin",
+        "title": "T",
+        "subtitle": "",
+        "headers": [],
+        "rows": [],
+        "alignments": []
+    })), "VALIDATION");
     let state = h.webview.state::<AppState>();
     let conn = state.db.lock().unwrap();
     let mut stmt = conn.prepare("SELECT status FROM reservations ORDER BY id").unwrap();
@@ -1494,6 +1544,40 @@ fn loan_import_commit_preserves_history_and_rolls_back_conflicts() {
 }
 
 #[test]
+fn loan_import_commit_supports_v2_return_conditions() {
+    use base64::{engine::general_purpose::STANDARD, Engine};
+    let h = Harness::new();
+    h.ok("complete_setup", setup_body());
+    let cfg = h.ok("config_overview", json!({}));
+    let policy = &cfg["policies"][0];
+    let member = h.ok("members_save", json!({"input":{"name":"Condition reader","memberNumber":"0001","categoryId":policy["memberCategoryId"]}}));
+    let record = h.ok("catalogue_save_record", json!({"input":{"title":"Condition fixture","contributors":[],"subjects":[]}}));
+    let copies = h.ok("catalogue_add_copies", json!({"recordId":record,"input":{"count":3,"itemCategoryId":policy["itemCategoryId"],"acquisitionSource":"purchase"}}));
+    let b1 = copies[0]["barcode"].as_str().unwrap();
+    let b2 = copies[1]["barcode"].as_str().unwrap();
+    let b3 = copies[2]["barcode"].as_str().unwrap();
+    let file = |rows: String| STANDARD.encode(format!("source_id,member_number,barcode,issued_at,due_on,returned_at,source_staff,return_condition\n{rows}"));
+    let request = |data: &str, fp: &Value, terms: bool| json!({"dataBase64":data,"sourceSystem":"Condition library","expectedFingerprint":fp,"useCurrentTerms":terms});
+    let data = file(format!(
+        "l_damaged,0001,{b1},2020-01-01T10:00:00Z,2020-01-20,2020-01-10T11:00:00Z,Staff A,damaged\n\
+         l_lost,0001,{b2},2020-02-01T10:00:00Z,2020-02-20,2020-02-10T11:00:00Z,Staff B,lost\n\
+         l_avail,0001,{b3},2020-03-01T10:00:00Z,2020-03-20,2020-03-10T11:00:00Z,Staff C,available\n"
+    ));
+    let p = h.ok("circulation_preview_import", json!({"dataBase64": data}));
+    assert_eq!(p["total"], 3);
+    assert_eq!(p["closed"], 3);
+    assert_eq!(p["invalid"], 0);
+    let imported = h.ok("circulation_commit_import", request(&data, &p["fingerprint"], false));
+    assert_eq!(imported, 3);
+    let history = h.ok("members_list_loans", json!({"memberId": member, "page": 1}));
+    assert_eq!(history["total"], 3);
+    let rows = history["rows"].as_array().unwrap();
+    assert!(rows.iter().any(|r| r["returnCondition"].as_str() == Some("damaged")));
+    assert!(rows.iter().any(|r| r["returnCondition"].as_str() == Some("lost")));
+    assert!(rows.iter().any(|r| r["returnCondition"].as_str() == Some("available")));
+}
+
+#[test]
 fn renewal_import_validates_chains_preserves_events_and_rolls_back() {
     use base64::{engine::general_purpose::STANDARD, Engine};
     let h=Harness::new();h.ok("complete_setup",setup_body());
@@ -1669,4 +1753,317 @@ fn history_bundle_import_reconciles_all_five_parts_and_rolls_back() {
     assert_eq!(h.code("circulation_preview_history",json!({"dataBase64":encoded(&bundle)})),"PERMISSION_DENIED");assert_eq!(h.code("circulation_commit_history",request(&bundle,&p)),"PERMISSION_DENIED");
     assert_eq!(h.code("circulation_history_imports",json!({})),"PERMISSION_DENIED");
     let redacted=h.ok("members_fine_history",json!({"memberId":member,"fineId":fine,"page":1}));assert!(redacted["rows"].as_array().unwrap().iter().all(|r|r["reason"].is_null()));
+}
+
+#[test]
+fn history_bundle_import_supports_open_loan_fines_and_subsequent_return() {
+    use base64::{engine::general_purpose::STANDARD, Engine};
+    let h = Harness::new();
+    h.ok("complete_setup", setup_body());
+    let cfg = h.ok("config_overview", json!({}));
+    let policy = &cfg["policies"][0];
+    let member = h.ok("members_save", json!({
+        "input": {
+            "name": "Open fine borrower",
+            "memberNumber": "M-OPEN-01",
+            "categoryId": policy["memberCategoryId"]
+        }
+    }));
+    let record = h.ok("catalogue_save_record", json!({
+        "input": {
+            "title": "Open loan fine migration",
+            "contributors": [],
+            "subjects": []
+        }
+    }));
+    let copies = h.ok("catalogue_add_copies", json!({
+        "recordId": record,
+        "input": {
+            "count": 1,
+            "itemCategoryId": policy["itemCategoryId"],
+            "acquisitionSource": "purchase"
+        }
+    }));
+    let barcode = copies[0]["barcode"].as_str().unwrap();
+
+    // Import an open loan (empty returned_at)
+    let loans = STANDARD.encode(format!(
+        "source_id,member_number,barcode,issued_at,due_on,returned_at,source_staff\nopen_1,M-OPEN-01,{barcode},2020-01-01T10:00:00Z,2020-01-10,,Original staff\n"
+    ));
+    let p = h.ok("circulation_preview_import", json!({ "dataBase64": loans }));
+    assert_eq!(p["open"], 1);
+    assert_eq!(p["closed"], 0);
+    h.ok("circulation_commit_import", json!({
+        "dataBase64": loans,
+        "sourceSystem": "LegacySys",
+        "expectedFingerprint": p["fingerprint"],
+        "useCurrentTerms": true
+    }));
+
+    // Verify copy is on_loan
+    {
+        let state = h.webview.state::<AppState>();
+        let conn = state.conn().unwrap();
+        assert_eq!(
+            conn.query_row("SELECT status FROM physical_items WHERE barcode=?1", [barcode], |r| r.get::<_, String>(0)).unwrap(),
+            "on_loan"
+        );
+    }
+
+    // Now import a history bundle attaching an assessed fine to this open loan, plus a partial payment
+    let bundle = json!({
+        "version": 1,
+        "sourceSystem": "LegacySys",
+        "reservations": [],
+        "fines": [
+            {
+                "sourceId": "f-open-1",
+                "loanSourceId": "open_1",
+                "amountMinor": 500,
+                "currency": "INR",
+                "assessedAt": "2020-01-15T10:00:00Z",
+                "sourceStaff": "Assessor Staff"
+            }
+        ],
+        "payments": [
+            {
+                "sourceId": "p-open-1",
+                "fineSourceId": "f-open-1",
+                "amountMinor": 200,
+                "currency": "INR",
+                "recordedAt": "2020-01-16T10:00:00Z",
+                "method": "cash",
+                "sourceStaff": "Cashier Staff"
+            }
+        ],
+        "waivers": [],
+        "expected": {
+            "counts": { "reservations": 0, "fines": 1, "payments": 1, "waivers": 0 },
+            "balances": [
+                { "currency": "INR", "assessedMinor": 500, "paidMinor": 200, "waivedMinor": 0, "outstandingMinor": 300 }
+            ]
+        }
+    });
+
+    let encoded = STANDARD.encode(serde_json::to_vec(&bundle).unwrap());
+    let p_hist = h.ok("circulation_preview_history", json!({ "dataBase64": encoded }));
+    assert_eq!(p_hist["canCommit"], true);
+    assert_eq!(p_hist["summary"], bundle["expected"]);
+
+    let committed = h.ok("circulation_commit_history", json!({
+        "dataBase64": encoded,
+        "expectedFingerprint": p_hist["fingerprint"]
+    }));
+    assert_eq!(committed, bundle["expected"]);
+
+    // Verify member account reflects the imported assessed fine and partial payment
+    let account = h.ok("members_fine_account", json!({ "memberId": member, "page": 1 }));
+    assert_eq!(account["balances"][0]["assessedMinor"], 500);
+    assert_eq!(account["balances"][0]["paidMinor"], 200);
+    assert_eq!(account["balances"][0]["outstandingMinor"], 300);
+
+    // Prepare return for this open loan at circulation desk: preview reflects the existing assessed fine
+    let ret_preview = h.ok("circulation_prepare_return", json!({ "barcode": barcode }));
+    assert_eq!(ret_preview["estimatedFine"]["amountMinor"], 500);
+    assert_eq!(ret_preview["estimatedFine"]["currency"], "INR");
+
+    // Return the copy at circulation desk: returns cleanly without UNIQUE constraint failure or duplicate insertion
+    let ret_result = h.ok("circulation_return", json!({
+        "loanId": ret_preview["loanId"],
+        "condition": "available"
+    }));
+    assert_eq!(ret_result["amountMinor"], 500);
+    assert_eq!(ret_result["currency"], "INR");
+
+    // Copy status is now available
+    {
+        let state = h.webview.state::<AppState>();
+        let conn = state.conn().unwrap();
+        assert_eq!(
+            conn.query_row("SELECT status FROM physical_items WHERE barcode=?1", [barcode], |r| r.get::<_, String>(0)).unwrap(),
+            "available"
+        );
+        // Only 1 fine exists in database for this loan
+        let fine_count: i64 = conn.query_row("SELECT count(*) FROM fines WHERE loan_id=?1", [ret_preview["loanId"].as_i64().unwrap()], |r| r.get(0)).unwrap();
+        assert_eq!(fine_count, 1);
+    }
+
+    // Verify fine can now be settled for the remaining 300 outstanding
+    let fines = h.ok("circulation_list_fines", json!({ "page": 1, "includeSettled": false }));
+    assert_eq!(fines["total"], 1);
+    let fine_id = fines["rows"][0]["id"].as_i64().unwrap();
+    assert_eq!(fines["rows"][0]["outstandingMinor"], 300);
+
+    h.ok("circulation_settle_fine", json!({
+        "fineId": fine_id,
+        "amountMinor": 300,
+        "expectedBalance": 300,
+        "entry": { "kind": "payment", "method": "cash" }
+    }));
+
+    // Fine is fully settled
+    let outstanding_fines = h.ok("circulation_list_fines", json!({ "page": 1, "includeSettled": false }));
+    assert_eq!(outstanding_fines["total"], 0);
+
+    let updated_account = h.ok("members_fine_account", json!({ "memberId": member, "page": 1 }));
+    assert_eq!(updated_account["balances"][0]["assessedMinor"], 500);
+    assert_eq!(updated_account["balances"][0]["paidMinor"], 500);
+    assert_eq!(updated_account["balances"][0]["outstandingMinor"], 0);
+}
+
+#[test]
+fn acquisitions_full_workflow_via_ipc() {
+    let h = Harness::new();
+    h.ok("complete_setup", setup_body());
+
+    // 1. Create vendor
+    let vendor_id = h.ok("acquisitions_save_vendor", json!({
+        "input": {
+            "name": "Prabhat Books",
+            "code": "PRABHAT",
+            "contactName": "Raman Nair",
+            "email": "raman@prabhat.example",
+            "phone": "+91 471 2334455",
+            "address": "Trivandrum",
+            "notes": "Literature supplier"
+        }
+    })).as_i64().unwrap();
+
+    let vendors = h.ok("acquisitions_list_vendors", json!({ "includeArchived": false }));
+    assert_eq!(vendors.as_array().unwrap().len(), 1);
+    assert_eq!(vendors[0]["name"], "Prabhat Books");
+
+    // 2. Create budget
+    let budget_id = h.ok("acquisitions_save_budget", json!({
+        "input": {
+            "name": "Literature 2026-27",
+            "code": "LIT-26",
+            "amountMinor": 10000000,
+            "currency": "INR",
+            "fiscalYear": "2026-27"
+        }
+    })).as_i64().unwrap();
+
+    let budgets = h.ok("acquisitions_list_budgets", json!({ "includeArchived": false }));
+    assert_eq!(budgets.as_array().unwrap().len(), 1);
+    assert_eq!(budgets[0]["allocatedMinor"], 0);
+
+    // 3. Create acquisition request
+    let req_id = h.ok("acquisitions_create_request", json!({
+        "input": {
+            "title": "Aadujeevitham",
+            "author": "Benyamin",
+            "isbn": "9788126419999",
+            "publisher": "Green Books",
+            "publicationYear": 2008,
+            "estimatedPriceMinor": 25000,
+            "currency": "INR",
+            "copies": 3,
+            "requestedBy": "Malayalam Department",
+            "requestReason": "Prescribed syllabus"
+        }
+    })).as_i64().unwrap();
+
+    let requests = h.ok("acquisitions_list_requests", json!({ "status": null }));
+    assert_eq!(requests.as_array().unwrap().len(), 1);
+    assert_eq!(requests[0]["status"], "pending");
+
+    // 4. Approve request with budget
+    h.ok("acquisitions_approve_request", json!({
+        "id": req_id,
+        "budgetId": budget_id
+    }));
+
+    let approved_requests = h.ok("acquisitions_list_requests", json!({ "status": "approved" }));
+    assert_eq!(approved_requests.as_array().unwrap().len(), 1);
+    assert_eq!(approved_requests[0]["budgetId"], budget_id);
+
+    // 5. Create purchase order with this item
+    let po_id = h.ok("acquisitions_create_order", json!({
+        "input": {
+            "orderNumber": "PO-2026-0001",
+            "vendorId": vendor_id,
+            "budgetId": budget_id,
+            "invoiceRef": "PROFORMA-101",
+            "expectedAt": "2026-12-01",
+            "notes": "Direct delivery to central library",
+            "items": [
+                {
+                    "requestId": req_id,
+                    "title": "Aadujeevitham",
+                    "author": "Benyamin",
+                    "isbn": "9788126419999",
+                    "quantity": 3,
+                    "unitPriceMinor": 24000,
+                    "notes": null
+                }
+            ]
+        }
+    })).as_i64().unwrap();
+
+    // 6. Verify purchase order detail
+    let po = h.ok("acquisitions_get_order", json!({ "id": po_id }));
+    assert_eq!(po["orderNumber"], "PO-2026-0001");
+    assert_eq!(po["vendorName"], "Prabhat Books");
+    assert_eq!(po["totalMinor"], 72000); // 3 * 24000
+    assert_eq!(po["items"].as_array().unwrap().len(), 1);
+
+    // 7. Verify budget now reflects allocated amount
+    let budgets_after = h.ok("acquisitions_list_budgets", json!({ "includeArchived": false }));
+    assert_eq!(budgets_after[0]["allocatedMinor"], 72000);
+
+    // 8. Verify request status transitioned to 'ordered'
+    let ordered_requests = h.ok("acquisitions_list_requests", json!({ "status": "ordered" }));
+    assert_eq!(ordered_requests.as_array().unwrap().len(), 1);
+
+    // 9. Update order status to 'ordered'
+    h.ok("acquisitions_update_order_status", json!({
+        "id": po_id,
+        "status": "ordered",
+        "invoiceRef": "INV-OFFICIAL-99"
+    }));
+
+    let updated_po = h.ok("acquisitions_get_order", json!({ "id": po_id }));
+    assert_eq!(updated_po["status"], "ordered");
+    assert_eq!(updated_po["invoiceRef"], "INV-OFFICIAL-99");
+
+    // 10. Receive 2 copies (partial order)
+    let item_id = updated_po["items"][0]["id"].as_i64().unwrap();
+    let recv1 = h.ok("acquisitions_receive_items", json!({
+        "input": {
+            "orderId": po_id,
+            "itemId": item_id,
+            "quantity": 2
+        }
+    }));
+    assert_eq!(recv1["orderStatus"], "partially_received");
+    assert_eq!(recv1["receivedQuantity"], 2);
+    assert_eq!(recv1["createdCopies"].as_array().unwrap().len(), 2);
+
+    // 11. Receive remaining 1 copy (full order)
+    let recv2 = h.ok("acquisitions_receive_items", json!({
+        "input": {
+            "orderId": po_id,
+            "itemId": item_id,
+            "quantity": 1
+        }
+    }));
+    assert_eq!(recv2["orderStatus"], "received");
+    assert_eq!(recv2["receivedQuantity"], 3);
+
+    // 12. Duplicate receipt rejected
+    assert_eq!(
+        h.code("acquisitions_receive_items", json!({
+            "input": {
+                "orderId": po_id,
+                "itemId": item_id,
+                "quantity": 1
+            }
+        })),
+        "VALIDATION"
+    );
+
+    // 13. Verify request is now marked 'received'
+    let received_requests = h.ok("acquisitions_list_requests", json!({ "status": "received" }));
+    assert_eq!(received_requests.as_array().unwrap().len(), 1);
 }

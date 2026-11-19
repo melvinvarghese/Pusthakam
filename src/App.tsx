@@ -20,6 +20,7 @@ import { ThemeProvider } from "@/lib/theme";
 
 const queryClient = new QueryClient();
 const ReportsPage = lazy(() => import("@/features/reports/ReportsPage"));
+const AcquisitionsPage = lazy(() => import("@/features/acquisitions/AcquisitionsPage"));
 
 // Development-only visual reference; `import.meta.env.DEV` is false in production builds, so it is never bundled.
 const DesignGallery = import.meta.env.DEV
@@ -42,6 +43,7 @@ export function AppRoutes() {
         <Route path="/members" element={<MembersPage />} />
         <Route path="/circulation" element={<CirculationPage />} />
         <Route path="/reports" element={<Suspense fallback={<p role="status" className="p-6">Loading reports.</p>}><ReportsPage /></Suspense>} />
+        <Route path="/acquisitions" element={<Suspense fallback={<p role="status" className="p-6">Loading acquisitions.</p>}><AcquisitionsPage /></Suspense>} />
         {ALL_NAV_ITEMS.filter((i) => !i.available).map((i) => (
           <Route key={i.path} path={i.path} element={<NotAvailable />} />
         ))}
