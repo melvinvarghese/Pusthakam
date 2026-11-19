@@ -1,17 +1,17 @@
 {
   "schemaVersion": 1,
-  "lastUpdated": "2026-11-18T15:09:51.441Z",
+  "lastUpdated": "2026-11-19T04:41:04.666Z",
   "currentPhase": "4",
   "currentTask": {
     "taskId": "IMP-LOANS",
-    "title": "Circulation migration: renewal history",
+    "title": "Five-feature Phase 4 migration batch",
     "status": "in-progress",
-    "detail": "Session paused at owner request. Owner confirmed Windows loan and renewal imports/history work. Next: make Choose file look like a proper button (currently appears as random text), preferably in the shared file-input styling. Then resume Phase 4 reservation and financial migration. Existing automated/native build checks passed; full IMP-LOANS remains in progress."
+    "detail": "Paused at owner request; source and session checkpoint saved locally. Owner accepted all five Windows migration features. Last passed checks: 122 Rust unit, 24 IPC, 28 focused frontend tests, production build/typecheck/lint and native build. Latest accepted executable pusthakam-phase4-five-feature.exe, schema 20. Next: review remaining Phase 4 source/schema gaps; no further code work until owner returns. No Git commit/push performed."
   },
   "nextMilestone": {
     "nextTaskId": "IMP-LOANS",
-    "title": "Style Choose file buttons, then reservation migration",
-    "detail": "First inspect shared TextField/file-input styling and make Choose file visibly a button, with keyboard focus, disabled, light/dark states; verify import screens and refresh native build. Owner requested documentation/checkpoint only tonight. Then continue Phase 4 reservation and financial migration; LAN/OPAC remain Phase 7b."
+    "title": "Review remaining Phase 4 migration gaps",
+    "detail": "Joint five-feature Windows acceptance is recorded. Next audit explicit unsupported mappings (open-loan/non-loan/multiple charges, credits/refunds, title-level reservations, historical policy/return-condition fields), select the next Phase 4 increment and keep real-source reconciliation pending without a sample. The five-at-once trial was authorized for this batch only. LAN/OPAC remain Phase 7b."
   },
   "totals": {
     "overall": 51.2,
@@ -935,7 +935,8 @@
       ],
       "sourceEvidence": [
         "services/loan_import.rs; migration 0018_loan_import_provenance.sql; commands/circulation.rs and app_handlers; LoanImport.tsx and circulationApi; member loan history displays preserved source labels. docs/CIRCULATION_MIGRATION.md. Open/closed loans only; remaining history types unimplemented.",
-        "services/renewal_import.rs, migration 0019_renewal_import_provenance.sql, permission-checked renewal-import commands, RenewalImport.tsx and member-history renewal counts. Source-linked complete chains; stock/current due dates unchanged."
+        "services/renewal_import.rs, migration 0019_renewal_import_provenance.sql, permission-checked renewal-import commands, RenewalImport.tsx and member-history renewal counts. Source-linked complete chains; stock/current due dates unchanged.",
+        "services/history_import/{mod,finance,reservations}.rs; schema 0020_history_bundle_import.sql; circulation history preview/commit/recent commands; HistoryImport.tsx; original settlement source staff display. docs/FIVE_FEATURE_MIGRATION.md and synthetic examples. All five supported neutral features implemented together, with explicit rejected-source limitations."
       ],
       "verificationEvidence": [
         "loan-import-analysis-tests",
@@ -947,13 +948,17 @@
         "renewal-import-focused",
         "renewal-import-full",
         "renewal-import-native-build",
-        "renewal-import-owner-windows"
+        "renewal-import-owner-windows",
+        "file-picker-focused-checks",
+        "file-picker-native-build",
+        "file-picker-owner-windows",
+        "history-bundle-full-checks",
+        "history-bundle-native-build",
+        "history-bundle-owner-windows"
       ],
       "verificationNeeded": [
-        "Style Choose file as an obvious accessible button in the shared file field, then check native Windows import screens.",
-        "Native repeated-renewal-file rejection and remaining loan invalid-reference/read-only/open-policy/stock checks. Loan and renewal basic import/history walkthroughs owner-confirmed.",
-        "Implement reservation and financial migration with reconciliation, plus historical-policy/return-condition format extensions.",
-        "Real source-specific mapping/reconciliation when representative anonymised exports become available."
+        "Full source-system migration still needs mapping/schema extensions for open-loan/non-loan/multiple charges, credits/refunds, title-level reservation mapping, historical fine-policy/return-condition fields and representative real-data reconciliation.",
+        "Other previously recorded native loan/renewal edge checks remain open unless explicitly reported."
       ]
     },
     {
@@ -1674,6 +1679,62 @@
     }
   ],
   "verificationRuns": [
+    {
+      "id": "history-bundle-owner-windows",
+      "title": "Owner confirmed the five-feature Windows batch",
+      "at": "2026-11-19T04:38:43.169Z",
+      "check": "Owner followed the supplied joint Windows checklist and reported the batch works fine.",
+      "outcome": "passed",
+      "result": "Owner accepted the combined reservation, assessed-fine, payment, waiver and reconciliation walkthrough in pusthakam-phase4-five-feature.exe. This is native acceptance of the provided synthetic test package, not real Koha/source reconciliation or proof of unsupported charge mappings."
+    },
+    {
+      "id": "history-bundle-native-build",
+      "title": "Single Windows five-feature batch build",
+      "at": "2026-11-19T03:54:19.591Z",
+      "check": "cargo build --offline --manifest-path <temporary verification>/src-tauri/Cargo.toml --features tauri/custom-protocol",
+      "outcome": "passed",
+      "result": "C:\\Users\\Melvin\\AppData\\Local\\Temp\\pusthakam-native-verification-cea843fbd8cb4e9bbaf6c2274b98c468\\pusthakam-phase4-five-feature.exe built with current production assets/maximized/tray setup; only staged app-data root redirected to the existing disposable verification library. Includes five-feature-loans.csv, valid/mismatch JSON and FIVE_FEATURE_TEST.txt. Preparation read existing identifiers and wrote files only; no native walkthrough or automatic imports performed."
+    },
+    {
+      "id": "history-bundle-full-checks",
+      "title": "Five-feature batch full automated checks",
+      "at": "2026-11-19T03:52:14.524Z",
+      "check": "cargo test --offline --manifest-path src-tauri/Cargo.toml; npm test -- src/features/circulation/HistoryImport.test.tsx src/features/circulation/CirculationPage.test.tsx src/features/circulation/LoanImport.test.tsx src/features/circulation/RenewalImport.test.tsx src/features/members/MemberFines.test.tsx; npm run build; npm run lint",
+      "outcome": "passed",
+      "result": "122 unit tests, 24 IPC tests, 28 focused frontend tests passed. Build/typecheck/lint passed. Comprehensive IPC checks all five features, two currencies, ready/pending/closed queues, normal promotion, payment-only follow-up, invalid references/amounts/currencies/methods/reasons, repeats/stale/rollback, saved summary/re-read detection, denied commands and reason redaction. Native build/acceptance pending."
+    },
+    {
+      "id": "file-picker-owner-windows",
+      "title": "Owner confirmed Windows file-picker button appearance",
+      "at": "2026-11-19T03:36:15.121Z",
+      "check": "Owner inspected the refreshed Windows build and reported Choose file is now a button.",
+      "outcome": "passed",
+      "result": "Native visible button appearance owner-confirmed. Explicit light/dark and keyboard-focus/open-cancel walkthrough was not reported; do not infer those checks."
+    },
+    {
+      "id": "file-picker-native-build",
+      "title": "Windows file-picker styling build",
+      "at": "2026-11-19T03:24:12.643Z",
+      "check": "cargo build --offline --manifest-path <temporary verification>/src-tauri/Cargo.toml --features tauri/custom-protocol",
+      "outcome": "passed",
+      "result": "C:\\Users\\Melvin\\AppData\\Local\\Temp\\pusthakam-native-verification-cea843fbd8cb4e9bbaf6c2274b98c468\\pusthakam-phase4-file-picker.exe embeds final production assets and the current maximized/tray configuration against the isolated existing verification library. Schema remains 19; no Rust business or migration change. Built CSS includes native selector-button styles. App not launched; rendered native appearance remains open."
+    },
+    {
+      "id": "file-picker-focused-checks",
+      "title": "Shared native file picker checks",
+      "at": "2026-11-19T03:22:44.181Z",
+      "check": "npm test -- src/components/ui/Field.test.tsx src/features/circulation/LoanImport.test.tsx src/features/circulation/RenewalImport.test.tsx src/features/catalogue/ImportDialog.test.tsx; npm run build; npm run lint",
+      "outcome": "passed",
+      "result": "19 tests passed, including label/description, Tab focus, accepted upload, disabled state and import workflows. Build/typecheck/lint passed; built CSS contains selector-button styling. CSS colors use light/dark theme tokens. No Rust business logic changed; no new full Rust run needed. Browser visual attempt failed separately and native visual acceptance remains open."
+    },
+    {
+      "id": "file-picker-browser-attempt",
+      "title": "File-picker browser visual inspection attempt",
+      "at": "2026-11-19T03:20:19.037Z",
+      "check": "Browser surface inventory via computer-use getState",
+      "outcome": "failed",
+      "result": "UI inventory call timed out and reset its kernel. No browser appearance inspected or claimed. Native visual/keyboard acceptance remains open."
+    },
     {
       "id": "renewal-import-owner-windows",
       "title": "Owner confirmed Windows renewal-history import",
@@ -2804,6 +2865,55 @@
     }
   ],
   "recentActivity": [
+    {
+      "kind": "progress",
+      "at": "2026-11-19T04:41:04.666Z",
+      "taskId": "IMP-LOANS",
+      "title": "Session saved and paused",
+      "detail": "Paused at owner request; source and session checkpoint saved locally. Owner accepted all five Windows migration features. Last passed checks: 122 Rust unit, 24 IPC, 28 focused frontend tests, production build/typecheck/lint and native build. Latest accepted executable pusthakam-phase4-five-feature.exe, schema 20. Next: review remaining Phase 4 source/schema gaps; no further code work until owner returns. No Git commit/push performed."
+    },
+    {
+      "kind": "progress",
+      "at": "2026-11-19T04:38:43.169Z",
+      "taskId": "IMP-LOANS",
+      "title": "Owner accepted all five migration features together",
+      "detail": "Combined Windows reservation/fine/payment/waiver/reconciliation walkthrough worked. Synthetic native acceptance recorded; broader source gaps remain explicit."
+    },
+    {
+      "kind": "progress",
+      "at": "2026-11-19T03:54:19.591Z",
+      "taskId": "IMP-LOANS",
+      "title": "Single five-feature Windows package ready",
+      "detail": "All five supported neutral features are ready together in pusthakam-phase4-five-feature.exe (schema 20): reservations, assessed fines, payments, waivers and saved reconciliation. 122 Rust unit, 24 IPC, 28 focused frontend tests, production build/typecheck/lint and native build passed. One checklist and prerequisite/valid/mismatch files are beside it. No test-library records inserted automatically. Joint owner acceptance pending; full source-migration gaps remain explicit."
+    },
+    {
+      "kind": "progress",
+      "at": "2026-11-19T03:52:14.524Z",
+      "taskId": "IMP-LOANS",
+      "title": "Five-feature migration batch passed automated checks",
+      "detail": "All five batch features implemented in one strict history JSON bundle: reservations, assessed fines, allocated payments, waivers and saved currency reconciliation. Schema 20 provenance; admin preview/atomic commit, source/queue/balance validation, repeat/stale checks and post-write rereconciliation. 122 Rust unit, 24 IPC and 28 focused frontend tests plus production build/typecheck/lint passed. One native build/test package in progress. Full IMP-LOANS remains in progress for broader unsupported source mappings and acceptance."
+    },
+    {
+      "kind": "progress",
+      "at": "2026-11-19T03:36:15.121Z",
+      "taskId": "IMP-LOANS",
+      "title": "Owner accepted Choose file button appearance",
+      "detail": "Windows visible button appearance confirmed. Reservation migration is next; no further styling changes made."
+    },
+    {
+      "kind": "progress",
+      "at": "2026-11-19T03:24:12.643Z",
+      "taskId": "IMP-LOANS",
+      "title": "Choose file Windows build ready",
+      "detail": "Choose file button fix implemented across all six file fields; catalogue import uses shared TextField. 19 focused frontend tests, production build/typecheck/lint and standalone Windows build passed. Ready: pusthakam-phase4-file-picker.exe (schema 19) in pinned test folder. Native visual/light-dark/focus/chooser acceptance open; browser check timed out. Next reservation/financial migration; full IMP-LOANS remains in progress."
+    },
+    {
+      "kind": "progress",
+      "at": "2026-11-19T03:22:44.181Z",
+      "taskId": "IMP-LOANS",
+      "title": "File-picker button fix passed focused checks",
+      "detail": "Shared Choose file styling implemented with theme-token filled native buttons, hover/disabled states and retained keyboard focus. Catalogue import now uses shared TextField, so all six file fields are consistent. 19 focused frontend tests, production build/typecheck and lint passed. Native packaging running; browser inspection timed out, so native appearance acceptance remains open."
+    },
     {
       "kind": "progress",
       "at": "2026-11-18T15:09:51.441Z",

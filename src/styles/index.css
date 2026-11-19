@@ -121,6 +121,21 @@ body {
 /* Browser surfaces themed from the palette */
 ::selection { background: color-mix(in oklab, var(--ring) 35%, transparent); }
 input, textarea { caret-color: var(--ring); }
+
+/* Keep the native picker and filename, with a visible action after browser resets. */
+.file-picker::file-selector-button {
+  margin-inline-end: 0.75rem;
+  border: 1px solid var(--primary);
+  border-radius: 4px;
+  background: var(--primary);
+  color: var(--primary-fg);
+  padding: 0.375rem 0.75rem;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+.file-picker:not(:disabled):hover::file-selector-button { opacity: 0.9; }
+.file-picker:disabled::file-selector-button { cursor: not-allowed; }
 * { scrollbar-width: thin; scrollbar-color: var(--line-strong) transparent; }
 .rail-scroll { scrollbar-color: var(--ink-3) transparent; }
 /* In the base layer so utility classes (e.g. focus-visible:outline-none) can override it. */

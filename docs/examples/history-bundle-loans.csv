@@ -1,0 +1,3 @@
+source_id,member_number,barcode,issued_at,due_on,returned_at,source_staff
+L-001,001,0002,2018-01-01T10:00:00Z,2018-01-10,2018-01-20T10:00:00Z,Historical staff
+L-002,001,0002,2019-01-01T10:00:00Z,2019-01-10,2019-01-20T10:00:00Z,Historical staff

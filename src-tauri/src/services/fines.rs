@@ -274,9 +274,11 @@ pub fn history(
     ).optional()?.ok_or_else(|| AppError::NotFound("Fine not found.".into()))?;
     let page = page.clamp(1, ((total + SIZE - 1) / SIZE).max(1));
     let mut stmt = conn.prepare(
-        "SELECT s.id, s.kind, s.amount_minor, s.method, CASE WHEN ?2 THEN s.reason END, s.recorded_at, u.display_name
+        "SELECT s.id, s.kind, s.amount_minor, s.method, CASE WHEN ?2 THEN s.reason END, s.recorded_at,
+                COALESCE(p.source_staff || ' (imported source)', u.display_name)
          FROM fine_settlements s JOIN staff_users u ON u.id = s.staff_user_id
-         WHERE s.fine_id = ?1 ORDER BY s.id DESC LIMIT ?3 OFFSET ?4",
+         LEFT JOIN history_import_sources p ON p.kind='settlement' AND p.local_id=s.id
+           WHERE s.fine_id = ?1 ORDER BY s.recorded_at DESC, s.id DESC LIMIT ?3 OFFSET ?4",
     )?;
     let rows = stmt
         .query_map(

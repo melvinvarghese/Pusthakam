@@ -5,7 +5,7 @@
 import { invoke } from "@tauri-apps/api/core";
 import { openUrl } from "@tauri-apps/plugin-opener";
 import { previewMode } from "@/lib/preview";
-import type { RenewalImportPreview, LoanImportPreview, MemberFineAccount, LibraryCalendar, Holiday,
+import type { HistoryBatchSummary, HistorySummary, HistoryPreview, RenewalImportPreview, LoanImportPreview, MemberFineAccount, LibraryCalendar, Holiday,
   CatalogueExportFormat, CatalogueExportFile, AccessionFormat, AppErrorPayload, AppInfo, ArchiveKind, CirculationDay, ConfigOverview, CopyBatchInput, CopyPage, CopyQuery,
   CopyRecord, CopyStatus, CopyUpdateInput, DashboardOverview, DuplicateHit, DuplicateProbe, FineAmount, FineHistoryPage, FinePage, FineSettlement, ImportOptions, ImportPreview,
   ImportPreviewRequest, ImportReport, IssuePreview, KohaPatronPreview, LibraryInput, MemberCategoryInput, MemberInput, MemberLoanPage, MemberPage, OverduePage, RenewalPreview, ReservationPage, ReturnCondition, ReturnPreview,
@@ -168,6 +168,9 @@ export const membersApi = {
 };
 
 export const circulationApi = {
+  historyImports: () => call<HistoryBatchSummary[]>("circulation_history_imports"),
+  previewHistory: (dataBase64: string) => call<HistoryPreview>("circulation_preview_history", { dataBase64 }),
+  commitHistory: (dataBase64: string, expectedFingerprint: string) => call<HistorySummary>("circulation_commit_history", { dataBase64, expectedFingerprint }),
   previewRenewalImport: (dataBase64: string, sourceSystem: string) => call<RenewalImportPreview>("circulation_preview_renewal_import", { dataBase64, sourceSystem }),
   commitRenewalImport: (dataBase64: string, sourceSystem: string, expectedFingerprint: string) => call<number>("circulation_commit_renewal_import", { dataBase64, sourceSystem, expectedFingerprint }),
   commitImport: (dataBase64: string, sourceSystem: string, expectedFingerprint: string, useCurrentTerms: boolean) =>

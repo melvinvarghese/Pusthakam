@@ -33,7 +33,7 @@ export function TextField({ label, hint, error, className, ...rest }: Shared & I
         id={id}
         aria-invalid={error ? true : undefined}
         aria-describedby={describedBy(id, hint, error)}
-        className={cn(CONTROL, error && "border-danger", className)}
+        className={cn(CONTROL, rest.type === "file" && "file-picker h-auto min-h-10 py-1 pl-1", error && "border-danger", className)}
         {...rest}
       />
     </Wrap>

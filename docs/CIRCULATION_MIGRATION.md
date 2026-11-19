@@ -1,6 +1,6 @@
 # Circulation and financial-history migration
 
-Phase 4 task IMP-LOANS remains **in progress**. The neutral loan CSV preview and confirmed open/closed loan import are implemented. Renewal history has a separate source-linked CSV importer (below). Reservations, fines and settlements remain unimplemented. Real Koha field mappings remain unverified; the owner has no source export and authorized generic formats and synthetic tests.
+Phase 4 task IMP-LOANS remains **in progress**. The neutral loan CSV preview and confirmed open/closed loan import are implemented. Renewal history has a separate source-linked CSV importer (below). Reservations, closed-loan assessed fines, payments and waivers now have an atomic history bundle; see FIVE_FEATURE_MIGRATION.md. Source/schema limitations remain explicit. Real Koha field mappings remain unverified; the owner has no source export and authorized generic formats and synthetic tests.
 
 ## Neutral loan CSV v1
 
@@ -41,9 +41,9 @@ Audited migrations 0006 through 0010 and the patron importer. The full task stil
 | Source information | Destination constraint | Remaining work |
 |---|---|---|
 | Renewal events | Source-linked complete-chain importer implemented | Native acceptance pending. Incompatible/nonextending events are explicitly rejected; counts never manufacture events. |
-| Reservations | Copy-specific queue uses local insertion order | Explicit copy mapping and source queue order; never choose an arbitrary copy for a title-level request. |
+| Reservations | Source-linked copy queues implemented in history bundle | Native acceptance and explicit title-level-to-copy mapping remain open. |
 | Charges | One assessed fine per loan | Preserve/report non-loan charges and multiple charge types; do not silently merge them into overdue fines. |
-| Settlements | Payments/waivers allocated to individual fines | Preserve allocation, currency, dates, method and reason; never infer payments from a net balance. |
+| Settlements | Allocated payments/waivers implemented in history bundle | Native acceptance and unsupported credit/refund mappings remain open. |
 | Historical policies and return conditions | Not present in neutral v1 | Extend the format and preview before accepting these fields. |
 
 Financial reconciliation must keep currency totals separate. Test every supported history type, permissions, repeat import, stale preview and rollback before marking the full task implemented.
@@ -95,6 +95,24 @@ All 122 Rust unit, 23 IPC and 22 focused frontend tests passed, along with produ
 
 Quit the older app via tray > Quit, then open pusthakam-phase4-renewal-import.exe. The same folder contains renewal-import-test.csv and RENEWAL_IMPORT_TEST.txt with the original source-system name. The CSV is a synthetic example linked to the previously imported historical loan; preparation only read the test database. In Circulation > Import renewal history, enter that source name, preview and confirm the CSV. Members > Loans should show Renewals: 1 on the historical loan, with due date and stock unchanged. Reimport must be rejected. No overdue copy or external export is needed. Schema 19 requires this refreshed build; older apps refuse a newer database. Owner confirmed renewal import/history works. Repeated-file rejection was not explicitly reported and remains an open native check.
 
-## Next-session UI fix
+## Shared file-picker button fix (19 November 2026)
 
-Owner reports Choose file appears as random text. Make shared file-selection controls clearly button-shaped and recognizable, with focus/disabled/light/dark states. This is the first next step before reservation migration. Request recorded only; no styling change implemented in this checkpoint. Owner confirmed renewal import works and paused work until the next session.
+Implemented in shared TextField and native ::file-selector-button CSS. Choose file has a filled theme-token background, contrasting text, border, hover treatment and disabled cursor; the input retains its visible keyboard focus outline. Native file selection, filename display, accept filters, labels and error/hint associations remain intact. Catalogue import now uses TextField too, so all six file fields share the fix (catalogue, loans, renewals, patrons, covers and member photos).
+
+Nineteen focused frontend tests and production build/typecheck/lint passed. The built CSS includes the selector rules. Browser visual inspection timed out before a surface was inspected; owner confirmed visible button appearance in Windows. Refreshed Windows build passed: pusthakam-phase4-file-picker.exe (schema 19) is in the pinned test folder. Quit the older app via tray > Quit before opening it. Check light/dark, Tab focus and opening/canceling the chooser; no database import is needed. Then resume Phase 4 reservation and financial migration.
+
+Owner result, 19 November: Choose file is now visibly a button in Windows. Appearance accepted; unreported theme/keyboard checks are not inferred. Next development task is reservation migration, followed by financial history.
+
+## Five-feature batch authorized — 19 November
+
+Owner requested this batch once: reservation history, assessed-fine history, payments, waivers and a currency-separated reconciliation summary. Implement/test together, then one native build and checklist. Neutral JSON bundle planned for atomic cross-record validation; source-specific mappings remain unverified. Work starting, no completion credit.
+
+Five-feature implementation checkpoint: schema 20 append-only provenance and one strict JSON bundle for reservations, assessed fines, payments and waivers. Expected counts/currency totals gate atomic commit; destination records are reread before finalizing. Admin preview/confirmation UI added. cargo check passed before the post-write reconciliation addition; focused tests next. Explicitly reject unsupported non-loan/multiple/open-loan charges and conflicting queues. No completion credit.
+
+## Five-feature batch implementation
+
+Implemented reservation/fine/payment/waiver import and saved reconciliation together in schema 20. Use docs/FIVE_FEATURE_MIGRATION.md for authoritative supported format, rejection rules and the combined checklist. Full automated checks passed: 122 Rust unit, 24 IPC, 28 focused frontend tests, production build/typecheck and lint. One native build is in progress; owner acceptance remains open. No current charge type is silently merged or discarded.
+
+Five-feature native build passed: pusthakam-phase4-five-feature.exe (schema 20), with one combined checklist and matching prerequisite/valid/mismatch sample files in the pinned verification folder. Final automated baseline: 122 unit, 24 IPC, 28 focused frontend tests, build/typecheck and lint passed. Joint owner acceptance remains open; see FIVE_FEATURE_MIGRATION.md.
+
+Owner confirmed the combined schema-20 Windows test works: reservation history, assessed fines, payments, waivers and saved reconciliation. Supported neutral five-feature acceptance recorded; full source mapping/reconciliation and documented schema extensions remain pending. Next: review remaining Phase 4 migration gaps.

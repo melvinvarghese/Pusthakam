@@ -16,17 +16,17 @@ After every meaningful change, immediately update **PROGRESS.md**, **PROGRESS.js
 
 The current clone is D:\Pusthakam. Other computers can use another path. Temporary verification executables and disposable databases are machine-specific: rebuild from source on another computer. Windows native builds require the documented Rust/MSVC/WebView2 toolchain.
 
-## Current task: IMP-LOANS, Phase 4 — paused for next session
+## Current task: saved and paused / Phase 4 IMP-LOANS
 
-Owner confirmed Windows loan and renewal imports/history work. Latest build: pusthakam-phase4-renewal-import.exe, schema 19. Tests passed: 122 Rust unit, 23 IPC and 22 focused frontend tests, production build/typecheck/lint and standalone native build. The full migration task remains in progress; no new completion credit.
+Owner asked to save everything and pause until returning. All source files are saved locally; no Git commit or push performed. Resume by reading PROGRESS.md/PROGRESS.json, inspecting Git status and continuing the next step below.
 
-**FIRST next step:** make Choose file visibly a button. Owner says it currently looks like random text. Inspect shared TextField/file-input CSS and apply consistent button appearance across relevant screens, including keyboard focus, disabled and light/dark states. Verify affected import screens and prepare a fresh native build. This is requested for next session; no styling implementation was made tonight.
+Owner confirmed the joint five-feature Windows batch works fine: reservation history, assessed fines, allocated payments, waivers and saved currency reconciliation. The supplied synthetic walkthrough is native-accepted. All 122 Rust unit, 24 IPC and 28 focused frontend tests plus production build/typecheck/lint and native build passed. Full IMP-LOANS remains in progress because broader source/schema gaps and representative real-data reconciliation are outstanding; no full-task credit was awarded.
 
-Then resume normal Phase 4 order: reservation migration, then fines/settlements. Basic native renewal acceptance is recorded; repeated-file rejection and remaining loan invalid-reference/read-only/open-policy/stock checks were not explicitly confirmed. Keep them open. Generic implementation can proceed without a real Koha export; source-specific mapping/reconciliation remains unverified. LAN/browser access and OPAC stay Phase 7b. Deferred loading screen/password rule remain deferred.
+Next: audit remaining explicit limitations and select the next Phase 4 increment: open-loan/non-loan/multiple charges, credits/refunds, title-level reservation mapping, historical policy/return-condition fields. No real Koha sample is available; generic development remains authorized. Do not misrepresent synthetic acceptance as real source compatibility. The owner requested five-at-once once for this batch only; do not assume all future work must be grouped by five.
 
-Test folder: %LOCALAPPDATA%\Temp\pusthakam-native-verification-cea843fbd8cb4e9bbaf6c2274b98c468. Owner pinned it in Explorer Quick access. It contains renewal-import-test.csv and RENEWAL_IMPORT_TEST.txt, linked to the prior historical test loan. Quit older builds from tray > Quit; X only hides them. Temporary files do not travel between computers. See docs/CIRCULATION_MIGRATION.md for format and provenance constraints.
+Latest accepted executable: pusthakam-phase4-five-feature.exe, schema 20. Pinned test folder: %LOCALAPPDATA%\Temp\pusthakam-native-verification-cea843fbd8cb4e9bbaf6c2274b98c468. It contains prerequisite loan CSV, valid/mismatch history JSON and FIVE_FEATURE_TEST.txt. The native example is now imported by the owner; source IDs must not be reused. Inspect actual disposable DB read-only before preparing future fixtures. Tray > Quit older apps (X hides). Temporary files and test-library records do not travel through Git.
 
-Owner is leaving and plans to resume tomorrow. All changes are local; no commit/push performed. Sync source/docs through Git before changing computers. No actual library data belongs in Git.
+See docs/FIVE_FEATURE_MIGRATION.md for the supported strict format, limits, provenance and reconciliation semantics. All source/docs remain local until Git commit/push/pull. Never commit actual library data. LAN/OPAC stay Phase 7b; splash/password/manual remain deferred.
 
 ## Member fine checkpoint
 
@@ -55,6 +55,8 @@ When populated test data becomes available: quit an older tray-enabled test app 
 
 ## Feature documentation
 
+- docs/FIVE_FEATURE_MIGRATION.md
+
 - docs/CIRCULATION_MIGRATION.md
 
 - docs/MEMBER_FINE_ACCOUNTS.md
@@ -70,3 +72,9 @@ When populated test data becomes available: quit an older tray-enabled test app 
 Current weighted totals: **51.2% overall, 62.9% implemented, 41.8% verified and 10% release-ready**. Recalculate from PROGRESS.json after any status change; partial work gets no full implementation credit.
 
 Source-sample absence blocks real-source verification only. Generic loan/renewal development is authorized and continues.
+
+## Five-feature batch authorized — 19 November
+
+Owner requested this batch once: reservation history, assessed-fine history, payments, waivers and a currency-separated reconciliation summary. Implement/test together, then one native build and checklist. Neutral JSON bundle planned for atomic cross-record validation; source-specific mappings remain unverified. Work starting, no completion credit.
+
+Five-feature implementation checkpoint: schema 20 append-only provenance and one strict JSON bundle for reservations, assessed fines, payments and waivers. Expected counts/currency totals gate atomic commit; destination records are reread before finalizing. Admin preview/confirmation UI added. cargo check passed before the post-write reconciliation addition; focused tests next. Explicitly reject unsupported non-loan/multiple/open-loan charges and conflicting queues. No completion credit.
