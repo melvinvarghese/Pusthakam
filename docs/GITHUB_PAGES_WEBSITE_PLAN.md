@@ -35,7 +35,9 @@ After publication, verify the domain/site in the relevant webmaster tools, submi
 5. Visually inspect desktop/mobile pages and representative articles. Check content claims against the release being advertised. Prepare a GitHub Pages build/deployment workflow when implementation starts.
 6. Publish only as a separate owner-directed step after the site is reviewable; then validate the live URLs and indexing setup. Do not claim local files are already online.
 
-No product roadmap weight or completion credit is added for this website plan. Preserve the existing desktop recovery milestone and report-design request. Resume website implementation only when the owner asks.
+No product roadmap weight or completion credit is added for this website plan. Preserve the existing desktop recovery milestone and report-design request. Resume broader website implementation only when the owner asks.
+
+Later narrow exception (20 November 2026): the owner authorized only a responsive overflow fix for long inline code on the FAQ page. The broader website plan remains deferred, with no desktop/v1 product credit.
 
 ## Initial visual direction, for later review
 

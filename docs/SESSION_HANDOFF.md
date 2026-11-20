@@ -20,13 +20,15 @@ The current clone is D:\Pusthakam. Other computers can use another path. Tempora
 
 Owner clarified: add the website to the roadmap/relevant docs now and implement later. Do NOT continue website implementation until requested. Scope: attractive librarian-focused homepage/try path, populated Blog and FAQ tabs, separate static article URLs, sitemap.xml, correctly deployed robots.txt, canonical/social metadata and appropriate structured data. Use relevant installed design/writing/site guidance; available skills are sufficient. No ranking/AI-citation promises. Detailed plan: docs/GITHUB_PAGES_WEBSITE_PLAN.md. This is separate from the OPAC.
 
-No website code, deployment workflow or publication implemented. Initial visual notes were moved into the documentation plan. No desktop completion credit; BAK-RESTORE milestone and planned report presentation work remain unchanged.
+At the time this planning note was recorded, no website code, deployment workflow or publication had been implemented. Initial visual notes were moved into the documentation plan. No desktop completion credit; BAK-RESTORE milestone and planned report presentation work remain unchanged.
+
+**Narrow exception authorized 20 November 2026:** The FAQ overflow at 320px came from a long inline code path. Added `overflow-wrap: anywhere` to FAQ code only; Chromium checks passed at 320, 360, 375, 390, 430, 768, 1024, 1280 and 1440px. No broader website work or v1 product credit is included.
 
 ## Planned owner requirement: report presentation (20 November 2026)
 
 Reports must be aesthetically beautiful and professionally composed by default, using relevant installed design/document/PDF/spreadsheet skills during implementation and visual review. Add an unchecked **Use simple report design** checkbox for a conventional minimal library-management report layout. Both modes retain identical data and calculations; apply the choice to preview/PDF/print/styled XLSX, while CSV remains data-only. Scope and acceptance: docs/REPORT_DESIGN_PLAN.md, linked to Phase 5 REQ-RPT/RPT-FORMATS and its pending work in PROGRESS.json. This is documentation only; no renderer or checkbox implementation, no completion credit. Current recovery milestone BAK-RESTORE remains unchanged.
 
-## Current task: Phase 5 (Dashboard, Reports and Printing) Complete: PRN-HARDWARE Verified & Simple Report Design Implemented (20 November 2026 Afternoon)
+## Latest v1 product milestone: Phase 5 (Dashboard, Reports and Printing) Complete: PRN-HARDWARE Verified & Simple Report Design Implemented (20 November 2026 Afternoon)
 
 **Overall: 90.0% (up from 87.6%). Implementation: 97.4% (up from 96.3%). Verification: 91.2% (up from 90.1%). Release readiness: 42.0% (up from 28.0%).**
 

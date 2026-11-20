@@ -8,6 +8,8 @@ For continuation on another computer, read [SESSION_HANDOFF.md](docs/SESSION_HAN
 
 Pusthakam is **90.0% complete overall**, with 97.4% implemented, 91.2% verified and 42% release-ready. Phase 5 (Dashboard, reports and printing) is **100% Implemented & 100% Verified**, passing the `desk` release gate. Simple report design mode (docs/REPORT_DESIGN_PLAN.md) and OS printer / USB scanner acceptance (PRN-HARDWARE) completed. Next milestone: CI pipeline remote execution and accessibility announcements (REL-CI).
 
+**Non-v1 website fix (20 November):** The FAQ’s long inline code path now wraps instead of causing horizontal overflow. Chromium checks passed at 320, 360, 375, 390, 430, 768, 1024, 1280 and 1440px; product roadmap totals are unchanged.
+
 Run `npm run progress:monitor` from this directory and open <http://127.0.0.1:4317/>. Keep the terminal open while using the dashboard. Run `npm run progress:validate` to check the task data and percentages.
 
 | Phase | Implemented | Verified |
