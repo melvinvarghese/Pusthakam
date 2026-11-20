@@ -224,7 +224,15 @@ pub(super) fn fingerprint(conn: &Connection, bytes: &[u8]) -> AppResult<String> 
         "libraries",
         "loans",
         "loan_import_sources",
-        "loan_import_batches", "loan_renewals", "renewal_import_batches", "renewal_import_sources", "reservations", "fines", "fine_settlements", "history_import_batches", "history_import_sources",
+        "loan_import_batches",
+        "loan_renewals",
+        "renewal_import_batches",
+        "renewal_import_sources",
+        "reservations",
+        "fines",
+        "fine_settlements",
+        "history_import_batches",
+        "history_import_sources",
     ] {
         hash.update(table.as_bytes());
         let mut stmt = conn.prepare(&format!("SELECT * FROM {table} ORDER BY rowid"))?;
@@ -238,7 +246,11 @@ pub(super) fn fingerprint(conn: &Connection, bytes: &[u8]) -> AppResult<String> 
             }
         }
     }
-    Ok(hash.finalize().iter().map(|b| format!("{b:02x}")).collect::<String>())
+    Ok(hash
+        .finalize()
+        .iter()
+        .map(|b| format!("{b:02x}"))
+        .collect::<String>())
 }
 
 pub fn commit(
@@ -275,7 +287,10 @@ pub fn commit(
             "Confirm the use of current fine policies for imported open loans.".into(),
         ));
     }
-    let digest = Sha256::digest(&bytes).iter().map(|b| format!("{b:02x}")).collect::<String>();
+    let digest = Sha256::digest(&bytes)
+        .iter()
+        .map(|b| format!("{b:02x}"))
+        .collect::<String>();
     let duplicate: bool = tx.query_row(
         "SELECT EXISTS(SELECT 1 FROM loan_import_batches WHERE file_digest=?1)",
         [&digest],
@@ -392,16 +407,18 @@ mod tests {
              c2,001,0002,2020-02-01T10:00:00Z,2020-02-10,2020-02-05T10:00:00Z,Staff,damaged\n\
              c3,001,0002,2020-03-01T10:00:00Z,2020-03-10,2020-03-05T10:00:00Z,Staff,lost\n\
              c4,001,0002,2020-04-01T10:00:00Z,2020-04-10,2020-04-05T10:00:00Z,Staff,\n\
-             op,001,0002,2026-11-01T10:00:00Z,2026-11-30,,Staff,"
+             op,001,0002,2026-11-01T10:00:00Z,2026-11-30,,Staff,",
         );
         let p = preview(&c, valid.as_bytes()).unwrap();
         assert_eq!((p.total, p.open, p.closed, p.invalid), (5, 1, 4, 0));
 
         // Invalid condition string on closed loan
-        let bad_cond = csv_v2("c1,001,0002,2020-01-01T10:00:00Z,2020-01-10,2020-01-05T10:00:00Z,Staff,broken");
+        let bad_cond =
+            csv_v2("c1,001,0002,2020-01-01T10:00:00Z,2020-01-10,2020-01-05T10:00:00Z,Staff,broken");
         let p_bad = preview(&c, bad_cond.as_bytes()).unwrap();
         assert_eq!(p_bad.invalid, 1);
-        assert!(p_bad.problems[0].contains("Return condition must be 'available', 'damaged', 'lost', or empty."));
+        assert!(p_bad.problems[0]
+            .contains("Return condition must be 'available', 'damaged', 'lost', or empty."));
 
         // Condition specified on open loan is rejected
         let open_with_cond = csv_v2("op,001,0002,2026-11-01T10:00:00Z,2026-11-30,,Staff,damaged");
@@ -415,7 +432,8 @@ mod tests {
         let rows=csv("a,001,0002,2026-11-01T10:00:00Z,2026-11-30,,Staff\nb,001,0002,2026-11-01T10:00:00Z,2026-11-30,,Staff\na,001,0002,2026-11-01T10:00:00Z,2026-11-30,,Staff\nc,1,0002,2026-11-01T10:00:00Z,2026-11-30,,Staff");
         let p = preview(&c, rows.as_bytes()).unwrap();
         assert_eq!((p.open, p.invalid), (1, 3));
-        c.execute("INSERT INTO loans VALUES(2,NULL,NULL)", []).unwrap();
+        c.execute("INSERT INTO loans VALUES(2,NULL,NULL)", [])
+            .unwrap();
         assert_eq!(
             preview(
                 &c,

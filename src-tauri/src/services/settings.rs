@@ -15,17 +15,28 @@ enum LibraryField {
 }
 
 fn validate_custom_fields(json: &str) -> AppResult<()> {
-    let invalid = || AppError::Validation("Enter unique field labels and values that match each field type.".into());
+    let invalid = || {
+        AppError::Validation(
+            "Enter unique field labels and values that match each field type.".into(),
+        )
+    };
     let fields: Vec<LibraryField> = serde_json::from_str(json).map_err(|_| invalid())?;
     let mut seen = std::collections::HashSet::new();
     for field in fields {
         let (label, valid) = match field {
             LibraryField::Text { label, value } => (label, value.chars().count() <= 500),
             LibraryField::Number { label, value } => (label, value.is_finite()),
-            LibraryField::Checkbox { label, value: _value } => (label, true),
+            LibraryField::Checkbox {
+                label,
+                value: _value,
+            } => (label, true),
         };
         let label = label.trim();
-        if !valid || label.is_empty() || label.chars().count() > 80 || !seen.insert(label.to_lowercase()) {
+        if !valid
+            || label.is_empty()
+            || label.chars().count() > 80
+            || !seen.insert(label.to_lowercase())
+        {
             return Err(invalid());
         }
     }
@@ -35,7 +46,9 @@ fn validate_custom_fields(json: &str) -> AppResult<()> {
 fn validate_key(key: &str) -> AppResult<()> {
     let ok = !key.is_empty()
         && key.len() <= 64
-        && key.chars().all(|c| c.is_ascii_lowercase() || c.is_ascii_digit() || c == '_' || c == '.');
+        && key
+            .chars()
+            .all(|c| c.is_ascii_lowercase() || c.is_ascii_digit() || c == '_' || c == '.');
     if ok {
         Ok(())
     } else {
@@ -48,7 +61,11 @@ fn validate_key(key: &str) -> AppResult<()> {
 pub fn get(conn: &Connection, key: &str) -> AppResult<Option<String>> {
     validate_key(key)?;
     Ok(conn
-        .query_row("SELECT value FROM application_settings WHERE key = ?1", [key], |r| r.get(0))
+        .query_row(
+            "SELECT value FROM application_settings WHERE key = ?1",
+            [key],
+            |r| r.get(0),
+        )
         .optional()?)
 }
 
@@ -84,11 +101,17 @@ mod tests {
             r#"[{"label":"District","kind":"text","value":"A"},{"label":" district ","kind":"text","value":"B"}]"#,
             r#"[{"label":" ","kind":"checkbox","value":true}]"#,
         ] {
-            assert!(matches!(set(&conn, CUSTOM_FIELDS_KEY, invalid), Err(AppError::Validation(_))));
+            assert!(matches!(
+                set(&conn, CUSTOM_FIELDS_KEY, invalid),
+                Err(AppError::Validation(_))
+            ));
         }
         drop(conn);
         let reopened = db::open(&tmp.path().join("s.db")).unwrap();
-        assert_eq!(get(&reopened, CUSTOM_FIELDS_KEY).unwrap().as_deref(), Some(valid));
+        assert_eq!(
+            get(&reopened, CUSTOM_FIELDS_KEY).unwrap().as_deref(),
+            Some(valid)
+        );
     }
 
     fn conn() -> (tempfile::TempDir, Connection) {
@@ -110,16 +133,32 @@ mod tests {
         assert_eq!(get(&c, "ui.theme").unwrap().as_deref(), Some("\"dark\""));
         set(&c, "ui.theme", "\"light\"").unwrap();
         assert_eq!(get(&c, "ui.theme").unwrap().as_deref(), Some("\"light\""));
-        let n: i64 = c.query_row("SELECT count(*) FROM application_settings", [], |r| r.get(0)).unwrap();
+        let n: i64 = c
+            .query_row("SELECT count(*) FROM application_settings", [], |r| {
+                r.get(0)
+            })
+            .unwrap();
         assert_eq!(n, 1);
     }
 
     #[test]
     fn rejects_bad_keys_and_oversized_values() {
         let (_t, c) = conn();
-        for bad in ["", "Has Space", "UPPER", "a'; DROP TABLE x;--", &"k".repeat(65)] {
-            assert!(matches!(set(&c, bad, "1"), Err(AppError::Validation(_))), "key {bad:?}");
+        for bad in [
+            "",
+            "Has Space",
+            "UPPER",
+            "a'; DROP TABLE x;--",
+            &"k".repeat(65),
+        ] {
+            assert!(
+                matches!(set(&c, bad, "1"), Err(AppError::Validation(_))),
+                "key {bad:?}"
+            );
         }
-        assert!(matches!(set(&c, "ok", &"x".repeat(MAX_VALUE_LEN + 1)), Err(AppError::Validation(_))));
+        assert!(matches!(
+            set(&c, "ok", &"x".repeat(MAX_VALUE_LEN + 1)),
+            Err(AppError::Validation(_))
+        ));
     }
 }

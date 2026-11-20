@@ -2,8 +2,8 @@
 
 use crate::error::AppResult;
 use crate::services::lan::{
-    self, LanConfig, LanLoginRequest, LanLoginResponse, LanPairingCode, PairedClient,
-    PairRequest, PairResponse, PublicOpacItem, PublicOpacSearchResult, UpdateLanConfigInput,
+    self, LanConfig, LanLoginRequest, LanLoginResponse, LanPairingCode, PairRequest, PairResponse,
+    PairedClient, PublicOpacItem, PublicOpacSearchResult, UpdateLanConfigInput,
 };
 use crate::state::AppState;
 use tauri::State;
@@ -48,12 +48,18 @@ pub fn lan_revoke_client(state: State<'_, AppState>, client_id: String) -> AppRe
 }
 
 #[tauri::command]
-pub fn lan_pair_client(state: State<'_, AppState>, request: PairRequest) -> AppResult<PairResponse> {
+pub fn lan_pair_client(
+    state: State<'_, AppState>,
+    request: PairRequest,
+) -> AppResult<PairResponse> {
     state.with_conn(|conn| lan::pair_client(conn, &request))
 }
 
 #[tauri::command]
-pub fn lan_login(state: State<'_, AppState>, request: LanLoginRequest) -> AppResult<LanLoginResponse> {
+pub fn lan_login(
+    state: State<'_, AppState>,
+    request: LanLoginRequest,
+) -> AppResult<LanLoginResponse> {
     state.with_conn(|conn| lan::lan_login(conn, &request))
 }
 

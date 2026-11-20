@@ -2,7 +2,10 @@ use crate::db::migrations;
 use crate::error::{AppError, AppResult};
 use crate::paths::AppPaths;
 use crate::services::{settings, setup};
-use rusqlite::{backup::{Backup, StepResult}, Connection, OpenFlags, Transaction, TransactionBehavior};
+use rusqlite::{
+    backup::{Backup, StepResult},
+    Connection, OpenFlags, Transaction, TransactionBehavior,
+};
 use serde::Serialize;
 use std::fs;
 use std::io::{ErrorKind, Read, Write};
@@ -26,7 +29,8 @@ pub fn startup_lock(paths: &AppPaths) -> AppResult<(Connection, bool)> {
         connection.busy_timeout(Duration::ZERO)?;
         match connection.execute_batch("BEGIN EXCLUSIVE") {
             Ok(()) => return Ok((connection, true)),
-            Err(rusqlite::Error::SqliteFailure(code, _)) if code.code == rusqlite::ErrorCode::DatabaseBusy => {}
+            Err(rusqlite::Error::SqliteFailure(code, _))
+                if code.code == rusqlite::ErrorCode::DatabaseBusy => {}
             Err(error) => return Err(error.into()),
         }
     }
@@ -46,7 +50,9 @@ pub fn hold_library_lock(connection: Connection, exclusive: bool) -> AppResult<L
         connection.execute_batch("ROLLBACK")?;
         lock_shared(&connection)?;
     }
-    Ok(LibraryUseLock { _connection: Mutex::new(connection) })
+    Ok(LibraryUseLock {
+        _connection: Mutex::new(connection),
+    })
 }
 
 #[derive(Serialize)]
@@ -75,8 +81,11 @@ pub fn set_daily(conn: &Connection, enabled: bool) -> AppResult<()> {
 }
 
 fn is_backup_name(name: &str) -> bool {
-    name.starts_with("pusthakam-") && name.ends_with(".sqlite3")
-        && name.bytes().all(|byte| byte.is_ascii_alphanumeric() || matches!(byte, b'-' | b'.' | b'_'))
+    name.starts_with("pusthakam-")
+        && name.ends_with(".sqlite3")
+        && name
+            .bytes()
+            .all(|byte| byte.is_ascii_alphanumeric() || matches!(byte, b'-' | b'.' | b'_'))
 }
 
 pub fn list(conn: &Connection, paths: &AppPaths) -> AppResult<BackupList> {
@@ -86,14 +95,20 @@ pub fn list(conn: &Connection, paths: &AppPaths) -> AppResult<BackupList> {
         let entry = entry?;
         let name = entry.file_name().to_string_lossy().into_owned();
         if is_backup_name(&name) && entry.file_type()?.is_file() {
-            files.push(BackupFile { name, size_bytes: entry.metadata()?.len() });
+            files.push(BackupFile {
+                name,
+                size_bytes: entry.metadata()?.len(),
+            });
         }
     }
     files.sort_by(|left, right| right.name.cmp(&left.name));
     Ok(BackupList {
-        folder: folder.to_string_lossy().into_owned(), files, daily_enabled: daily_enabled(conn)?,
+        folder: folder.to_string_lossy().into_owned(),
+        files,
+        daily_enabled: daily_enabled(conn)?,
         pending_restore: pending_restore(paths)?,
-        last_restore: settings::get(conn, RESTORE_RESULT)?.and_then(|raw| serde_json::from_str(&raw).ok()),
+        last_restore: settings::get(conn, RESTORE_RESULT)?
+            .and_then(|raw| serde_json::from_str(&raw).ok()),
     })
 }
 
@@ -104,11 +119,15 @@ pub fn create(source: &Connection, folder: &Path) -> AppResult<BackupFile> {
 pub fn copy_to_folder(paths: &AppPaths, name: &str, folder: &str) -> AppResult<BackupFile> {
     let destination = Path::new(folder.trim());
     if !destination.is_absolute() || !destination.is_dir() {
-        return Err(AppError::Validation("Enter the full path to an existing backup destination folder.".into()));
+        return Err(AppError::Validation(
+            "Enter the full path to an existing backup destination folder.".into(),
+        ));
     }
     let destination = destination.canonicalize()?;
     if destination.starts_with(paths.data_dir.canonicalize()?) {
-        return Err(AppError::Validation("Choose a folder outside the Pusthakam data directory.".into()));
+        return Err(AppError::Validation(
+            "Choose a folder outside the Pusthakam data directory.".into(),
+        ));
     }
     let source = open_saved(&paths.backups, name)?;
     check_schema_history(&source)?;
@@ -119,9 +138,10 @@ pub fn run_daily(source: &Connection, paths: &AppPaths) -> AppResult<bool> {
     if !daily_enabled(source)? || !setup::status(source)?.configured {
         return Ok(false);
     }
-    let date: String = source.query_row(
-        "SELECT strftime('%Y%m%d','now','localtime')", [], |row| row.get(0),
-    )?;
+    let date: String =
+        source.query_row("SELECT strftime('%Y%m%d','now','localtime')", [], |row| {
+            row.get(0)
+        })?;
     let name = format!("pusthakam-{date}-daily.sqlite3");
     let folder = &paths.backups;
     if folder.join(&name).try_exists()? {
@@ -135,10 +155,15 @@ pub fn run_daily(source: &Connection, paths: &AppPaths) -> AppResult<bool> {
         let entry = entry?;
         let filename = entry.file_name();
         let Some(previous) = filename.to_str().and_then(|name| {
-            name.strip_prefix("pusthakam-")?.strip_suffix("-daily.sqlite3")
-        }) else { continue };
-        if previous.len() == 8 && previous.bytes().all(|byte| byte.is_ascii_digit())
-            && previous < date.as_str() && filename.to_str() != queued.as_deref()
+            name.strip_prefix("pusthakam-")?
+                .strip_suffix("-daily.sqlite3")
+        }) else {
+            continue;
+        };
+        if previous.len() == 8
+            && previous.bytes().all(|byte| byte.is_ascii_digit())
+            && previous < date.as_str()
+            && filename.to_str() != queued.as_deref()
             && entry.file_type()?.is_file()
         {
             fs::remove_file(entry.path())?;
@@ -149,8 +174,13 @@ pub fn run_daily(source: &Connection, paths: &AppPaths) -> AppResult<bool> {
 }
 
 fn check_integrity(conn: &Connection) -> AppResult<()> {
-    if conn.query_row("PRAGMA integrity_check(1)", [], |row| row.get::<_, String>(0))? != "ok" {
-        return Err(AppError::Validation("The backup did not pass SQLite integrity checking.".into()));
+    if conn.query_row("PRAGMA integrity_check(1)", [], |row| {
+        row.get::<_, String>(0)
+    })? != "ok"
+    {
+        return Err(AppError::Validation(
+            "The backup did not pass SQLite integrity checking.".into(),
+        ));
     }
     Ok(())
 }
@@ -163,7 +193,9 @@ fn copy_database(source: &Connection, destination: &mut Connection) -> AppResult
             StepResult::Done => return Ok(()),
             StepResult::More => {}
             _ if started.elapsed() >= Duration::from_secs(5) => {
-                return Err(AppError::Conflict("The database is busy. Retry the backup operation.".into()));
+                return Err(AppError::Conflict(
+                    "The database is busy. Retry the backup operation.".into(),
+                ));
             }
             _ => std::thread::sleep(Duration::from_millis(25)),
         }
@@ -178,7 +210,9 @@ pub fn verify_saved(folder: &Path, name: &str) -> AppResult<i64> {
 
 fn open_saved(folder: &Path, name: &str) -> AppResult<Connection> {
     if !is_backup_name(name) {
-        return Err(AppError::Validation("Choose a saved backup from the list.".into()));
+        return Err(AppError::Validation(
+            "Choose a saved backup from the list.".into(),
+        ));
     }
     let path = folder.join(name);
     if !fs::symlink_metadata(&path)?.is_file() {
@@ -190,7 +224,8 @@ fn open_saved(folder: &Path, name: &str) -> AppResult<Connection> {
 }
 
 fn check_schema_history(conn: &Connection) -> AppResult<i64> {
-    let mut stmt = conn.prepare("SELECT version, checksum FROM schema_migrations ORDER BY version")?;
+    let mut stmt =
+        conn.prepare("SELECT version, checksum FROM schema_migrations ORDER BY version")?;
     let mut rows = stmt.query([])?;
     let mut latest = 0;
     for migration in migrations::MIGRATIONS {
@@ -198,12 +233,16 @@ fn check_schema_history(conn: &Connection) -> AppResult<i64> {
         let version: i64 = row.get(0)?;
         let checksum: String = row.get(1)?;
         if version != migration.version || checksum != migrations::checksum(migration.sql) {
-            return Err(AppError::Validation("This backup has an incompatible migration history.".into()));
+            return Err(AppError::Validation(
+                "This backup has an incompatible migration history.".into(),
+            ));
         }
         latest = version;
     }
     if latest == 0 || (latest == migrations::latest_version() && rows.next()?.is_some()) {
-        return Err(AppError::Validation("This backup has an incompatible database schema version.".into()));
+        return Err(AppError::Validation(
+            "This backup has an incompatible database schema version.".into(),
+        ));
     }
     Ok(latest)
 }
@@ -226,13 +265,17 @@ pub fn request_restore(conn: &Connection, paths: &AppPaths, name: &str) -> AppRe
     let mut request = tempfile::NamedTempFile::new_in(&paths.data_dir)?;
     request.write_all(name.as_bytes())?;
     request.as_file().sync_all()?;
-    request.persist_noclobber(paths.data_dir.join(RESTORE_REQUEST)).map_err(|error| {
-        if error.error.kind() == ErrorKind::AlreadyExists {
-            AppError::Conflict("Cancel the existing restore request before selecting another backup.".into())
-        } else {
-            AppError::Io(error.error)
-        }
-    })?;
+    request
+        .persist_noclobber(paths.data_dir.join(RESTORE_REQUEST))
+        .map_err(|error| {
+            if error.error.kind() == ErrorKind::AlreadyExists {
+                AppError::Conflict(
+                    "Cancel the existing restore request before selecting another backup.".into(),
+                )
+            } else {
+                AppError::Io(error.error)
+            }
+        })?;
     tx.commit()?;
     Ok(())
 }
@@ -257,8 +300,15 @@ fn restore(conn: &mut Connection, paths: &AppPaths, name: &str) -> AppResult<Str
     // An older snapshot may contain a code that was already used or revoked.
     candidate.execute("DELETE FROM staff_recovery_codes", [])?;
     check_integrity(&candidate)?;
-    if candidate.prepare("PRAGMA foreign_key_check")?.query([])?.next()?.is_some() {
-        return Err(AppError::Validation("The backup contains broken database references.".into()));
+    if candidate
+        .prepare("PRAGMA foreign_key_check")?
+        .query([])?
+        .next()?
+        .is_some()
+    {
+        return Err(AppError::Validation(
+            "The backup contains broken database references.".into(),
+        ));
     }
     let recovery = create(conn, &paths.backups)?;
     copy_database(&candidate, conn)?;
@@ -267,42 +317,70 @@ fn restore(conn: &mut Connection, paths: &AppPaths, name: &str) -> AppResult<Str
 
 /// Startup-only. No staff session or in-flight library commands exist during replacement.
 pub fn apply_pending_restore(conn: &mut Connection, paths: &AppPaths) -> AppResult<()> {
-    let Some(name) = pending_restore(paths)? else { return Ok(()) };
+    let Some(name) = pending_restore(paths)? else {
+        return Ok(());
+    };
     fs::remove_file(paths.data_dir.join(RESTORE_REQUEST))?;
     let message = match restore(conn, paths, &name) {
-        Ok(recovery) => format!("Database restored from {name}. Previous database saved as {recovery}."),
+        Ok(recovery) => {
+            format!("Database restored from {name}. Previous database saved as {recovery}.")
+        }
         Err(error) => {
             tracing::warn!(%error, "Requested database restore failed");
             format!("Restore failed. {}", error.user_message())
         }
     };
-    let value = serde_json::to_string(&message).map_err(|error| AppError::Internal(error.to_string()))?;
+    let value =
+        serde_json::to_string(&message).map_err(|error| AppError::Internal(error.to_string()))?;
     settings::set(conn, RESTORE_RESULT, &value)
 }
 
-fn create_snapshot(source: &Connection, folder: &Path, filename: Option<&str>) -> AppResult<BackupFile> {
-    let timestamp: String = source.query_row(
-        "SELECT strftime('%Y%m%dT%H%M%SZ','now')", [], |row| row.get(0),
-    )?;
-    let staged = tempfile::Builder::new().prefix(&format!("pusthakam-{timestamp}-"))
-        .suffix(".partial").tempfile_in(folder)?.into_temp_path();
+fn create_snapshot(
+    source: &Connection,
+    folder: &Path,
+    filename: Option<&str>,
+) -> AppResult<BackupFile> {
+    let timestamp: String =
+        source.query_row("SELECT strftime('%Y%m%dT%H%M%SZ','now')", [], |row| {
+            row.get(0)
+        })?;
+    let staged = tempfile::Builder::new()
+        .prefix(&format!("pusthakam-{timestamp}-"))
+        .suffix(".partial")
+        .tempfile_in(folder)?
+        .into_temp_path();
     {
-        let mut destination = Connection::open_with_flags(&staged, OpenFlags::SQLITE_OPEN_READ_WRITE)?;
+        let mut destination =
+            Connection::open_with_flags(&staged, OpenFlags::SQLITE_OPEN_READ_WRITE)?;
         copy_database(source, &mut destination)?;
-        let mode: String = destination.query_row("PRAGMA journal_mode = DELETE", [], |row| row.get(0))?;
+        let mode: String =
+            destination.query_row("PRAGMA journal_mode = DELETE", [], |row| row.get(0))?;
         if mode != "delete" {
-            return Err(AppError::Internal("Could not finalize the backup as a single database file.".into()));
+            return Err(AppError::Internal(
+                "Could not finalize the backup as a single database file.".into(),
+            ));
         }
         check_integrity(&destination)?;
         destination.close().map_err(|(_, error)| error)?;
     }
-    let file = fs::OpenOptions::new().read(true).write(true).open(&staged)?;
+    let file = fs::OpenOptions::new()
+        .read(true)
+        .write(true)
+        .open(&staged)?;
     file.sync_all()?;
     let size_bytes = file.metadata()?.len();
     drop(file);
-    let target = filename.map_or_else(|| staged.with_extension("sqlite3"), |name| folder.join(name));
-    let name = target.file_name().ok_or_else(|| AppError::Internal("Missing backup filename.".into()))?
-        .to_string_lossy().into_owned();
-    staged.persist_noclobber(&target).map_err(|error| error.error)?;
+    let target = filename.map_or_else(
+        || staged.with_extension("sqlite3"),
+        |name| folder.join(name),
+    );
+    let name = target
+        .file_name()
+        .ok_or_else(|| AppError::Internal("Missing backup filename.".into()))?
+        .to_string_lossy()
+        .into_owned();
+    staged
+        .persist_noclobber(&target)
+        .map_err(|error| error.error)?;
     Ok(BackupFile { name, size_bytes })
 }

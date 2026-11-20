@@ -19,7 +19,9 @@ pub struct AppState {
 
 impl AppState {
     pub fn conn(&self) -> AppResult<MutexGuard<'_, Connection>> {
-        self.db.lock().map_err(|_| AppError::Internal("database lock poisoned".into()))
+        self.db
+            .lock()
+            .map_err(|_| AppError::Internal("database lock poisoned".into()))
     }
 
     /// Runs `f` with the database connection locked for the duration of the call.
@@ -29,7 +31,8 @@ impl AppState {
     }
 
     pub fn current(&self) -> AppResult<Session> {
-        let session = self.session
+        let session = self
+            .session
             .lock()
             .map_err(|_| AppError::Internal("session lock poisoned".into()))?
             .clone()
@@ -45,7 +48,10 @@ impl AppState {
     }
 
     pub fn set_session(&self, s: Option<Session>) -> AppResult<()> {
-        *self.session.lock().map_err(|_| AppError::Internal("session lock poisoned".into()))? = s;
+        *self
+            .session
+            .lock()
+            .map_err(|_| AppError::Internal("session lock poisoned".into()))? = s;
         Ok(())
     }
 }

@@ -68,22 +68,57 @@ pub fn search(conn: &Connection, query: &AuditQuery) -> AppResult<AuditPage> {
           AND (?2 IS NULL OR date(occurred_at, 'localtime') <= ?2)
           AND (?3 IS NULL OR instr(lower(coalesce(actor_name, '')), lower(?3)) > 0)
           AND (?4 IS NULL OR instr(lower(action), lower(?4)) > 0)";
-    let from = query.from.as_deref().filter(|value| !value.trim().is_empty()).map(|value| validate::date("Start date", value)).transpose()?;
-    let to = query.to.as_deref().filter(|value| !value.trim().is_empty()).map(|value| validate::date("End date", value)).transpose()?;
+    let from = query
+        .from
+        .as_deref()
+        .filter(|value| !value.trim().is_empty())
+        .map(|value| validate::date("Start date", value))
+        .transpose()?;
+    let to = query
+        .to
+        .as_deref()
+        .filter(|value| !value.trim().is_empty())
+        .map(|value| validate::date("End date", value))
+        .transpose()?;
     if matches!((&from, &to), (Some(start), Some(end)) if start > end) {
-        return Err(AppError::Validation("The end date must be on or after the start date.".into()));
+        return Err(AppError::Validation(
+            "The end date must be on or after the start date.".into(),
+        ));
     }
     let actor = validate::optional("Staff name", query.actor.as_deref(), 120)?;
     let action = validate::optional("Action code", query.action.as_deref(), 120)?;
-    let total: i64 = conn.query_row(&format!("SELECT count(*) {FILTER}"), params![from, to, actor, action], |row| row.get(0))?;
-    let page = query.page.clamp(1, ((total + PAGE_SIZE - 1) / PAGE_SIZE).max(1));
+    let total: i64 = conn.query_row(
+        &format!("SELECT count(*) {FILTER}"),
+        params![from, to, actor, action],
+        |row| row.get(0),
+    )?;
+    let page = query
+        .page
+        .clamp(1, ((total + PAGE_SIZE - 1) / PAGE_SIZE).max(1));
     let mut statement = conn.prepare(&format!(
         "SELECT id, occurred_at, actor_name, action, entity_type, entity_id, summary {FILTER}
          ORDER BY occurred_at DESC, id DESC LIMIT ?5 OFFSET ?6"
     ))?;
-    let rows = statement.query_map(params![from, to, actor, action, PAGE_SIZE, (page - 1) * PAGE_SIZE], |row| Ok(AuditEntry {
-        id: row.get(0)?, occurred_at: row.get(1)?, actor: row.get(2)?, action: row.get(3)?,
-        entity_type: row.get(4)?, entity_id: row.get(5)?, summary: row.get(6)?,
-    }))?.collect::<Result<_, _>>()?;
-    Ok(AuditPage { rows, total, page, page_size: PAGE_SIZE })
+    let rows = statement
+        .query_map(
+            params![from, to, actor, action, PAGE_SIZE, (page - 1) * PAGE_SIZE],
+            |row| {
+                Ok(AuditEntry {
+                    id: row.get(0)?,
+                    occurred_at: row.get(1)?,
+                    actor: row.get(2)?,
+                    action: row.get(3)?,
+                    entity_type: row.get(4)?,
+                    entity_id: row.get(5)?,
+                    summary: row.get(6)?,
+                })
+            },
+        )?
+        .collect::<Result<_, _>>()?;
+    Ok(AuditPage {
+        rows,
+        total,
+        page,
+        page_size: PAGE_SIZE,
+    })
 }

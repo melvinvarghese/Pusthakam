@@ -4,7 +4,11 @@ use crate::error::{AppError, AppResult};
 use quick_xml::{events::Event, Reader};
 
 fn append_text(stack: &[String], text: &mut String, value: &str) -> AppResult<()> {
-    if !matches!(stack.last().map(String::as_str), Some("subfield" | "controlfield" | "leader")) && !value.trim().is_empty() {
+    if !matches!(
+        stack.last().map(String::as_str),
+        Some("subfield" | "controlfield" | "leader")
+    ) && !value.trim().is_empty()
+    {
         return Err(invalid());
     }
     text.push_str(value);
@@ -31,30 +35,58 @@ pub fn parse(bytes: &[u8]) -> AppResult<Vec<MarcRecord>> {
             Event::Start(e) => {
                 let name = e.local_name().as_ref().to_string();
                 let parent = stack.last().map(String::as_str);
-                let valid = matches!((parent, name.as_str()),
-                    (None, "collection" | "record") | (Some("collection"), "record") |
-                    (Some("record"), "leader" | "controlfield" | "datafield") |
-                    (Some("datafield"), "subfield"));
-                if !valid { return Err(invalid()); }
-                if parent.is_none() { roots += 1; if roots != 1 { return Err(invalid()); } }
+                let valid = matches!(
+                    (parent, name.as_str()),
+                    (None, "collection" | "record")
+                        | (Some("collection"), "record")
+                        | (Some("record"), "leader" | "controlfield" | "datafield")
+                        | (Some("datafield"), "subfield")
+                );
+                if !valid {
+                    return Err(invalid());
+                }
+                if parent.is_none() {
+                    roots += 1;
+                    if roots != 1 {
+                        return Err(invalid());
+                    }
+                }
                 let mut tag = None;
                 code = None;
                 for attr in e.attributes() {
                     let attr = attr.map_err(|_| invalid())?;
-                    let value = attr.normalized_value(quick_xml::XmlVersion::Implicit1_0).map_err(|_| invalid())?.into_owned();
+                    let value = attr
+                        .normalized_value(quick_xml::XmlVersion::Implicit1_0)
+                        .map_err(|_| invalid())?
+                        .into_owned();
                     match attr.key.as_ref() {
                         "tag" => tag = Some(value),
-                        "code" => { if value.chars().count() != 1 { return Err(invalid()); } code = value.chars().next(); },
+                        "code" => {
+                            if value.chars().count() != 1 {
+                                return Err(invalid());
+                            }
+                            code = value.chars().next();
+                        }
                         _ => (),
                     }
                 }
-                if name == "record" { record = MarcRecord::default(); }
+                if name == "record" {
+                    record = MarcRecord::default();
+                }
                 if name == "datafield" || name == "controlfield" {
                     let tag = tag.ok_or_else(invalid)?;
-                    if tag.len() != 3 || !tag.bytes().all(|b| b.is_ascii_digit()) { return Err(invalid()); }
-                    field = Some(Field { tag, control: None, subfields: Vec::new() });
+                    if tag.len() != 3 || !tag.bytes().all(|b| b.is_ascii_digit()) {
+                        return Err(invalid());
+                    }
+                    field = Some(Field {
+                        tag,
+                        control: None,
+                        subfields: Vec::new(),
+                    });
                 }
-                if name == "subfield" && code.is_none() { return Err(invalid()); }
+                if name == "subfield" && code.is_none() {
+                    return Err(invalid());
+                }
                 text.clear();
                 stack.push(name);
             }
@@ -64,15 +96,25 @@ pub fn parse(bytes: &[u8]) -> AppResult<Vec<MarcRecord>> {
             }
             Event::GeneralRef(e) => {
                 let entity = e.as_ref();
-                let value = quick_xml::escape::unescape(&format!("&{entity};")).map_err(|_| invalid())?.into_owned();
+                let value = quick_xml::escape::unescape(&format!("&{entity};"))
+                    .map_err(|_| invalid())?
+                    .into_owned();
                 append_text(&stack, &mut text, &value)?;
             }
             Event::CData(e) => append_text(&stack, &mut text, e.as_ref())?,
             Event::End(_) => {
                 let name = stack.pop().ok_or_else(invalid)?;
                 match name.as_str() {
-                    "subfield" => field.as_mut().ok_or_else(invalid)?.subfields.push((code.ok_or_else(invalid)?, text.clone())),
-                    "controlfield" => { let mut f = field.take().ok_or_else(invalid)?; f.control = Some(text.clone()); record.fields.push(f); },
+                    "subfield" => field
+                        .as_mut()
+                        .ok_or_else(invalid)?
+                        .subfields
+                        .push((code.ok_or_else(invalid)?, text.clone())),
+                    "controlfield" => {
+                        let mut f = field.take().ok_or_else(invalid)?;
+                        f.control = Some(text.clone());
+                        record.fields.push(f);
+                    }
                     "datafield" => record.fields.push(field.take().ok_or_else(invalid)?),
                     "record" => records.push(std::mem::take(&mut record)),
                     _ => (),
@@ -85,7 +127,9 @@ pub fn parse(bytes: &[u8]) -> AppResult<Vec<MarcRecord>> {
             _ => return Err(invalid()),
         }
     }
-    if roots != 1 || !stack.is_empty() { return Err(invalid()); }
+    if roots != 1 || !stack.is_empty() {
+        return Err(invalid());
+    }
     Ok(records)
 }
 
@@ -100,11 +144,25 @@ mod tests {
         assert_eq!(r.title, "Books & reading \u{e9}");
         assert_eq!(r.copies[0].barcode.as_deref(), Some("000123"));
         assert_eq!(r.copies[0].price_minor, Some(12550));
-        assert!(super::super::marc::to_import_record(&rows[0], 1, false).copies.is_empty());
+        assert!(super::super::marc::to_import_record(&rows[0], 1, false)
+            .copies
+            .is_empty());
     }
     #[test]
     fn rejects_malformed_or_unsafe_whole_files() {
-        for xml in ["<record>", "<record></collection>", "<foo/>", "<record/><record/>", "<!DOCTYPE record><record/>", "<record><datafield tag='bad'/></record>", "<record><datafield tag='245'><subfield>Book</subfield></datafield></record>", "<record><leader>&custom;</leader></record>", "<record><![CDATA[discarded]]></record>", "<record>&amp;</record>", "<record><datafield tag='245'><![CDATA[discarded]]></datafield></record>"] {
+        for xml in [
+            "<record>",
+            "<record></collection>",
+            "<foo/>",
+            "<record/><record/>",
+            "<!DOCTYPE record><record/>",
+            "<record><datafield tag='bad'/></record>",
+            "<record><datafield tag='245'><subfield>Book</subfield></datafield></record>",
+            "<record><leader>&custom;</leader></record>",
+            "<record><![CDATA[discarded]]></record>",
+            "<record>&amp;</record>",
+            "<record><datafield tag='245'><![CDATA[discarded]]></datafield></record>",
+        ] {
             assert!(parse(xml.as_bytes()).is_err(), "accepted {xml}");
         }
     }

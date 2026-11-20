@@ -11,7 +11,9 @@ pub fn required(label: &str, value: &str, max: usize) -> AppResult<String> {
         return Err(AppError::Validation(format!("{label} is required.")));
     }
     if v.chars().count() > max {
-        return Err(AppError::Validation(format!("{label} must be at most {max} characters.")));
+        return Err(AppError::Validation(format!(
+            "{label} must be at most {max} characters."
+        )));
     }
     Ok(v.to_string())
 }
@@ -20,9 +22,9 @@ pub fn required(label: &str, value: &str, max: usize) -> AppResult<String> {
 pub fn optional(label: &str, value: Option<&str>, max: usize) -> AppResult<Option<String>> {
     match value.map(str::trim) {
         None | Some("") => Ok(None),
-        Some(v) if v.chars().count() > max => {
-            Err(AppError::Validation(format!("{label} must be at most {max} characters.")))
-        }
+        Some(v) if v.chars().count() > max => Err(AppError::Validation(format!(
+            "{label} must be at most {max} characters."
+        ))),
         Some(v) => Ok(Some(v.to_string())),
     }
 }
@@ -31,7 +33,9 @@ pub fn in_range(label: &str, value: i64, min: i64, max: i64) -> AppResult<i64> {
     if (min..=max).contains(&value) {
         Ok(value)
     } else {
-        Err(AppError::Validation(format!("{label} must be between {min} and {max}.")))
+        Err(AppError::Validation(format!(
+            "{label} must be between {min} and {max}."
+        )))
     }
 }
 
@@ -39,7 +43,8 @@ pub fn in_range(label: &str, value: i64, min: i64, max: i64) -> AppResult<i64> {
 pub fn username(value: &str) -> AppResult<String> {
     let v = value.trim();
     let ok = (3..=40).contains(&v.chars().count())
-        && v.chars().all(|c| c.is_ascii_alphanumeric() || c == '.' || c == '_' || c == '-');
+        && v.chars()
+            .all(|c| c.is_ascii_alphanumeric() || c == '.' || c == '_' || c == '-');
     if ok {
         Ok(v.to_string())
     } else {
@@ -52,7 +57,9 @@ pub fn username(value: &str) -> AppResult<String> {
 /// Length-based password rule (no composition rules). Never log the value.
 pub fn password(value: &str) -> AppResult<()> {
     if value.chars().count() < PASSWORD_MIN {
-        return Err(AppError::Validation(format!("Password must be at least {PASSWORD_MIN} characters.")));
+        return Err(AppError::Validation(format!(
+            "Password must be at least {PASSWORD_MIN} characters."
+        )));
     }
     if value.chars().count() > 200 {
         return Err(AppError::Validation("Password is too long.".into()));
@@ -65,7 +72,9 @@ pub fn date(label: &str, value: &str) -> AppResult<String> {
     let bad = || AppError::Validation(format!("{label} must be a real date written YYYY-MM-DD."));
     let v = value.trim();
     let parts: Vec<&str> = v.split('-').collect();
-    let [y, m, d] = parts.as_slice() else { return Err(bad()) };
+    let [y, m, d] = parts.as_slice() else {
+        return Err(bad());
+    };
     if y.len() != 4 || m.len() != 2 || d.len() != 2 {
         return Err(bad());
     }
@@ -78,7 +87,13 @@ pub fn date(label: &str, value: &str) -> AppResult<String> {
     let days = match m {
         1 | 3 | 5 | 7 | 8 | 10 | 12 => 31,
         4 | 6 | 9 | 11 => 30,
-        2 => if leap { 29 } else { 28 },
+        2 => {
+            if leap {
+                29
+            } else {
+                28
+            }
+        }
         _ => return Err(bad()),
     };
     if y < 1000 || d < 1 || d > days {
@@ -92,7 +107,9 @@ pub fn currency(value: &str) -> AppResult<String> {
     if v.len() == 3 && v.chars().all(|c| c.is_ascii_uppercase()) {
         Ok(v)
     } else {
-        Err(AppError::Validation("Currency must be a 3-letter code such as INR or USD.".into()))
+        Err(AppError::Validation(
+            "Currency must be a 3-letter code such as INR or USD.".into(),
+        ))
     }
 }
 
@@ -134,7 +151,17 @@ mod tests {
         for good in ["2026-11-15", "2024-02-29", "2000-02-29"] {
             assert_eq!(date("D", good).unwrap(), good);
         }
-        for bad in ["2026-02-29", "1900-02-29", "2026-13-01", "2026-00-10", "2026-04-31", "26-01-01", "2026/01/01", "", "2026-1-1"] {
+        for bad in [
+            "2026-02-29",
+            "1900-02-29",
+            "2026-13-01",
+            "2026-00-10",
+            "2026-04-31",
+            "26-01-01",
+            "2026/01/01",
+            "",
+            "2026-1-1",
+        ] {
             assert!(date("D", bad).is_err(), "{bad}");
         }
     }

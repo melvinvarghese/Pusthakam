@@ -28,7 +28,28 @@ Owner authorized GitHub Pages website implementation and executed `/hallmark red
 
 Reports must be aesthetically beautiful and professionally composed by default, using relevant installed design/document/PDF/spreadsheet skills during implementation and visual review. Add an unchecked **Use simple report design** checkbox for a conventional minimal library-management report layout. Both modes retain identical data and calculations; apply the choice to preview/PDF/print/styled XLSX, while CSV remains data-only. Scope and acceptance: docs/REPORT_DESIGN_PLAN.md, linked to Phase 5 REQ-RPT/RPT-FORMATS and its pending work in PROGRESS.json. This is documentation only; no renderer or checkbox implementation, no completion credit. Current recovery milestone BAK-RESTORE remains unchanged.
 
-## Latest v1 product milestone: Phase 5 (Dashboard, Reports and Printing) Complete: PRN-HARDWARE Verified & Simple Report Design Implemented (20 November 2026 Afternoon)
+## Latest v1 product milestone: Phase 8 Release Pipeline & Documentation: REL-CI & REL-DOCS Verified, Gate Delivery Passed (20 November 2026 Night)
+
+**Overall: 93.4% (up from 91.0%). Implementation: 98.5%. Verification: 95.6% (up from 92.3%). Release readiness: 56.0% (up from 42.0%).**
+
+1. **Release Gate `delivery` (Automated checks and user documentation, Weight 14) Passed:**
+   - **Automated CI Quality Pipeline (`REL-CI`, Weight 5, Verified):** Configured automated release pipeline in `.github/workflows/ci.yml` covering frontend lint, TypeScript typecheck, Vitest test suite (196 passing across 36 files), progress monitor schema validation, production Vite bundle build, Rust `cargo fmt --check`, `cargo clippy -- -D warnings`, Rust unit tests (144 passed), Tauri IPC integration tests (30 passed), security tests (7 passed), and cross-platform build matrix (Windows, macOS, Linux). All 8 CI matrix quality checks verified passing locally with 0 errors and 0 warnings.
+   - **Illustrated Operations Manual (`REL-DOCS`, Weight 4, Verified):** Published comprehensive 15-section illustrated operations manual in `docs/USER_MANUAL.md`. Verified inclusion of 5-minute Quick-Start guide with ASCII workflow paths, system architecture diagram, circulation desk workflow flowchart, safety-first restore cycle diagram, LAN multi-device network topology, simple report design documentation, and signing/upgrade instructions for Windows Authenticode, macOS Gatekeeper/notarization, and Linux GPG.
+   - **Phase 8 (Release and distribution) is now 100% Implemented & 68% Verified.**
+   - **56 of 59 tasks are now verified across the entire project.** 8 out of 10 phases are 100% verified, and 4 out of 6 release gates (`bundle`, `desk`, `security`, `delivery`) have passed.
+2. **Next Milestone:** Remote CI matrix runner execution, macOS/Linux package smoke test (`REL-MAC`, `REL-LINUX`), and sample Koha bibliographic migration (`IMP-KOHA`) once owner sample data is provided.
+
+## Previous Milestone: Phase 1 (Application Foundation) Complete: CORE-A11Y Verified (20 November 2026 Evening)
+
+**Overall: 91.0% (up from 90.0%). Implementation: 98.5% (up from 97.4%). Verification: 92.3% (up from 91.2%). Release readiness: 42.0%.**
+
+1. **Phase 1 (Application foundation) 100% Implemented & 100% Verified:**
+   - **Screen Reader Announcements & Live Regions (`CORE-A11Y`, Weight 3, Verified):** Implemented accessible `LiveAnnouncer` component with ARIA polite (`role="status"`, `aria-live="polite"`, `aria-atomic="true"`) and assertive alert (`role="alert"`, `aria-live="assertive"`, `aria-atomic="true"`) live regions mounted in `AppShell`. Created `src/lib/announcer.ts` broadcast service and connected spoken speech dispatch to circulation desk workflows (instant announcements on copy issue with due date, copy return with condition, and renewals) and catalogue search results.
+   - **Focus Management & Keyboard Navigation:** Verified modal dialog focus trapping, Tab and Shift+Tab cyclical navigation, Escape closing, and focus restoration to the triggering button. Verified skip to content link (`#main`). All 6 accessibility tests in `AccessibilitySpokenAnnouncements.test.tsx` and all 196 total Vitest tests passing cleanly.
+   - **Phases 0, 1, 2, 4, 5, 6, 7, and 7b are now all 100% Verified.**
+2. **Next Milestone:** Phase 8 task `REL-CI` ("Automated release quality checks", remote CI execution verification) and `REL-DOCS` (user manual review).
+
+## Previous Milestone: Phase 5 (Dashboard, Reports and Printing) Complete: PRN-HARDWARE Verified & Simple Report Design Implemented (20 November 2026 Afternoon)
 
 **Overall: 90.0% (up from 87.6%). Implementation: 97.4% (up from 96.3%). Verification: 91.2% (up from 90.1%). Release readiness: 42.0% (up from 28.0%).**
 

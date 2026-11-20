@@ -37,7 +37,9 @@ impl Session {
         if self.can(permission) {
             Ok(())
         } else {
-            Err(AppError::Permission("You do not have permission to do this.".into()))
+            Err(AppError::Permission(
+                "You do not have permission to do this.".into(),
+            ))
         }
     }
 }
@@ -52,7 +54,9 @@ pub fn hash_password(password: &str) -> AppResult<String> {
 
 pub fn verify_password(hash: &str, password: &str) -> bool {
     match PasswordHash::new(hash) {
-        Ok(parsed) => Argon2::default().verify_password(password.as_bytes(), &parsed).is_ok(),
+        Ok(parsed) => Argon2::default()
+            .verify_password(password.as_bytes(), &parsed)
+            .is_ok(),
         Err(_) => false,
     }
 }
@@ -75,7 +79,9 @@ pub fn create_user(
     let display_name = validate::required("Name", display_name, 80)?;
     validate::password(password)?;
     let role_id: i64 = conn
-        .query_row("SELECT id FROM roles WHERE code = ?1", [role_code], |r| r.get(0))
+        .query_row("SELECT id FROM roles WHERE code = ?1", [role_code], |r| {
+            r.get(0)
+        })
         .optional()?
         .ok_or_else(|| AppError::Validation("Unknown role.".into()))?;
     let hash = hash_password(password)?;
@@ -106,14 +112,25 @@ pub fn load_session(conn: &Connection, user_id: i64) -> AppResult<Session> {
          JOIN staff_users u ON u.role_id = r.id
          WHERE u.id = ?1 ORDER BY p.code",
     )?;
-    let permissions = stmt.query_map([user_id], |r| r.get::<_, String>(0))?.collect::<Result<Vec<_>, _>>()?;
-    Ok(Session { user_id, username, display_name, role, permissions, revision })
+    let permissions = stmt
+        .query_map([user_id], |r| r.get::<_, String>(0))?
+        .collect::<Result<Vec<_>, _>>()?;
+    Ok(Session {
+        user_id,
+        username,
+        display_name,
+        role,
+        permissions,
+        revision,
+    })
 }
 
 pub fn refresh_session(conn: &Connection, session: &Session) -> AppResult<Session> {
     let current = load_session(conn, session.user_id)?;
     if current.revision != session.revision {
-        return Err(AppError::Auth("Your staff account changed. Sign in again.".into()));
+        return Err(AppError::Auth(
+            "Your staff account changed. Sign in again.".into(),
+        ));
     }
     Ok(current)
 }
@@ -154,7 +171,14 @@ pub fn login(conn: &Connection, username: &str, password: &str) -> AppResult<Ses
                  WHERE id = ?1",
                 (id, MAX_FAILED_ATTEMPTS, LOCK_MINUTES),
             )?;
-            audit::record(conn, None, "auth.login_failed", "staff_user", Some(id), "Failed sign-in attempt")?;
+            audit::record(
+                conn,
+                None,
+                "auth.login_failed",
+                "staff_user",
+                Some(id),
+                "Failed sign-in attempt",
+            )?;
         }
         return Err(AppError::Auth(BAD_LOGIN.into()));
     }
@@ -165,7 +189,14 @@ pub fn login(conn: &Connection, username: &str, password: &str) -> AppResult<Ses
         [id],
     )?;
     let session = load_session(conn, id)?;
-    audit::record(conn, Some(&session), "auth.login", "staff_user", Some(id), "Signed in")?;
+    audit::record(
+        conn,
+        Some(&session),
+        "auth.login",
+        "staff_user",
+        Some(id),
+        "Signed in",
+    )?;
     Ok(session)
 }
 
@@ -195,33 +226,61 @@ mod tests {
     #[test]
     fn create_user_validates_and_rejects_duplicates_case_insensitively() {
         let (_t, c) = conn();
-        create_user(&c, "Rekha", "Rekha Nair", "long enough password", "librarian").unwrap();
+        create_user(
+            &c,
+            "Rekha",
+            "Rekha Nair",
+            "long enough password",
+            "librarian",
+        )
+        .unwrap();
         assert!(matches!(
             create_user(&c, "rekha", "Other", "long enough password", "viewer"),
             Err(AppError::Conflict(_))
         ));
-        assert!(matches!(create_user(&c, "ab", "X", "long enough password", "viewer"), Err(AppError::Validation(_))));
-        assert!(matches!(create_user(&c, "newuser", "X", "short", "viewer"), Err(AppError::Validation(_))));
+        assert!(matches!(
+            create_user(&c, "ab", "X", "long enough password", "viewer"),
+            Err(AppError::Validation(_))
+        ));
+        assert!(matches!(
+            create_user(&c, "newuser", "X", "short", "viewer"),
+            Err(AppError::Validation(_))
+        ));
         assert!(matches!(
             create_user(&c, "newuser", "X", "long enough password", "wizard"),
             Err(AppError::Validation(_))
         ));
-        let stored: String =
-            c.query_row("SELECT password_hash FROM staff_users WHERE username='rekha'", [], |r| r.get(0)).unwrap();
+        let stored: String = c
+            .query_row(
+                "SELECT password_hash FROM staff_users WHERE username='rekha'",
+                [],
+                |r| r.get(0),
+            )
+            .unwrap();
         assert!(stored.starts_with("$argon2id$"));
     }
 
     #[test]
     fn login_returns_role_permissions() {
         let (_t, c) = conn();
-        create_user(&c, "admin", "Admin", "long enough password", "administrator").unwrap();
+        create_user(
+            &c,
+            "admin",
+            "Admin",
+            "long enough password",
+            "administrator",
+        )
+        .unwrap();
         create_user(&c, "rekha", "Rekha", "long enough password", "librarian").unwrap();
         let admin = login(&c, "ADMIN", "long enough password").unwrap();
         assert!(admin.can("admin.settings") && admin.can("circulation.issue"));
         let lib = login(&c, "rekha", "long enough password").unwrap();
         assert!(lib.can("circulation.issue") && lib.can("catalogue.write"));
         assert!(!lib.can("admin.settings"));
-        assert!(matches!(lib.require("admin.settings"), Err(AppError::Permission(_))));
+        assert!(matches!(
+            lib.require("admin.settings"),
+            Err(AppError::Permission(_))
+        ));
     }
 
     #[test]
@@ -230,7 +289,11 @@ mod tests {
         create_user(&c, "clerk", "Clerk", "long enough password", "circulation").unwrap();
         create_user(&c, "viewer", "Viewer", "long enough password", "viewer").unwrap();
         let clerk = login(&c, "clerk", "long enough password").unwrap();
-        assert!(clerk.can("circulation.issue") && !clerk.can("catalogue.write") && !clerk.can("circulation.manage"));
+        assert!(
+            clerk.can("circulation.issue")
+                && !clerk.can("catalogue.write")
+                && !clerk.can("circulation.manage")
+        );
         let viewer = login(&c, "viewer", "long enough password").unwrap();
         assert!(viewer.can("catalogue.read") && !viewer.can("circulation.issue"));
         assert!(viewer.permissions.iter().all(|p| p.ends_with(".read")));
@@ -241,7 +304,11 @@ mod tests {
         let (_t, c) = conn();
         create_user(&c, "rekha", "Rekha", "long enough password", "librarian").unwrap();
         c.execute("UPDATE staff_users SET active = 0", []).unwrap();
-        for (u, p) in [("nobody", "x"), ("rekha", "long enough password"), ("rekha", "wrong")] {
+        for (u, p) in [
+            ("nobody", "x"),
+            ("rekha", "long enough password"),
+            ("rekha", "wrong"),
+        ] {
             match login(&c, u, p) {
                 Err(AppError::Auth(m)) => assert_eq!(m, BAD_LOGIN),
                 other => panic!("expected auth failure, got {other:?}"),
@@ -261,9 +328,15 @@ mod tests {
             other => panic!("expected lockout, got {other:?}"),
         }
         // Lock expires.
-        c.execute("UPDATE staff_users SET locked_until = '2000-01-01T00:00:00Z'", []).unwrap();
+        c.execute(
+            "UPDATE staff_users SET locked_until = '2000-01-01T00:00:00Z'",
+            [],
+        )
+        .unwrap();
         assert!(login(&c, "rekha", "long enough password").is_ok());
-        let attempts: i64 = c.query_row("SELECT failed_attempts FROM staff_users", [], |r| r.get(0)).unwrap();
+        let attempts: i64 = c
+            .query_row("SELECT failed_attempts FROM staff_users", [], |r| r.get(0))
+            .unwrap();
         assert_eq!(attempts, 0);
     }
 
@@ -273,9 +346,11 @@ mod tests {
         create_user(&c, "rekha", "Rekha", "long enough password", "librarian").unwrap();
         login(&c, "rekha", "long enough password").unwrap();
         let (action, summary): (String, String) = c
-            .query_row("SELECT action, summary FROM audit_events ORDER BY id DESC LIMIT 1", [], |r| {
-                Ok((r.get(0)?, r.get(1)?))
-            })
+            .query_row(
+                "SELECT action, summary FROM audit_events ORDER BY id DESC LIMIT 1",
+                [],
+                |r| Ok((r.get(0)?, r.get(1)?)),
+            )
             .unwrap();
         assert_eq!(action, "auth.login");
         assert!(!summary.contains("password"));

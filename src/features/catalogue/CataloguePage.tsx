@@ -11,6 +11,7 @@ import { Panel } from "@/components/ui/Panel";
 import { Modal } from "@/components/ui/Modal";
 import { ApiError, catalogueApi, toApiError } from "@/lib/api";
 import type { SearchQuery } from "@/lib/api/types";
+import { announce } from "@/lib/announcer";
 import { can, useSession } from "@/lib/session";
 import { ExportDialog } from "./ExportDialog";
 import { ImportDialog } from "./ImportDialog";
@@ -59,6 +60,12 @@ export function CataloguePage() {
     queryFn: () => catalogueApi.search(query),
     retry: false,
   });
+
+  useEffect(() => {
+    if (result.data) {
+      announce(`Found ${result.data.total} catalogue ${result.data.total === 1 ? "record" : "records"}.`, "polite");
+    }
+  }, [result.data]);
 
   const rows = result.data?.rows ?? [];
   const selectedRows = rows.filter((row) => !row.archived && selected.includes(row.id));

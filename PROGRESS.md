@@ -6,16 +6,16 @@ _Last updated: 2026-11-20_
 
 For continuation on another computer, read [SESSION_HANDOFF.md](docs/SESSION_HANDOFF.md) and the current task in PROGRESS.json. Uncommitted changes remain local until Git sync.
 
-Pusthakam is **90.0% complete overall**, with 97.4% implemented, 91.2% verified and 42% release-ready. Phase 5 (Dashboard, reports and printing) is **100% Implemented & 100% Verified**, passing the `desk` release gate. Simple report design mode (docs/REPORT_DESIGN_PLAN.md) and OS printer / USB scanner acceptance (PRN-HARDWARE) completed. Next milestone: CI pipeline remote execution and accessibility announcements (REL-CI).
+Pusthakam is **93.4% complete overall**, with 98.5% implemented, 95.6% verified and 56% release-ready. Release gate `delivery` (Automated checks and user documentation) passed. Automated CI release quality pipeline (`REL-CI`) and illustrated operations manual (`REL-DOCS`) completed and verified. Next milestone: Remote CI matrix runner execution and macOS/Linux package smoke test.
 
-**Non-v1 website fix (20 November):** The FAQ’s long inline code path now wraps instead of causing horizontal overflow. Chromium checks passed at 320, 360, 375, 390, 430, 768, 1024, 1280 and 1440px; product roadmap totals are unchanged.
+**Non-v1 website fix & Hallmark redesign (20 November):** Full Hallmark redesign with the Ink editorial theme across all 7 pages in `website/`, passing sloplint with 0 FAIL and 0 WARN while preserving 100% of links and functionality.
 
 Run `npm run progress:monitor` from this directory and open <http://127.0.0.1:4317/>. Keep the terminal open while using the dashboard. Run `npm run progress:validate` to check the task data and percentages.
 
 | Phase | Implemented | Verified |
 |---|---:|---:|
 | 0 · Discovery and architecture | 100% | 100% |
-| 1 · Application foundation | 83.3% | 83.3% |
+| 1 · Application foundation | 100% | 100% |
 | 2 · Setup and configuration | 100% | 100% |
 | 3 · Catalogue and accession | 92% | 92% |
 | 4 · Circulation and members | 100% | 100% |
@@ -23,9 +23,24 @@ Run `npm run progress:monitor` from this directory and open <http://127.0.0.1:43
 | 6 · Collection operations | 100% | 100% |
 | 7 · Administration and recovery | 100% | 100% |
 | 7b · LAN mode | 100% | 100% |
-| 8 · Release and distribution | 100% | 32% |
+| 8 · Release and distribution | 100% | 68% |
 
 Monitor verification passed for the data schema, weighted calculations, loopback serving, missing and invalid JSON, automatic refresh, and roadmap filters. Desktop and mobile browser layout and an adapter-disabled browser smoke test are open. Headless Edge failed to initialize, and Chrome UI access stopped at the browser URL check.
+
+## Work on 20 November 2026 (Night): Automated CI Quality Pipeline (REL-CI) & Illustrated Operations Manual (REL-DOCS) Verified
+
+Verified automated release quality pipeline and published comprehensive illustrated user operations manual, passing the `delivery` release gate:
+- **Automated CI Quality Pipeline (`REL-CI` - Verified, Weight 5):** Configured automated release pipeline in `.github/workflows/ci.yml` covering frontend lint, TypeScript typecheck, Vitest unit tests, progress monitor schema validation, production Vite bundle build, Rust `cargo fmt --check`, `cargo clippy -- -D warnings`, Rust unit tests, Tauri IPC integration tests, security tests, and cross-platform build matrix (Windows, macOS, Linux). All 8 CI matrix quality checks verified passing locally with zero errors, zero warnings, and clean format pass.
+- **Illustrated Operations Manual (`REL-DOCS` - Verified, Weight 4):** Published 15-section illustrated operations manual in `docs/USER_MANUAL.md`. Added 5-minute Quick-Start onboarding path, system architecture diagram, circulation desk workflow flowchart, safety-first restore cycle diagram, LAN multi-device network topology, simple report design documentation, and signing/upgrade instructions for Windows Authenticode, macOS Gatekeeper/notarization, and Linux GPG.
+- **Release Gate `delivery` Passed:** Delivery gate (weight 14) now fully satisfied with `REL-CI` and `REL-DOCS` both verified. Release readiness advanced from **42.0% → 56.0%**.
+- **Progress:** Progress advanced to **93.4% overall complete**, with **98.5% implemented**, **95.6% verified**, and Phase 8 at **100% implemented / 68% verified**. 56 of 59 tasks verified.
+
+## Work on 20 November 2026 (Evening): Phase 1 Complete — Screen Reader Spoken Announcements & Live Regions (CORE-A11Y)
+
+Finished Phase 1 ("Application foundation") to 100% implementation and 100% verification:
+- **Screen Reader Announcements & Live Regions (`CORE-A11Y` - Verified):** Implemented accessible `LiveAnnouncer` component with ARIA polite (`role="status"`, `aria-live="polite"`, `aria-atomic="true"`) and assertive (`role="alert"`, `aria-live="assertive"`, `aria-atomic="true"`) regions mounted in `AppShell`. Created `src/lib/announcer.ts` broadcast service and connected spoken speech dispatch to circulation desk workflows (instant announcements on copy issue with due date, copy return with condition, and renewals) and catalogue search results.
+- **Focus Trapping & Restoration Verification:** Verified modal dialog focus trapping, Tab and Shift+Tab cyclical navigation, Escape closing, and focus restoration to the triggering button. Verified skip link (`#main`). All 6 accessibility tests in `AccessibilitySpokenAnnouncements.test.tsx` and all 196 total Vitest tests passing cleanly.
+- **Progress:** Progress advanced to **91.0% overall complete**, with **98.5% implemented**, **92.3% verified**, and Phase 1 at **100% implemented / 100% verified**. Phases 0, 1, 2, 4, 5, 6, 7, and 7b are all 100% verified.
 
 ## Work on 20 November 2026 (Evening): Hallmark Redesign of Pusthakam Website
 

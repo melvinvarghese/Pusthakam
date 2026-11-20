@@ -1,8 +1,8 @@
 use crate::error::AppResult;
 use crate::services::acquisitions::{
-    self, AcquisitionBudget, AcquisitionRequest, BudgetInput, CreateOrderInput,
-    CreateRequestInput, PurchaseOrderDetail, PurchaseOrderSummary, ReceiveItemInput,
-    ReceiveResult, Vendor, VendorInput,
+    self, AcquisitionBudget, AcquisitionRequest, BudgetInput, CreateOrderInput, CreateRequestInput,
+    PurchaseOrderDetail, PurchaseOrderSummary, ReceiveItemInput, ReceiveResult, Vendor,
+    VendorInput,
 };
 use crate::state::AppState;
 use tauri::State;
@@ -17,10 +17,7 @@ pub fn acquisitions_list_vendors(
 }
 
 #[tauri::command]
-pub fn acquisitions_save_vendor(
-    state: State<'_, AppState>,
-    input: VendorInput,
-) -> AppResult<i64> {
+pub fn acquisitions_save_vendor(state: State<'_, AppState>, input: VendorInput) -> AppResult<i64> {
     let session = state.require("acquisitions.write")?;
     acquisitions::save_vendor(&mut *state.conn()?, input, &session)
 }
@@ -45,10 +42,7 @@ pub fn acquisitions_list_budgets(
 }
 
 #[tauri::command]
-pub fn acquisitions_save_budget(
-    state: State<'_, AppState>,
-    input: BudgetInput,
-) -> AppResult<i64> {
+pub fn acquisitions_save_budget(state: State<'_, AppState>, input: BudgetInput) -> AppResult<i64> {
     let session = state.require("acquisitions.write")?;
     acquisitions::save_budget(&mut *state.conn()?, input, &session)
 }

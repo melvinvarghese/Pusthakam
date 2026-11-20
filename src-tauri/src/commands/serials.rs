@@ -1,8 +1,8 @@
 use crate::error::AppResult;
 use crate::services::serials::{
     self, AddIssueInput, CheckInIssueInput, CheckInResult, ExpiringSubscription, IssueFilter,
-    RenewSubscriptionInput, SaveSubscriptionInput, SerialIssue, SerialRenewal,
-    SerialSubscription, SerialsExpenditureSummary, SubscriptionFilter,
+    RenewSubscriptionInput, SaveSubscriptionInput, SerialIssue, SerialRenewal, SerialSubscription,
+    SerialsExpenditureSummary, SubscriptionFilter,
 };
 use crate::state::AppState;
 use tauri::State;
@@ -35,10 +35,7 @@ pub fn serials_save_subscription(
 }
 
 #[tauri::command]
-pub fn serials_cancel_subscription(
-    state: State<'_, AppState>,
-    id: i64,
-) -> AppResult<()> {
+pub fn serials_cancel_subscription(state: State<'_, AppState>, id: i64) -> AppResult<()> {
     let session = state.require("serials.write")?;
     serials::cancel_subscription(&mut *state.conn()?, &session, id)
 }
@@ -53,18 +50,13 @@ pub fn serials_list_issues(
 }
 
 #[tauri::command]
-pub fn serials_list_missing_issues(
-    state: State<'_, AppState>,
-) -> AppResult<Vec<SerialIssue>> {
+pub fn serials_list_missing_issues(state: State<'_, AppState>) -> AppResult<Vec<SerialIssue>> {
     state.require("serials.read")?;
     state.with_conn(serials::list_missing_issues)
 }
 
 #[tauri::command]
-pub fn serials_add_issue(
-    state: State<'_, AppState>,
-    input: AddIssueInput,
-) -> AppResult<i64> {
+pub fn serials_add_issue(state: State<'_, AppState>, input: AddIssueInput) -> AppResult<i64> {
     let session = state.require("serials.write")?;
     serials::add_issue(&mut *state.conn()?, &session, input)
 }
@@ -113,7 +105,9 @@ pub fn serials_get_expenditure(
     to_date: Option<String>,
 ) -> AppResult<SerialsExpenditureSummary> {
     state.require("serials.read")?;
-    state.with_conn(|conn| serials::get_serials_expenditure(conn, from_date.as_deref(), to_date.as_deref()))
+    state.with_conn(|conn| {
+        serials::get_serials_expenditure(conn, from_date.as_deref(), to_date.as_deref())
+    })
 }
 
 #[tauri::command]

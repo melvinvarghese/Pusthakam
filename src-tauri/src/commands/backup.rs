@@ -40,7 +40,11 @@ pub async fn backup_create(state: State<'_, AppState>) -> AppResult<BackupFile> 
 }
 
 #[tauri::command]
-pub async fn backup_copy_to_folder(state: State<'_, AppState>, name: String, folder: String) -> AppResult<BackupFile> {
+pub async fn backup_copy_to_folder(
+    state: State<'_, AppState>,
+    name: String,
+    folder: String,
+) -> AppResult<BackupFile> {
     state.require("admin.backup")?;
     backup::copy_to_folder(&state.paths, &name, &folder)
 }

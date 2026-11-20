@@ -10,6 +10,7 @@ import { CommandPalette } from "@/components/CommandPalette";
 import { OnlineToolsMenu } from "@/components/OnlineToolsMenu";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { LiveAnnouncer } from "@/components/LiveAnnouncer";
 import { cn } from "@/lib/utils";
 
 function Brand({ libraryName }: { libraryName?: string }) {
@@ -87,6 +88,7 @@ export function AppShell() {
       >
         Skip to content
       </a>
+      <LiveAnnouncer />
       <NavRail libraryName={config.data?.library?.name} />
       <header className="flex items-center gap-4 border-b border-ink-3 bg-ink px-6">
         <button

@@ -14,14 +14,19 @@ pub fn decode_png(data: &str) -> AppResult<Vec<u8>> {
         return Err(invalid());
     }
     let mut decoder = png::Decoder::new(Cursor::new(bytes));
-    decoder.set_limits(png::Limits { bytes: 4 * MAX_BYTES });
+    decoder.set_limits(png::Limits {
+        bytes: 4 * MAX_BYTES,
+    });
     decoder.set_transformations(png::Transformations::EXPAND | png::Transformations::STRIP_16);
     let mut reader = decoder.read_info().map_err(|_| invalid())?;
     let info = reader.info();
     if info.width > MAX_EDGE || info.height > MAX_EDGE || info.animation_control.is_some() {
         return Err(invalid());
     }
-    let size = reader.output_buffer_size().filter(|&size| size <= MAX_BYTES).ok_or_else(invalid)?;
+    let size = reader
+        .output_buffer_size()
+        .filter(|&size| size <= MAX_BYTES)
+        .ok_or_else(invalid)?;
     let mut pixels = vec![0; size];
     let frame = reader.next_frame(&mut pixels).map_err(|_| invalid())?;
 
@@ -31,8 +36,9 @@ pub fn decode_png(data: &str) -> AppResult<Vec<u8>> {
     encoder.set_color(frame.color_type);
     encoder.set_depth(frame.bit_depth);
     let mut writer = encoder.write_header().map_err(|_| invalid())?;
-    writer.write_image_data(&pixels[..frame.buffer_size()]).map_err(|_| invalid())?;
+    writer
+        .write_image_data(&pixels[..frame.buffer_size()])
+        .map_err(|_| invalid())?;
     writer.finish().map_err(|_| invalid())?;
     Ok(photo)
 }
-

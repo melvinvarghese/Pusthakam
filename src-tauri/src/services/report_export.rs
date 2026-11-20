@@ -11,7 +11,11 @@ pub struct ReportExportFile {
     pub data_base64: String,
 }
 
-pub fn generate_xlsx(sheet_name: &str, headers: &[String], rows: &[Vec<String>]) -> AppResult<Vec<u8>> {
+pub fn generate_xlsx(
+    sheet_name: &str,
+    headers: &[String],
+    rows: &[Vec<String>],
+) -> AppResult<Vec<u8>> {
     let mut all_rows = Vec::with_capacity(rows.len() + 1);
     all_rows.push(headers.to_vec());
     all_rows.extend_from_slice(rows);
@@ -115,7 +119,11 @@ pub fn generate_pdf(
     let mut col_lens = Vec::with_capacity(num_cols);
     for c in 0..num_cols {
         let h_len = headers.get(c).map(|h| h.len()).unwrap_or(4);
-        let max_data = rows.iter().map(|r| r.get(c).map(|s| s.len()).unwrap_or(0)).max().unwrap_or(0);
+        let max_data = rows
+            .iter()
+            .map(|r| r.get(c).map(|s| s.len()).unwrap_or(0))
+            .max()
+            .unwrap_or(0);
         col_lens.push(h_len.max(max_data).max(4));
     }
     let total_len: usize = col_lens.iter().sum::<usize>().max(1);
@@ -178,11 +186,15 @@ pub fn generate_pdf(
 
     // Obj 3: Font F1 (Helvetica)
     offsets.push(buf.len());
-    buf.extend_from_slice(b"3 0 obj\n<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>\nendobj\n");
+    buf.extend_from_slice(
+        b"3 0 obj\n<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>\nendobj\n",
+    );
 
     // Obj 4: Font F2 (Helvetica-Bold)
     offsets.push(buf.len());
-    buf.extend_from_slice(b"4 0 obj\n<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold >>\nendobj\n");
+    buf.extend_from_slice(
+        b"4 0 obj\n<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold >>\nendobj\n",
+    );
 
     for (p, page_rows) in pages.iter().enumerate() {
         let page_obj = 5 + p * 2;
@@ -253,7 +265,8 @@ pub fn generate_pdf(
             };
             stream.push_str(&format!(
                 "BT /F2 8.5 Tf 0.1 0.1 0.1 rg {:.2} {:.2} Td ({esc_h}) Tj 0 0 0 rg ET\n",
-                text_x, header_y + 1.0
+                text_x,
+                header_y + 1.0
             ));
             col_x += w;
         }
@@ -261,7 +274,10 @@ pub fn generate_pdf(
         // Table rows
         for (r_idx, row) in page_rows.iter().enumerate() {
             let row_y = header_y - 4.0 - ((r_idx + 1) as f32 * row_height);
-            let is_total = row.first().map(|s| s.starts_with("Total") || s.starts_with("All")).unwrap_or(false);
+            let is_total = row
+                .first()
+                .map(|s| s.starts_with("Total") || s.starts_with("All"))
+                .unwrap_or(false);
 
             if is_total {
                 if !simple {
@@ -384,7 +400,15 @@ mod tests {
             vec!["Total".into(), "25".into(), "20".into()],
         ];
         let alignments = vec!["left".into(), "right".into(), "right".into()];
-        let bytes_polished = generate_pdf("Circulation Activity", "Date range: 2026-11-18 to 2026-11-19", &headers, &rows, &alignments, false).unwrap();
+        let bytes_polished = generate_pdf(
+            "Circulation Activity",
+            "Date range: 2026-11-18 to 2026-11-19",
+            &headers,
+            &rows,
+            &alignments,
+            false,
+        )
+        .unwrap();
         assert!(bytes_polished.starts_with(b"%PDF-1.4"));
         assert!(bytes_polished.ends_with(b"%%EOF\n"));
         let pdf_str = String::from_utf8_lossy(&bytes_polished);
@@ -393,7 +417,15 @@ mod tests {
         assert!(pdf_str.contains("Page 1 of 1"));
 
         // Also verify simple design mode generates valid PDF without errors
-        let bytes_simple = generate_pdf("Circulation Activity", "Date range: 2026-11-18 to 2026-11-19", &headers, &rows, &alignments, true).unwrap();
+        let bytes_simple = generate_pdf(
+            "Circulation Activity",
+            "Date range: 2026-11-18 to 2026-11-19",
+            &headers,
+            &rows,
+            &alignments,
+            true,
+        )
+        .unwrap();
         assert!(bytes_simple.starts_with(b"%PDF-1.4"));
         assert!(bytes_simple.ends_with(b"%%EOF\n"));
     }

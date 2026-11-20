@@ -11,27 +11,28 @@ _Version 1.0 · Desktop Library Management System_
    - [Windows (x64)](#windows-x64)
    - [macOS (Apple Silicon & Intel)](#macos-apple-silicon--intel)
    - [Linux (Debian / Ubuntu / Fedora)](#linux-debian--ubuntu--fedora)
-3. [First-Run Setup Wizard](#3-first-run-setup-wizard)
-4. [Catalogue & Accession Register](#4-catalogue--accession-register)
+3. [Quick-Start Guide (5-Minute Onboarding)](#3-quick-start-guide-5-minute-onboarding)
+4. [First-Run Setup Wizard](#4-first-run-setup-wizard)
+5. [Catalogue & Accession Register](#5-catalogue--accession-register)
    - [Bibliographic Records](#bibliographic-records)
    - [Physical Copy Accessioning](#physical-copy-accessioning)
    - [Classification & Authority Control](#classification--authority-control)
    - [Bulk Operations & Cover Management](#bulk-operations--cover-management)
-5. [Circulation Desk](#5-circulation-desk)
+6. [Circulation Desk](#6-circulation-desk)
    - [Issuing Items](#issuing-items)
    - [Returning Items & Condition Assessment](#returning-items--condition-assessment)
    - [Renewals & Hold Reservations](#renewals--hold-reservations)
    - [Library Calendar & Closures](#library-calendar--closures)
    - [Fines Ledger & Payment/Waiver Settlement](#fines-ledger--paymentwaiver-settlement)
-6. [Patron & Member Management](#6-patron--member-management)
-7. [Periodicals & Serials Management](#7-periodicals--serials-management)
-8. [Acquisitions & Purchase Orders](#8-acquisitions--purchase-orders)
-9. [Reports & Exports](#9-reports--exports)
-10. [Data Migration (Koha, MARC, CSV, XLSX)](#10-data-migration-koha-marc-csv-xlsx)
-11. [Backup, Restore & Disaster Recovery](#11-backup-restore--disaster-recovery)
-12. [Local Network (LAN) Multi-Device Mode](#12-local-network-lan-multi-device-mode)
-13. [Code Signing & Application Upgrades](#13-code-signing--application-upgrades)
-14. [Troubleshooting & Frequently Asked Questions](#14-troubleshooting--frequently-asked-questions)
+7. [Patron & Member Management](#7-patron--member-management)
+8. [Periodicals & Serials Management](#8-periodicals--serials-management)
+9. [Acquisitions & Purchase Orders](#9-acquisitions--purchase-orders)
+10. [Reports & Exports](#10-reports--exports)
+11. [Data Migration (Koha, MARC, CSV, XLSX)](#11-data-migration-koha-marc-csv-xlsx)
+12. [Backup, Restore & Disaster Recovery](#12-backup-restore--disaster-recovery)
+13. [Local Network (LAN) Multi-Device Mode](#13-local-network-lan-multi-device-mode)
+14. [Code Signing & Application Upgrades](#14-code-signing--application-upgrades)
+15. [Troubleshooting & Frequently Asked Questions](#15-troubleshooting--frequently-asked-questions)
 
 ---
 
@@ -39,11 +40,31 @@ _Version 1.0 · Desktop Library Management System_
 
 Pusthakam is an offline-first desktop library management system engineered for school, college, community, and public libraries. Built on Tauri 2, Rust, SQLite, and React 19, Pusthakam delivers professional library administration without cloud dependencies, subscriptions, or telemetry.
 
+```
++-----------------------------------------------------------------------+
+|                         Pusthakam Desktop App                         |
+|                                                                       |
+|  +--------------------+                     +----------------------+  |
+|  |  React 19 Frontend | <--- IPC Events --  | Tauri 2 Rust Backend |  |
+|  |  (Accessible UI,   | --- IPC Commands -> | (Argon2id, Actix LAN,|  |
+|  |   Keyboard Nav,    |                     |  PDF/XLSX Exporters, |  |
+|  |   Live Announcer)  |                     |  FTS5 Search Engine) |  |
+|  +--------------------+                     +----------------------+  |
+|                                                         |             |
+|                                                Local SQLite (WAL)     |
+|                                                +--------------------+ |
+|                                                | pusthakam.sqlite3  | |
+|                                                | Zero Cloud Telemetry |
+|                                                +--------------------+ |
++-----------------------------------------------------------------------+
+```
+
 ### Core Architecture Highlights
 
 - **Zero Remote Dependencies:** All catalogue searches, circulation rules, PDF/XLSX generation, and barcode rendering execute locally on your computer. An internet disconnection will never halt desk operations.
 - **ACID-Compliant Storage:** Library data resides in a local SQLite database utilizing Write-Ahead Logging (WAL) and synchronous file locking for complete crash resilience.
 - **Local Network Support (Phase 7b):** One designated desktop acts as the local library server. Staff on other laptops, tablets, or phones on the same Wi-Fi or LAN can access a browser circulation portal (`/staff`) or public OPAC (`/opac`) without touching the internet.
+- **Accessible & Screen-Reader Ready:** Built-in ARIA live regions (`LiveAnnouncer`) announce loan status, issue confirmations, and catalogue search results for Windows Narrator and NVDA users.
 
 ---
 
@@ -53,7 +74,7 @@ Pusthakam is an offline-first desktop library management system engineered for s
 - **Minimum Requirements:** Windows 10 (version 1809 or higher) or Windows 11; 4 GB RAM; 250 MB disk space.
 - **Runtime Dependency:** Microsoft Edge WebView2 Evergreen Runtime (pre-installed on Windows 10/11; automatically verified on launch).
 - **Installation Procedure:**
-  1. Download `Pusthakam-Setup-x64.exe` (or MSIX package).
+  1. Download `Pusthakam_0.1.0_x64-setup.exe` (or MSIX package).
   2. Run the installer. If Windows SmartScreen displays a warning, click **More info** &rarr; **Run anyway**.
   3. The installer creates a desktop shortcut and registers Start Menu entries.
   4. Application data is stored securely in `%APPDATA%\com.pusthakam.desktop\`.
@@ -82,7 +103,35 @@ Pusthakam is an offline-first desktop library management system engineered for s
 
 ---
 
-## 3. First-Run Setup Wizard
+## 3. Quick-Start Guide (5-Minute Onboarding)
+
+Get your library operational in five rapid steps:
+
+```
++-----------------------------------------------------------------------------+
+|                               QUICK-START PATH                              |
+|                                                                             |
+|  [ 1. Install ] -> [ 2. Setup Wizard ] -> [ 3. Add Members ]                |
+|         |                  |                       |                        |
+|  Select Profile     Choose admin &       Import CSV or add by hand,         |
+|  (School/College)   circulation defaults  print patron library cards        |
+|                                                    |                        |
+|  [ 6. Reports ] <- [ 5. Issue / Return ] <- [ 4. Accession Books ]          |
+|         |                  |                       |                        |
+|  Export PDF/XLSX,   Optical barcode scan  Batch add copies, assign barcodes |
+|  audit ledger       instant loan check    and call numbers                  |
++-----------------------------------------------------------------------------+
+```
+
+1. **Launch & Setup:** Follow the 4-step wizard to choose your library profile (**School**, **College**, **Public**, or **Special**), set your currency, and create the administrator passphrase.
+2. **Configure Policies:** Review loan rules under **Settings** &rarr; **Circulation Rules** (e.g., 14-day loan, 5 items max). Add weekly closures in **Settings** &rarr; **Calendar**.
+3. **Register Members:** Add patrons in **Members** &rarr; **New Member** (or import a patron CSV). Print barcode patron cards directly via **Print Card**.
+4. **Accession Books:** Add your catalogue records under **Catalogue** &rarr; **New Record**. Click **Add Copies** to generate sequential accession numbers and print label sheets with Code 128 barcodes.
+5. **Begin Circulation:** Go to **Circulation** &rarr; **Issue**. Scan member card, scan book barcode, press Enter. The loan is live!
+
+---
+
+## 4. First-Run Setup Wizard
 
 Upon opening Pusthakam on a newly installed machine, the setup wizard guides the head librarian through four essential steps:
 
@@ -101,7 +150,7 @@ Click **Finish Setup** to initialize the database schema and transition to the l
 
 ---
 
-## 4. Catalogue & Accession Register
+## 5. Catalogue & Accession Register
 
 ### Bibliographic Records
 - **Search & Filter:** Find records instantly by title, author, subject, ISBN, or classification number using full-text search (FTS5).
@@ -127,9 +176,30 @@ In Pusthakam, one bibliographic record can hold multiple physical copies:
 
 ---
 
-## 5. Circulation Desk
+## 6. Circulation Desk
 
 The circulation desk handles everyday patron interactions with optical barcode scanner integration.
+
+```
++-----------------------------------------------------------------------------+
+|                          CIRCULATION DESK WORKFLOW                          |
+|                                                                             |
+|  +--------------------+      +--------------------+      +----------------+ |
+|  | 1. Scan/Enter      | ---> | 2. Eligibility &   | ---> | 3. Scan Copy   | |
+|  |    Member Number   |      |    Block Checks    |      |    Barcode     | |
+|  +--------------------+      +--------------------+      +----------------+ |
+|                                       |                          |          |
+|                              Checks: Expiry,             Checks: On shelf,  |
+|                              Loan limits, Fines          Hold reservation   |
+|                                                                  |          |
+|  +--------------------+      +--------------------+      +----------------+ |
+|  | 6. Print Due Slip  | <--- | 5. Issue Confirmed | <--- | 4. Due Date    | |
+|  |    (Optional)      |      |    (Status: Loan)  |      |    Calculated  | |
+|  +--------------------+      +--------------------+      +----------------+ |
+|                                                          Considers Weekly   |
+|                                                          Closures & Holidays|
++-----------------------------------------------------------------------------+
+```
 
 ### Issuing Items
 1. Navigate to **Circulation** &rarr; **Issue**.
@@ -142,6 +212,7 @@ The circulation desk handles everyday patron interactions with optical barcode s
    - Existing holds/reservations by other patrons are enforced.
 5. The system calculates the due date considering library operating days and calendar holidays.
 6. Click **Confirm Issue** (or press Enter). The copy status changes to `On Loan`.
+7. An accessible ARIA live alert announces: *"Loan issued to [Member Name]. Due date: [Date]."*
 
 ### Returning Items & Condition Assessment
 1. Navigate to **Circulation** &rarr; **Return**.
@@ -152,6 +223,7 @@ The circulation desk handles everyday patron interactions with optical barcode s
    - **Damaged:** Prompts for damage assessment notes and fine levy.
    - **Lost:** Closes loan, updates inventory status to `Lost`, and bills replacement cost.
 5. If overdue, the system calculates fines according to the policy in effect when the item was borrowed.
+6. An accessible ARIA live alert announces: *"Copy returned. Condition: Normal."*
 
 ### Renewals & Hold Reservations
 - **Renewals:** Extend loans if renewals remain under the policy limit and no other patron has placed a reservation on that title.
@@ -169,16 +241,16 @@ The circulation desk handles everyday patron interactions with optical barcode s
 
 ---
 
-## 6. Patron & Member Management
+## 7. Patron & Member Management
 
 - **Directory:** Search members by name, member number, email, phone, or category.
 - **Categories:** Configure student, faculty, staff, or general public categories with independent loan limits (e.g., 5 books for students, 15 for faculty) and loan duration rules.
-- **Member Cards:** View and print patron library cards featuring library branding, photo, barcode, and expiration date.
+- **Member Cards:** View and print patron library cards featuring library branding, photo, barcode, and expiration date (ISO 7810 format).
 - **History:** Complete ledger of active loans, borrowing history, reservations, and fine transactions.
 
 ---
 
-## 7. Periodicals & Serials Management
+## 8. Periodicals & Serials Management
 
 Located under **Periodicals**:
 - **Subscriptions:** Track active magazine and journal subscriptions with frequency (`Daily`, `Weekly`, `Monthly`, `Quarterly`, `Annual`), vendor details, and subscription date ranges.
@@ -189,7 +261,7 @@ Located under **Periodicals**:
 
 ---
 
-## 8. Acquisitions & Purchase Orders
+## 9. Acquisitions & Purchase Orders
 
 Located under **Acquisitions**:
 - **Vendors:** Maintain a directory of book vendors, terms, and contact information.
@@ -199,7 +271,7 @@ Located under **Acquisitions**:
 
 ---
 
-## 9. Reports & Exports
+## 10. Reports & Exports
 
 Pusthakam includes built-in reporting and vector document generation:
 - **Dashboard:** Real-time metrics for total catalogue records, physical copies, active loans, overdue items, and recent circulation trends.
@@ -209,6 +281,9 @@ Pusthakam includes built-in reporting and vector document generation:
   - Fine assessment and collection reconciliation.
   - Monthly catalogue growth and acquisition expenditure.
   - Lost and damaged stock audit.
+- **Visual Presentation & "Simple Report Design" Mode:**
+  - By default, reports display with rich typography, shaded headers, alternating zebra striping, and accented totals.
+  - Check the **Use simple report design** box for economical black-and-white printing and minimal styling. Both modes retain identical calculations and data.
 - **Export Formats:**
   - **Vector PDF 1.4:** Multi-page formatted tables with page numbering and headers (no third-party PDF tools needed).
   - **OpenXML XLSX:** Clean spreadsheet tables with formatted columns compatible with Microsoft Excel and LibreOffice Calc.
@@ -216,7 +291,7 @@ Pusthakam includes built-in reporting and vector document generation:
 
 ---
 
-## 10. Data Migration (Koha, MARC, CSV, XLSX)
+## 11. Data Migration (Koha, MARC, CSV, XLSX)
 
 Pusthakam provides an interactive, transactional migration wizard under **Settings** &rarr; **Import / Export**:
 
@@ -232,9 +307,31 @@ Pusthakam provides an interactive, transactional migration wizard under **Settin
 
 ---
 
-## 11. Backup, Restore & Disaster Recovery
+## 12. Backup, Restore & Disaster Recovery
 
 Located under **Settings** &rarr; **Backup & Restore**:
+
+```
++-----------------------------------------------------------------------------+
+|                    SAFETY-FIRST RESTORE CYCLE                               |
+|                                                                             |
+|  [ Select Backup File ] ----------------------------------------->          |
+|           |                                                      |          |
+|  [ Acquire Exclusive Lock ]                                      |          |
+|           |                                                      |          |
+|  [ Checkpoint WAL & Terminate Active Tasks ]                     |          |
+|           |                                                      |          |
+|  [ Create Automatic Pre-Restore Safety Snapshot ]                |          |
+|           |                                                      |          |
+|  [ Overwrite Database with Backup ]                              |          |
+|           |                                                      |          |
+|    Verification Check                                            |          |
+|    /              \                                              |          |
+|  Success        Failure                                          |          |
+|    |               |                                             |          |
+| [ Reopen DB ]   [ Automatic Rollback to Pre-Restore Snapshot ]   |          |
++-----------------------------------------------------------------------------+
+```
 
 - **Automated Backups:** Pusthakam creates scheduled rolling daily snapshots stored in `%APPDATA%\com.pusthakam.desktop\backups\`.
 - **Manual Backups:** Click **Create Backup Now** to produce a timestamped SQLite snapshot. Use **Copy to Folder** to save a copy to a USB flash drive or external backup drive.
@@ -242,9 +339,33 @@ Located under **Settings** &rarr; **Backup & Restore**:
 
 ---
 
-## 12. Local Network (LAN) Multi-Device Mode
+## 13. Local Network (LAN) Multi-Device Mode
 
 When multiple staff members need to work simultaneously from different computers, or when you want to provide a public catalogue for visitors:
+
+```
++-----------------------------------------------------------------------------+
+|                      LOCAL NETWORK (LAN) TOPOLOGY                           |
+|                                                                             |
+|                      +------------------------+                             |
+|                      |   Host Library PC      |                             |
+|                      |  Pusthakam Desktop     |                             |
+|                      |  Embedded Server :4318 |                             |
+|                      +------------------------+                             |
+|                                  |                                          |
+|                       Local Wi-Fi or Ethernet                               |
+|                     (No Internet Access Needed)                             |
+|                                  |                                          |
+|        +-------------------------+-------------------------+                |
+|        |                                                   |                |
+|  +-------------------+                               +-------------------+  |
+|  |  Staff Terminal   |                               |  Public OPAC      |  |
+|  |  (Tablet/Laptop)  |                               |  (Kiosk/Phone)    |  |
+|  |  http://ip:4318   |                               |  http://ip:4318   |  |
+|  |  /staff (Pairing) |                               |  /opac (Read-only)|  |
+|  +-------------------+                               +-------------------+  |
++-----------------------------------------------------------------------------+
+```
 
 ### Setting Up the Host PC
 1. Select one computer with a reliable network connection as the **Library Host**.
@@ -265,7 +386,7 @@ When multiple staff members need to work simultaneously from different computers
 
 ---
 
-## 13. Code Signing & Application Upgrades
+## 14. Code Signing & Application Upgrades
 
 ### Code Signing Architecture
 To ensure security and eliminate platform warnings:
@@ -289,7 +410,7 @@ Upgrading Pusthakam is seamless and non-destructive:
 
 ---
 
-## 14. Troubleshooting & Frequently Asked Questions
+## 15. Troubleshooting & Frequently Asked Questions
 
 ### Q: Does Pusthakam require an internet connection?
 **A:** No. Pusthakam is 100% offline-first. All barcode rendering, PDF/XLSX generation, search indexing, and circulation rules run locally.

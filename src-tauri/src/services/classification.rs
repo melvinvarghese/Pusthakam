@@ -291,7 +291,10 @@ pub fn delete_custom_scheme(conn: &Connection, actor: &Session, id: i64) -> AppR
         )));
     }
 
-    tx.execute("DELETE FROM classification_entries WHERE scheme_id = ?1", [id])?;
+    tx.execute(
+        "DELETE FROM classification_entries WHERE scheme_id = ?1",
+        [id],
+    )?;
     tx.execute("DELETE FROM classification_schemes WHERE id = ?1", [id])?;
 
     audit::record(
@@ -345,7 +348,10 @@ pub fn list_entries(
     sql.push_str("ORDER BY e.code ASC");
 
     let mut stmt = conn.prepare(&sql)?;
-    let params_slice: Vec<&dyn rusqlite::ToSql> = params_vec.iter().map(|b| &**b as &dyn rusqlite::ToSql).collect();
+    let params_slice: Vec<&dyn rusqlite::ToSql> = params_vec
+        .iter()
+        .map(|b| &**b as &dyn rusqlite::ToSql)
+        .collect();
 
     let rows = stmt
         .query_map(&params_slice[..], |r| {
@@ -471,7 +477,9 @@ pub fn list_authors(
 
     if let Some(q) = clean_search {
         let idx = params_vec.len() + 1;
-        sql.push_str(&format!("AND (c.name LIKE ?{idx} OR c.sort_name LIKE ?{idx} OR c.variant_names LIKE ?{idx}) "));
+        sql.push_str(&format!(
+            "AND (c.name LIKE ?{idx} OR c.sort_name LIKE ?{idx} OR c.variant_names LIKE ?{idx}) "
+        ));
         params_vec.push(Box::new(format!("%{q}%")));
     }
     if let Some(k) = clean_kind {
@@ -483,7 +491,10 @@ pub fn list_authors(
     sql.push_str("ORDER BY COALESCE(c.sort_name, c.name) COLLATE NOCASE ASC LIMIT 300");
 
     let mut stmt = conn.prepare(&sql)?;
-    let params_slice: Vec<&dyn rusqlite::ToSql> = params_vec.iter().map(|b| &**b as &dyn rusqlite::ToSql).collect();
+    let params_slice: Vec<&dyn rusqlite::ToSql> = params_vec
+        .iter()
+        .map(|b| &**b as &dyn rusqlite::ToSql)
+        .collect();
 
     let rows = stmt
         .query_map(&params_slice[..], |r| {
@@ -515,7 +526,8 @@ pub fn save_author(
     let name = validate::required("Author name", &input.name, 250)?;
     let sort_name = validate::optional("Sort name", input.sort_name.as_deref(), 250)?;
     let kind = input.kind.as_deref().unwrap_or("personal");
-    let authority_note = validate::optional("Authority note", input.authority_note.as_deref(), 2000)?;
+    let authority_note =
+        validate::optional("Authority note", input.authority_note.as_deref(), 2000)?;
     let variant_names = validate::optional("Variant names", input.variant_names.as_deref(), 1000)?;
     let marc_tag = input.marc_tag.as_deref().unwrap_or("100");
 
@@ -541,8 +553,12 @@ pub fn save_author(
         )?;
 
         let recs = {
-            let mut stmt = tx.prepare("SELECT DISTINCT record_id FROM record_contributors WHERE contributor_id = ?1")?;
-            let res = stmt.query_map([id], |r| r.get(0))?.collect::<Result<Vec<i64>, _>>()?;
+            let mut stmt = tx.prepare(
+                "SELECT DISTINCT record_id FROM record_contributors WHERE contributor_id = ?1",
+            )?;
+            let res = stmt
+                .query_map([id], |r| r.get(0))?
+                .collect::<Result<Vec<i64>, _>>()?;
             res
         };
 
@@ -598,24 +614,37 @@ pub fn merge_authors(
     to_id: i64,
 ) -> AppResult<()> {
     if from_id == to_id {
-        return Err(AppError::Validation("Cannot merge an author into itself.".into()));
+        return Err(AppError::Validation(
+            "Cannot merge an author into itself.".into(),
+        ));
     }
 
     let tx = conn.unchecked_transaction()?;
     let from_name: String = tx
-        .query_row("SELECT name FROM contributors WHERE id = ?1", [from_id], |r| r.get(0))
+        .query_row(
+            "SELECT name FROM contributors WHERE id = ?1",
+            [from_id],
+            |r| r.get(0),
+        )
         .optional()?
         .ok_or_else(|| AppError::NotFound(format!("Source author #{from_id} not found.")))?;
 
     let to_name: String = tx
-        .query_row("SELECT name FROM contributors WHERE id = ?1", [to_id], |r| r.get(0))
+        .query_row(
+            "SELECT name FROM contributors WHERE id = ?1",
+            [to_id],
+            |r| r.get(0),
+        )
         .optional()?
         .ok_or_else(|| AppError::NotFound(format!("Target author #{to_id} not found.")))?;
 
     // Find all records referencing from_id
     let links: Vec<(i64, String, i64)> = {
-        let mut stmt = tx.prepare("SELECT record_id, role, position FROM record_contributors WHERE contributor_id = ?1")?;
-        let res = stmt.query_map([from_id], |r| Ok((r.get(0)?, r.get(1)?, r.get(2)?)))?
+        let mut stmt = tx.prepare(
+            "SELECT record_id, role, position FROM record_contributors WHERE contributor_id = ?1",
+        )?;
+        let res = stmt
+            .query_map([from_id], |r| Ok((r.get(0)?, r.get(1)?, r.get(2)?)))?
             .collect::<Result<Vec<_>, _>>()?;
         res
     };
@@ -694,7 +723,10 @@ pub fn list_publishers(
     sql.push_str("ORDER BY p.name COLLATE NOCASE ASC LIMIT 300");
 
     let mut stmt = conn.prepare(&sql)?;
-    let params_slice: Vec<&dyn rusqlite::ToSql> = params_vec.iter().map(|b| &**b as &dyn rusqlite::ToSql).collect();
+    let params_slice: Vec<&dyn rusqlite::ToSql> = params_vec
+        .iter()
+        .map(|b| &**b as &dyn rusqlite::ToSql)
+        .collect();
 
     let rows = stmt
         .query_map(&params_slice[..], |r| {
@@ -726,11 +758,10 @@ pub fn save_publisher(
 
     let tx = conn.unchecked_transaction()?;
     let (id, affected_records): (i64, Vec<i64>) = if let Some(id) = input.id {
-        let old_name: String = tx.query_row(
-            "SELECT name FROM publishers WHERE id = ?1",
-            [id],
-            |r| r.get(0),
-        )?;
+        let old_name: String =
+            tx.query_row("SELECT name FROM publishers WHERE id = ?1", [id], |r| {
+                r.get(0)
+            })?;
 
         tx.execute(
             "UPDATE publishers
@@ -749,8 +780,11 @@ pub fn save_publisher(
         )?;
 
         let recs = {
-            let mut stmt = tx.prepare("SELECT id FROM bibliographic_records WHERE publisher_id = ?1")?;
-            let res = stmt.query_map([id], |r| r.get(0))?.collect::<Result<Vec<i64>, _>>()?;
+            let mut stmt =
+                tx.prepare("SELECT id FROM bibliographic_records WHERE publisher_id = ?1")?;
+            let res = stmt
+                .query_map([id], |r| r.get(0))?
+                .collect::<Result<Vec<i64>, _>>()?;
             res
         };
 
@@ -806,19 +840,27 @@ pub fn merge_publishers(
     to_id: i64,
 ) -> AppResult<()> {
     if from_id == to_id {
-        return Err(AppError::Validation("Cannot merge a publisher into itself.".into()));
+        return Err(AppError::Validation(
+            "Cannot merge a publisher into itself.".into(),
+        ));
     }
 
     let tx = conn.unchecked_transaction()?;
     let from_name: String = tx
-        .query_row("SELECT name FROM publishers WHERE id = ?1", [from_id], |r| r.get(0))
+        .query_row(
+            "SELECT name FROM publishers WHERE id = ?1",
+            [from_id],
+            |r| r.get(0),
+        )
         .optional()?
         .ok_or_else(|| AppError::NotFound(format!("Source publisher #{from_id} not found.")))?;
 
     let (to_name, to_place): (String, Option<String>) = tx
-        .query_row("SELECT name, place FROM publishers WHERE id = ?1", [to_id], |r| {
-            Ok((r.get(0)?, r.get(1)?))
-        })
+        .query_row(
+            "SELECT name, place FROM publishers WHERE id = ?1",
+            [to_id],
+            |r| Ok((r.get(0)?, r.get(1)?)),
+        )
         .optional()?
         .ok_or_else(|| AppError::NotFound(format!("Target publisher #{to_id} not found.")))?;
 
@@ -828,7 +870,8 @@ pub fn merge_publishers(
             "SELECT id FROM bibliographic_records
              WHERE publisher_id = ?1 OR publisher = ?2 COLLATE NOCASE",
         )?;
-        let res = stmt.query_map(params![from_id, from_name], |r| r.get(0))?
+        let res = stmt
+            .query_map(params![from_id, from_name], |r| r.get(0))?
             .collect::<Result<Vec<_>, _>>()?;
         res
     };
@@ -889,13 +932,17 @@ pub fn list_subjects(
     );
 
     let clean_search = search_query.map(|s| s.trim()).filter(|s| !s.is_empty());
-    let clean_scheme = scheme_filter.map(|sc| sc.trim()).filter(|sc| !sc.is_empty());
+    let clean_scheme = scheme_filter
+        .map(|sc| sc.trim())
+        .filter(|sc| !sc.is_empty());
 
     let mut params_vec: Vec<Box<dyn rusqlite::ToSql>> = Vec::new();
 
     if let Some(q) = clean_search {
         let idx = params_vec.len() + 1;
-        sql.push_str(&format!("AND (s.heading LIKE ?{idx} OR s.scope_note LIKE ?{idx} OR s.see_also LIKE ?{idx}) "));
+        sql.push_str(&format!(
+            "AND (s.heading LIKE ?{idx} OR s.scope_note LIKE ?{idx} OR s.see_also LIKE ?{idx}) "
+        ));
         params_vec.push(Box::new(format!("%{q}%")));
     }
     if let Some(sc) = clean_scheme {
@@ -907,7 +954,10 @@ pub fn list_subjects(
     sql.push_str("ORDER BY s.heading COLLATE NOCASE ASC LIMIT 300");
 
     let mut stmt = conn.prepare(&sql)?;
-    let params_slice: Vec<&dyn rusqlite::ToSql> = params_vec.iter().map(|b| &**b as &dyn rusqlite::ToSql).collect();
+    let params_slice: Vec<&dyn rusqlite::ToSql> = params_vec
+        .iter()
+        .map(|b| &**b as &dyn rusqlite::ToSql)
+        .collect();
 
     let rows = stmt
         .query_map(&params_slice[..], |r| {
@@ -938,7 +988,8 @@ pub fn save_subject(
     let scheme = input.scheme.as_deref().unwrap_or("local");
     let scope_note = validate::optional("Scope note", input.scope_note.as_deref(), 2000)?;
     let broader_term = validate::optional("Broader term", input.broader_term.as_deref(), 250)?;
-    let narrower_terms = validate::optional("Narrower terms", input.narrower_terms.as_deref(), 1000)?;
+    let narrower_terms =
+        validate::optional("Narrower terms", input.narrower_terms.as_deref(), 1000)?;
     let see_also = validate::optional("See also terms", input.see_also.as_deref(), 1000)?;
     let marc_tag = input.marc_tag.as_deref().unwrap_or("650");
 
@@ -963,8 +1014,11 @@ pub fn save_subject(
         )?;
 
         let recs = {
-            let mut stmt = tx.prepare("SELECT DISTINCT record_id FROM record_subjects WHERE subject_id = ?1")?;
-            let res = stmt.query_map([id], |r| r.get(0))?.collect::<Result<Vec<i64>, _>>()?;
+            let mut stmt =
+                tx.prepare("SELECT DISTINCT record_id FROM record_subjects WHERE subject_id = ?1")?;
+            let res = stmt
+                .query_map([id], |r| r.get(0))?
+                .collect::<Result<Vec<i64>, _>>()?;
             res
         };
 
@@ -1011,23 +1065,33 @@ pub fn merge_subjects(
     to_id: i64,
 ) -> AppResult<()> {
     if from_id == to_id {
-        return Err(AppError::Validation("Cannot merge a subject heading into itself.".into()));
+        return Err(AppError::Validation(
+            "Cannot merge a subject heading into itself.".into(),
+        ));
     }
 
     let tx = conn.unchecked_transaction()?;
     let from_heading: String = tx
-        .query_row("SELECT heading FROM subjects WHERE id = ?1", [from_id], |r| r.get(0))
+        .query_row(
+            "SELECT heading FROM subjects WHERE id = ?1",
+            [from_id],
+            |r| r.get(0),
+        )
         .optional()?
         .ok_or_else(|| AppError::NotFound(format!("Source subject #{from_id} not found.")))?;
 
     let to_heading: String = tx
-        .query_row("SELECT heading FROM subjects WHERE id = ?1", [to_id], |r| r.get(0))
+        .query_row("SELECT heading FROM subjects WHERE id = ?1", [to_id], |r| {
+            r.get(0)
+        })
         .optional()?
         .ok_or_else(|| AppError::NotFound(format!("Target subject #{to_id} not found.")))?;
 
     let affected_records: Vec<i64> = {
-        let mut stmt = tx.prepare("SELECT DISTINCT record_id FROM record_subjects WHERE subject_id = ?1")?;
-        let res = stmt.query_map([from_id], |r| r.get(0))?
+        let mut stmt =
+            tx.prepare("SELECT DISTINCT record_id FROM record_subjects WHERE subject_id = ?1")?;
+        let res = stmt
+            .query_map([from_id], |r| r.get(0))?
             .collect::<Result<Vec<_>, _>>()?;
         res
     };
@@ -1156,7 +1220,9 @@ pub fn save_marc_mapping(
 pub fn test_marc_mapping(conn: &Connection, input: &MarcTestInput) -> AppResult<MarcTestResult> {
     let line = input.raw_marc_line.trim();
     if line.is_empty() {
-        return Err(AppError::Validation("MARC sample line cannot be empty.".into()));
+        return Err(AppError::Validation(
+            "MARC sample line cannot be empty.".into(),
+        ));
     }
 
     // Split line into tag + rest: e.g. "100 1# $a Basheer, Vaikom Muhammad, $d 1908-1994"
@@ -1168,7 +1234,11 @@ pub fn test_marc_mapping(conn: &Connection, input: &MarcTestInput) -> AppResult<
         tag_part.to_string()
     } else if let Some(idx) = line.find('$') {
         let prefix = line[..idx].trim();
-        prefix.split_whitespace().next().unwrap_or("100").to_string()
+        prefix
+            .split_whitespace()
+            .next()
+            .unwrap_or("100")
+            .to_string()
     } else {
         "100".to_string()
     };
@@ -1289,12 +1359,18 @@ mod tests {
 
         // Browse top-level DDC entries
         let top_entries = list_entries(&conn, ddc.id, None, None).unwrap();
-        assert!(top_entries.iter().any(|e| e.code == "500" && e.title == "Science"));
-        assert!(top_entries.iter().any(|e| e.code == "800" && e.title.contains("Literature")));
+        assert!(top_entries
+            .iter()
+            .any(|e| e.code == "500" && e.title == "Science"));
+        assert!(top_entries
+            .iter()
+            .any(|e| e.code == "800" && e.title.contains("Literature")));
 
         // Browse child entries of 500 (Mathematics 510, Physics 530, etc.)
         let science_children = list_entries(&conn, ddc.id, Some("500"), None).unwrap();
-        assert!(science_children.iter().any(|e| e.code == "510" && e.title == "Mathematics"));
+        assert!(science_children
+            .iter()
+            .any(|e| e.code == "510" && e.title == "Mathematics"));
 
         // Search classification
         let search_math = list_entries(&conn, ddc.id, None, Some("Mathematics")).unwrap();
@@ -1334,11 +1410,19 @@ mod tests {
 
         // Delete custom entry
         delete_custom_entry(&conn, &actor, custom_entry_id).unwrap();
-        assert_eq!(list_entries(&conn, custom_scheme_id, None, None).unwrap().len(), 0);
+        assert_eq!(
+            list_entries(&conn, custom_scheme_id, None, None)
+                .unwrap()
+                .len(),
+            0
+        );
 
         // Delete custom scheme
         delete_custom_scheme(&conn, &actor, custom_scheme_id).unwrap();
-        assert!(list_schemes(&conn).unwrap().iter().all(|s| s.code != "school"));
+        assert!(list_schemes(&conn)
+            .unwrap()
+            .iter()
+            .all(|s| s.code != "school"));
     }
 
     #[test]
@@ -1514,10 +1598,18 @@ mod tests {
         let (conn, _actor) = setup_test_db();
 
         let mappings = list_marc_mappings(&conn).unwrap();
-        assert!(mappings.iter().any(|m| m.marc_tag == "100" && m.subfield_code == "a"));
-        assert!(mappings.iter().any(|m| m.marc_tag == "650" && m.subfield_code == "a"));
-        assert!(mappings.iter().any(|m| m.marc_tag == "264" && m.subfield_code == "b"));
-        assert!(mappings.iter().any(|m| m.marc_tag == "082" && m.subfield_code == "a"));
+        assert!(mappings
+            .iter()
+            .any(|m| m.marc_tag == "100" && m.subfield_code == "a"));
+        assert!(mappings
+            .iter()
+            .any(|m| m.marc_tag == "650" && m.subfield_code == "a"));
+        assert!(mappings
+            .iter()
+            .any(|m| m.marc_tag == "264" && m.subfield_code == "b"));
+        assert!(mappings
+            .iter()
+            .any(|m| m.marc_tag == "082" && m.subfield_code == "a"));
 
         // Test Author 100 line
         let author_test = test_marc_mapping(
@@ -1528,9 +1620,18 @@ mod tests {
         )
         .unwrap();
         assert_eq!(author_test.tag, "100");
-        assert_eq!(author_test.mapped_authority_type.as_deref(), Some("author_personal"));
-        assert_eq!(author_test.target_fields.get("name").map(|s| s.as_str()), Some("Basheer, Vaikom Muhammad"));
-        assert_eq!(author_test.target_fields.get("dates").map(|s| s.as_str()), Some("1908-1994"));
+        assert_eq!(
+            author_test.mapped_authority_type.as_deref(),
+            Some("author_personal")
+        );
+        assert_eq!(
+            author_test.target_fields.get("name").map(|s| s.as_str()),
+            Some("Basheer, Vaikom Muhammad")
+        );
+        assert_eq!(
+            author_test.target_fields.get("dates").map(|s| s.as_str()),
+            Some("1908-1994")
+        );
 
         // Test Subject 650 line
         let subject_test = test_marc_mapping(
@@ -1541,8 +1642,17 @@ mod tests {
         )
         .unwrap();
         assert_eq!(subject_test.tag, "650");
-        assert_eq!(subject_test.mapped_authority_type.as_deref(), Some("subject_topical"));
-        assert_eq!(subject_test.target_fields.get("heading").map(|s| s.as_str()), Some("Malayalam fiction"));
+        assert_eq!(
+            subject_test.mapped_authority_type.as_deref(),
+            Some("subject_topical")
+        );
+        assert_eq!(
+            subject_test
+                .target_fields
+                .get("heading")
+                .map(|s| s.as_str()),
+            Some("Malayalam fiction")
+        );
 
         // Test Publisher 264 line
         let pub_test = test_marc_mapping(
@@ -1554,8 +1664,14 @@ mod tests {
         .unwrap();
         assert_eq!(pub_test.tag, "264");
         assert_eq!(pub_test.mapped_authority_type.as_deref(), Some("publisher"));
-        assert_eq!(pub_test.target_fields.get("name").map(|s| s.as_str()), Some("DC Books"));
-        assert_eq!(pub_test.target_fields.get("place").map(|s| s.as_str()), Some("Kottayam"));
+        assert_eq!(
+            pub_test.target_fields.get("name").map(|s| s.as_str()),
+            Some("DC Books")
+        );
+        assert_eq!(
+            pub_test.target_fields.get("place").map(|s| s.as_str()),
+            Some("Kottayam")
+        );
 
         // Test Classification 082 line
         let class_test = test_marc_mapping(
@@ -1566,7 +1682,16 @@ mod tests {
         )
         .unwrap();
         assert_eq!(class_test.tag, "082");
-        assert_eq!(class_test.mapped_authority_type.as_deref(), Some("classification_ddc"));
-        assert_eq!(class_test.target_fields.get("classification_number").map(|s| s.as_str()), Some("894.8123"));
+        assert_eq!(
+            class_test.mapped_authority_type.as_deref(),
+            Some("classification_ddc")
+        );
+        assert_eq!(
+            class_test
+                .target_fields
+                .get("classification_number")
+                .map(|s| s.as_str()),
+            Some("894.8123")
+        );
     }
 }

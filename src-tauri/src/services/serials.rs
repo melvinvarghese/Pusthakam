@@ -479,8 +479,15 @@ pub fn save_subscription(
     let publisher = validate::optional("Publisher", input.publisher.as_deref(), 150)?;
 
     let valid_freqs = [
-        "daily", "weekly", "biweekly", "monthly", "bimonthly",
-        "quarterly", "semiannual", "annual", "irregular",
+        "daily",
+        "weekly",
+        "biweekly",
+        "monthly",
+        "bimonthly",
+        "quarterly",
+        "semiannual",
+        "annual",
+        "irregular",
     ];
     let freq = input.frequency.to_lowercase();
     if !valid_freqs.contains(&freq.as_str()) {
@@ -491,13 +498,19 @@ pub fn save_subscription(
     }
 
     if parse_date(&input.start_date).is_none() {
-        return Err(AppError::Validation("Start date must be in YYYY-MM-DD format".into()));
+        return Err(AppError::Validation(
+            "Start date must be in YYYY-MM-DD format".into(),
+        ));
     }
     if parse_date(&input.end_date).is_none() {
-        return Err(AppError::Validation("End date must be in YYYY-MM-DD format".into()));
+        return Err(AppError::Validation(
+            "End date must be in YYYY-MM-DD format".into(),
+        ));
     }
     if input.end_date < input.start_date {
-        return Err(AppError::Validation("End date cannot be earlier than start date".into()));
+        return Err(AppError::Validation(
+            "End date cannot be earlier than start date".into(),
+        ));
     }
 
     let cost_minor = input.cost_minor.unwrap_or(0);
@@ -537,8 +550,18 @@ pub fn save_subscription(
                 cost_minor, currency, start_date, end_date, notes, created_by
              ) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12)",
             params![
-                title, issn, publisher, freq, input.vendor_id, input.budget_id,
-                cost_minor, currency, input.start_date, input.end_date, notes, actor.user_id
+                title,
+                issn,
+                publisher,
+                freq,
+                input.vendor_id,
+                input.budget_id,
+                cost_minor,
+                currency,
+                input.start_date,
+                input.end_date,
+                notes,
+                actor.user_id
             ],
         )?;
         let new_id = tx.last_insert_rowid();
@@ -585,7 +608,9 @@ pub fn cancel_subscription(
             |r| r.get(0),
         )
         .optional()?
-        .ok_or_else(|| AppError::NotFound(format!("Serial subscription {subscription_id} not found")))?;
+        .ok_or_else(|| {
+            AppError::NotFound(format!("Serial subscription {subscription_id} not found"))
+        })?;
 
     let tx = conn.transaction()?;
     tx.execute(
@@ -724,14 +749,12 @@ pub fn list_missing_issues(conn: &Connection) -> AppResult<Vec<SerialIssue>> {
     Ok(rows)
 }
 
-pub fn add_issue(
-    conn: &mut Connection,
-    actor: &Session,
-    input: AddIssueInput,
-) -> AppResult<i64> {
+pub fn add_issue(conn: &mut Connection, actor: &Session, input: AddIssueInput) -> AppResult<i64> {
     let issue_number = validate::required("Issue number", &input.issue_number, 50)?;
     if parse_date(&input.expected_date).is_none() {
-        return Err(AppError::Validation("Expected date must be in YYYY-MM-DD format".into()));
+        return Err(AppError::Validation(
+            "Expected date must be in YYYY-MM-DD format".into(),
+        ));
     }
     let notes = validate::optional("Notes", input.notes.as_deref(), 500)?;
 
@@ -745,7 +768,10 @@ pub fn add_issue(
         .unwrap_or((false, String::new()));
 
     if !sub_exists {
-        return Err(AppError::NotFound(format!("Serial subscription {} not found", input.subscription_id)));
+        return Err(AppError::NotFound(format!(
+            "Serial subscription {} not found",
+            input.subscription_id
+        )));
     }
 
     let existing: Option<i64> = conn
@@ -766,7 +792,12 @@ pub fn add_issue(
     tx.execute(
         "INSERT INTO serial_issues (subscription_id, issue_number, expected_date, notes)
          VALUES (?1, ?2, ?3, ?4)",
-        params![input.subscription_id, issue_number, input.expected_date, notes],
+        params![
+            input.subscription_id,
+            issue_number,
+            input.expected_date,
+            notes
+        ],
     )?;
     let issue_id = tx.last_insert_rowid();
 
@@ -801,7 +832,16 @@ pub fn check_in_issue(
              JOIN serial_subscriptions s ON i.subscription_id = s.id
              WHERE i.id = ?1",
             params![input.issue_id],
-            |r| Ok((r.get(0)?, r.get(1)?, r.get(2)?, r.get(3)?, r.get(4)?, r.get(5)?)),
+            |r| {
+                Ok((
+                    r.get(0)?,
+                    r.get(1)?,
+                    r.get(2)?,
+                    r.get(3)?,
+                    r.get(4)?,
+                    r.get(5)?,
+                ))
+            },
         )
         .optional()?
         .ok_or_else(|| AppError::NotFound(format!("Issue {} not found", input.issue_id)))?;
@@ -814,7 +854,9 @@ pub fn check_in_issue(
 
     let received_date = if let Some(d) = input.received_date {
         if parse_date(&d).is_none() {
-            return Err(AppError::Validation("Received date must be in YYYY-MM-DD format".into()));
+            return Err(AppError::Validation(
+                "Received date must be in YYYY-MM-DD format".into(),
+            ));
         }
         d
     } else {
@@ -1013,7 +1055,9 @@ pub fn update_issue_status(
         "serial.issue_status",
         "serial_issue",
         Some(issue_id),
-        &format!("Updated issue {issue_number} of {sub_title} status from {old_status} to {status}"),
+        &format!(
+            "Updated issue {issue_number} of {sub_title} status from {old_status} to {status}"
+        ),
     )?;
 
     tx.commit()?;
@@ -1036,16 +1080,27 @@ pub fn renew_subscription(
             |r| Ok((r.get(0)?, r.get(1)?, r.get(2)?)),
         )
         .optional()?
-        .ok_or_else(|| AppError::NotFound(format!("Serial subscription {} not found", input.subscription_id)))?;
+        .ok_or_else(|| {
+            AppError::NotFound(format!(
+                "Serial subscription {} not found",
+                input.subscription_id
+            ))
+        })?;
 
     if parse_date(&input.start_date).is_none() {
-        return Err(AppError::Validation("Start date must be in YYYY-MM-DD format".into()));
+        return Err(AppError::Validation(
+            "Start date must be in YYYY-MM-DD format".into(),
+        ));
     }
     if parse_date(&input.end_date).is_none() {
-        return Err(AppError::Validation("End date must be in YYYY-MM-DD format".into()));
+        return Err(AppError::Validation(
+            "End date must be in YYYY-MM-DD format".into(),
+        ));
     }
     if input.end_date < input.start_date {
-        return Err(AppError::Validation("End date cannot be earlier than start date".into()));
+        return Err(AppError::Validation(
+            "End date cannot be earlier than start date".into(),
+        ));
     }
     if input.cost_minor < 0 {
         return Err(AppError::Validation("Cost cannot be negative".into()));
@@ -1105,7 +1160,10 @@ pub fn renew_subscription(
         "serial.renew",
         "serial_subscription",
         Some(input.subscription_id),
-        &format!("Renewed subscription {title} from {current_end} to {}", input.end_date),
+        &format!(
+            "Renewed subscription {title} from {current_end} to {}",
+            input.end_date
+        ),
     )?;
 
     tx.commit()?;
@@ -1219,7 +1277,9 @@ pub fn get_serials_expenditure(
 
     let total_spend_minor: i64 = items.iter().map(|i| i.cost_minor).sum();
     let currency: String = conn
-        .query_row("SELECT currency FROM library WHERE id = 1", [], |r| r.get(0))
+        .query_row("SELECT currency FROM library WHERE id = 1", [], |r| {
+            r.get(0)
+        })
         .unwrap_or_else(|_| "INR".to_string());
 
     let item_count = items.len();
@@ -1349,13 +1409,28 @@ mod tests {
     #[test]
     fn schedule_generation_and_frequency_calculations() {
         let daily = calculate_expected_dates("2026-01-01", "2026-01-05", "daily");
-        assert_eq!(daily, vec!["2026-01-01", "2026-01-02", "2026-01-03", "2026-01-04", "2026-01-05"]);
+        assert_eq!(
+            daily,
+            vec![
+                "2026-01-01",
+                "2026-01-02",
+                "2026-01-03",
+                "2026-01-04",
+                "2026-01-05"
+            ]
+        );
 
         let weekly = calculate_expected_dates("2026-01-01", "2026-01-22", "weekly");
-        assert_eq!(weekly, vec!["2026-01-01", "2026-01-08", "2026-01-15", "2026-01-22"]);
+        assert_eq!(
+            weekly,
+            vec!["2026-01-01", "2026-01-08", "2026-01-15", "2026-01-22"]
+        );
 
         let monthly = calculate_expected_dates("2026-01-15", "2026-04-15", "monthly");
-        assert_eq!(monthly, vec!["2026-01-15", "2026-02-15", "2026-03-15", "2026-04-15"]);
+        assert_eq!(
+            monthly,
+            vec!["2026-01-15", "2026-02-15", "2026-03-15", "2026-04-15"]
+        );
 
         let irregular = calculate_expected_dates("2026-01-01", "2026-12-31", "irregular");
         assert!(irregular.is_empty());
@@ -1395,7 +1470,14 @@ mod tests {
         assert_eq!(sub.expected_issues_count, 4);
         assert_eq!(sub.received_issues_count, 0);
 
-        let issues = list_issues(&conn, IssueFilter { subscription_id: Some(sub_id), ..Default::default() }).unwrap();
+        let issues = list_issues(
+            &conn,
+            IssueFilter {
+                subscription_id: Some(sub_id),
+                ..Default::default()
+            },
+        )
+        .unwrap();
         assert_eq!(issues.len(), 4);
         assert_eq!(issues[0].issue_number, "Vol 14 No 1");
         assert_eq!(issues[0].expected_date, "2026-01-01");
@@ -1430,7 +1512,14 @@ mod tests {
         )
         .unwrap();
 
-        let issues = list_issues(&conn, IssueFilter { subscription_id: Some(sub_id), ..Default::default() }).unwrap();
+        let issues = list_issues(
+            &conn,
+            IssueFilter {
+                subscription_id: Some(sub_id),
+                ..Default::default()
+            },
+        )
+        .unwrap();
         assert_eq!(issues.len(), 3);
         let first_issue_id = issues[0].id;
 
@@ -1513,17 +1602,38 @@ mod tests {
         )
         .unwrap();
 
-        let issues = list_issues(&conn, IssueFilter { subscription_id: Some(sub_id), ..Default::default() }).unwrap();
+        let issues = list_issues(
+            &conn,
+            IssueFilter {
+                subscription_id: Some(sub_id),
+                ..Default::default()
+            },
+        )
+        .unwrap();
         let issue_id = issues[0].id;
 
         // Mark as missing
         update_issue_status(&mut conn, &actor, issue_id, "missing").unwrap();
-        let updated = list_issues(&conn, IssueFilter { subscription_id: Some(sub_id), ..Default::default() }).unwrap();
+        let updated = list_issues(
+            &conn,
+            IssueFilter {
+                subscription_id: Some(sub_id),
+                ..Default::default()
+            },
+        )
+        .unwrap();
         assert_eq!(updated[0].status, "missing");
 
         // Claim issue from vendor
         update_issue_status(&mut conn, &actor, issue_id, "claimed").unwrap();
-        let claimed = list_issues(&conn, IssueFilter { subscription_id: Some(sub_id), ..Default::default() }).unwrap();
+        let claimed = list_issues(
+            &conn,
+            IssueFilter {
+                subscription_id: Some(sub_id),
+                ..Default::default()
+            },
+        )
+        .unwrap();
         assert_eq!(claimed[0].status, "claimed");
         assert_eq!(claimed[0].claim_count, 1);
         assert!(claimed[0].claim_date.is_some());
@@ -1561,7 +1671,14 @@ mod tests {
         .unwrap();
 
         // Irregular has 0 auto issues
-        let issues = list_issues(&conn, IssueFilter { subscription_id: Some(sub_id), ..Default::default() }).unwrap();
+        let issues = list_issues(
+            &conn,
+            IssueFilter {
+                subscription_id: Some(sub_id),
+                ..Default::default()
+            },
+        )
+        .unwrap();
         assert_eq!(issues.len(), 0);
 
         // Manually add issue
@@ -1689,15 +1806,24 @@ mod tests {
         assert!(ren_b > 0);
 
         // 4. Test date range expenditure for 2026: should include Sub A initial (50,000) and Sub B renewal (35,000) = 85,000
-        let exp_2026 = get_serials_expenditure(&conn, Some("2026-01-01"), Some("2026-12-31")).unwrap();
+        let exp_2026 =
+            get_serials_expenditure(&conn, Some("2026-01-01"), Some("2026-12-31")).unwrap();
         assert_eq!(exp_2026.total_spend_minor, 85000);
         assert_eq!(exp_2026.item_count, 2);
         assert_eq!(exp_2026.items.len(), 2);
-        assert!(exp_2026.items.iter().any(|i| i.title == "ACM Computing Surveys" && i.item_type == "initial" && i.cost_minor == 50000));
-        assert!(exp_2026.items.iter().any(|i| i.title == "IEEE Software" && i.item_type == "renewal" && i.cost_minor == 35000));
+        assert!(exp_2026
+            .items
+            .iter()
+            .any(|i| i.title == "ACM Computing Surveys"
+                && i.item_type == "initial"
+                && i.cost_minor == 50000));
+        assert!(exp_2026.items.iter().any(|i| i.title == "IEEE Software"
+            && i.item_type == "renewal"
+            && i.cost_minor == 35000));
 
         // 5. Test date range expenditure for 2025: should include only Sub B initial (30,000)
-        let exp_2025 = get_serials_expenditure(&conn, Some("2025-01-01"), Some("2025-12-31")).unwrap();
+        let exp_2025 =
+            get_serials_expenditure(&conn, Some("2025-01-01"), Some("2025-12-31")).unwrap();
         assert_eq!(exp_2025.total_spend_minor, 30000);
         assert_eq!(exp_2025.item_count, 1);
         assert_eq!(exp_2025.items[0].title, "IEEE Software");
@@ -1737,7 +1863,10 @@ mod tests {
 
         let expiring = list_expiring_subscriptions(&conn, Some(10)).unwrap();
         assert!(!expiring.is_empty());
-        let found = expiring.iter().find(|e| e.subscription.title == "Expiring Today Gazette").unwrap();
+        let found = expiring
+            .iter()
+            .find(|e| e.subscription.title == "Expiring Today Gazette")
+            .unwrap();
         assert_eq!(found.days_remaining, 5);
         assert!(!found.is_overdue);
     }

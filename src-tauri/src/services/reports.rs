@@ -18,15 +18,24 @@ pub struct CirculationDay {
 fn date_range(conn: &Connection, from: &str, to: &str) -> AppResult<(String, String)> {
     let from = validate::date("Start date", from)?;
     let to = validate::date("End date", to)?;
-    let span: i64 = conn.query_row("SELECT CAST(julianday(?2) - julianday(?1) AS INTEGER)",
-        params![from, to], |r| r.get(0))?;
+    let span: i64 = conn.query_row(
+        "SELECT CAST(julianday(?2) - julianday(?1) AS INTEGER)",
+        params![from, to],
+        |r| r.get(0),
+    )?;
     if !(0..366).contains(&span) {
-        return Err(AppError::Validation("Choose a date range of 1 to 366 days.".into()));
+        return Err(AppError::Validation(
+            "Choose a date range of 1 to 366 days.".into(),
+        ));
     }
     Ok((from, to))
 }
 
-pub fn circulation_activity(conn: &Connection, from: &str, to: &str) -> AppResult<Vec<CirculationDay>> {
+pub fn circulation_activity(
+    conn: &Connection,
+    from: &str,
+    to: &str,
+) -> AppResult<Vec<CirculationDay>> {
     let (from, to) = date_range(conn, from, to)?;
     let mut stmt = conn.prepare(
         "WITH RECURSIVE days(day) AS (
@@ -50,9 +59,18 @@ pub fn circulation_activity(conn: &Connection, from: &str, to: &str) -> AppResul
                 COALESCE(t.renewed,0), COALESCE(t.reservations,0)
          FROM days LEFT JOIN totals t ON t.day = days.day ORDER BY days.day",
     )?;
-    let rows = stmt.query_map(params![from, to], |r| Ok(CirculationDay {
-        date: r.get(0)?, issued: r.get(1)?, returned: r.get(2)?, lost: r.get(3)?, renewed: r.get(4)?, reservations: r.get(5)?,
-    }))?.collect::<Result<_, _>>()?;
+    let rows = stmt
+        .query_map(params![from, to], |r| {
+            Ok(CirculationDay {
+                date: r.get(0)?,
+                issued: r.get(1)?,
+                returned: r.get(2)?,
+                lost: r.get(3)?,
+                renewed: r.get(4)?,
+                reservations: r.get(5)?,
+            })
+        })?
+        .collect::<Result<_, _>>()?;
     Ok(rows)
 }
 
@@ -74,9 +92,16 @@ pub fn popular_titles(conn: &Connection, from: &str, to: &str) -> AppResult<Vec<
          WHERE date(l.issued_at,'localtime') BETWEEN ?1 AND ?2
          GROUP BY r.id ORDER BY issues DESC, r.title COLLATE NOCASE, r.id LIMIT 25",
     )?;
-    let rows = stmt.query_map(params![from, to], |r| Ok(PopularTitle {
-        record_id: r.get(0)?, title: r.get(1)?, archived: r.get(2)?, issues: r.get(3)?,
-    }))?.collect::<Result<_, _>>()?;
+    let rows = stmt
+        .query_map(params![from, to], |r| {
+            Ok(PopularTitle {
+                record_id: r.get(0)?,
+                title: r.get(1)?,
+                archived: r.get(2)?,
+                issues: r.get(3)?,
+            })
+        })?
+        .collect::<Result<_, _>>()?;
     Ok(rows)
 }
 
@@ -108,11 +133,22 @@ pub fn stock_by_location(conn: &mut Connection) -> AppResult<Vec<StockRow>> {
          WHERE r.archived_at IS NULL AND i.status <> 'withdrawn'
          GROUP BY i.location_id ORDER BY i.location_id IS NULL, l.name COLLATE NOCASE, i.location_id",
     )?;
-    let rows = stmt.query_map([], |r| Ok(StockRow {
-        location_id: r.get(0)?, location: r.get(1)?, archived_location: r.get(2)?,
-        available: r.get(3)?, on_loan: r.get(4)?, held: r.get(5)?, lost: r.get(6)?,
-        damaged: r.get(7)?, other: r.get(8)?, total: r.get(9)?,
-    }))?.collect::<Result<_, _>>()?;
+    let rows = stmt
+        .query_map([], |r| {
+            Ok(StockRow {
+                location_id: r.get(0)?,
+                location: r.get(1)?,
+                archived_location: r.get(2)?,
+                available: r.get(3)?,
+                on_loan: r.get(4)?,
+                held: r.get(5)?,
+                lost: r.get(6)?,
+                damaged: r.get(7)?,
+                other: r.get(8)?,
+                total: r.get(9)?,
+            })
+        })?
+        .collect::<Result<_, _>>()?;
     Ok(rows)
 }
 
@@ -147,15 +183,19 @@ pub fn member_summary(conn: &Connection) -> AppResult<Vec<MemberSummary>> {
          FROM members m JOIN member_categories c ON c.id = m.category_id
          GROUP BY c.id ORDER BY c.archived_at IS NOT NULL, c.name COLLATE NOCASE, c.id",
     )?;
-    let rows = stmt.query_map([], |row| Ok(MemberSummary {
-        category_id: row.get(0)?,
-        category: row.get(1)?,
-        archived_category: row.get(2)?,
-        current: row.get(3)?,
-        expired: row.get(4)?,
-        archived: row.get(5)?,
-        total: row.get(6)?,
-    }))?.collect::<Result<_, _>>()?;
+    let rows = stmt
+        .query_map([], |row| {
+            Ok(MemberSummary {
+                category_id: row.get(0)?,
+                category: row.get(1)?,
+                archived_category: row.get(2)?,
+                current: row.get(3)?,
+                expired: row.get(4)?,
+                archived: row.get(5)?,
+                total: row.get(6)?,
+            })
+        })?
+        .collect::<Result<_, _>>()?;
     Ok(rows)
 }
 
@@ -170,15 +210,20 @@ pub fn fine_summary(conn: &Connection) -> AppResult<Vec<FineSummary>> {
         FROM fines f LEFT JOIN settlements s ON s.fine_id = f.id
         GROUP BY f.currency ORDER BY f.currency",
     )?;
-    let rows = stmt.query_map([], |row| {
-        let assessed: i64 = row.get(1)?;
-        let paid: i64 = row.get(2)?;
-        let waived: i64 = row.get(3)?;
-        Ok(FineSummary {
-            currency: row.get(0)?, assessed: assessed.to_string(), paid: paid.to_string(),
-            waived: waived.to_string(), outstanding: (assessed - paid - waived).to_string(),
-        })
-    })?.collect::<Result<_, _>>()?;
+    let rows = stmt
+        .query_map([], |row| {
+            let assessed: i64 = row.get(1)?;
+            let paid: i64 = row.get(2)?;
+            let waived: i64 = row.get(3)?;
+            Ok(FineSummary {
+                currency: row.get(0)?,
+                assessed: assessed.to_string(),
+                paid: paid.to_string(),
+                waived: waived.to_string(),
+                outstanding: (assessed - paid - waived).to_string(),
+            })
+        })?
+        .collect::<Result<_, _>>()?;
     Ok(rows)
 }
 
@@ -190,7 +235,11 @@ pub struct CatalogueGrowthDay {
     copies_added: i64,
 }
 
-pub fn catalogue_growth(conn: &Connection, from: &str, to: &str) -> AppResult<Vec<CatalogueGrowthDay>> {
+pub fn catalogue_growth(
+    conn: &Connection,
+    from: &str,
+    to: &str,
+) -> AppResult<Vec<CatalogueGrowthDay>> {
     let (from, to) = date_range(conn, from, to)?;
     let mut stmt = conn.prepare(
         "WITH RECURSIVE days(day) AS (
@@ -207,11 +256,15 @@ pub fn catalogue_growth(conn: &Connection, from: &str, to: &str) -> AppResult<Ve
          SELECT days.day, coalesce(t.titles, 0), coalesce(t.copies, 0)
          FROM days LEFT JOIN totals t ON t.day = days.day ORDER BY days.day",
     )?;
-    let rows = stmt.query_map(params![from, to], |row| Ok(CatalogueGrowthDay {
-        date: row.get(0)?,
-        titles_added: row.get(1)?,
-        copies_added: row.get(2)?,
-    }))?.collect::<Result<_, _>>()?;
+    let rows = stmt
+        .query_map(params![from, to], |row| {
+            Ok(CatalogueGrowthDay {
+                date: row.get(0)?,
+                titles_added: row.get(1)?,
+                copies_added: row.get(2)?,
+            })
+        })?
+        .collect::<Result<_, _>>()?;
     Ok(rows)
 }
 
@@ -244,18 +297,22 @@ pub fn overdues_list(conn: &Connection, from: &str, to: &str) -> AppResult<Vec<O
            AND date(l.due_on,'localtime') BETWEEN ?1 AND ?2
          ORDER BY l.due_on, r.title COLLATE NOCASE",
     )?;
-    let rows = stmt.query_map(params![from, to], |r| Ok(OverdueRow {
-        loan_id: r.get(0)?,
-        member_id: r.get(1)?,
-        member_name: r.get(2)?,
-        member_barcode: r.get(3)?,
-        item_id: r.get(4)?,
-        accession_no: r.get(5)?,
-        barcode: r.get(6)?,
-        title: r.get(7)?,
-        due_date: r.get(8)?,
-        days_overdue: r.get(9)?,
-    }))?.collect::<Result<_, _>>()?;
+    let rows = stmt
+        .query_map(params![from, to], |r| {
+            Ok(OverdueRow {
+                loan_id: r.get(0)?,
+                member_id: r.get(1)?,
+                member_name: r.get(2)?,
+                member_barcode: r.get(3)?,
+                item_id: r.get(4)?,
+                accession_no: r.get(5)?,
+                barcode: r.get(6)?,
+                title: r.get(7)?,
+                due_date: r.get(8)?,
+                days_overdue: r.get(9)?,
+            })
+        })?
+        .collect::<Result<_, _>>()?;
     Ok(rows)
 }
 
@@ -285,17 +342,21 @@ pub fn accession_list(conn: &Connection, from: &str, to: &str) -> AppResult<Vec<
          WHERE COALESCE(i.acquisition_date, date(i.created_at,'localtime')) BETWEEN ?1 AND ?2
          ORDER BY COALESCE(i.acquisition_date, date(i.created_at,'localtime')), i.accession_no COLLATE NOCASE",
     )?;
-    let rows = stmt.query_map(params![from, to], |r| Ok(AccessionRow {
-        item_id: r.get(0)?,
-        accession_no: r.get(1)?,
-        barcode: r.get(2)?,
-        title: r.get(3)?,
-        acquisition_date: r.get(4)?,
-        acquisition_source: r.get(5)?,
-        price_minor: r.get(6)?,
-        location: r.get(7)?,
-        status: r.get(8)?,
-    }))?.collect::<Result<_, _>>()?;
+    let rows = stmt
+        .query_map(params![from, to], |r| {
+            Ok(AccessionRow {
+                item_id: r.get(0)?,
+                accession_no: r.get(1)?,
+                barcode: r.get(2)?,
+                title: r.get(3)?,
+                acquisition_date: r.get(4)?,
+                acquisition_source: r.get(5)?,
+                price_minor: r.get(6)?,
+                location: r.get(7)?,
+                status: r.get(8)?,
+            })
+        })?
+        .collect::<Result<_, _>>()?;
     Ok(rows)
 }
 
@@ -307,7 +368,11 @@ pub struct ExpenditureRow {
     total_minor: i64,
 }
 
-pub fn expenditure_summary(conn: &Connection, from: &str, to: &str) -> AppResult<Vec<ExpenditureRow>> {
+pub fn expenditure_summary(
+    conn: &Connection,
+    from: &str,
+    to: &str,
+) -> AppResult<Vec<ExpenditureRow>> {
     let (from, to) = date_range(conn, from, to)?;
     let mut stmt = conn.prepare(
         "SELECT i.acquisition_source, count(*) AS copies, coalesce(sum(i.price_minor), 0) AS total_minor
@@ -316,11 +381,15 @@ pub fn expenditure_summary(conn: &Connection, from: &str, to: &str) -> AppResult
          GROUP BY i.acquisition_source
          ORDER BY total_minor DESC, copies DESC, i.acquisition_source",
     )?;
-    let rows = stmt.query_map(params![from, to], |r| Ok(ExpenditureRow {
-        acquisition_source: r.get(0)?,
-        copies: r.get(1)?,
-        total_minor: r.get(2)?,
-    }))?.collect::<Result<_, _>>()?;
+    let rows = stmt
+        .query_map(params![from, to], |r| {
+            Ok(ExpenditureRow {
+                acquisition_source: r.get(0)?,
+                copies: r.get(1)?,
+                total_minor: r.get(2)?,
+            })
+        })?
+        .collect::<Result<_, _>>()?;
     Ok(rows)
 }
 
@@ -350,15 +419,19 @@ pub fn loss_damage_list(conn: &Connection, from: &str, to: &str) -> AppResult<Ve
            AND date(l.returned_at,'localtime') BETWEEN ?1 AND ?2
          ORDER BY date(l.returned_at,'localtime'), r.title COLLATE NOCASE",
     )?;
-    let rows = stmt.query_map(params![from, to], |r| Ok(LossDamageRow {
-        loan_id: r.get(0)?,
-        return_condition: r.get(1)?,
-        returned_date: r.get(2)?,
-        member_id: r.get(3)?,
-        member_name: r.get(4)?,
-        item_id: r.get(5)?,
-        accession_no: r.get(6)?,
-        title: r.get(7)?,
-    }))?.collect::<Result<_, _>>()?;
+    let rows = stmt
+        .query_map(params![from, to], |r| {
+            Ok(LossDamageRow {
+                loan_id: r.get(0)?,
+                return_condition: r.get(1)?,
+                returned_date: r.get(2)?,
+                member_id: r.get(3)?,
+                member_name: r.get(4)?,
+                item_id: r.get(5)?,
+                accession_no: r.get(6)?,
+                title: r.get(7)?,
+            })
+        })?
+        .collect::<Result<_, _>>()?;
     Ok(rows)
 }

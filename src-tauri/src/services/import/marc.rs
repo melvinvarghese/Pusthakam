@@ -19,10 +19,19 @@ pub struct Field {
 
 impl Field {
     pub fn sub(&self, code: char) -> Option<&str> {
-        self.subfields.iter().find(|(c, _)| *c == code).map(|(_, v)| v.as_str()).filter(|v| !v.is_empty())
+        self.subfields
+            .iter()
+            .find(|(c, _)| *c == code)
+            .map(|(_, v)| v.as_str())
+            .filter(|v| !v.is_empty())
     }
     pub fn subs(&self, code: char) -> Vec<&str> {
-        self.subfields.iter().filter(|(c, _)| *c == code).map(|(_, v)| v.as_str()).filter(|v| !v.is_empty()).collect()
+        self.subfields
+            .iter()
+            .filter(|(c, _)| *c == code)
+            .map(|(_, v)| v.as_str())
+            .filter(|v| !v.is_empty())
+            .collect()
     }
 }
 
@@ -74,7 +83,9 @@ pub fn read_iso2709(data: &[u8]) -> (Vec<MarcRecord>, Vec<String>) {
         n += 1;
         let rest = &data[pos..];
         if rest.len() < 24 {
-            errors.push(format!("Record {n}: the file ends in the middle of a record."));
+            errors.push(format!(
+                "Record {n}: the file ends in the middle of a record."
+            ));
             break;
         }
         let declared = digits(&rest[0..5]);
@@ -104,7 +115,11 @@ fn parse_record(rec: &[u8]) -> Result<MarcRecord, String> {
     if base < 25 || base > rec.len() {
         return Err("the base address points outside the record.".into());
     }
-    let dir_end = if rec[base - 1] == 0x1E { base - 1 } else { base };
+    let dir_end = if rec[base - 1] == 0x1E {
+        base - 1
+    } else {
+        base
+    };
     let dir = &rec[24..dir_end];
     if dir.len() % 12 != 0 {
         return Err("the directory is damaged.".into());
@@ -125,7 +140,11 @@ fn parse_record(rec: &[u8]) -> Result<MarcRecord, String> {
             data = &data[..data.len() - 1];
         }
         if tag.as_str() < "010" {
-            fields.push(Field { tag, control: Some(decode(data, &mut note)), subfields: vec![] });
+            fields.push(Field {
+                tag,
+                control: Some(decode(data, &mut note)),
+                subfields: vec![],
+            });
             continue;
         }
         let body = if data.len() >= 2 { &data[2..] } else { &[][..] };
@@ -137,16 +156,26 @@ fn parse_record(rec: &[u8]) -> Result<MarcRecord, String> {
             let code = chunk[0] as char;
             subfields.push((code, decode(&chunk[1..], &mut note).trim().to_string()));
         }
-        fields.push(Field { tag, control: None, subfields });
+        fields.push(Field {
+            tag,
+            control: None,
+            subfields,
+        });
     }
-    Ok(MarcRecord { fields, warnings: note.into_iter().collect() })
+    Ok(MarcRecord {
+        fields,
+        warnings: note.into_iter().collect(),
+    })
 }
 
 // ---------- text clean-up ----------
 
 /// Removes trailing ISBD punctuation such as " /" or " :" from a title part.
 fn isbd(s: &str) -> String {
-    s.trim().trim_end_matches([' ', '/', ':', ';', ',', '=']).trim().to_string()
+    s.trim()
+        .trim_end_matches([' ', '/', ':', ';', ',', '='])
+        .trim()
+        .to_string()
 }
 
 fn person(s: &str) -> String {
@@ -178,22 +207,47 @@ fn first_year(s: &str) -> Option<i64> {
 
 fn language_name(code: &str) -> String {
     match code.trim().to_ascii_lowercase().as_str() {
-        "eng" => "English", "mal" => "Malayalam", "hin" => "Hindi", "tam" => "Tamil", "tel" => "Telugu",
-        "kan" => "Kannada", "san" => "Sanskrit", "ben" => "Bengali", "urd" => "Urdu", "ara" => "Arabic",
-        "fre" | "fra" => "French", "ger" | "deu" => "German", "spa" => "Spanish", "lat" => "Latin",
+        "eng" => "English",
+        "mal" => "Malayalam",
+        "hin" => "Hindi",
+        "tam" => "Tamil",
+        "tel" => "Telugu",
+        "kan" => "Kannada",
+        "san" => "Sanskrit",
+        "ben" => "Bengali",
+        "urd" => "Urdu",
+        "ara" => "Arabic",
+        "fre" | "fra" => "French",
+        "ger" | "deu" => "German",
+        "spa" => "Spanish",
+        "lat" => "Latin",
         other => return other.to_string(),
     }
     .to_string()
 }
 
 fn ddc(raw: &str) -> String {
-    let cleaned: String = raw.split_whitespace().next().unwrap_or("").chars().filter(|c| *c != '/' && *c != '\'').collect();
+    let cleaned: String = raw
+        .split_whitespace()
+        .next()
+        .unwrap_or("")
+        .chars()
+        .filter(|c| *c != '/' && *c != '\'')
+        .collect();
     cleaned
 }
 
 fn role_from_relator(rel: Option<&str>) -> &'static str {
     let r = rel.unwrap_or("").to_ascii_lowercase();
-    if r.starts_with("ed") { "editor" } else if r.starts_with("tr") { "translator" } else if r.starts_with("ill") { "illustrator" } else { "additional_author" }
+    if r.starts_with("ed") {
+        "editor"
+    } else if r.starts_with("tr") {
+        "translator"
+    } else if r.starts_with("ill") {
+        "illustrator"
+    } else {
+        "additional_author"
+    }
 }
 
 fn flagged(f: &Field, code: char) -> bool {
@@ -204,7 +258,11 @@ fn flagged(f: &Field, code: char) -> bool {
 
 /// Maps one MARC21 record to an import record. With `koha`, field 952 holdings become copies.
 pub fn to_import_record(m: &MarcRecord, row: usize, koha: bool) -> ImportRecord {
-    let mut r = ImportRecord { row, warnings: m.warnings.clone(), ..Default::default() };
+    let mut r = ImportRecord {
+        row,
+        warnings: m.warnings.clone(),
+        ..Default::default()
+    };
 
     if let Some(f) = m.fields("245").next() {
         let mut title = isbd(f.sub('a').unwrap_or(""));
@@ -215,20 +273,41 @@ pub fn to_import_record(m: &MarcRecord, row: usize, koha: bool) -> ImportRecord 
         r.subtitle = f.sub('b').map(isbd).filter(|s| !s.is_empty());
     }
 
-    for f in m.fields("100").chain(m.fields("110")).chain(m.fields("111")) {
+    for f in m
+        .fields("100")
+        .chain(m.fields("110"))
+        .chain(m.fields("111"))
+    {
         if let Some(a) = f.sub('a') {
-            r.contributors.push(ContributorDto { name: person(a), role: "author".into() });
+            r.contributors.push(ContributorDto {
+                name: person(a),
+                role: "author".into(),
+            });
         }
     }
-    for f in m.fields("700").chain(m.fields("710")).chain(m.fields("711")) {
+    for f in m
+        .fields("700")
+        .chain(m.fields("710"))
+        .chain(m.fields("711"))
+    {
         if let Some(a) = f.sub('a') {
-            r.contributors.push(ContributorDto { name: person(a), role: role_from_relator(f.sub('e')).into() });
+            r.contributors.push(ContributorDto {
+                name: person(a),
+                role: role_from_relator(f.sub('e')).into(),
+            });
         }
     }
 
-    r.isbn = m.fields("020").filter_map(|f| f.sub('a')).map(|v| v.split_whitespace().next().unwrap_or("").to_string()).find(|v| !v.is_empty());
+    r.isbn = m
+        .fields("020")
+        .filter_map(|f| f.sub('a'))
+        .map(|v| v.split_whitespace().next().unwrap_or("").to_string())
+        .find(|v| !v.is_empty());
     r.edition = m.first_sub("250", 'a').map(isbd);
-    let imprint = m.fields("264").find(|f| f.sub('c').is_some() || f.sub('b').is_some()).or_else(|| m.fields("260").next());
+    let imprint = m
+        .fields("264")
+        .find(|f| f.sub('c').is_some() || f.sub('b').is_some())
+        .or_else(|| m.fields("260").next());
     if let Some(f) = imprint {
         r.place = f.sub('a').map(isbd).filter(|s| !s.is_empty());
         r.publisher = f.sub('b').map(isbd).filter(|s| !s.is_empty());
@@ -236,23 +315,43 @@ pub fn to_import_record(m: &MarcRecord, row: usize, koha: bool) -> ImportRecord 
     }
     if let Some(f) = m.fields("300").next() {
         r.pagination = f.sub('a').map(isbd).filter(|s| !s.is_empty());
-        let phys: Vec<String> = [f.sub('b'), f.sub('c')].into_iter().flatten().map(isbd).filter(|s| !s.is_empty()).collect();
+        let phys: Vec<String> = [f.sub('b'), f.sub('c')]
+            .into_iter()
+            .flatten()
+            .map(isbd)
+            .filter(|s| !s.is_empty())
+            .collect();
         if !phys.is_empty() {
             r.physical = Some(phys.join("; "));
         }
     }
-    r.series = m.fields("490").chain(m.fields("440")).find_map(|f| f.sub('a')).map(isbd).filter(|s| !s.is_empty());
+    r.series = m
+        .fields("490")
+        .chain(m.fields("440"))
+        .find_map(|f| f.sub('a'))
+        .map(isbd)
+        .filter(|s| !s.is_empty());
     r.abstract_text = m.first_sub("520", 'a').map(str::to_string);
     let notes: Vec<&str> = m.fields("500").filter_map(|f| f.sub('a')).collect();
     if !notes.is_empty() {
         r.notes = Some(notes.join("; "));
     }
-    for f in m.fields("650").chain(m.fields("600")).chain(m.fields("651")).chain(m.fields("610")) {
+    for f in m
+        .fields("650")
+        .chain(m.fields("600"))
+        .chain(m.fields("651"))
+        .chain(m.fields("610"))
+    {
         if let Some(a) = f.sub('a') {
             // Subject headings end with a full stop in MARC; it is punctuation, not part of the heading.
             let stop = |s: &str| isbd(s).trim_end_matches('.').trim().to_string();
             let mut h = stop(a);
-            for x in f.subs('x').into_iter().chain(f.subs('z')).chain(f.subs('v')) {
+            for x in f
+                .subs('x')
+                .into_iter()
+                .chain(f.subs('z'))
+                .chain(f.subs('v'))
+            {
                 h = format!("{h} -- {}", stop(x));
             }
             if !h.is_empty() {
@@ -260,25 +359,35 @@ pub fn to_import_record(m: &MarcRecord, row: usize, koha: bool) -> ImportRecord 
             }
         }
     }
-    let kw: Vec<String> = m.fields("653").flat_map(|f| f.subs('a')).map(isbd).collect();
+    let kw: Vec<String> = m
+        .fields("653")
+        .flat_map(|f| f.subs('a'))
+        .map(isbd)
+        .collect();
     if !kw.is_empty() {
         r.keywords = Some(kw.join("; "));
     }
     r.classification = m.first_sub("082", 'a').map(ddc).filter(|s| !s.is_empty());
-    if r.classification.is_some() { r.classification_scheme = Some("ddc".into()); }
-    else {
+    if r.classification.is_some() {
+        r.classification_scheme = Some("ddc".into());
+    } else {
         for (tag, scheme) in [("080", "udc"), ("050", "lcc")] {
-            if let Some(number) = m.first_sub(tag, 'a') { r.classification = Some(number.to_string()); r.classification_scheme = Some(scheme.into()); break; }
+            if let Some(number) = m.first_sub(tag, 'a') {
+                r.classification = Some(number.to_string());
+                r.classification_scheme = Some(scheme.into());
+                break;
+            }
         }
     }
-
 
     // Language: 008 positions 35-37, else 041 $a.
     let lang = m
         .fields("008")
         .find_map(|f| f.control.as_deref())
         .and_then(|c| c.get(35..38).map(str::to_string))
-        .filter(|c| c.trim().chars().all(|ch| ch.is_ascii_alphabetic()) && c.trim().len() == 3 && c != "   ")
+        .filter(|c| {
+            c.trim().chars().all(|ch| ch.is_ascii_alphabetic()) && c.trim().len() == 3 && c != "   "
+        })
         .or_else(|| m.first_sub("041", 'a').map(str::to_string));
     r.language = lang.map(|c| language_name(&c));
 
@@ -286,25 +395,51 @@ pub fn to_import_record(m: &MarcRecord, row: usize, koha: bool) -> ImportRecord 
         let default_type = m.first_sub("942", 'c').map(str::to_string);
         if let Some(bn) = m.first_sub("999", 'c') {
             let note = format!("Imported from Koha (biblionumber {bn}).");
-            r.notes = Some(match r.notes.take() { Some(n) => format!("{n} {note}"), None => note });
+            r.notes = Some(match r.notes.take() {
+                Some(n) => format!("{n} {note}"),
+                None => note,
+            });
         }
         for f in m.fields("952") {
-            let mut c = ImportCopy { accession: f.sub('i').map(str::to_string), barcode: f.sub('p').map(str::to_string), call_number: f.sub('o').map(str::to_string), ..Default::default() };
+            let mut c = ImportCopy {
+                accession: f.sub('i').map(str::to_string),
+                barcode: f.sub('p').map(str::to_string),
+                call_number: f.sub('o').map(str::to_string),
+                ..Default::default()
+            };
             c.location = f.sub('b').or_else(|| f.sub('a')).map(str::to_string);
             c.shelf = f.sub('c').map(str::to_string);
             c.collection = f.sub('8').map(str::to_string);
-            c.item_category = f.sub('y').map(str::to_string).or_else(|| default_type.clone());
+            c.item_category = f
+                .sub('y')
+                .map(str::to_string)
+                .or_else(|| default_type.clone());
             c.vendor = f.sub('e').map(str::to_string);
             if let Some(d) = f.sub('d') {
                 match validate::date("Date", d) {
                     Ok(v) => c.acquisition_date = Some(v),
-                    Err(_) => r.warnings.push(format!("Copy {}: date \"{d}\" is not YYYY-MM-DD and was left empty.", c.barcode.as_deref().unwrap_or("?"))),
+                    Err(_) => r.warnings.push(format!(
+                        "Copy {}: date \"{d}\" is not YYYY-MM-DD and was left empty.",
+                        c.barcode.as_deref().unwrap_or("?")
+                    )),
                 }
             }
             c.price_minor = f.sub('g').and_then(parse_price_minor);
             // Item flags: any non-zero value means the flag applies. The most serious wins.
-            c.status = if flagged(f, '1') { Some("lost".into()) } else if flagged(f, '0') { Some("withdrawn".into()) } else if flagged(f, '4') { Some("damaged".into()) } else { None };
-            let mut notes: Vec<String> = [f.sub('z'), f.sub('x')].into_iter().flatten().map(str::to_string).collect();
+            c.status = if flagged(f, '1') {
+                Some("lost".into())
+            } else if flagged(f, '0') {
+                Some("withdrawn".into())
+            } else if flagged(f, '4') {
+                Some("damaged".into())
+            } else {
+                None
+            };
+            let mut notes: Vec<String> = [f.sub('z'), f.sub('x')]
+                .into_iter()
+                .flatten()
+                .map(str::to_string)
+                .collect();
             if flagged(f, '7') {
                 notes.push("Marked not for loan in Koha.".into());
             }
@@ -361,15 +496,49 @@ pub mod tests {
                 ("100", vec![('a', "Basheer, Vaikom Muhammad,")]),
                 ("245", vec![('a', "ബാല്യകാലസഖി /"), ('b', "a novel :")]),
                 ("250", vec![('a', "5th ed.")]),
-                ("260", vec![('a', "Kottayam :"), ('b', "DC Books,"), ('c', "c1944.")]),
+                (
+                    "260",
+                    vec![('a', "Kottayam :"), ('b', "DC Books,"), ('c', "c1944.")],
+                ),
                 ("300", vec![('a', "120 p. ;"), ('c', "20 cm.")]),
                 ("500", vec![('a', "A classic.")]),
                 ("650", vec![('a', "Malayalam fiction"), ('x', "History.")]),
                 ("700", vec![('a', "Nair, Someone."), ('e', "translator.")]),
                 ("942", vec![('c', "BK")]),
-                ("952", vec![('a', "MAIN"), ('b', "MAIN"), ('c', "FIC"), ('d', "2026-11-02"), ('g', "250.00"), ('o', "894.8123 BAS"), ('p', "004217"), ('y', "BK"), ('8', "FICTION")]),
-                ("952", vec![('a', "MAIN"), ('b', "ANNEX"), ('d', "2026-13-45"), ('p', "004218"), ('1', "2026-01-01")]),
-                ("952", vec![('b', "MAIN"), ('p', "004219"), ('4', "1"), ('7', "1"), ('z', "Cover torn")]),
+                (
+                    "952",
+                    vec![
+                        ('a', "MAIN"),
+                        ('b', "MAIN"),
+                        ('c', "FIC"),
+                        ('d', "2026-11-02"),
+                        ('g', "250.00"),
+                        ('o', "894.8123 BAS"),
+                        ('p', "004217"),
+                        ('y', "BK"),
+                        ('8', "FICTION"),
+                    ],
+                ),
+                (
+                    "952",
+                    vec![
+                        ('a', "MAIN"),
+                        ('b', "ANNEX"),
+                        ('d', "2026-13-45"),
+                        ('p', "004218"),
+                        ('1', "2026-01-01"),
+                    ],
+                ),
+                (
+                    "952",
+                    vec![
+                        ('b', "MAIN"),
+                        ('p', "004219"),
+                        ('4', "1"),
+                        ('7', "1"),
+                        ('z', "Cover torn"),
+                    ],
+                ),
                 ("999", vec![('c', "1234"), ('d', "1234")]),
             ],
             &[("008", "261102s1944    ii            000 0 mal d")],
@@ -393,9 +562,24 @@ pub mod tests {
         assert_eq!(r.title, "ബാല്യകാലസഖി");
         assert_eq!(r.subtitle.as_deref(), Some("a novel"));
         assert_eq!(r.isbn.as_deref(), Some("0-306-40615-2"));
-        assert_eq!(r.contributors[0], ContributorDto { name: "Basheer, Vaikom Muhammad".into(), role: "author".into() });
-        assert_eq!(r.contributors[1], ContributorDto { name: "Nair, Someone".into(), role: "translator".into() });
-        assert_eq!((r.place.as_deref(), r.publisher.as_deref(), r.year), (Some("Kottayam"), Some("DC Books"), Some(1944)));
+        assert_eq!(
+            r.contributors[0],
+            ContributorDto {
+                name: "Basheer, Vaikom Muhammad".into(),
+                role: "author".into()
+            }
+        );
+        assert_eq!(
+            r.contributors[1],
+            ContributorDto {
+                name: "Nair, Someone".into(),
+                role: "translator".into()
+            }
+        );
+        assert_eq!(
+            (r.place.as_deref(), r.publisher.as_deref(), r.year),
+            (Some("Kottayam"), Some("DC Books"), Some(1944))
+        );
         assert_eq!(r.classification.as_deref(), Some("894.8123"));
         assert_eq!(r.pagination.as_deref(), Some("120 p."));
         assert_eq!(r.language.as_deref(), Some("Malayalam"));
@@ -410,16 +594,51 @@ pub mod tests {
         assert_eq!(r.copies.len(), 3);
         let a = &r.copies[0];
         assert_eq!(
-            (a.barcode.as_deref(), a.call_number.as_deref(), a.location.as_deref(), a.shelf.as_deref(), a.collection.as_deref(), a.item_category.as_deref(), a.acquisition_date.as_deref(), a.price_minor),
-            (Some("004217"), Some("894.8123 BAS"), Some("MAIN"), Some("FIC"), Some("FICTION"), Some("BK"), Some("2026-11-02"), Some(25000))
+            (
+                a.barcode.as_deref(),
+                a.call_number.as_deref(),
+                a.location.as_deref(),
+                a.shelf.as_deref(),
+                a.collection.as_deref(),
+                a.item_category.as_deref(),
+                a.acquisition_date.as_deref(),
+                a.price_minor
+            ),
+            (
+                Some("004217"),
+                Some("894.8123 BAS"),
+                Some("MAIN"),
+                Some("FIC"),
+                Some("FICTION"),
+                Some("BK"),
+                Some("2026-11-02"),
+                Some(25000)
+            )
         );
         let b = &r.copies[1];
-        assert_eq!((b.location.as_deref(), b.status.as_deref(), b.acquisition_date.as_deref()), (Some("ANNEX"), Some("lost"), None));
-        assert!(r.warnings.iter().any(|w| w.contains("2026-13-45")), "a bad date is reported, not hidden");
-        assert_eq!(b.item_category.as_deref(), Some("BK"), "falls back to the record's 942 item type");
+        assert_eq!(
+            (
+                b.location.as_deref(),
+                b.status.as_deref(),
+                b.acquisition_date.as_deref()
+            ),
+            (Some("ANNEX"), Some("lost"), None)
+        );
+        assert!(
+            r.warnings.iter().any(|w| w.contains("2026-13-45")),
+            "a bad date is reported, not hidden"
+        );
+        assert_eq!(
+            b.item_category.as_deref(),
+            Some("BK"),
+            "falls back to the record's 942 item type"
+        );
         let c = &r.copies[2];
         assert_eq!(c.status.as_deref(), Some("damaged"));
-        assert!(c.notes.as_deref().unwrap().contains("Cover torn") && c.notes.as_deref().unwrap().contains("not for loan"));
+        assert!(
+            c.notes.as_deref().unwrap().contains("Cover torn")
+                && c.notes.as_deref().unwrap().contains("not for loan")
+        );
     }
 
     #[test]
@@ -446,7 +665,11 @@ pub mod tests {
         file.extend_from_slice(&broken);
         file.extend_from_slice(&good);
         let (recs, errs) = read_iso2709(&file);
-        assert_eq!(recs.len(), 3, "the good records and the one with a wrong length are read");
+        assert_eq!(
+            recs.len(),
+            3,
+            "the good records and the one with a wrong length are read"
+        );
         assert_eq!(errs.len(), 1, "the damaged record is reported: {errs:?}");
         assert!(errs[0].starts_with("Record 3"));
     }
@@ -476,7 +699,10 @@ pub mod tests {
         let (recs, errs) = read_iso2709(&rec);
         assert!(errs.is_empty(), "{errs:?}");
         assert!(recs[0].warnings[0].contains("Latin-1"));
-        assert_eq!(recs[0].fields("245").next().unwrap().sub('a'), Some("Café title"));
+        assert_eq!(
+            recs[0].fields("245").next().unwrap().sub('a'),
+            Some("Café title")
+        );
     }
 
     #[test]

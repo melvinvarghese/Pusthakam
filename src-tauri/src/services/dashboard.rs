@@ -41,16 +41,27 @@ pub fn overview(conn: &mut Connection, session: &Session) -> AppResult<Overview>
                     count(*), count(*) FILTER (WHERE i.status = 'available')
              FROM physical_items i JOIN bibliographic_records r ON r.id = i.record_id
              WHERE r.archived_at IS NULL AND i.status <> 'withdrawn'",
-            [], |r| Ok(CatalogueCounts { titles: r.get(0)?, copies: r.get(1)?, available: r.get(2)? }),
+            [],
+            |r| {
+                Ok(CatalogueCounts {
+                    titles: r.get(0)?,
+                    copies: r.get(1)?,
+                    available: r.get(2)?,
+                })
+            },
         )?)
-    } else { None };
+    } else {
+        None
+    };
     let active_members = if session.can("members.read") {
         Some(conn.query_row(
             "SELECT count(*) FROM members m JOIN member_categories c ON c.id = m.category_id
              WHERE m.archived_at IS NULL AND c.archived_at IS NULL AND m.expires_on >= date('now','localtime')",
             [], |r| r.get(0),
         )?)
-    } else { None };
+    } else {
+        None
+    };
     let circulation = if can_read_circulation {
         Some(conn.query_row(
             "SELECT count(*), count(*) FILTER (WHERE due_on = date('now','localtime')),
@@ -65,6 +76,12 @@ pub fn overview(conn: &mut Connection, session: &Session) -> AppResult<Overview>
                 ready_holds: r.get(3)?, outstanding_fines: r.get(4)?,
             }),
         )?)
-    } else { None };
-    Ok(Overview { catalogue, active_members, circulation })
+    } else {
+        None
+    };
+    Ok(Overview {
+        catalogue,
+        active_members,
+        circulation,
+    })
 }
