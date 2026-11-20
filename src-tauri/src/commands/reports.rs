@@ -77,8 +77,10 @@ pub fn reports_export_file(
     headers: Vec<String>,
     rows: Vec<Vec<String>>,
     alignments: Vec<String>,
+    simple_design: Option<bool>,
 ) -> AppResult<ReportExportFile> {
     state.require("reports.read")?;
+    let simple = simple_design.unwrap_or(false);
     match format.as_str() {
         "xlsx" => {
             let bytes = report_export::generate_xlsx(&title, &headers, &rows)?;
@@ -89,7 +91,7 @@ pub fn reports_export_file(
             })
         }
         "pdf" => {
-            let bytes = report_export::generate_pdf(&title, &subtitle, &headers, &rows, &alignments)?;
+            let bytes = report_export::generate_pdf(&title, &subtitle, &headers, &rows, &alignments, simple)?;
             Ok(ReportExportFile {
                 file_name,
                 mime_type: "application/pdf".into(),

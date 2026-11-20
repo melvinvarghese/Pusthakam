@@ -98,6 +98,7 @@ pub fn generate_pdf(
     headers: &[String],
     rows: &[Vec<String>],
     alignments: &[String],
+    simple: bool,
 ) -> AppResult<Vec<u8>> {
     let landscape = headers.len() > 5;
     let (page_width, page_height) = if landscape {
@@ -228,10 +229,12 @@ pub fn generate_pdf(
         };
 
         // Table header bar
-        stream.push_str(&format!(
-            "0.92 0.94 0.96 rg {margin:.2} {:.2} {available_width:.2} 18.00 re f\n",
-            header_y - 4.0
-        ));
+        if !simple {
+            stream.push_str(&format!(
+                "0.92 0.94 0.96 rg {margin:.2} {:.2} {available_width:.2} 18.00 re f\n",
+                header_y - 4.0
+            ));
+        }
         stream.push_str(&format!(
             "0.75 0.78 0.82 RG 0.5 w {margin:.2} {:.2} {available_width:.2} 18.00 re s\n",
             header_y - 4.0
@@ -261,17 +264,19 @@ pub fn generate_pdf(
             let is_total = row.first().map(|s| s.starts_with("Total") || s.starts_with("All")).unwrap_or(false);
 
             if is_total {
-                stream.push_str(&format!(
-                    "0.90 0.92 0.95 rg {margin:.2} {:.2} {available_width:.2} {row_height:.2} re f\n",
-                    row_y
-                ));
+                if !simple {
+                    stream.push_str(&format!(
+                        "0.90 0.92 0.95 rg {margin:.2} {:.2} {available_width:.2} {row_height:.2} re f\n",
+                        row_y
+                    ));
+                }
                 stream.push_str(&format!(
                     "0.65 0.65 0.65 RG 0.75 w {margin:.2} {:.2} m {:.2} {:.2} l S\n",
                     row_y + row_height,
                     margin + available_width,
                     row_y + row_height
                 ));
-            } else if r_idx % 2 == 1 {
+            } else if !simple && r_idx % 2 == 1 {
                 stream.push_str(&format!(
                     "0.98 0.98 0.99 rg {margin:.2} {:.2} {available_width:.2} {row_height:.2} re f\n",
                     row_y
@@ -379,12 +384,17 @@ mod tests {
             vec!["Total".into(), "25".into(), "20".into()],
         ];
         let alignments = vec!["left".into(), "right".into(), "right".into()];
-        let bytes = generate_pdf("Circulation Activity", "Date range: 2026-11-18 to 2026-11-19", &headers, &rows, &alignments).unwrap();
-        assert!(bytes.starts_with(b"%PDF-1.4"));
-        assert!(bytes.ends_with(b"%%EOF\n"));
-        let pdf_str = String::from_utf8_lossy(&bytes);
+        let bytes_polished = generate_pdf("Circulation Activity", "Date range: 2026-11-18 to 2026-11-19", &headers, &rows, &alignments, false).unwrap();
+        assert!(bytes_polished.starts_with(b"%PDF-1.4"));
+        assert!(bytes_polished.ends_with(b"%%EOF\n"));
+        let pdf_str = String::from_utf8_lossy(&bytes_polished);
         assert!(pdf_str.contains("Circulation Activity"));
         assert!(pdf_str.contains("2026-11-18 to 2026-11-19"));
         assert!(pdf_str.contains("Page 1 of 1"));
+
+        // Also verify simple design mode generates valid PDF without errors
+        let bytes_simple = generate_pdf("Circulation Activity", "Date range: 2026-11-18 to 2026-11-19", &headers, &rows, &alignments, true).unwrap();
+        assert!(bytes_simple.starts_with(b"%PDF-1.4"));
+        assert!(bytes_simple.ends_with(b"%%EOF\n"));
     }
 }
