@@ -3,9 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Accession Numbers, ISBNs and Barcodes: A Librarian's Primer — Pusthakam</title>
+  <title>Accession Numbers, ISBNs and Barcodes: Pusthakam</title>
   <meta name="description" content="A practical guide explaining the operational differences between ISBNs, accession numbers, and barcode symbology in physical library collection control.">
   <link rel="canonical" href="https://melvinvarghese.github.io/Pusthakam/blog/accession-numbers-vs-isbns/">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@400;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../../css/styles.css">
   
   <script type="application/ld+json">
@@ -27,13 +30,11 @@
 
   <!-- Site Header -->
   <header class="site-header">
-    <div class="header-container">
+    <div class="container header-container">
       <div class="brand-wrap">
-        <a href="../../index.html" class="flex items-center gap-2">
-          <div class="brand-mark">P</div>
-        </a>
+        <a href="../../index.html" class="brand-mark" aria-label="Pusthakam Home">P</a>
         <a href="../../index.html" class="brand-title">Pusthakam</a>
-        <span class="brand-badge">v0.1.0 Offline-First</span>
+        <span class="brand-badge">Offline first</span>
       </div>
 
       <nav class="main-nav" aria-label="Main Navigation">
@@ -41,22 +42,21 @@
         <a href="../../try/index.html">Try & Download</a>
         <a href="../../faq/index.html">FAQ</a>
         <a href="../index.html" class="active">Blog</a>
-        <a href="https://github.com/melvinvarghese/Pusthakam" target="_blank" rel="noopener">GitHub ↗</a>
+        <a href="https://github.com/melvinvarghese/Pusthakam" target="_blank" rel="noopener">GitHub</a>
       </nav>
 
       <div class="header-actions">
-        <a href="../index.html" class="btn btn-outline" style="border-color: #3A5070; color: #FFFFFF;">← Back to Blog</a>
+        <a href="../index.html" class="btn btn-outline">Back to blog</a>
       </div>
     </div>
   </header>
 
-  <main class="main-content container prose" style="padding-top: 3.5rem; padding-bottom: 3.5rem;">
+  <main class="main-content container prose" style="padding-top: var(--space-2xl); padding-bottom: var(--space-2xl);">
     <article>
-      <header>
-        <span class="section-tag">Cataloguing Foundations</span>
-        <h1>Accession Numbers, ISBNs and Barcodes: A Librarian's Primer</h1>
-        <div class="post-meta">
-          Published November 15, 2026 · 4 min read · By Pusthakam Project
+      <header style="margin-bottom: var(--space-lg);">
+        <h1 style="font-size: var(--text-section); font-weight: 700; color: var(--color-ink); margin-bottom: var(--space-xs);">Accession Numbers, ISBNs and Barcodes</h1>
+        <div style="font-size: var(--text-xs); color: var(--color-muted); font-family: var(--font-outlier);">
+          <span>Published November 15, 2026</span>, <span>4 min read</span>, <span>By Pusthakam Project</span>
         </div>
       </header>
 
@@ -94,16 +94,16 @@
         Pusthakam automatically generates standard Code 128 vector barcode SVGs for every accession number. When printed on adhesive label sheets and affixed to the book cover or flyleaf, a standard USB keyboard-wedge barcode scanner can read the code instantly in a fraction of a second.
       </p>
 
-      <div class="callout-box" style="margin: 2.5rem 0;">
-        <h3 style="font-size: 1.1rem; font-weight: 700; color: var(--ink); margin-bottom: 0.35rem;">Best Practice Recommendation</h3>
-        <p style="font-size: 0.9rem; color: var(--muted); margin: 0;">
-          Never use the publisher's printed EAN-13 ISBN as your circulation barcode if you have multiple copies of any title. Always assign a distinct accession number to each physical copy and scan the accession barcode during desk circulation.
+      <div class="callout-box" style="margin: var(--space-xl) 0;">
+        <h3>Best Practice Recommendation</h3>
+        <p>
+          Never use the publisher’s printed EAN-13 ISBN as your circulation barcode if you have multiple copies of any title. Always assign a distinct accession number to each physical copy and scan the accession barcode during desk circulation.
         </p>
       </div>
 
-      <div style="border-top: 1px solid var(--line); padding-top: 2rem; margin-top: 3rem; display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem;">
-        <a href="../index.html" style="font-weight: 600; color: var(--accent-lit);">← Back to All Articles</a>
-        <a href="../../try/index.html" class="btn btn-dark">Get Pusthakam</a>
+      <div style="border-top: var(--rule-hair) solid var(--color-rule); padding-top: var(--space-lg); margin-top: var(--space-xl); display: flex; justify-content: space-between; align-items: center; font-size: var(--text-sm);">
+        <a href="../index.html" class="btn btn-outline">Back to all articles</a>
+        <a href="../../try/index.html" class="btn btn-primary">Get Pusthakam</a>
       </div>
     </article>
   </main>
@@ -111,8 +111,8 @@
   <!-- Site Footer -->
   <footer class="site-footer">
     <div class="container footer-bottom">
-      <span>Copyright © 2026 Pusthakam Contributors · Released under open source license.</span>
-      <a href="../../index.html">← Back to Overview</a>
+      <span>Copyright © 2026 Pusthakam Contributors, released under open source license.</span>
+      <a href="../../index.html">Back to overview</a>
     </div>
   </footer>
 

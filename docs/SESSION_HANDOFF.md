@@ -16,13 +16,13 @@ After every meaningful change, immediately update **PROGRESS.md**, **PROGRESS.js
 
 The current clone is D:\Pusthakam. Other computers can use another path. Temporary verification executables and disposable databases are machine-specific: rebuild from source on another computer. Windows native builds require the documented Rust/MSVC/WebView2 toolchain.
 
-## Deferred owner requirement: GitHub Pages website (20 November 2026)
+## Deferred owner requirement: GitHub Pages website & Hallmark redesign (20 November 2026)
 
-Owner clarified: add the website to the roadmap/relevant docs now and implement later. Do NOT continue website implementation until requested. Scope: attractive librarian-focused homepage/try path, populated Blog and FAQ tabs, separate static article URLs, sitemap.xml, correctly deployed robots.txt, canonical/social metadata and appropriate structured data. Use relevant installed design/writing/site guidance; available skills are sufficient. No ranking/AI-citation promises. Detailed plan: docs/GITHUB_PAGES_WEBSITE_PLAN.md. This is separate from the OPAC.
-
-At the time this planning note was recorded, no website code, deployment workflow or publication had been implemented. Initial visual notes were moved into the documentation plan. No desktop completion credit; BAK-RESTORE milestone and planned report presentation work remain unchanged.
-
-**Narrow exception authorized 20 November 2026:** The FAQ overflow at 320px came from a long inline code path. Added `overflow-wrap: anywhere` to FAQ code only; Chromium checks passed at 320, 360, 375, 390, 430, 768, 1024, 1280 and 1440px. No broader website work or v1 product credit is included.
+Owner authorized GitHub Pages website implementation and executed `/hallmark redesign the webpage of Pusthakam`:
+- Website files reside in `website/` with complete static routing (`index.html`, `try/index.html`, `faq/index.html`, `blog/index.html`, 3 standalone blog articles, `sitemap.xml`, `robots.txt`, and `.github/workflows/pages.yml`).
+- Executed full Hallmark redesign with the `ink` editorial theme (`tokens.css`, `base.css`, Epilogue 700/400 display/body font, IBM Plex Mono for barcodes/accessions, and chromatic teal accent).
+- `sloplint` verified across all 7 HTML pages: reduced from 45 FAIL and 11 REFLEX to **0 FAIL and 0 WARN** with **11/11 links and handlers preserved**.
+- No change to v1 product roadmap percentages (90.0% overall, 97.4% implemented, 91.2% verified, 42.0% release readiness). All 190 Vitest desktop tests passing.
 
 ## Planned owner requirement: report presentation (20 November 2026)
 

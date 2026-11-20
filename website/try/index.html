@@ -3,22 +3,23 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Download & Try Pusthakam — Free Offline Library Software</title>
+  <title>Download and Try Pusthakam: Free Offline Library Software</title>
   <meta name="description" content="Download Pusthakam v0.1.0 desktop installer for Windows 64-bit, or build for macOS and Linux. Review system requirements and first-run installation instructions.">
   <link rel="canonical" href="https://melvinvarghese.github.io/Pusthakam/try/">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@400;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../css/styles.css">
 </head>
 <body>
 
   <!-- Site Header -->
   <header class="site-header">
-    <div class="header-container">
+    <div class="container header-container">
       <div class="brand-wrap">
-        <a href="../index.html" class="flex items-center gap-2">
-          <div class="brand-mark">P</div>
-        </a>
+        <a href="../index.html" class="brand-mark" aria-label="Pusthakam Home">P</a>
         <a href="../index.html" class="brand-title">Pusthakam</a>
-        <span class="brand-badge">v0.1.0 Offline-First</span>
+        <span class="brand-badge">Offline first</span>
       </div>
 
       <nav class="main-nav" aria-label="Main Navigation">
@@ -26,18 +27,17 @@
         <a href="./index.html" class="active">Try & Download</a>
         <a href="../faq/index.html">FAQ</a>
         <a href="../blog/index.html">Blog</a>
-        <a href="https://github.com/melvinvarghese/Pusthakam" target="_blank" rel="noopener">GitHub ↗</a>
+        <a href="https://github.com/melvinvarghese/Pusthakam" target="_blank" rel="noopener">GitHub</a>
       </nav>
 
       <div class="header-actions">
-        <a href="../index.html" class="btn btn-outline" style="border-color: #3A5070;">← Back to Overview</a>
+        <a href="../index.html" class="btn btn-outline">Back to overview</a>
       </div>
     </div>
   </header>
 
-  <main class="main-content container download-page" style="max-width: 860px; padding-top: 3rem; padding-bottom: 3rem;">
-    <div class="section-head" style="margin-bottom: 2rem;">
-      <span class="section-tag">Release Distribution</span>
+  <main class="main-content container download-page" style="max-width: 860px;">
+    <div class="section-head">
       <h1 class="section-title">Get Pusthakam v0.1.0</h1>
       <p class="section-lead">
         Download verified native desktop packages or build from source. Pusthakam runs completely locally on your hardware with no internet connection required.
@@ -45,93 +45,93 @@
     </div>
 
     <!-- Windows Release Card -->
-    <div class="release-card" style="background: var(--surface); border: 2px solid var(--accent-science); border-radius: 12px; padding: 2rem; margin-bottom: 2rem; box-shadow: 0 4px 12px rgba(22,32,46,0.06);">
-      <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem; flex-wrap: wrap; gap: 1rem;">
+    <div class="release-card">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: var(--space-sm); flex-wrap: wrap; gap: var(--space-xs);">
         <div>
-          <span style="font-size: 0.75rem; font-family: var(--font-mono); font-weight: 700; color: var(--accent-science); text-transform: uppercase;">Primary Native Release</span>
-          <h2 style="font-size: 1.5rem; font-weight: 800; color: var(--ink); margin-top: 0.25rem;">Windows 64-bit Installer (.exe)</h2>
+          <span style="font-size: var(--text-xs); font-family: var(--font-body); font-weight: 700; color: var(--color-ink);">Primary native release</span>
+          <h2 style="font-size: var(--text-xl); font-weight: 700; color: var(--color-ink); margin-top: var(--space-3xs);">Windows 64-bit installer (.exe)</h2>
         </div>
-        <span style="background: #ECFDF5; border: 1px solid #A7F3D0; color: #065F46; padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 700;">Verified Release</span>
+        <span class="shelf-pill pill-active">Verified release</span>
       </div>
 
-      <p style="color: var(--muted); font-size: 0.95rem; margin-bottom: 1.5rem; line-height: 1.6;">
+      <p style="color: var(--color-ink-2); font-size: var(--text-sm); margin-bottom: var(--space-md); line-height: 1.55;">
         Standard NSIS setup installer for Windows 10 and Windows 11 (x64). Installs the optimized Pusthakam desktop application with bundled SQLite engine, local webview runtime, and automatic desktop shortcuts.
       </p>
 
-      <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 1rem; margin-bottom: 1.5rem;">
-        <a href="https://github.com/melvinvarghese/Pusthakam/releases" target="_blank" class="btn btn-dark release-download-button" style="padding: 0.75rem 1.5rem; font-size: 0.95rem;">
+      <div style="display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-sm); margin-bottom: var(--space-md);">
+        <a href="https://github.com/melvinvarghese/Pusthakam/releases" target="_blank" rel="noopener" class="btn btn-primary release-download-button">
           Download Pusthakam_0.1.0_x64-setup.exe
         </a>
-        <span style="font-family: var(--font-mono); font-size: 0.8rem; color: var(--muted);">File size: 4.24 MB</span>
+        <span style="font-family: var(--font-outlier); font-size: var(--text-xs); color: var(--color-muted);">File size: 4.24 MB</span>
       </div>
 
-      <div class="installer-path" style="background: var(--band); border: 1px solid var(--line); border-radius: 6px; padding: 0.85rem; font-size: 0.78rem; font-family: var(--font-mono); color: var(--fg);">
+      <div class="installer-path">
         <code>Installer: src-tauri/target/release/bundle/nsis/Pusthakam_0.1.0_x64-setup.exe<br>
-        Install Mode: Current User (No administrator privileges required)<br>
-        Target Binary: pusthakam.exe (16.6 MB optimized release)</code>
+        Install mode: Current user (no administrator privileges required)<br>
+        Target binary: pusthakam.exe (16.6 MB optimized release)</code>
       </div>
     </div>
 
     <!-- macOS & Linux Support Grid -->
     <div class="platform-grid">
-      <div style="background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 1.5rem;">
-        <h3 style="font-size: 1.1rem; font-weight: 700; color: var(--ink); margin-bottom: 0.5rem;">macOS (Apple Silicon & Intel)</h3>
-        <p style="font-size: 0.85rem; color: var(--muted); line-height: 1.5; margin-bottom: 1rem;">
+      <div class="platform-card">
+        <h3>macOS (Apple Silicon and Intel)</h3>
+        <p>
           Supports macOS 10.15 (Catalina) and newer. Built via GitHub Actions multi-platform matrix producing drag-to-Applications <code>.dmg</code> packages.
         </p>
-        <span style="font-family: var(--font-mono); font-size: 0.75rem; color: var(--muted); display: block; border-top: 1px solid var(--line); padding-top: 0.75rem;">
-          Tauri Bundle: <code>.dmg</code> / <code>.app</code>
+        <span style="font-family: var(--font-outlier); font-size: 11px; color: var(--color-muted); display: block; border-top: var(--rule-hair) solid var(--color-rule); padding-top: var(--space-xs);">
+          Tauri bundle: <code>.dmg</code>, <code>.app</code>
         </span>
       </div>
 
-      <div style="background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 1.5rem;">
-        <h3 style="font-size: 1.1rem; font-weight: 700; color: var(--ink); margin-bottom: 0.5rem;">Linux (Debian / Ubuntu / Fedora)</h3>
-        <p style="font-size: 0.85rem; color: var(--muted); line-height: 1.5; margin-bottom: 1rem;">
+      <div class="platform-card">
+        <h3>Linux (Debian, Ubuntu, Fedora)</h3>
+        <p>
           Supports Ubuntu 22.04 LTS and derivatives. Packaged as standalone <code>.deb</code> and universal <code>.AppImage</code>. Requires standard WebKitGTK and OpenSSL libraries.
         </p>
-        <span style="font-family: var(--font-mono); font-size: 0.75rem; color: var(--muted); display: block; border-top: 1px solid var(--line); padding-top: 0.75rem;">
+        <span style="font-family: var(--font-outlier); font-size: 11px; color: var(--color-muted); display: block; border-top: var(--rule-hair) solid var(--color-rule); padding-top: var(--space-xs);">
           Depends: <code>libwebkit2gtk-4.1-0</code>, <code>libssl3</code>
         </span>
       </div>
     </div>
 
     <!-- System Requirements -->
-    <div style="margin-bottom: 3rem;">
-      <h2 style="font-size: 1.4rem; font-weight: 800; color: var(--ink); margin-bottom: 1rem;">Hardware & System Requirements</h2>
-      <div style="background: var(--surface); border: 1px solid var(--line); border-radius: 10px; overflow: hidden;">
-        <table style="width: 100%; border-collapse: collapse; font-size: 0.85rem; text-align: left;">
-          <thead style="background: var(--band); border-bottom: 1px solid var(--line); color: var(--muted); font-size: 0.75rem; text-transform: uppercase;">
+    <div style="margin-bottom: var(--space-2xl);">
+      <h2 style="font-size: var(--text-lg); font-weight: 700; color: var(--color-ink); margin-bottom: var(--space-sm);">Hardware and system requirements</h2>
+      <div style="background: var(--color-paper); border: var(--rule-hair) solid var(--color-rule); border-radius: var(--radius-btn); overflow: hidden;">
+        <table style="width: 100%; border-collapse: collapse; font-size: var(--text-xs); text-align: left;">
+          <thead style="background: var(--color-paper-2); border-bottom: var(--rule-hair) solid var(--color-rule); color: var(--color-muted);">
             <tr>
-              <th style="padding: 0.75rem 1rem;">Component</th>
-              <th style="padding: 0.75rem 1rem;">Minimum</th>
-              <th style="padding: 0.75rem 1rem;">Recommended</th>
+              <th style="padding: var(--space-xs) var(--space-sm);">Component</th>
+              <th style="padding: var(--space-xs) var(--space-sm);">Minimum</th>
+              <th style="padding: var(--space-xs) var(--space-sm);">Recommended</th>
             </tr>
           </thead>
-          <tbody style="divide-y divide-gray-100;">
-            <tr style="border-bottom: 1px solid var(--line);">
-              <td style="padding: 0.75rem 1rem; font-weight: 600;">Processor</td>
-              <td style="padding: 0.75rem 1rem; color: var(--muted);">64-bit Dual-core (1.5 GHz)</td>
-              <td style="padding: 0.75rem 1rem; color: var(--fg);">Quad-core modern CPU</td>
+          <tbody>
+            <tr style="border-bottom: var(--rule-hair) solid var(--color-rule-2);">
+              <td style="padding: var(--space-xs) var(--space-sm); font-weight: 600;">Processor</td>
+              <td style="padding: var(--space-xs) var(--space-sm); color: var(--color-muted);">64-bit dual-core (1.5 GHz)</td>
+              <td style="padding: var(--space-xs) var(--space-sm); color: var(--color-ink);">Quad-core modern CPU</td>
             </tr>
-            <tr style="border-bottom: 1px solid var(--line);">
-              <td style="padding: 0.75rem 1rem; font-weight: 600;">Memory (RAM)</td>
-              <td style="padding: 0.75rem 1rem; color: var(--muted);">2 GB RAM</td>
-              <td style="padding: 0.75rem 1rem; color: var(--fg);">4 GB RAM or more</td>
+            <tr style="border-bottom: var(--rule-hair) solid var(--color-rule-2);">
+              <td style="padding: var(--space-xs) var(--space-sm); font-weight: 600;">Memory (RAM)</td>
+              <td style="padding: var(--space-xs) var(--space-sm); color: var(--color-muted);">2 GB RAM</td>
+              <td style="padding: var(--space-xs) var(--space-sm); color: var(--color-ink);">4 GB RAM or more</td>
             </tr>
-            <tr style="border-bottom: 1px solid var(--line);">
-              <td style="padding: 0.75rem 1rem; font-weight: 600;">Disk Storage</td>
-              <td style="padding: 0.75rem 1rem; color: var(--muted);">100 MB free space</td>
-              <td style="padding: 0.75rem 1rem; color: var(--fg);">500 MB (with backup archives)</td>
+            <tr style="border-bottom: var(--rule-hair) solid var(--color-rule-2);">
+              <td style="padding: var(--space-xs) var(--space-sm); font-weight: 600;">Disk storage</td>
+              <td style="padding: var(--space-xs) var(--space-sm); color: var(--color-muted);">100 MB free space</td>
+              <td style="padding: var(--space-xs) var(--space-sm); color: var(--color-ink);">500 MB (with backup archives)</td>
             </tr>
-            <tr style="border-bottom: 1px solid var(--line);">
-              <td style="padding: 0.75rem 1rem; font-weight: 600;">Display Resolution</td>
-              <td style="padding: 0.75rem 1rem; color: var(--muted);">1024 × 640</td>
-              <td style="padding: 0.75rem 1rem; color: var(--fg);">1280 × 800 or 1920 × 1080</td>
+            <tr style="border-bottom: var(--rule-hair) solid var(--color-rule-2);">
+              <td style="padding: var(--space-xs) var(--space-sm); font-weight: 600;">Display resolution</td>
+              <td style="padding: var(--space-xs) var(--space-sm); color: var(--color-muted);">1024 × 640</td>
+              <td style="padding: var(--space-xs) var(--space-sm); color: var(--color-ink);">1280 × 800 or 1920 × 1080</td>
             </tr>
             <tr>
-              <td style="padding: 0.75rem 1rem; font-weight: 600;">Peripherals</td>
-              <td style="padding: 0.75rem 1rem; color: var(--muted);">Keyboard & Mouse</td>
-              <td style="padding: 0.75rem 1rem; color: var(--fg);">Standard USB Barcode Scanner (HID Wedge)</td>
+              <td style="padding: var(--space-xs) var(--space-sm); font-weight: 600;">Peripherals</td>
+              <td style="padding: var(--space-xs) var(--space-sm); color: var(--color-muted);">Keyboard & mouse</td>
+              <td style="padding: var(--space-xs) var(--space-sm); color: var(--color-ink);">Standard USB barcode scanner (HID wedge)</td>
             </tr>
           </tbody>
         </table>
@@ -139,10 +139,10 @@
     </div>
 
     <!-- First Run Wizard Guide -->
-    <div class="callout-box" style="margin-top: 2rem;">
-      <h3 style="font-size: 1.15rem; font-weight: 700; color: var(--ink); margin-bottom: 0.5rem;">First-Run Configuration</h3>
-      <p style="color: var(--muted); font-size: 0.9rem; line-height: 1.6;">
-        When you launch Pusthakam for the first time, an offline setup wizard guides you through naming your library, setting your default currency (e.g. INR, USD, EUR), establishing loan policies (loan period, renewal limits, fine rates), and creating an administrator password. You will receive an offline recovery token — keep it in a safe place.
+    <div class="callout-box">
+      <h3>First-run configuration</h3>
+      <p>
+        When you launch Pusthakam for the first time, an offline setup wizard guides you through naming your library, setting your default currency (such as INR, USD, EUR), establishing loan policies (loan period, renewal limits, fine rates), and creating an administrator password. You will receive an offline recovery token; keep it in a safe place.
       </p>
     </div>
   </main>
@@ -150,8 +150,8 @@
   <!-- Site Footer -->
   <footer class="site-footer">
     <div class="container footer-bottom">
-      <span>Copyright © 2026 Pusthakam Contributors · Released under open source license.</span>
-      <a href="../index.html">← Back to Overview</a>
+      <span>Copyright © 2026 Pusthakam Contributors, released under open source license.</span>
+      <a href="../index.html">Back to overview</a>
     </div>
   </footer>
 
