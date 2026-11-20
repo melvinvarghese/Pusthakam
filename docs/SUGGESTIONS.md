@@ -85,3 +85,7 @@ For quick cross-reference, earlier owner-requested changes deferred in `PROGRESS
 Make Choose file visibly a button; owner says it currently looks like random text in import screens. Inspect the shared file-field styling so the fix is consistent, keyboard accessible and supports light/dark/disabled/focus states. Prioritize this before Phase 4 reservation migration. Recorded 18 November 2026; implemented 19 November in shared TextField/native selector-button styling, including catalogue import. Nineteen focused tests and build/typecheck/lint passed; refreshed native build pusthakam-phase4-file-picker.exe passed; owner confirmed visible button appearance in Windows on 19 November. Renewal import itself was owner-confirmed working.
 
 Owner result, 19 November: Choose file is now visibly a button in Windows. Appearance accepted; unreported theme/keyboard checks are not inferred. Next development task is reservation migration, followed by financial history.
+
+## Owner-approved report presentation requirement — 20 November 2026
+
+Polished, aesthetically beautiful reports are the default; do not settle for plain table dumps. Provide an unchecked **Use simple report design** checkbox for conventional minimal layouts with unchanged data. Use relevant installed design/document/PDF/spreadsheet skills when implementing and reviewing outputs. Applies to preview/PDF/print/styled XLSX; CSV remains data-only. See REPORT_DESIGN_PLAN.md. Planned, not implemented; no progress credit.
