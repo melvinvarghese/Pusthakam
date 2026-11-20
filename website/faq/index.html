@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Frequently Asked Questions — Pusthakam Library Software</title>
+  <meta name="description" content="Practical answers for librarians about Pusthakam: pricing, offline operation, SQLite storage, barcode scanner compatibility, Koha migration, backups, and LAN mode.">
+  <link rel="canonical" href="https://melvinvarghese.github.io/Pusthakam/faq/">
+  <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+
+  <!-- Site Header -->
+  <header class="site-header">
+    <div class="header-container">
+      <div class="brand-wrap">
+        <a href="../index.html" class="flex items-center gap-2">
+          <div class="brand-mark">P</div>
+        </a>
+        <a href="../index.html" class="brand-title">Pusthakam</a>
+        <span class="brand-badge">v0.1.0 Offline-First</span>
+      </div>
+
+      <nav class="main-nav" aria-label="Main Navigation">
+        <a href="../index.html">Overview</a>
+        <a href="../try/index.html">Try & Download</a>
+        <a href="./index.html" class="active">FAQ</a>
+        <a href="../blog/index.html">Blog</a>
+        <a href="https://github.com/melvinvarghese/Pusthakam" target="_blank" rel="noopener">GitHub ↗</a>
+      </nav>
+
+      <div class="header-actions">
+        <a href="../try/index.html" class="btn btn-primary">Get Windows Installer</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="main-content container" style="max-width: 860px; padding-top: 3rem; padding-bottom: 3rem;">
+    <div class="section-head" style="margin-bottom: 2.5rem;">
+      <span class="section-tag">Practical Questions</span>
+      <h1 class="section-title">Frequently Asked Questions</h1>
+      <p class="section-lead">
+        Straightforward, fact-based answers about Pusthakam’s features, architecture, hardware compatibility, and data ownership.
+      </p>
+    </div>
+
+    <div class="faq-list">
+      <div class="faq-item">
+        <h3>Is Pusthakam really free? Are there recurring fees or hidden tiers?</h3>
+        <p>Pusthakam is 100% free and open-source software. There are no recurring subscription fees, per-patron pricing, book limits, or feature paywalls. You install it on your computer and own your system completely.</p>
+      </div>
+
+      <div class="faq-item">
+        <h3>Does Pusthakam require an internet connection to run?</h3>
+        <p>No. Pusthakam is built from the ground up as an offline-first desktop application. Every search, issue, return, cataloguing edit, label generation, and report runs locally on your PC. You can operate your library desk during complete network outages without missing a beat.</p>
+      </div>
+
+      <div class="faq-item">
+        <h3>Where is our library data stored? Who has access to it?</h3>
+        <p>Your data is stored in an encrypted, local SQLite database file in your operating system's standard application directory (e.g. <code>AppData/Roaming/app.pusthakam.desktop</code> on Windows). It never uploads to external cloud servers, and no telemetry or usage analytics are collected.</p>
+      </div>
+
+      <div class="faq-item">
+        <h3>Can we use our existing USB barcode scanner and printers?</h3>
+        <p>Yes. Pusthakam works seamlessly with standard USB keyboard-wedge barcode scanners (which emit scanned characters followed by an Enter key). Scanning a member card automatically advances focus to the copy barcode input, and scanning the book barcode instantly prepares the loan. All print actions (spine labels, member cards, receipt slips, reports) use standard OS print dialogs compatible with any thermal or laser printer.</p>
+      </div>
+
+      <div class="faq-item">
+        <h3>What is the difference between accession numbers and ISBNs in Pusthakam?</h3>
+        <p>An ISBN identifies a published work or edition globally, while an accession number identifies the specific, physical copy on your library shelf. Pusthakam models this relationship cleanly: one bibliographic title can hold multiple individual physical copies, each with its own accession number, barcode, shelf location, acquisition cost, and condition.</p>
+      </div>
+
+      <div class="faq-item">
+        <h3>Can we migrate existing records from Koha, Excel, or MARC?</h3>
+        <p>Yes. Pusthakam includes dedicated, transactional import wizards with rollback safety for: Koha patron and catalogue CSV dumps, MARC21/ISO 2709, MARCXML, and Excel (.xlsx) files. You can preview columns, review duplicate warnings, and map fields before committing data.</p>
+      </div>
+
+      <div class="faq-item">
+        <h3>How do backups and disaster recovery work?</h3>
+        <p>Pusthakam provides one-click atomic SQLite backups with SHA-256 integrity checksums. You can export timestamped backup files to external USB drives, network shares, or external drives. Exclusive restore verification prevents multiple instances from overwriting working databases.</p>
+      </div>
+
+      <div class="faq-item">
+        <h3>Can multiple staff or students access Pusthakam on our local Wi-Fi?</h3>
+        <p>Yes. Pusthakam includes an embedded Local Network (LAN) mode. With LAN hosting enabled, staff can open <code>http://&lt;PC-IP&gt;:4318/staff</code> on mobile tablets to check out copies from the stacks, and students can search the catalogue at <code>http://&lt;PC-IP&gt;:4318/opac</code> without cloud dependencies or leaking patron data.</p>
+      </div>
+
+      <div class="faq-item">
+        <h3>How does Pusthakam handle holiday closures and overdue fines?</h3>
+        <p>Pusthakam includes a full Library Calendar where you configure weekly closed days (e.g. Sundays) and annual holiday dates. Due dates that would fall on closed dates automatically roll forward to the next open library day, ensuring fair fines calculation.</p>
+      </div>
+
+      <div class="faq-item">
+        <h3>What report formats are supported?</h3>
+        <p>Every operational report (circulation activity, stock by location, overdue loans, catalogue growth, expenditure, loss & damage, and fine summaries) can be exported to clean CSV data, styled Microsoft Excel (.xlsx), or vector PDF 1.4 documents with polished and economical simple design modes.</p>
+      </div>
+    </div>
+  </main>
+
+  <!-- Site Footer -->
+  <footer class="site-footer">
+    <div class="container footer-bottom">
+      <span>Copyright © 2026 Pusthakam Contributors · Released under open source license.</span>
+      <a href="../index.html">← Back to Overview</a>
+    </div>
+  </footer>
+
+</body>
+</html>
