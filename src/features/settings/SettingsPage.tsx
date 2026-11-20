@@ -8,6 +8,7 @@ import { ApiError, catalogueApi, configApi } from "@/lib/api";
 import { LibraryCalendarPanel } from "./LibraryCalendarPanel";
 import { OptionalModules } from "./OptionalModules";
 import { LibraryCustomFields } from "./LibraryCustomFields";
+import { LanSettingsPanel } from "./LanSettingsPanel";
 import type { AccessionFormat, ArchiveKind, ConfigOverview, Library, Named, Policy, Shelf } from "@/lib/api/types";
 import { formatMinor } from "@/lib/money";
 import { can, useSession } from "@/lib/session";
@@ -148,6 +149,7 @@ export function SettingsPage() {
 
       <LibraryCustomFields canEdit={canEdit} />
       <LibraryCalendarPanel canEdit={canEdit} />
+      <LanSettingsPanel />
       {listPanel("memberCategory", c.memberCategories)}
       {listPanel("itemCategory", c.itemCategories)}
 

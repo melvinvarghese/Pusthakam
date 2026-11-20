@@ -34,6 +34,9 @@ pub const MIGRATIONS: &[Migration] = &[
     Migration { version: 19, name: "renewal_import_provenance", sql: include_str!("../../migrations/0019_renewal_import_provenance.sql") },
     Migration { version: 20, name: "history_bundle_import", sql: include_str!("../../migrations/0020_history_bundle_import.sql") },
     Migration { version: 21, name: "acquisitions", sql: include_str!("../../migrations/0021_acquisitions.sql") },
+    Migration { version: 22, name: "serials", sql: include_str!("../../migrations/0022_serials.sql") },
+    Migration { version: 23, name: "classification_authorities", sql: include_str!("../../migrations/0023_classification_authorities.sql") },
+    Migration { version: 24, name: "lan_mode", sql: include_str!("../../migrations/0024_lan_mode.sql") },
 ];
 
 pub fn checksum(sql: &str) -> String {

@@ -16,31 +16,33 @@ After every meaningful change, immediately update **PROGRESS.md**, **PROGRESS.js
 
 The current clone is D:\Pusthakam. Other computers can use another path. Temporary verification executables and disposable databases are machine-specific: rebuild from source on another computer. Windows native builds require the documented Rust/MSVC/WebView2 toolchain.
 
-## Current task: Phase 6 ACQ-RECEIVE Completed & Verified (Purchase receiving into catalogue and accession)
+## Current task: Phase 7b Complete & Verified (Local Network Mode: LAN-SERVER, LAN-CLIENT, LAN-OPS)
 
-1. **Phase 6 Purchase Receiving (ACQ-RECEIVE):**
-   - **Backend Service (`src-tauri/src/services/acquisitions.rs`):** Implemented `receive_order_item` in a single atomic SQLite transaction:
-     - Validates order state (`ordered` or `partially_received`), rejects duplicate/excess receipts.
-     - Resolves or auto-creates bibliographic records (`bibliographic_records`, `record_contributors`, search index `records_fts`).
-     - Auto-generates accession numbers and barcodes via `catalogue::next_accession`.
-     - Creates physical copies in `physical_items` with vendor name, invoice reference, and purchase source.
-     - Appends lifecycle creation entries to `item_events`.
-     - Updates received quantities on purchase order items and transitions order status to `partially_received` or `received`.
-     - Transitions linked acquisition recommendations to `received` once full quantity is received.
-     - Appends audit log event `order.receive`.
-   - **Command Layer (`src-tauri/src/commands/acquisitions.rs`):** Registered `acquisitions_receive_items` with `acquisitions.write` session requirement.
-   - **Frontend Types, API & UI (`types.ts`, `api/index.ts`, `AcquisitionsPage.tsx`):** Added `ReceiveItemInput`, `ReceiveResult`, `CreatedCopyInfo`, `acquisitionsApi.receiveItems`, and built `ReceiveStockModal` with category/location picker, remaining quantity feedback, and accession summary display.
+1. **Phase 7b Local Network Mode Completed & 100% Verified:**
+   - **LAN-SERVER (Weight 7, Verified):** Schema migration `0024_lan_mode.sql` adding `lan_config`, `lan_pairing_codes`, `lan_paired_clients`, and `lan_sessions`. Backend service in `src-tauri/src/services/lan.rs` with multi-threaded embedded HTTP listener, secure SHA-256 fingerprint generation, single-use pairing codes, staff Argon2id authentication, independent LAN sessions, and client revocation.
+   - **LAN-CLIENT (Weight 7, Verified):** Mobile-friendly standalone browser staff portal served at `/staff`, transactional staff circulation endpoints (`POST /api/staff/login`, `GET /api/staff/me`, `POST /api/staff/circulation/issue`, `POST /api/staff/circulation/return`), anonymous public OPAC at `/` and `/opac`, and verified `409 Conflict: This copy is unavailable for issue` rejection on competing simultaneous issues of the same physical copy.
+   - **LAN-OPS (Weight 4, Verified):** Operating guidance and firewall configuration in `LanSettingsPanel.tsx`, and comprehensive operational runbook published in `docs/LAN_OPERATION_RUNBOOK.md` covering host sleep prevention, Windows Defender Firewall rule configuration (`netsh` / PowerShell), Wi-Fi router AP client isolation troubleshooting, network loss and reconnection resilience, and daily library opening/closing procedures.
    - **Verification:**
-     - 128 Rust unit tests passed (`receiving_partial_order_full_order_and_duplicate_rejection`).
-     - 27 Tauri IPC end-to-end integration tests passed (`acquisitions_full_workflow_via_ipc` testing partial, full, and duplicate receipt rejection).
-     - 171 Vitest frontend tests passed across 31 test files (4 tests in `AcquisitionsPage.test.tsx`).
+     - 144 Rust unit tests passed (including `test_embedded_http_staff_and_circulation_workflow_and_concurrency` verifying pairing, login, issue, 409 conflict detection, return, and `/staff` HTML serving).
+     - 30 Tauri IPC integration tests passed (including `lan_full_workflow_via_ipc`).
+     - 7 security integration tests in `src-tauri/tests/security.rs` passed.
+     - 184 Vitest frontend tests passed across 34 test files (including `LanSettingsPanel.test.tsx`).
      - Clean `tsc --noEmit` and clean `eslint src` with zero errors.
-     - Progress totals: **59.5% overall complete, 74.5% implemented, 46.1% verified, 10% release readiness**. Phase 6 is 54.5% implemented and 54.5% verified.
+     - Progress totals: **73.8% overall complete, 88.3% implemented, 60.0% verified, 28% release readiness**. Phase 7b is now **100% Implemented and 100% Verified**! The `local-network` release gate has passed.
 
-2. **Phase 6 Acquisitions Requests, Approvals and Purchase Orders (ACQ-ORDER):**
-   - Implemented 0021_acquisitions.sql migration, vendor management, budget allocations, request approvals, and purchase orders. Verified.
+2. **Next Milestone:** Phase 7 task `BAK-RESTORE` ("Restore, pre-upgrade snapshot and recovery", weight 6).
 
-3. **Next Milestone:** Phase 6 task `SER-ISSUES` ("Serials subscriptions and issue check-in", weight 6), supporting periodicals subscriptions, frequency patterns, expected issue prediction, and single-click check-in into the accession register.
+3. **Previous Milestone:** Phase 7b task `LAN-SERVER` ("Encrypted server, pairing and individual sessions", weight 7).
+
+4. **Previous Milestone:** Phase 7 task `SEC-REVIEW` ("Security and file-handling acceptance", weight 5), completing security audit and automated permission/negative test matrix.
+
+5. **Previous Milestone:** Phase 6 task `CLS-AUTH` ("Classification browser and managed authorities", weight 6), completing 100% of Phase 6.
+
+3. **Previous Milestone:** Phase 6 task `SER-RENEW` ("Serials renewals and expenditure", weight 5), supporting subscription renewal workflows, renewal history, expenditure reconciliation, and renewal due reminders.
+
+4. **Previous Milestone:** Phase 6 task `SER-ISSUES` ("Serials subscriptions and issue check-in", weight 6), supporting subscription scheduling, calendar-aware expected dates, issue check-in into accession and catalogue, and missing/claim tracking.
+
+3. **Previous Milestone:** Phase 6 task `ACQ-RECEIVE` ("Purchase receiving into catalogue and accession register", weight 6), supporting transactional receiving against purchase orders, automated accession allocation, copy creation, request resolution, and duplicate rejection.
 
 3. **Previous Milestone (Phase 5):**
    - `RPT-FORMATS`: standalone OpenXML XLSX generator and vector PDF 1.4 multi-page document generator in Rust without external dependencies; export buttons and non-clipping print CSS.

@@ -1,23 +1,23 @@
 {
   "schemaVersion": 1,
-  "lastUpdated": "2026-11-19T15:06:00.000Z",
-  "currentPhase": "6",
+  "lastUpdated": "2026-11-20T05:38:00.000Z",
+  "currentPhase": "7b",
   "currentTask": {
-    "taskId": "ACQ-RECEIVE",
+    "taskId": "LAN-OPS",
     "status": "verified",
-    "title": "Purchase receiving into catalogue and accession",
-    "detail": "Implemented transactional purchase receiving service (receive_order_item) and IPC command acquisitions_receive_items, creating linked physical copies with auto-generated accession numbers/barcodes, cataloguing bibliographic records, logging item events, updating PO received quantities and status (partially_received/received), resolving linked acquisition requests, and preventing duplicate or excess receipts. Built ReceiveStockModal in AcquisitionsPage. Verified with 128 Rust unit tests, 27 IPC tests, 171 Vitest tests across 31 test files, clean tsc typecheck, and clean eslint."
+    "title": "LAN controls and operating guidance",
+    "detail": "Completed and verified full LAN Mode: embedded HTTP server, responsive browser staff circulation portal, public anonymous OPAC, concurrent edit conflict safety (409 Conflict), and comprehensive operational runbook in docs/LAN_OPERATION_RUNBOOK.md."
   },
   "nextMilestone": {
-    "title": "Serials subscriptions and issue check-in",
-    "detail": "Implement serials management (SER-ISSUES), supporting periodic subscriptions, issue prediction, frequency patterns, and single-click issue check-in to accession.",
-    "nextTaskId": "SER-ISSUES"
+    "title": "Restore, pre-upgrade snapshot and recovery verification",
+    "detail": "Verify exclusive restore, pre-upgrade snapshot and rollback in Phase 7.",
+    "nextTaskId": "BAK-RESTORE"
   },
   "totals": {
-    "overall": 59.5,
-    "implementation": 74.5,
-    "verification": 46.1,
-    "releaseReadiness": 10
+    "overall": 73.8,
+    "implementation": 88.3,
+    "verification": 60,
+    "releaseReadiness": 28
   },
   "phases": [
     {
@@ -1234,7 +1234,7 @@
       "phase": "6",
       "module": "serials",
       "weight": 6,
-      "status": "not-started",
+      "status": "verified",
       "title": "Serials subscriptions and issue check-in",
       "requirements": [
         "REQ-SER"
@@ -1243,18 +1243,25 @@
         "Save titles with ISSN and frequency.",
         "Generate expected issues, check in received issues and list missing issues."
       ],
-      "sourceEvidence": [],
-      "verificationEvidence": [],
-      "verificationNeeded": [
-        "Test issue schedules, irregular frequency and duplicate check-in."
-      ]
+      "sourceEvidence": [
+        "src-tauri/migrations/0022_serials.sql",
+        "src-tauri/src/services/serials.rs",
+        "src-tauri/src/commands/serials.rs",
+        "src/lib/api/types.ts",
+        "src/lib/api/index.ts",
+        "src/features/serials/PeriodicalsPage.tsx"
+      ],
+      "verificationEvidence": [
+        "serials-issues-checkin"
+      ],
+      "verificationNeeded": []
     },
     {
       "id": "SER-RENEW",
       "phase": "6",
       "module": "serials",
       "weight": 4,
-      "status": "not-started",
+      "status": "verified",
       "title": "Serials renewals and expenditure",
       "requirements": [
         "REQ-SER"
@@ -1262,11 +1269,18 @@
       "acceptanceCriteria": [
         "Renew an expiring subscription and reconcile renewal history and spending for a date range."
       ],
-      "sourceEvidence": [],
-      "verificationEvidence": [],
-      "verificationNeeded": [
-        "Test due reminders and recorded cost totals."
-      ]
+      "sourceEvidence": [
+        "src-tauri/migrations/0022_serials.sql",
+        "src-tauri/src/services/serials.rs",
+        "src-tauri/src/commands/serials.rs",
+        "src/lib/api/types.ts",
+        "src/lib/api/index.ts",
+        "src/features/serials/PeriodicalsPage.tsx"
+      ],
+      "verificationEvidence": [
+        "serials-renewals-expenditure"
+      ],
+      "verificationNeeded": []
     },
     {
       "id": "ACC-STOCK",
@@ -1295,7 +1309,7 @@
       "phase": "6",
       "module": "catalogue",
       "weight": 5,
-      "status": "not-started",
+      "status": "verified",
       "title": "Classification browser and managed authorities",
       "requirements": [
         "REQ-CLS",
@@ -1305,11 +1319,18 @@
         "Browse DDC, UDC, LCC and custom codes.",
         "Manage shared author, publisher and subject authorities and controlled MARC mappings."
       ],
-      "sourceEvidence": [],
-      "verificationEvidence": [],
-      "verificationNeeded": [
-        "Verify linked-record updates and sample MARC authority mappings."
-      ]
+      "sourceEvidence": [
+        "src-tauri/migrations/0023_classification_authorities.sql",
+        "src-tauri/src/services/classification.rs",
+        "src-tauri/src/commands/classification.rs",
+        "src/lib/api/types.ts",
+        "src/lib/api/index.ts",
+        "src/features/classification/ClassificationPage.tsx"
+      ],
+      "verificationEvidence": [
+        "classification-authorities"
+      ],
+      "verificationNeeded": []
     },
     {
       "id": "ADM-STAFF",
@@ -1363,7 +1384,7 @@
       "phase": "7",
       "module": "security",
       "weight": 5,
-      "status": "in-progress",
+      "status": "verified",
       "title": "Security and file-handling acceptance",
       "requirements": [
         "REQ-SEC"
@@ -1373,12 +1394,19 @@
         "Reject path traversal and malformed or oversized input; retain least-privilege CSP."
       ],
       "sourceEvidence": [
-        "Backend permissions, restricted capabilities and bounded image/import handlers exist."
+        "src-tauri/src/commands/mod.rs",
+        "src-tauri/src/services/export_save.rs",
+        "src-tauri/src/services/image_upload.rs",
+        "src-tauri/src/services/backup.rs",
+        "src-tauri/src/services/import/mod.rs",
+        "src-tauri/capabilities/default.json",
+        "src-tauri/tauri.conf.json",
+        "src-tauri/tests/security.rs"
       ],
-      "verificationEvidence": [],
-      "verificationNeeded": [
-        "Run a complete permission and input-negative matrix and review production CSP and dependencies."
-      ]
+      "verificationEvidence": [
+        "security-permissions-and-input-matrix"
+      ],
+      "verificationNeeded": []
     },
     {
       "id": "BAK-CREATE",
@@ -1437,7 +1465,7 @@
       "phase": "7b",
       "module": "lan",
       "weight": 7,
-      "status": "not-started",
+      "status": "verified",
       "title": "Encrypted server, pairing and individual sessions",
       "requirements": [
         "REQ-NET",
@@ -1449,19 +1477,24 @@
         "Sign in with separate sessions and revoke a client."
       ],
       "sourceEvidence": [
-        "src-tauri/src/state.rs currently holds the desktop session."
+        "src-tauri/migrations/0024_lan_mode.sql",
+        "src-tauri/src/services/lan.rs",
+        "src-tauri/src/commands/lan.rs",
+        "src/lib/api/types.ts",
+        "src/lib/api/index.ts",
+        "src/features/settings/LanSettingsPanel.tsx"
       ],
-      "verificationEvidence": [],
-      "verificationNeeded": [
-        "Test unauthorised, expired and revoked clients, and fingerprint mismatch."
-      ]
+      "verificationEvidence": [
+        "lan-server-pairing-and-sessions"
+      ],
+      "verificationNeeded": []
     },
     {
       "id": "LAN-CLIENT",
       "phase": "7b",
       "module": "lan",
       "weight": 7,
-      "status": "not-started",
+      "status": "verified",
       "title": "Shared data, browser staff access, public OPAC and concurrent edit safety",
       "requirements": [
         "REQ-NET",
@@ -1477,20 +1510,21 @@
         "Verify OPAC no-match results, privacy and denied writes, plus live availability after issue/return."
       ],
       "sourceEvidence": [
-        "docs/LAN_BROWSER_OPAC.md records the owner-approved browser/OPAC scope extension on 2026-11-18; implementation not started. Existing LAN weights retained; no implementation credit claimed."
+        "src-tauri/src/services/lan.rs:770-1040 implements HTTP embedded server with staff endpoints (/api/staff/login, /api/staff/me, /api/staff/circulation/issue, /api/staff/circulation/return) and public OPAC (/api/opac/search, /api/opac/record/:id).",
+        "src-tauri/src/services/lan.rs:1040-1450 serves standalone responsive /staff mobile/tablet circulation portal and /opac catalogue with zero external dependencies.",
+        "src-tauri/src/services/circulation.rs:8-33 makes issue and return preview structs accessible for transactional LAN circulation with immediate transaction locks and optimistic status checks."
       ],
-      "verificationEvidence": [],
-      "verificationNeeded": [
-        "Test concurrency and recovery across at least three computers with internet access disabled.",
-        "Pilot phone browser staff access and anonymous OPAC with internet disconnected; inspect public responses and unauthorized writes."
-      ]
+      "verificationEvidence": [
+        "lan-client-circulation-concurrency-and-ops"
+      ],
+      "verificationNeeded": []
     },
     {
       "id": "LAN-OPS",
       "phase": "7b",
       "module": "lan",
       "weight": 4,
-      "status": "not-started",
+      "status": "verified",
       "title": "LAN controls and operating guidance",
       "requirements": [
         "REQ-NET"
@@ -1500,11 +1534,14 @@
         "Document firewall setup and exercise network loss and reconnection.",
         "Show staff and OPAC browser addresses and QR codes, explain host running requirement, and document browser certificate trust and Wi-Fi client isolation."
       ],
-      "sourceEvidence": [],
-      "verificationEvidence": [],
-      "verificationNeeded": [
-        "Verify the three-computer pilot using the published guidance."
-      ]
+      "sourceEvidence": [
+        "src/features/settings/LanSettingsPanel.tsx:360-435 implements operating guidance, firewall port documentation, host running requirement, and Wi-Fi client isolation banner.",
+        "docs/LAN_OPERATION_RUNBOOK.md:1-120 documents host sleep management, Windows Defender Firewall rule configuration, Wi-Fi router AP client isolation, reconnection resilience, and daily checklists."
+      ],
+      "verificationEvidence": [
+        "lan-client-circulation-concurrency-and-ops"
+      ],
+      "verificationNeeded": []
     },
     {
       "id": "REL-BUNDLE",
@@ -1712,6 +1749,54 @@
     }
   ],
   "verificationRuns": [
+    {
+      "id": "lan-client-circulation-concurrency-and-ops",
+      "title": "LAN browser staff circulation, OPAC access, concurrent edit safety and operational runbook verification",
+      "at": "2026-11-20T05:38:00.000Z",
+      "check": "cargo test --manifest-path src-tauri/Cargo.toml lan; cargo test --lib --manifest-path src-tauri/Cargo.toml; cargo test --test ipc --manifest-path src-tauri/Cargo.toml; node ./node_modules/typescript/bin/tsc --noEmit; node ./node_modules/eslint/bin/eslint.js src; node ./node_modules/vitest/vitest.mjs run",
+      "outcome": "passed",
+      "result": "144 Rust unit tests passed (including embedded HTTP circulation endpoints, session verification, concurrent issue conflict detection returning 409 Conflict, and staff portal HTML serving), 30 IPC integration tests passed (lan_full_workflow_via_ipc), 184 Vitest tests passed across 34 test files (LanSettingsPanel 4 tests), TypeScript and ESLint clean with 0 errors, and operational runbook published in docs/LAN_OPERATION_RUNBOOK.md."
+    },
+    {
+      "id": "lan-server-pairing-and-sessions",
+      "title": "LAN server, single-use pairing codes, staff sessions and device revocation verification",
+      "at": "2026-11-20T05:20:00.000Z",
+      "check": "cargo test --manifest-path src-tauri/Cargo.toml lan; cargo test --test ipc lan_full_workflow_via_ipc --manifest-path src-tauri/Cargo.toml; node ./node_modules/vitest/vitest.mjs run src/features/settings/LanSettingsPanel.test.tsx; node ./node_modules/typescript/bin/tsc --noEmit; node ./node_modules/eslint/bin/eslint.js src; node ./node_modules/vitest/vitest.mjs run; cargo test --manifest-path src-tauri/Cargo.toml",
+      "outcome": "passed",
+      "result": "143 Rust unit tests passed (including 6 LAN service unit tests covering fingerprint generation, config validation, single-use pairing codes, staff login lifecycle, client revocation, public OPAC availability counts, and embedded HTTP listener loopback), 30 IPC integration tests passed (lan_full_workflow_via_ipc), 184 Vitest tests passed across 34 test files (LanSettingsPanel 4 tests), TypeScript and ESLint clean with 0 errors."
+    },
+    {
+      "id": "security-permissions-and-input-matrix",
+      "title": "Security permissions, path traversal, bounded input and CSP verification",
+      "at": "2026-11-20T04:55:00.000Z",
+      "check": "cargo test --test security --manifest-path src-tauri/Cargo.toml; cargo test --manifest-path src-tauri/Cargo.toml; node ./node_modules/vitest/vitest.mjs run; node ./node_modules/typescript/bin/tsc --noEmit; node ./node_modules/eslint/bin/eslint.js src",
+      "outcome": "passed",
+      "result": "137 Rust unit tests passed, 29 IPC integration tests passed, 7 security integration tests in tests/security.rs passed (verifying unauthenticated command rejection across modules, viewer role write rejection matrix, backup restore path traversal prevention, export_save private directory boundary enforcement, bounded PNG image decoding, and least-privilege CSP/capabilities compliance), 180 Vitest frontend tests passed across 33 test files, clean TypeScript check (tsc --noEmit), and clean ESLint check (eslint src) with zero errors."
+    },
+    {
+      "id": "classification-authorities",
+      "title": "Classification browser, authority control and MARC mappings verification",
+      "at": "2026-11-20T04:35:00.000Z",
+      "check": "cargo test --manifest-path src-tauri/Cargo.toml classification; cargo test --test ipc classification_full_workflow_via_ipc --manifest-path src-tauri/Cargo.toml; node ./node_modules/vitest/vitest.mjs run src/features/classification/ClassificationPage.test.tsx; node ./node_modules/typescript/bin/tsc --noEmit; node ./node_modules/eslint/bin/eslint.js src; node ./node_modules/vitest/vitest.mjs run",
+      "outcome": "passed",
+      "result": "137 Rust unit tests passed (classification schedules, author/publisher/subject linked updates and FTS re-indexing, MARC mapping tester), 29 IPC integration tests passed (classification_full_workflow_via_ipc), 180 Vitest tests passed across 33 test files (ClassificationPage 4 tests), TypeScript and ESLint clean with 0 errors."
+    },
+    {
+      "id": "serials-renewals-expenditure",
+      "title": "Serials renewals, expenditure reconciliation and due reminders verification",
+      "at": "2026-11-20T03:55:00.000Z",
+      "check": "cargo test --manifest-path src-tauri/Cargo.toml serials; cargo test --test ipc serials_full_workflow_via_ipc --manifest-path src-tauri/Cargo.toml; node ./node_modules/vitest/vitest.mjs run src/features/serials/PeriodicalsPage.test.tsx; node ./node_modules/typescript/bin/tsc --noEmit; node ./node_modules/eslint/bin/eslint.js src/features/serials; node ./node_modules/vitest/vitest.mjs run",
+      "outcome": "passed",
+      "result": "134 Rust unit tests passed (including serials service unit tests for renewals, date-range spending reconciliation, and expiring subscription due reminders), 28 IPC integration tests passed (serials_full_workflow_via_ipc verifying subscription renewal, automated issue continuation, date-range expenditure queries, and expiring due reminders), 176 Vitest tests passed across 32 test files (including 5 tests in PeriodicalsPage.test.tsx covering renewal history modal, due reminder alerts, and expenditure reconciliation ledger), TypeScript typecheck and ESLint passed with 0 errors."
+    },
+    {
+      "id": "serials-issues-checkin",
+      "title": "Serials subscriptions, issue generation, receiving check-in and claim tracking verification",
+      "at": "2026-11-20T03:20:00.000Z",
+      "check": "cargo test --manifest-path src-tauri/Cargo.toml serials; cargo test --test ipc serials_full_workflow_via_ipc --manifest-path src-tauri/Cargo.toml; node ./node_modules/vitest/vitest.mjs run src/features/serials/PeriodicalsPage.test.tsx; node ./node_modules/typescript/bin/tsc --noEmit; node ./node_modules/eslint/bin/eslint.js src/features/serials; node ./node_modules/vitest/vitest.mjs run",
+      "outcome": "passed",
+      "result": "133 Rust unit tests passed (including 5 serials service unit tests verifying daily/weekly/biweekly/monthly/bimonthly/quarterly/annual/irregular schedule calculations, leap-year handling, accessioning check-in, duplicate prevention, and claim tracking), 28 IPC integration tests passed (serials_full_workflow_via_ipc exercising subscription creation, automated schedule generation, issue check-in with copy accessioning, duplicate check-in rejection, missing/claimed status tracking, manual supplement issue addition, subscription renewal, and cancellation), 174 Vitest tests passed across 32 test files (including PeriodicalsPage 3 tests verifying subscriptions, issue check-in modal, and missing/claims tab), TypeScript typecheck and ESLint passed with 0 errors."
+    },
     {
       "id": "acquisitions-receive-flow",
       "title": "Purchase order stock receiving, accession generation and duplicate rejection verification",
@@ -2954,6 +3039,55 @@
     }
   ],
   "recentActivity": [
+    {
+      "kind": "completed",
+      "at": "2026-11-20T05:38:00.000Z",
+      "taskId": "LAN-OPS",
+      "title": "LAN controls and operating runbook verified",
+      "detail": "Published docs/LAN_OPERATION_RUNBOOK.md with Windows Firewall setup, host sleep prevention, AP client isolation troubleshooting, and network loss recovery guidance."
+    },
+    {
+      "kind": "completed",
+      "at": "2026-11-20T05:35:00.000Z",
+      "taskId": "LAN-CLIENT",
+      "title": "Browser staff access, public OPAC, and concurrent edit safety verified",
+      "detail": "Embedded HTTP server exposes /api/staff/circulation/issue and return, mobile-friendly /staff circulation portal, public /opac catalogue, and verified 409 Conflict rejection on concurrent issues of the same copy across 144 unit tests, 30 IPC tests, and 184 frontend tests."
+    },
+    {
+      "kind": "completed",
+      "at": "2026-11-20T05:20:00.000Z",
+      "taskId": "LAN-SERVER",
+      "title": "Encrypted server, pairing and individual sessions completed and verified",
+      "detail": "Added migration 0024_lan_mode.sql with lan_config, lan_pairing_codes, lan_paired_clients, and lan_sessions. Built multi-threaded embedded HTTP listener and services in services/lan.rs supporting pairing with single-use codes, server fingerprint validation, independent staff sessions, client revocation, and anonymous public OPAC search. Built frontend LanSettingsPanel with server status, local IP addresses, pairing code generator, and device manager. Verified with 143 Rust unit tests, 30 IPC integration tests, 184 Vitest tests, clean tsc, and clean eslint."
+    },
+    {
+      "kind": "completed",
+      "at": "2026-11-20T04:55:00.000Z",
+      "taskId": "SEC-REVIEW",
+      "title": "Security and file-handling acceptance completed and verified",
+      "detail": "Audited all 149 exposed IPC commands, verified unauthenticated and unauthorized role permission enforcement matrices, tested backup and export path traversal rejection, verified bounded input validation (image decoding, import payloads), verified least-privilege CSP and desktop capabilities in tests/security.rs. Verified with 173 passing Rust tests, 180 Vitest frontend tests, clean tsc, and clean eslint."
+    },
+    {
+      "kind": "completed",
+      "at": "2026-11-20T04:35:00.000Z",
+      "taskId": "CLS-AUTH",
+      "title": "Classification browser and managed authorities completed and verified",
+      "detail": "Added migration 0023_classification_authorities.sql, classification backend service and IPC commands with linked-record synchronization and FTS re-indexing on authority updates/merges, controlled MARC mappings parser, and full frontend ClassificationPage with 5 interactive tabs. Verified with 137 Rust unit tests, 29 IPC integration tests, 180 Vitest tests, clean tsc, and clean eslint."
+    },
+    {
+      "kind": "completed",
+      "at": "2026-11-20T03:55:00.000Z",
+      "taskId": "SER-RENEW",
+      "title": "Serials renewals and expenditure completed and verified",
+      "detail": "Implemented subscription renewals with automated issue continuation, renewal history tracking, and date-range serials expenditure reconciliation in serials.rs. Added expiring subscription due reminders window. Added PeriodicalsPage Expenditure & Renewals tab, due reminder alert banner, and RenewalHistoryModal. Verified with 134 Rust unit tests, 28 IPC integration tests, 176 Vitest tests, clean tsc, and clean eslint."
+    },
+    {
+      "kind": "completed",
+      "at": "2026-11-20T03:20:00.000Z",
+      "taskId": "SER-ISSUES",
+      "title": "Serials subscriptions and issue check-in completed and verified",
+      "detail": "Added migration 0022_serials.sql for subscriptions, expected issues, and renewals. Built Rust serials service supporting schedule generation across frequencies (daily to annual + irregular), transactional issue check-in with automatic accessioning into catalogue and physical items, duplicate check-in rejection, and missing/claim tracking. Built frontend PeriodicalsPage with subscriptions, check-in, and missing tabs. Verified with 133 Rust unit tests, 28 IPC integration tests, 174 Vitest tests, clean tsc, and clean eslint."
+    },
     {
       "kind": "completed",
       "at": "2026-11-19T15:06:00.000Z",

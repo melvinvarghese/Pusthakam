@@ -10,4 +10,7 @@ pub mod import;
 pub mod inventory;
 pub mod members;
 pub mod reports;
+pub mod serials;
+pub mod classification;
+pub mod lan;
 pub mod staff;

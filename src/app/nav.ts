@@ -32,8 +32,8 @@ export const NAV_GROUPS: NavGroup[] = [
     items: [
       { path: "/accession", label: "Accession Register", available: true, phase: 3, summary: "Track every physical copy by accession number, barcode, location and status." },
       { path: "/inventory", label: "Inventory", available: true, phase: 6, summary: "Scan copies and review matched, missing and unexpected stock." },
-      { path: "/classification", label: "Classification", available: false, phase: 6, summary: "Dewey, UDC, Library of Congress and custom classification schemes, subjects and authorities." },
-      { path: "/periodicals", label: "Periodicals", available: false, phase: 6, summary: "Journals, magazines and newspapers: subscriptions, expected and received issues." },
+      { path: "/classification", label: "Classification", available: true, phase: 6, summary: "Dewey, UDC, Library of Congress and custom classification schemes, subjects and authorities." },
+      { path: "/periodicals", label: "Periodicals", available: true, phase: 6, summary: "Journals, magazines and newspapers: subscriptions, expected and received issues." },
     ],
   },
   {

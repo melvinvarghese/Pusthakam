@@ -2067,3 +2067,492 @@ fn acquisitions_full_workflow_via_ipc() {
     let received_requests = h.ok("acquisitions_list_requests", json!({ "status": "received" }));
     assert_eq!(received_requests.as_array().unwrap().len(), 1);
 }
+
+#[test]
+fn serials_full_workflow_via_ipc() {
+    let h = Harness::new();
+    h.ok("complete_setup", setup_body());
+
+    // 1. Create quarterly subscription with auto issue generation
+    let sub_id = h.ok("serials_save_subscription", json!({
+        "input": {
+            "id": null,
+            "title": "National Geographic",
+            "issn": "0027-9358",
+            "publisher": "National Geographic Society",
+            "frequency": "quarterly",
+            "vendorId": null,
+            "budgetId": null,
+            "costMinor": 360000,
+            "currency": "INR",
+            "startDate": "2026-01-01",
+            "endDate": "2026-12-31",
+            "notes": "Annual subscription",
+            "autoGenerateIssues": true,
+            "issuePatternPrefix": "Q"
+        }
+    })).as_i64().unwrap();
+
+    // 2. Fetch subscription details
+    let sub = h.ok("serials_get_subscription", json!({ "id": sub_id }));
+    assert_eq!(sub["title"], "National Geographic");
+    assert_eq!(sub["frequency"], "quarterly");
+    assert_eq!(sub["totalIssuesCount"], 4);
+    assert_eq!(sub["expectedIssuesCount"], 4);
+
+    // 3. List issues
+    let issues = h.ok("serials_list_issues", json!({
+        "filter": {
+            "subscriptionId": sub_id
+        }
+    }));
+    let issue_array = issues.as_array().unwrap();
+    assert_eq!(issue_array.len(), 4);
+    assert_eq!(issue_array[0]["issueNumber"], "Q1");
+    assert_eq!(issue_array[0]["expectedDate"], "2026-01-01");
+    assert_eq!(issue_array[0]["status"], "expected");
+
+    let issue_1_id = issue_array[0]["id"].as_i64().unwrap();
+    let issue_2_id = issue_array[1]["id"].as_i64().unwrap();
+
+    // 4. Check in issue 1 with accessioning
+    let checkin1 = h.ok("serials_check_in_issue", json!({
+        "input": {
+            "issueId": issue_1_id,
+            "receivedDate": "2026-01-02",
+            "accessionCopy": true,
+            "notes": "Issue received in mint condition"
+        }
+    }));
+    assert_eq!(checkin1["status"], "received");
+    assert_eq!(checkin1["receivedDate"], "2026-01-02");
+    assert!(checkin1["accessionNo"].is_string());
+    assert!(checkin1["copyId"].is_number());
+
+    // 5. Duplicate check-in rejection
+    assert_eq!(
+        h.code("serials_check_in_issue", json!({
+            "input": {
+                "issueId": issue_1_id
+            }
+        })),
+        "CONFLICT"
+    );
+
+    // 6. Update issue 2 status to missing, then claimed
+    h.ok("serials_update_issue_status", json!({
+        "issueId": issue_2_id,
+        "status": "missing"
+    }));
+    h.ok("serials_update_issue_status", json!({
+        "issueId": issue_2_id,
+        "status": "claimed"
+    }));
+
+    let missing = h.ok("serials_list_missing_issues", json!({}));
+    assert!(missing.as_array().unwrap().iter().any(|i| i["id"] == issue_2_id && i["status"] == "claimed"));
+
+    // 7. Add ad-hoc manual issue (supplement)
+    let manual_id = h.ok("serials_add_issue", json!({
+        "input": {
+            "subscriptionId": sub_id,
+            "issueNumber": "Special Wildlife Atlas",
+            "expectedDate": "2026-05-15",
+            "notes": "Supplementary edition"
+        }
+    })).as_i64().unwrap();
+    assert!(manual_id > 0);
+
+    // 8. Renew subscription for 2027
+    let renewal_id = h.ok("serials_renew_subscription", json!({
+        "input": {
+            "subscriptionId": sub_id,
+            "startDate": "2027-01-01",
+            "endDate": "2027-12-31",
+            "costMinor": 380000,
+            "currency": "INR",
+            "budgetId": null,
+            "notes": "Early bird renewal discount",
+            "autoGenerateIssues": true,
+            "issuePatternPrefix": "2027-Q"
+        }
+    })).as_i64().unwrap();
+    assert!(renewal_id > 0);
+
+    let renewals = h.ok("serials_list_renewals", json!({ "subscriptionId": sub_id }));
+    assert_eq!(renewals.as_array().unwrap().len(), 1);
+    assert_eq!(renewals[0]["costMinor"], 380000);
+
+    // 9. Reconcile expenditure via IPC for date range
+    let exp_2026 = h.ok("serials_get_expenditure", json!({
+        "fromDate": "2026-01-01",
+        "toDate": "2026-12-31"
+    }));
+    assert_eq!(exp_2026["totalSpendMinor"], 360000);
+    assert_eq!(exp_2026["items"].as_array().unwrap().len(), 1);
+    assert_eq!(exp_2026["items"][0]["itemType"], "initial");
+
+    let exp_2027 = h.ok("serials_get_expenditure", json!({
+        "fromDate": "2027-01-01",
+        "toDate": "2027-12-31"
+    }));
+    assert_eq!(exp_2027["totalSpendMinor"], 380000);
+    assert_eq!(exp_2027["items"].as_array().unwrap().len(), 1);
+    assert_eq!(exp_2027["items"][0]["itemType"], "renewal");
+
+    let exp_all = h.ok("serials_get_expenditure", json!({}));
+    assert_eq!(exp_all["totalSpendMinor"], 740000);
+    assert_eq!(exp_all["items"].as_array().unwrap().len(), 2);
+
+    // 10. Test due reminders / expiring subscriptions via IPC
+    let exp_sub_id = h.ok("serials_save_subscription", json!({
+        "input": {
+            "id": null,
+            "title": "Weekly Chronicle",
+            "issn": "1234-5679",
+            "publisher": "Chronicle Media",
+            "frequency": "weekly",
+            "costMinor": 15000,
+            "currency": "INR",
+            "startDate": "2026-01-01",
+            "endDate": "2026-11-25",
+            "autoGenerateIssues": false
+        }
+    })).as_i64().unwrap();
+    assert!(exp_sub_id > 0);
+
+    let expiring = h.ok("serials_list_expiring", json!({ "daysAhead": 60 }));
+    assert!(expiring.as_array().unwrap().iter().any(|e| e["subscription"]["id"] == exp_sub_id));
+
+    // 11. Cancel subscription
+    h.ok("serials_cancel_subscription", json!({ "id": sub_id }));
+    let cancelled_sub = h.ok("serials_get_subscription", json!({ "id": sub_id }));
+    assert_eq!(cancelled_sub["status"], "cancelled");
+}
+
+#[test]
+fn classification_full_workflow_via_ipc() {
+    let h = Harness::new();
+    h.ok("complete_setup", setup_body());
+
+    // 1. Classification schemes: list built-in schemes
+    let schemes = h.ok("classification_list_schemes", json!({})).as_array().unwrap().clone();
+    assert!(schemes.len() >= 4);
+    let ddc = schemes.iter().find(|s| s["code"] == "ddc").unwrap();
+    let ddc_id = ddc["id"].as_i64().unwrap();
+    assert_eq!(ddc["isCustom"], false);
+
+    // 2. Browse DDC entries: top-level
+    let top_ddc = h.ok("classification_list_entries", json!({
+        "schemeId": ddc_id,
+        "parentCode": null,
+        "searchQuery": null
+    })).as_array().unwrap().clone();
+    assert!(top_ddc.iter().any(|e| e["code"] == "500" && e["title"] == "Science"));
+    assert!(top_ddc.iter().any(|e| e["code"] == "800"));
+
+    // Browse child entries of 500
+    let math_entries = h.ok("classification_list_entries", json!({
+        "schemeId": ddc_id,
+        "parentCode": "500",
+        "searchQuery": null
+    })).as_array().unwrap().clone();
+    assert!(math_entries.iter().any(|e| e["code"] == "510" && e["title"] == "Mathematics"));
+
+    // Search classification entries
+    let search_res = h.ok("classification_list_entries", json!({
+        "schemeId": ddc_id,
+        "parentCode": null,
+        "searchQuery": "Physics"
+    })).as_array().unwrap().clone();
+    assert!(search_res.iter().any(|e| e["code"] == "530"));
+
+    // 3. Custom scheme and custom code creation and deletion
+    let custom_scheme_id = h.ok("classification_save_scheme", json!({
+        "input": {
+            "id": null,
+            "code": "special",
+            "name": "Special Collections Scheme",
+            "description": "Internal special collection numbering"
+        }
+    })).as_i64().unwrap();
+    assert!(custom_scheme_id > 0);
+
+    let custom_entry_id = h.ok("classification_save_entry", json!({
+        "input": {
+            "id": null,
+            "schemeId": custom_scheme_id,
+            "code": "SPEC-01",
+            "parentCode": null,
+            "title": "Rare Manuscripts",
+            "description": "Historical palm-leaf and parchment manuscripts"
+        }
+    })).as_i64().unwrap();
+    assert!(custom_entry_id > 0);
+
+    let spec_entries = h.ok("classification_list_entries", json!({
+        "schemeId": custom_scheme_id,
+        "parentCode": null,
+        "searchQuery": null
+    })).as_array().unwrap().clone();
+    assert_eq!(spec_entries.len(), 1);
+    assert_eq!(spec_entries[0]["code"], "SPEC-01");
+
+    h.ok("classification_delete_entry", json!({ "id": custom_entry_id }));
+    h.ok("classification_delete_scheme", json!({ "id": custom_scheme_id }));
+
+    // 4. Managed Author Authorities
+    let author_a_id = h.ok("classification_save_author", json!({
+        "input": {
+            "id": null,
+            "name": "Vaikom Muhammad Basheer",
+            "sortName": "Basheer, Vaikom Muhammad",
+            "kind": "personal",
+            "birthYear": 1908,
+            "deathYear": 1994,
+            "authorityNote": "Renowned Malayalam writer",
+            "variantNames": "Beypore Sultan",
+            "marcTag": "100"
+        }
+    })).as_i64().unwrap();
+    assert!(author_a_id > 0);
+
+    let author_b_id = h.ok("classification_save_author", json!({
+        "input": {
+            "id": null,
+            "name": "V. M. Basheer",
+            "sortName": "Basheer, V. M.",
+            "kind": "personal",
+            "birthYear": 1908,
+            "deathYear": 1994,
+            "authorityNote": "Alternate heading to merge",
+            "variantNames": null,
+            "marcTag": "100"
+        }
+    })).as_i64().unwrap();
+    assert!(author_b_id > 0);
+
+    // 5. Managed Publisher Authorities
+    let publisher_id = h.ok("classification_save_publisher", json!({
+        "input": {
+            "id": null,
+            "name": "DC Books",
+            "place": "Kottayam, Kerala",
+            "notes": "Leading Malayalam literary publisher",
+            "marcTag": "264"
+        }
+    })).as_i64().unwrap();
+    assert!(publisher_id > 0);
+
+    // 6. Managed Subject Authorities
+    let subject_id = h.ok("classification_save_subject", json!({
+        "input": {
+            "id": null,
+            "heading": "Malayalam fiction",
+            "scheme": "lcsh",
+            "scopeNote": "Fiction written in the Malayalam language",
+            "broaderTerm": "Indic literature",
+            "narrowerTerms": "Malayalam short stories; Malayalam novels",
+            "seeAlso": "Malayalam literature",
+            "marcTag": "650"
+        }
+    })).as_i64().unwrap();
+    assert!(subject_id > 0);
+
+    // 7. Save a book record linked to author_b, publisher, and subject
+    let record_id = h.ok("catalogue_save_record", json!({
+        "input": {
+            "id": null,
+            "title": "Pathummayude Aadu",
+            "subtitle": "The Goat of Pathumma",
+            "edition": "1st ed.",
+            "publisher": "DC Books",
+            "publicationPlace": "Kottayam",
+            "publicationYear": 1959,
+            "language": "mal",
+            "physicalDescription": null,
+            "pagination": "96 p.",
+            "series": null,
+            "abstractText": "Humorous and touching autobiographical novella",
+            "notes": null,
+            "isbn": null,
+            "classificationSchemeId": ddc_id,
+            "classificationNumber": "894.8123",
+            "keywords": "goat family humor",
+            "contributors": [{ "name": "V. M. Basheer", "role": "author" }],
+            "subjects": ["Malayalam fiction"]
+        }
+    })).as_i64().unwrap();
+    assert!(record_id > 0);
+
+    // Verify author_b has 1 linked record
+    let authors = h.ok("classification_list_authors", json!({ "searchQuery": "Basheer" })).as_array().unwrap().clone();
+    assert_eq!(authors.iter().find(|a| a["id"] == author_b_id).unwrap()["recordCount"], 1);
+
+    // Merge author_b into author_a: test linked-record synchronization
+    h.ok("classification_merge_authors", json!({
+        "fromId": author_b_id,
+        "toId": author_a_id
+    }));
+
+    // author_a now has the linked record
+    let updated_authors = h.ok("classification_list_authors", json!({ "searchQuery": "Basheer" })).as_array().unwrap().clone();
+    assert_eq!(updated_authors.iter().find(|a| a["id"] == author_a_id).unwrap()["recordCount"], 1);
+    assert!(!updated_authors.iter().any(|a| a["id"] == author_b_id));
+
+    // 8. Update Publisher Authority and verify linked records reflect update
+    h.ok("classification_save_publisher", json!({
+        "input": {
+            "id": publisher_id,
+            "name": "DC Books Publications",
+            "place": "Kottayam, Kerala",
+            "notes": "Updated publisher name",
+            "marcTag": "264"
+        }
+    }));
+    let rec = h.ok("catalogue_get_record", json!({ "id": record_id }));
+    assert_eq!(rec["publisher"], "DC Books Publications");
+
+    // 9. Controlled MARC Mappings & Parser Testing
+    let mappings = h.ok("classification_list_marc_mappings", json!({})).as_array().unwrap().clone();
+    assert!(mappings.len() >= 15);
+
+    let marc_author_test = h.ok("classification_test_marc_mapping", json!({
+        "input": {
+            "rawMarcLine": "100 1# $a Thakazhi Sivasankara Pillai, $d 1912-1999"
+        }
+    }));
+    assert_eq!(marc_author_test["tag"], "100");
+    assert_eq!(marc_author_test["mappedAuthorityType"], "author_personal");
+    assert_eq!(marc_author_test["targetFields"]["name"], "Thakazhi Sivasankara Pillai");
+    assert_eq!(marc_author_test["targetFields"]["dates"], "1912-1999");
+
+    let marc_pub_test = h.ok("classification_test_marc_mapping", json!({
+        "input": {
+            "rawMarcLine": "264 #1 $a Thrissur : $b Current Books, $c 1956"
+        }
+    }));
+    assert_eq!(marc_pub_test["tag"], "264");
+    assert_eq!(marc_pub_test["mappedAuthorityType"], "publisher");
+    assert_eq!(marc_pub_test["targetFields"]["name"], "Current Books");
+    assert_eq!(marc_pub_test["targetFields"]["place"], "Thrissur");
+
+    let marc_class_test = h.ok("classification_test_marc_mapping", json!({
+        "input": {
+            "rawMarcLine": "082 04 $a 894.8123"
+        }
+    }));
+    assert_eq!(marc_class_test["tag"], "082");
+    assert_eq!(marc_class_test["mappedAuthorityType"], "classification_ddc");
+    assert_eq!(marc_class_test["targetFields"]["classification_number"], "894.8123");
+}
+
+#[test]
+fn lan_full_workflow_via_ipc() {
+    let h = Harness::new();
+    h.ok("complete_setup", setup_body());
+
+    // 1. Initial LAN config
+    let config = h.ok("lan_get_config", json!({}));
+    assert_eq!(config["port"], 4318);
+    assert!(!config["enabled"].as_bool().unwrap());
+    assert!(!config["serverFingerprint"].as_str().unwrap().is_empty());
+    let server_fp = config["serverFingerprint"].as_str().unwrap().to_string();
+
+    // 2. Update LAN config: enable server and configure port
+    let updated = h.ok("lan_update_config", json!({
+        "input": {
+            "enabled": true,
+            "bindAddress": "127.0.0.1",
+            "port": 4318,
+            "serverName": "Pusthakam Central Server",
+            "opacEnabled": true,
+            "browserStaffEnabled": true
+        }
+    }));
+    assert!(updated["enabled"].as_bool().unwrap());
+    assert_eq!(updated["serverName"], "Pusthakam Central Server");
+
+    // 3. Generate single-use pairing code
+    let pair_code = h.ok("lan_generate_pairing_code", json!({}));
+    let code_str = pair_code["code"].as_str().unwrap().to_string();
+    assert_eq!(code_str.len(), 6);
+
+    let code_list = h.ok("lan_list_pairing_codes", json!({}));
+    assert!(code_list.as_array().unwrap().len() >= 1);
+
+    // 4. Pair a client device
+    let pair_res = h.ok("lan_pair_client", json!({
+        "request": {
+            "pairingCode": code_str,
+            "clientName": "Circulation Desk 2",
+            "deviceKind": "desktop",
+            "clientIp": "192.168.1.101"
+        }
+    }));
+    let client_id = pair_res["clientId"].as_str().unwrap().to_string();
+    assert!(!client_id.is_empty());
+    assert_eq!(pair_res["serverFingerprint"], server_fp);
+
+    // Verify code cannot be reused
+    assert_eq!(h.code("lan_pair_client", json!({
+        "request": {
+            "pairingCode": code_str,
+            "clientName": "Attacker Machine"
+        }
+    })), "VALIDATION");
+
+    // 5. List paired clients
+    let clients = h.ok("lan_list_paired_clients", json!({}));
+    assert_eq!(clients.as_array().unwrap().len(), 1);
+    assert_eq!(clients[0]["clientName"], "Circulation Desk 2");
+
+    // 6. Sign in staff member via LAN client
+    let login_res = h.ok("lan_login", json!({
+        "request": {
+            "clientId": client_id,
+            "serverFingerprint": server_fp,
+            "username": "admin",
+            "password": "a long passphrase"
+        }
+    }));
+    assert!(!login_res["token"].as_str().unwrap().is_empty());
+    assert_eq!(login_res["role"], "administrator");
+
+    // 7. Catalogue book setup & public OPAC search
+    let book_id = h.ok("catalogue_save_record", json!({
+        "input": {
+            "title": "Computer Networks: Principles and Practice",
+            "contributors": [],
+            "subjects": []
+        }
+    }));
+
+    let opac_search_res = h.ok("lan_opac_search", json!({
+        "query": "",
+        "page": 1,
+        "pageSize": 20
+    }));
+    assert_eq!(opac_search_res["total"], 1);
+    assert_eq!(opac_search_res["items"][0]["title"], "Computer Networks: Principles and Practice");
+
+    let opac_record = h.ok("lan_opac_get_record", json!({ "id": book_id }));
+    assert_eq!(opac_record["title"], "Computer Networks: Principles and Practice");
+
+    // 8. Revoke the client device
+    h.ok("lan_revoke_client", json!({ "clientId": client_id }));
+    let clients_after = h.ok("lan_list_paired_clients", json!({}));
+    assert!(!clients_after[0]["revokedAt"].is_null());
+
+    // Login from revoked client is blocked
+    assert_eq!(h.code("lan_login", json!({
+        "request": {
+            "clientId": client_id,
+            "serverFingerprint": server_fp,
+            "username": "admin",
+            "password": "a long passphrase"
+        }
+    })), "PERMISSION_DENIED");
+}
+
+
