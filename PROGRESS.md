@@ -27,6 +27,14 @@ Run `npm run progress:monitor` from this directory and open <http://127.0.0.1:43
 
 Monitor verification passed for the data schema, weighted calculations, loopback serving, missing and invalid JSON, automatic refresh, and roadmap filters. Desktop and mobile browser layout and an adapter-disabled browser smoke test are open. Headless Edge failed to initialize, and Chrome UI access stopped at the browser URL check.
 
+## Work on 20 November 2026 (Evening): Hallmark Redesign of Pusthakam Website
+
+Executed full Hallmark redesign across the website (`website/`):
+- **Editorial Theme Dealt & Scaffolding (`ink`):** Selected the `ink` editorial theme (white paper, hueless black, Epilogue display at 700, Epilogue body at 400, IBM Plex Mono for call numbers and barcodes, chromatic teal accent at `oklch(50% 0.095 188)`). Scaffolded `tokens.css` and `base.css` with zero untokenized color literals, strict `overflow-x: clip`, and full `:focus-visible` and `:active` state management.
+- **Copy & Structure Gates Resolved:** Eliminated eyebrows before headings across all pages, replaced middle-dot joined meta strings with hairline/comma separation, removed buzzwords ("seamlessly", "effortless", "robust"), corrected heading hierarchies to step 1-by-1 (`h1` -> `h2`), balanced display headings, and replaced straight quotes with typographic quotes. Replaced the generic 3-column card grid with a ruled shelf list format matching the Ink theme Range.
+- **Lint & Verification Pass:** `sloplint` verified across all 7 HTML pages (`index.html`, `try/index.html`, `faq/index.html`, `blog/index.html`, and the 3 static articles). Results improved from **45 FAIL and 11 REFLEX** down to **0 FAIL, 0 WARN** with **11/11 links and handlers kept intact**.
+- **Test Suite Unaffected:** All 190 Vitest tests passing across 35 test files.
+
 ## Work on 20 November 2026 (Afternoon): Phase 5 Complete — Simple Report Design Mode & Hardware Acceptance (PRN-HARDWARE)
 
 Finished Phase 5 ("Dashboard, reports and printing") to 100% implementation and 100% verification, passing the `desk` release gate:

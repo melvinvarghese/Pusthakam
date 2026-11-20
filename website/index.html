@@ -3,14 +3,18 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Pusthakam — Free Offline Library Management Software</title>
+  <title>Pusthakam: Free Offline Library Management Software</title>
   <meta name="description" content="Pusthakam is a free, offline-first library management system for Windows, macOS and Linux. Manage catalogues, physical accession records, and everyday circulation without cloud dependencies.">
   <link rel="canonical" href="https://melvinvarghese.github.io/Pusthakam/">
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@400;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="./css/styles.css">
   
   <!-- Open Graph / Social -->
   <meta property="og:type" content="website">
-  <meta property="og:title" content="Pusthakam — A Better Way to Manage Libraries">
+  <meta property="og:title" content="Pusthakam: A Better Way to Manage Libraries">
   <meta property="og:description" content="Free, offline-first desktop library management system for schools, colleges, and community libraries. Zero cloud sync latency.">
   <meta property="og:url" content="https://melvinvarghese.github.io/Pusthakam/">
   <meta property="og:image" content="./assets/hero_desk.jpg">
@@ -36,13 +40,11 @@
 
   <!-- Site Header -->
   <header class="site-header">
-    <div class="header-container">
+    <div class="container header-container">
       <div class="brand-wrap">
-        <a href="./index.html" class="flex items-center gap-2">
-          <div class="brand-mark">P</div>
-        </a>
+        <a href="./index.html" class="brand-mark" aria-label="Pusthakam Home">P</a>
         <a href="./index.html" class="brand-title">Pusthakam</a>
-        <span class="brand-badge">v0.1.0 Offline-First</span>
+        <span class="brand-badge">Offline first</span>
       </div>
 
       <nav class="main-nav" aria-label="Main Navigation">
@@ -50,11 +52,11 @@
         <a href="./try/index.html">Try & Download</a>
         <a href="./faq/index.html">FAQ</a>
         <a href="./blog/index.html">Blog</a>
-        <a href="https://github.com/melvinvarghese/Pusthakam" target="_blank" rel="noopener">GitHub ↗</a>
+        <a href="https://github.com/melvinvarghese/Pusthakam" target="_blank" rel="noopener">GitHub</a>
       </nav>
 
       <div class="header-actions">
-        <a href="./try/index.html" class="btn btn-primary">Get Windows Installer</a>
+        <a href="./try/index.html" class="btn btn-primary">Get Windows installer</a>
       </div>
     </div>
   </header>
@@ -64,54 +66,50 @@
     <section class="hero container">
       <div class="hero-grid">
         <div class="hero-copy">
-          <div class="hero-tag">
-            <span class="status-dot"></span>
-            Zero Cloud Dependencies · Local SQLite Database
-          </div>
-          <h1 class="hero-title">Your library deserves software that works for you.</h1>
+          <h1 class="hero-title">Library software that works for you.</h1>
           <p class="hero-lead">
-            A free, offline-first desktop library management system for Windows, macOS and Linux. Catalogue your collection, manage physical copy accession records, and run daily circulation without cloud dependencies or subscription fees.
+            Free, offline-first desktop management for cataloguing, physical copy accessions, and fast circulation.
           </p>
           <div class="hero-cta">
-            <a href="./try/index.html" class="btn btn-dark">Download Pusthakam 0.1.0 (.exe)</a>
-            <a href="https://github.com/melvinvarghese/Pusthakam/blob/main/docs/USER_MANUAL.md" target="_blank" class="btn btn-outline">Read User Manual</a>
-            <span class="hero-meta">4.24 MB · SHA-256 Verified · Windows 64-bit</span>
+            <a href="./try/index.html" class="btn btn-primary">Download Pusthakam 0.1.0 (.exe)</a>
+            <a href="https://github.com/melvinvarghese/Pusthakam/blob/main/docs/USER_MANUAL.md" target="_blank" rel="noopener" class="btn btn-outline">Read user manual</a>
+            <span class="hero-meta">4.24 MB, SHA-256 verified, Windows 64-bit</span>
           </div>
         </div>
 
         <!-- Desk Ergonomics Specimen -->
         <div class="desk-specimen">
           <div class="specimen-header">
-            <strong>Circulation Desk Specimen</strong>
-            <span class="specimen-badge">Fast USB Wedge Mode</span>
+            <span class="specimen-title">Circulation desk specimen</span>
+            <span class="specimen-badge">Fast USB wedge mode</span>
           </div>
 
           <!-- Physical Spine Label -->
           <div class="spine-label-wrapper">
             <div class="spine-label">
-              <div class="spine-class">Fiction</div>
-              <div class="spine-call">823 TOL</div>
-              <div class="spine-acc">ACC-0042</div>
+              <span class="spine-class">Fiction</span>
+              <span class="spine-call">823 TOL</span>
+              <span class="spine-acc">ACC-0042</span>
             </div>
             <div class="spine-desc">
-              <strong>Printable Dewey Spine Labels</strong><br>
+              <strong>Printable Dewey spine labels</strong><br>
               Generates Code 128 barcode labels and call-number bands that align cleanly with standard Avery sheets.
             </div>
           </div>
 
           <!-- Quick Issue Flow Simulation -->
-          <div style="background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 0.85rem; font-size: 0.8rem; display: flex; flex-direction: column; gap: 0.5rem;">
-            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--line); padding-bottom: 0.4rem;">
-              <span style="color: var(--muted);">1. Scan Patron Card:</span>
-              <span style="font-family: var(--font-mono); font-weight: 700; color: var(--ink);">M-1042 (Deepa Nair)</span>
+          <div class="sim-ledger">
+            <div class="sim-row">
+              <span class="sim-label">1. Scan patron card:</span>
+              <span class="sim-val">M-1042 (Deepa Nair)</span>
             </div>
-            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--line); padding-bottom: 0.4rem;">
-              <span style="color: var(--muted);">2. Scan Book Barcode:</span>
-              <span style="font-family: var(--font-mono); font-weight: 700; color: var(--ink);">ACC-0042 (The Hobbit)</span>
+            <div class="sim-row">
+              <span class="sim-label">2. Scan book barcode:</span>
+              <span class="sim-val">ACC-0042 (The Hobbit)</span>
             </div>
-            <div style="display: flex; justify-content: space-between; align-items: center; background: #ECFDF5; border: 1px solid #A7F3D0; color: #065F46; padding: 0.4rem 0.6rem; border-radius: 4px; font-weight: 600;">
-              <span>✓ Due Date Computed (14 Days)</span>
-              <span style="font-family: var(--font-mono);">Due 2026-12-04</span>
+            <div class="sim-status">
+              <span>Due date computed (14 days)</span>
+              <span class="sim-val">Due 2026-12-04</span>
             </div>
           </div>
         </div>
@@ -126,65 +124,70 @@
           <span>No recurring subscriptions</span>
         </div>
         <div class="trust-item">
-          <strong>Offline by Design</strong>
+          <strong>Offline by design</strong>
           <span>Local SQLite database on your PC</span>
         </div>
         <div class="trust-item">
-          <strong>Physical Accessions</strong>
+          <strong>Physical accessions</strong>
           <span>Every physical copy uniquely tracked</span>
         </div>
         <div class="trust-item">
-          <strong>Cross-Platform</strong>
-          <span>Windows · macOS · Linux</span>
+          <strong>Cross-platform</strong>
+          <span>Windows, macOS, Linux</span>
         </div>
       </div>
     </section>
 
-    <!-- Feature Grid Section -->
+    <!-- Ruled Shelf Section -->
     <section class="features-section container">
       <div class="section-head">
-        <span class="section-tag">Core Modules</span>
         <h2 class="section-title">Built around the real work of libraries.</h2>
         <p class="section-lead">
           Pusthakam replaces fragile spreadsheets and complex cloud software with a fast desktop system designed for practical library operations.
         </p>
       </div>
 
-      <div class="cards-grid">
-        <div class="feature-card">
-          <div class="card-icon">01</div>
-          <h3>Catalogue & Sub-5ms Search</h3>
-          <p>Describe resources with authors, corporate contributors, subjects, and classification schedules. SQLite FTS5 delivers instant search across tens of thousands of titles as you type.</p>
+      <div class="shelf-list">
+        <div class="shelf-item">
+          <span class="shelf-num">01</span>
+          <span class="shelf-title">Catalogue and sub-5ms search</span>
+          <p class="shelf-desc">Describe resources with authors, corporate contributors, subjects, and classification schedules. SQLite FTS5 delivers instant search across tens of thousands of titles as you type.</p>
+          <span class="shelf-pill pill-active">Local search</span>
         </div>
 
-        <div class="feature-card">
-          <div class="card-icon">02</div>
-          <h3>Accession & Copy Registry</h3>
-          <p>Every physical copy carries its own accession number, barcode, call number, location, and condition. Track loss, damage, withdrawals, and stock checks with USB barcode scanners.</p>
+        <div class="shelf-item">
+          <span class="shelf-num">02</span>
+          <span class="shelf-title">Accession and copy registry</span>
+          <p class="shelf-desc">Every physical copy carries its own accession number, barcode, call number, location, and condition. Track loss, damage, withdrawals, and stock checks with USB barcode scanners.</p>
+          <span class="shelf-pill">Physical copies</span>
         </div>
 
-        <div class="feature-card">
-          <div class="card-icon">03</div>
-          <h3>Desk Circulation & Slips</h3>
-          <p>Issue, return, and renew with USB keyboard-wedge scanners. Calculate overdue fines, enforce calendar closures, manage reservations, and print instant loan due slips.</p>
+        <div class="shelf-item">
+          <span class="shelf-num">03</span>
+          <span class="shelf-title">Desk circulation and slips</span>
+          <p class="shelf-desc">Issue, return, and renew with USB keyboard-wedge scanners. Calculate overdue fines, enforce calendar closures, manage reservations, and print instant loan due slips.</p>
+          <span class="shelf-pill pill-active">Desk circulation</span>
         </div>
 
-        <div class="feature-card">
-          <div class="card-icon">04</div>
-          <h3>Lossless Migration</h3>
-          <p>Bring your existing collection in with confidence. Full support for Koha CSV, MARC21/ISO 2709, MARCXML, and Excel imports with interactive preview and rollback protection.</p>
+        <div class="shelf-item">
+          <span class="shelf-num">04</span>
+          <span class="shelf-title">Lossless migration</span>
+          <p class="shelf-desc">Bring your existing collection in with confidence. Full support for Koha CSV, MARC21/ISO 2709, MARCXML, and Excel imports with interactive preview and rollback protection.</p>
+          <span class="shelf-pill">Import tools</span>
         </div>
 
-        <div class="feature-card">
-          <div class="card-icon">05</div>
-          <h3>Vector PDF & Styled Reports</h3>
-          <p>Generate circulation summaries, stock by location, overdue notices, and fine ledgers. Export to clean CSV, formatted XLSX, or vector PDF 1.4 with simple and polished design modes.</p>
+        <div class="shelf-item">
+          <span class="shelf-num">05</span>
+          <span class="shelf-title">Vector PDF and styled reports</span>
+          <p class="shelf-desc">Generate circulation summaries, stock by location, overdue notices, and fine ledgers. Export to clean CSV, formatted XLSX, or vector PDF 1.4 with simple and polished design modes.</p>
+          <span class="shelf-pill">Vector exports</span>
         </div>
 
-        <div class="feature-card">
-          <div class="card-icon">06</div>
-          <h3>Local Network Mode</h3>
-          <p>Turn your desktop into a local LAN server. Staff can issue copies from shelves at <code>/staff</code> using mobile tablets, and students can search the catalogue at <code>/opac</code> over Wi-Fi with no internet access.</p>
+        <div class="shelf-item">
+          <span class="shelf-num">06</span>
+          <span class="shelf-title">Local network mode</span>
+          <p class="shelf-desc">Turn your desktop into a local LAN server. Staff can issue copies from shelves at <code>/staff</code> using mobile tablets, and students can search the catalogue at <code>/opac</code> over Wi-Fi with no internet access.</p>
+          <span class="shelf-pill pill-active">LAN mode</span>
         </div>
       </div>
     </section>
@@ -192,9 +195,9 @@
     <!-- Offline Commitment Callout -->
     <section class="container">
       <div class="callout-box">
-        <h3 style="font-size: 1.25rem; font-weight: 700; color: var(--ink); margin-bottom: 0.5rem;">Your library should not depend on someone else's server.</h3>
-        <p style="color: var(--muted); line-height: 1.6; max-width: 800px;">
-          Pusthakam keeps all library records on the computer where the application is installed. There is no mandatory online account, recurring cloud billing, or telemetry tracking. Your catalogue is your library's permanent working record, stored in an open SQLite database with one-click atomic backup and restore.
+        <h3>Your library should not depend on someone else’s server.</h3>
+        <p>
+          Pusthakam keeps all library records on the computer where the application is installed. There is no mandatory online account, recurring cloud billing, or telemetry tracking. Your catalogue is your library’s permanent working record, stored in an open SQLite database with one-click atomic backup and restore.
         </p>
       </div>
     </section>
@@ -205,12 +208,12 @@
     <div class="container">
       <div class="footer-grid">
         <div class="footer-col">
-          <div class="brand-wrap" style="margin-bottom: 0.75rem;">
-            <div class="brand-mark" style="width:26px; height:26px; font-size:0.8rem;">P</div>
-            <strong style="color: #FFFFFF; font-size: 1rem;">Pusthakam</strong>
+          <div class="brand-wrap" style="margin-bottom: var(--space-xs);">
+            <div class="brand-mark" style="width:26px; height:26px; font-size:var(--text-xs);">P</div>
+            <strong style="color: var(--color-ink); font-size: var(--text-md);">Pusthakam</strong>
           </div>
-          <p style="font-size: 0.78rem; line-height: 1.5; color: #8E9CB1;">
-            A Better Way to Manage Libraries.<br>
+          <p style="font-size: var(--text-xs); line-height: 1.5; color: var(--color-muted);">
+            A better way to manage libraries.<br>
             Free, offline-first desktop software for school, college, and community libraries.
           </p>
         </div>
@@ -228,26 +231,26 @@
         <div class="footer-col">
           <h4>Documentation</h4>
           <ul>
-            <li><a href="https://github.com/melvinvarghese/Pusthakam/blob/main/docs/USER_MANUAL.md" target="_blank">User Operations Manual</a></li>
-            <li><a href="https://github.com/melvinvarghese/Pusthakam/blob/main/docs/LAN_OPERATION_RUNBOOK.md" target="_blank">LAN Operation Runbook</a></li>
-            <li><a href="https://github.com/melvinvarghese/Pusthakam/blob/main/docs/ARCHITECTURE.md" target="_blank">Architecture & Schema</a></li>
-            <li><a href="https://github.com/melvinvarghese/Pusthakam/blob/main/PROGRESS.md" target="_blank">Development Progress</a></li>
+            <li><a href="https://github.com/melvinvarghese/Pusthakam/blob/main/docs/USER_MANUAL.md" target="_blank" rel="noopener">User operations manual</a></li>
+            <li><a href="https://github.com/melvinvarghese/Pusthakam/blob/main/docs/LAN_OPERATION_RUNBOOK.md" target="_blank" rel="noopener">LAN operation runbook</a></li>
+            <li><a href="https://github.com/melvinvarghese/Pusthakam/blob/main/docs/ARCHITECTURE.md" target="_blank" rel="noopener">Architecture & schema</a></li>
+            <li><a href="https://github.com/melvinvarghese/Pusthakam/blob/main/PROGRESS.md" target="_blank" rel="noopener">Development progress</a></li>
           </ul>
         </div>
 
         <div class="footer-col">
           <h4>Project</h4>
           <ul>
-            <li><a href="https://github.com/melvinvarghese/Pusthakam" target="_blank">GitHub Repository</a></li>
-            <li><a href="https://github.com/melvinvarghese/Pusthakam/releases" target="_blank">Release Notes</a></li>
-            <li><a href="https://github.com/melvinvarghese/Pusthakam/issues" target="_blank">Report an Issue</a></li>
+            <li><a href="https://github.com/melvinvarghese/Pusthakam" target="_blank" rel="noopener">GitHub repository</a></li>
+            <li><a href="https://github.com/melvinvarghese/Pusthakam/releases" target="_blank" rel="noopener">Release notes</a></li>
+            <li><a href="https://github.com/melvinvarghese/Pusthakam/issues" target="_blank" rel="noopener">Report an issue</a></li>
           </ul>
         </div>
       </div>
 
       <div class="footer-bottom">
-        <span>Copyright © 2026 Pusthakam Contributors · Released under open source license.</span>
-        <span>Version 0.1.0 · Windows · macOS · Linux</span>
+        <span>Copyright © 2026 Pusthakam Contributors, released under open source license.</span>
+        <span>Version 0.1.0, Windows, macOS, Linux</span>
       </div>
     </div>
   </footer>
