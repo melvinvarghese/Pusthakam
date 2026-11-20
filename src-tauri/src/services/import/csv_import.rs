@@ -68,7 +68,7 @@ fn decode(bytes: &[u8]) -> String {
 
 fn detect_delimiter(text: &str) -> u8 {
     let first = text.lines().next().unwrap_or("");
-    [b',', b';', b'\t', b'|']
+    (*b",;\t|")
         .into_iter()
         .max_by_key(|d| first.bytes().filter(|b| b == d).count())
         .filter(|d| first.bytes().any(|b| b == *d))

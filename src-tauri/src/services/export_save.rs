@@ -33,7 +33,7 @@ pub fn prepare(file_name: &str, encoded: &str) -> AppResult<Payload> {
             ))
         }
     };
-    if encoded.len() > (MAX_BYTES + 2) / 3 * 4 {
+    if encoded.len() > MAX_BYTES.div_ceil(3) * 4 {
         return Err(AppError::Validation("Export is too large to save.".into()));
     }
     let bytes = base64::engine::general_purpose::STANDARD

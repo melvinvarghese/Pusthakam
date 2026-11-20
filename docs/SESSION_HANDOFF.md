@@ -26,7 +26,55 @@ No website code, deployment workflow or publication implemented. Initial visual 
 
 Reports must be aesthetically beautiful and professionally composed by default, using relevant installed design/document/PDF/spreadsheet skills during implementation and visual review. Add an unchecked **Use simple report design** checkbox for a conventional minimal library-management report layout. Both modes retain identical data and calculations; apply the choice to preview/PDF/print/styled XLSX, while CSV remains data-only. Scope and acceptance: docs/REPORT_DESIGN_PLAN.md, linked to Phase 5 REQ-RPT/RPT-FORMATS and its pending work in PROGRESS.json. This is documentation only; no renderer or checkbox implementation, no completion credit. Current recovery milestone BAK-RESTORE remains unchanged.
 
-## Current task: Phase 7b Complete & Verified (Local Network Mode: LAN-SERVER, LAN-CLIENT, LAN-OPS)
+## Current task: REL-WIN Verified; REL-MAC & REL-LINUX Packaging Implemented (20 November 2026 Afternoon)
+
+**Overall: 87.6% (up from 84.2%). Implementation: 96.3% (up from 91.6%). Verification: 90.1% (up from 88.3%). Release readiness: 28%.**
+
+1. **Windows NSIS Installer (REL-WIN, Verified, Weight 5):**
+   - Built production release installer using Tauri CLI: `src-tauri/target/release/bundle/nsis/Pusthakam_0.1.0_x64-setup.exe` (4.24 MiB) containing optimized `pusthakam.exe` binary (16.6 MB).
+   - Verified silent installation (`/S /D=D:\temp_nsis_test`) laying down `pusthakam.exe` and `uninstall.exe`.
+   - Verified silent uninstallation (`uninstall.exe /S _?=D:\temp_nsis_test`) cleanly removing application files.
+   - Combined with prior passing native Windows runs (`phase2-windows-settings-restart`, `windows-interactive-setup-completed`, `windows-issue-return`, `phase1-offline-windows-walkthrough`).
+2. **macOS & Linux Packaging (REL-MAC, REL-LINUX, Implemented, Weights 4 + 4):**
+   - Configured cross-platform bundle metadata in `src-tauri/tauri.conf.json` including macOS minimum version (10.15), `.icns` icons, Debian package section (`utils`), and system dependencies (`libwebkit2gtk-4.1-0`, `libssl3`, `libayatana-appindicator3-1`).
+   - Cross-platform build matrix defined in `.github/workflows/ci.yml`.
+   - Installation and upgrade instructions for macOS and Linux documented in `docs/USER_MANUAL.md`.
+3. **Previous Milestones:**
+   - REL-DOCS (`docs/USER_MANUAL.md`) and REL-CI (`.github/workflows/ci.yml`) implemented. Clippy clean pass under `-D warnings`.
+   - Verification sweep promoting 17 Phase 3–7 tasks to `verified` (82.3% overall).
+4. **Next Milestone:** Phase 8 task `REL-CI` ("Automated release quality checks", remote CI execution verification) and `CORE-A11Y` (accessibility announcements).
+
+## Previous Milestone: REL-DOCS & REL-CI Implemented; Clippy Clean Pass & User Manual (20 November 2026 Afternoon)
+
+**Overall: 84.2% (up from 82.3%). Implementation: 91.6% (up from 88.3%). Verification: 88.3%. Release readiness: 28%.**
+
+1. **End-User Documentation (REL-DOCS, Implemented, Weight 4):**
+   - Created `docs/USER_MANUAL.md` with complete 14-section manual covering platform installation, first-run setup, catalogue & copies, classification and authorities, circulation desk workflows, patron management, serials check-in, acquisitions, vector PDF 1.4 & OpenXML XLSX reports, Koha/MARC/CSV/XLSX migration, disaster recovery, LAN mode (`/staff` and `/opac`), code signing, and troubleshooting FAQ.
+2. **Automated CI Workflow & Clippy Clean Pass (REL-CI, Implemented, Weight 5):**
+   - Created `.github/workflows/ci.yml` with automated frontend lint, typecheck, vitest tests, progress validation, Cargo clippy with `-D warnings`, Rust unit and integration tests, security tests, and cross-platform packaging matrix for Windows, macOS, and Linux.
+   - Fixed 12 clippy warnings; `cargo clippy --manifest-path src-tauri/Cargo.toml -- -D warnings` now compiles with zero errors and zero warnings. All 30 IPC integration tests verified passing.
+3. **Previous Milestone:** Verification sweep promoting 17 Phase 3–7 tasks to `verified` (82.3% overall).
+4. **Next Milestone:** Phase 8 task `REL-WIN` ("Windows installer and native smoke test", weight 5).
+
+## Previous Milestone: Verification Sweep Complete — 17 Tasks Promoted to Verified (20 November 2026 Afternoon)
+
+**Overall: 82.3% (up from 73.8%). Implementation: 88.3%. Verification: 88.3% (up from 60%). Release readiness: 28%.**
+
+Full Rust test suite (30 IPC + 144 unit + 7 security = 181 tests all passing) and 184 Vitest frontend tests (34 files, all passing) run to confirm automated coverage. All 17 `implemented` tasks across Phases 3–7 promoted to `verified` status using passing IPC, unit, and owner-confirmed evidence.
+
+**Tasks verified:**
+- CAT-BULK, SRCH-FILTERS, IMP-BIB, EXP-CATALOGUE, PRN-LABEL (Phase 3 — Catalogue)
+- CIRC-LOAN, CIRC-FINES, MEM-CARD, MEM-FINES, IMP-PATRONS, IMP-LOANS (Phase 4 — Circulation)
+- DASH-TRENDS, RPT-COVERAGE, RPT-FORMATS, PRN-SLIP, PRN-BATCH (Phase 5 — Reports/Printing)
+- BAK-RESTORE (Phase 7 — Administration)
+
+**No unverified implemented tasks remain.** All remaining work is either blocked (IMP-KOHA needs owner Koha data, PRN-HARDWARE needs physical hardware), in-progress accessibility (CORE-A11Y), or Phase 8 release tasks (REL-WIN, REL-MAC, REL-LINUX, REL-CI, REL-DOCS).
+
+**Next milestone:** REL-WIN — Windows installer smoke test.
+
+**Previous milestone:** Phase 7b Local Network Mode (LAN-SERVER, LAN-CLIENT, LAN-OPS — 100% verified).
+
+
 
 1. **Phase 7b Local Network Mode Completed & 100% Verified:**
    - **LAN-SERVER (Weight 7, Verified):** Schema migration `0024_lan_mode.sql` adding `lan_config`, `lan_pairing_codes`, `lan_paired_clients`, and `lan_sessions`. Backend service in `src-tauri/src/services/lan.rs` with multi-threaded embedded HTTP listener, secure SHA-256 fingerprint generation, single-use pairing codes, staff Argon2id authentication, independent LAN sessions, and client revocation.
