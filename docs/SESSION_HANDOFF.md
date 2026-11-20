@@ -164,7 +164,7 @@ When populated test data becomes available: quit an older tray-enabled test app 
 
 - Continue normal phase order; do not jump ahead to LAN/OPAC.
 - LAN browser staff access and anonymous OPAC remain Phase 7b: one designated host, server-enforced permissions and public-data allowlists, no application-imposed client count cap.
-- The startup loading screen must remain visible for at least three seconds when implemented; the owner explicitly deferred it. Do not implement it as part of unrelated work.
+- The startup loading screen was implemented on 20 November 2026: `StartupSplashScreen.tsx` mounted in `Gate.tsx` enforces a minimum 3-second branded presentation before transitioning into sign-in or the setup wizard. Verified with 4 unit tests.
 - New passwords should eventually be at least six characters and contain no spaces; align setup, staff screens and backend validation when that deferred rule is implemented.
 - Write the illustrated user manual after feature completion.
 - Do not add attribution/signatures/watermarks to deliverables. Keep the product name Pusthakam.
