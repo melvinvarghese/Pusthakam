@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Evaluating Library Management Software for Schools and Colleges — Pusthakam</title>
+  <meta name="description" content="A practical evaluation guide for school and college librarians choosing an integrated library system (ILS): cloud dependency, data portability, hardware compatibility, and costs.">
+  <link rel="canonical" href="https://melvinvarghese.github.io/Pusthakam/blog/library-software-evaluation/">
+  <link rel="stylesheet" href="../../css/styles.css">
+  
+  <!-- Article Schema -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "Evaluating Library Management Software for Schools and Colleges: A Practical Guide",
+    "datePublished": "2026-11-20",
+    "dateModified": "2026-11-20",
+    "author": {
+      "@type": "Organization",
+      "name": "Pusthakam Project"
+    },
+    "description": "How school and college librarians can evaluate library software beyond vendor sales demos."
+  }
+  </script>
+</head>
+<body>
+
+  <!-- Site Header -->
+  <header class="site-header">
+    <div class="header-container">
+      <div class="brand-wrap">
+        <a href="../../index.html" class="flex items-center gap-2">
+          <div class="brand-mark">P</div>
+        </a>
+        <a href="../../index.html" class="brand-title">Pusthakam</a>
+        <span class="brand-badge">v0.1.0 Offline-First</span>
+      </div>
+
+      <nav class="main-nav" aria-label="Main Navigation">
+        <a href="../../index.html">Overview</a>
+        <a href="../../try/index.html">Try & Download</a>
+        <a href="../../faq/index.html">FAQ</a>
+        <a href="../index.html" class="active">Blog</a>
+        <a href="https://github.com/melvinvarghese/Pusthakam" target="_blank" rel="noopener">GitHub ↗</a>
+      </nav>
+
+      <div class="header-actions">
+        <a href="../index.html" class="btn btn-outline" style="border-color: #3A5070; color: #FFFFFF;">← Back to Blog</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="main-content container prose" style="padding-top: 3.5rem; padding-bottom: 3.5rem;">
+    <article>
+      <header>
+        <span class="section-tag">Library Software Evaluation</span>
+        <h1>Evaluating Library Management Software for Schools and Colleges: A Practical Guide</h1>
+        <div class="post-meta">
+          Published November 20, 2026 · 6 min read · By Pusthakam Project
+        </div>
+      </header>
+
+      <p>
+        Choosing a library management system (LMS or ILS) for a school, college, or community institution is often treated as a purchasing decision made from sales presentations. Yet the true test of library software occurs at 8:45 AM on a Monday morning, when twenty students stand in line at the circulation desk before the morning bell, and the campus network connection slows to a crawl.
+      </p>
+
+      <h2>1. The Hidden Trap of Cloud Subscription Lock-In</h2>
+      <p>
+        In recent years, library software vendors have aggressively moved toward SaaS (Software-as-a-Service) subscription models. While cloud hosting promises effortless access, it introduces four severe vulnerabilities for schools and community libraries:
+      </p>
+      <ul>
+        <li><strong>Continuous Operating Overhead:</strong> An annual subscription is an ongoing recurring cost that can double or triple when vendor pricing tiers change. If a school budget is frozen, the library risks losing access to its own software.</li>
+        <li><strong>Network Dependency:</strong> Cloud portals require an active internet connection for every single transaction. If the ISP experiences downtime, the desk cannot check out books or lookup patrons.</li>
+        <li><strong>Patron Privacy Exposure:</strong> Cloud systems store student names, phone numbers, addresses, and borrowing histories on third-party remote servers subject to data breaches and third-party terms of service.</li>
+        <li><strong>Data Hostage Risks:</strong> When switching away from a proprietary SaaS vendor, extracting your historical borrowing logs and complete copy histories is often penalized with expensive export fees or incomplete CSV dumps.</li>
+      </ul>
+
+      <h2>2. What to Look for in Daily Desk Ergonomics</h2>
+      <p>
+        A great library system is built around the speed of physical library desk interactions:
+      </p>
+      <ul>
+        <li><strong>USB Keyboard-Wedge Scanner Compatibility:</strong> The software must accept barcode scanner input directly without requiring manual mouse clicks between input boxes. Scanning a member card should automatically focus the book barcode input; scanning the book barcode should immediately prepare the loan.</li>
+        <li><strong>Instant Full-Text Search:</strong> Looking up a title should happen in under 5 milliseconds as you type, matching ISBNs, titles, authors, and classification call numbers simultaneously.</li>
+        <li><strong>Printable Due Slips and Spine Labels:</strong> The system should output clean, formatted receipt slips and Avery A4/Letter spine labels directly to any standard printer without clipping margins or requiring specialized proprietary drivers.</li>
+      </ul>
+
+      <h2>3. The Offline-First Alternative: How Pusthakam Approaches the Problem</h2>
+      <p>
+        Pusthakam was built specifically to address these challenges. By pairing Tauri 2, Rust, and SQLite, Pusthakam operates as a permanent local desktop application. The entire database resides on your computer. When you need to provide access across other computers or tablets in the library, Pusthakam’s embedded Local Network (LAN) mode lets staff and students connect over local Wi-Fi without needing external internet access.
+      </p>
+
+      <div class="callout-box" style="margin: 2.5rem 0;">
+        <h3 style="font-size: 1.1rem; font-weight: 700; color: var(--ink); margin-bottom: 0.35rem;">Evaluation Checklist Summary</h3>
+        <p style="font-size: 0.9rem; color: var(--muted); margin: 0;">
+          Before committing your institution to a new system, verify: Does it work completely offline? Can you export a full SQLite or CSV backup with one click? Does it support USB barcode wedge scanners out of the box? Does it calculate loan due dates around your specific holiday calendar? If the answer to any of these is no, look closely before signing.
+        </p>
+      </div>
+
+      <div style="border-top: 1px solid var(--line); padding-top: 2rem; margin-top: 3rem; display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem;">
+        <a href="../index.html" style="font-weight: 600; color: var(--accent-science);">← Back to All Articles</a>
+        <a href="../../try/index.html" class="btn btn-dark">Try Pusthakam v0.1.0</a>
+      </div>
+    </article>
+  </main>
+
+  <!-- Site Footer -->
+  <footer class="site-footer">
+    <div class="container footer-bottom">
+      <span>Copyright © 2026 Pusthakam Contributors · Released under open source license.</span>
+      <a href="../../index.html">← Back to Overview</a>
+    </div>
+  </footer>
+
+</body>
+</html>

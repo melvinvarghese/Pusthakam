@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Why Offline-First Architecture Matters for Real Libraries — Pusthakam</title>
+  <meta name="description" content="An architectural deep-dive into why local SQLite storage, atomic backups, and offline desktop software provide superior reliability, speed, and data privacy for libraries.">
+  <link rel="canonical" href="https://melvinvarghese.github.io/Pusthakam/blog/offline-first-library-operations/">
+  <link rel="stylesheet" href="../../css/styles.css">
+  
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "Why Offline-First Architecture Matters for Real Libraries",
+    "datePublished": "2026-11-18",
+    "dateModified": "2026-11-18",
+    "author": {
+      "@type": "Organization",
+      "name": "Pusthakam Project"
+    },
+    "description": "Why offline-first architecture with local SQLite storage provides genuine continuity, speed, and privacy."
+  }
+  </script>
+</head>
+<body>
+
+  <!-- Site Header -->
+  <header class="site-header">
+    <div class="header-container">
+      <div class="brand-wrap">
+        <a href="../../index.html" class="flex items-center gap-2">
+          <div class="brand-mark">P</div>
+        </a>
+        <a href="../../index.html" class="brand-title">Pusthakam</a>
+        <span class="brand-badge">v0.1.0 Offline-First</span>
+      </div>
+
+      <nav class="main-nav" aria-label="Main Navigation">
+        <a href="../../index.html">Overview</a>
+        <a href="../../try/index.html">Try & Download</a>
+        <a href="../../faq/index.html">FAQ</a>
+        <a href="../index.html" class="active">Blog</a>
+        <a href="https://github.com/melvinvarghese/Pusthakam" target="_blank" rel="noopener">GitHub ↗</a>
+      </nav>
+
+      <div class="header-actions">
+        <a href="../index.html" class="btn btn-outline" style="border-color: #3A5070; color: #FFFFFF;">← Back to Blog</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="main-content container prose" style="padding-top: 3.5rem; padding-bottom: 3.5rem;">
+    <article>
+      <header>
+        <span class="section-tag">Architecture & Reliability</span>
+        <h1>Why Offline-First Architecture Matters for Real Libraries</h1>
+        <div class="post-meta">
+          Published November 18, 2026 · 5 min read · By Pusthakam Project
+        </div>
+      </header>
+
+      <p>
+        In modern software design, "cloud-native" is often praised as the gold standard. But in the physical reality of libraries—situated in basement reading rooms, rural schools, historic college campuses, or developing regions—the internet is not an omnipresent utility. It fluctuates, disconnects, and suffers outages.
+      </p>
+
+      <h2>The Principle of Sovereign Local Storage</h2>
+      <p>
+        An offline-first application reverses the traditional client-server hierarchy: the local computer is not a temporary cache waiting for a remote server's permission. It is the authoritative host.
+      </p>
+      <p>
+        In Pusthakam, every record lives in a single, robust SQLite database file managed with Write-Ahead Logging (WAL) mode. When you search for a book, the query executes directly against local memory and SSD storage in 2 to 4 milliseconds. There are no HTTP roundtrips, no DNS lookups, and no TLS handshakes required to check out a book.
+      </p>
+
+      <h2>Local Network Collaboration Without the Cloud</h2>
+      <p>
+        One frequent objection to desktop software is multi-user collaboration: "What if multiple staff members need to issue books or students need to search the catalogue?"
+      </p>
+      <p>
+        Pusthakam solves this with its built-in Local Network (LAN) mode. The desktop instance contains an embedded multi-threaded HTTP server written in Rust. When enabled:
+      </p>
+      <ul>
+        <li>Staff members can open <code>http://&lt;IP&gt;:4318/staff</code> on any Wi-Fi connected phone or tablet to scan barcodes right from the library stacks.</li>
+        <li>Students can browse the catalogue on kiosk tablets at <code>http://&lt;IP&gt;:4318/opac</code> without seeing private patron or circulation data.</li>
+        <li>Transactions use immediate write locks: if two staff members attempt to issue the same physical copy at the same millisecond, the system safely rejects the conflicting transaction with an immediate <code>409 Conflict</code> error.</li>
+      </ul>
+
+      <h2>Disaster Recovery That You Actually Control</h2>
+      <p>
+        Cloud vendors frequently claim that your data is safe because it is in "the cloud." But when an institutional subscription lapses or an account is suspended, retrieving that data is agonizing. With Pusthakam, disaster recovery is physical and verifiable: clicking "Create backup" generates an atomic, self-contained SQLite file with an SHA-256 hash that you can copy to an external USB drive or secure local storage.
+      </p>
+
+      <div style="border-top: 1px solid var(--line); padding-top: 2rem; margin-top: 3rem; display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem;">
+        <a href="../index.html" style="font-weight: 600; color: var(--accent-tech);">← Back to All Articles</a>
+        <a href="../../try/index.html" class="btn btn-dark">Get Pusthakam</a>
+      </div>
+    </article>
+  </main>
+
+  <!-- Site Footer -->
+  <footer class="site-footer">
+    <div class="container footer-bottom">
+      <span>Copyright © 2026 Pusthakam Contributors · Released under open source license.</span>
+      <a href="../../index.html">← Back to Overview</a>
+    </div>
+  </footer>
+
+</body>
+</html>
