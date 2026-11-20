@@ -89,3 +89,7 @@ Owner result, 19 November: Choose file is now visibly a button in Windows. Appea
 ## Owner-approved report presentation requirement — 20 November 2026
 
 Polished, aesthetically beautiful reports are the default; do not settle for plain table dumps. Provide an unchecked **Use simple report design** checkbox for conventional minimal layouts with unchanged data. Use relevant installed design/document/PDF/spreadsheet skills when implementing and reviewing outputs. Applies to preview/PDF/print/styled XLSX; CSV remains data-only. See REPORT_DESIGN_PLAN.md. Planned, not implemented; no progress credit.
+
+## Deferred owner request: GitHub Pages website
+
+Record now, implement later: an attractive librarian-focused homepage, populated Blog and FAQ tabs, individually addressable/crawlable blog posts, sitemap.xml, robots.txt and metadata/structured data for ordinary and AI-assisted search discovery. Relevant design/writing/site skills are available. No implementation or publication now. See GITHUB_PAGES_WEBSITE_PLAN.md for hosting/root-robots constraints, content and acceptance.

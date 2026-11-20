@@ -52,3 +52,7 @@ See the master brief §19: installs, starts, configures, catalogues, circulates,
 ## Report presentation requirement — 20 November 2026
 
 REQ-RPT: generated reports should be professionally designed and aesthetically beautiful by default. An unchecked **Use simple report design** checkbox allows a conventional, minimal library-management report appearance. Preview and PDF/print/styled XLSX should honor the selected design, with identical records/calculations/totals in either mode. CSV has no visual layout. Relevant installed design/document/PDF/spreadsheet skills should guide implementation and visual review. This is a planned enhancement; see REPORT_DESIGN_PLAN.md for acceptance.
+
+## Deferred public project website — 20 November 2026
+
+Owner requests a GitHub Pages marketing/information site for librarians, separate from the library OPAC. Required: attractive homepage, populated blog and FAQ, individual static article URLs, clear release/try information, sitemap/robots and search/AI-discovery fundamentals. All public claims must reflect actual release status; no guaranteed indexing/rankings. Implementation and publication are deferred. See GITHUB_PAGES_WEBSITE_PLAN.md; no desktop completion credit.

@@ -496,3 +496,11 @@ Implemented `DASH-TRENDS` in `src/features/dashboard/Dashboard.tsx` to satisfy `
 ## Report-design requirement added to work plan — 20 November 2026
 
 Owner requests aesthetically beautiful, professionally designed reports by default, with an unchecked **Use simple report design** checkbox for a conventional layout. Preview/PDF/print/styled XLSX must use the selected design without changing data, counts or totals; CSV is data-only. Relevant installed design/document-generation skills must guide the future implementation and visual review. Detailed plan and acceptance: docs/REPORT_DESIGN_PLAN.md, linked to REQ-RPT/RPT-FORMATS and recorded in PROGRESS.json verificationNeeded. Documentation only: no application changes or completion credit. Existing RPT-FORMATS implementation status refers to current basic exports; this presentation enhancement is explicitly pending. Current milestone BAK-RESTORE is unchanged.
+
+## Public website work — 20 November 2026
+
+Owner requested an attractive GitHub Pages site for librarians, including populated blog/FAQ, distinct article URLs, sitemap/robots and search/AI-discovery fundamentals. Separate static site under development; no deployment performed and no desktop completion credit. Build all reviewable assets before publishing. Restore/recovery milestone remains queued, and report-design plan remains pending.
+
+## GitHub Pages website plan saved; implementation deferred
+
+Owner clarified to document the website request only and build later. Saved docs/GITHUB_PAGES_WEBSITE_PLAN.md: librarian-focused homepage/try path, populated blog and FAQ, distinct static article URLs, sitemap/robots, metadata/structured data and honest search/AI-discovery goals. An initial design note was moved into the plan; no site code, workflow or published pages were produced. Source/product recovery milestone and report-design plan remain unchanged; no weighted completion credit.
