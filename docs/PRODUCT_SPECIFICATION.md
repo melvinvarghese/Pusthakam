@@ -48,3 +48,7 @@ Cloud sync, online ISBN/metadata lookup, multi-site libraries, custom cryptograp
 
 ## Definition of done (release candidate)
 See the master brief §19: installs, starts, configures, catalogues, circulates, reports, searches, imports/exports, backs up/restores, enforces permissions, passes automated tests, verified offline, packaged for each claimed platform, with user documentation.
+
+## Report presentation requirement — 20 November 2026
+
+REQ-RPT: generated reports should be professionally designed and aesthetically beautiful by default. An unchecked **Use simple report design** checkbox allows a conventional, minimal library-management report appearance. Preview and PDF/print/styled XLSX should honor the selected design, with identical records/calculations/totals in either mode. CSV has no visual layout. Relevant installed design/document/PDF/spreadsheet skills should guide implementation and visual review. This is a planned enhancement; see REPORT_DESIGN_PLAN.md for acceptance.

@@ -62,3 +62,7 @@ Owner request (18 November 2026): when Pusthakam opens, display a startup loadin
 ## Phase 4 calendar checkpoint
 
 Holiday dates and recurring weekly closures are implemented in Library Settings. Issue and renewal use the same next-open-date rule. Schema 17, validation, permissions, audit rollback, persisted configuration and stale confirmations passed automated checks. Native Windows acceptance remains open; see LIBRARY_CALENDAR.md. Phase 3 real Koha acceptance remains blocked on a representative export, with native catalogue/printing checks recorded in PROGRESS.json.
+
+## Planned report presentation enhancement — owner request, 20 November 2026
+
+Phase 5 / REQ-RPT / RPT-FORMATS: reports must be polished and aesthetically beautiful by default, using relevant installed design and document-generation skills during development. Add an unchecked **Use simple report design** checkbox for a conventional library-management layout. Apply the choice to preview/PDF/print/styled XLSX, preserving identical data and totals; CSV remains data-only. See [REPORT_DESIGN_PLAN.md](REPORT_DESIGN_PLAN.md) for scope and visual acceptance. Planned only; no implementation credit. This does not reorder the active recovery milestone.

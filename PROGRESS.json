@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "lastUpdated": "2026-11-20T05:38:00.000Z",
+  "lastUpdated": "2026-11-20T06:04:24.274Z",
   "currentPhase": "7b",
   "currentTask": {
     "taskId": "LAN-OPS",
@@ -1090,13 +1090,15 @@
         "src/features/reports/ReportsPage.tsx",
         "src/lib/api/types.ts",
         "src/lib/api/index.ts",
-        "src/styles/index.css"
+        "src/styles/index.css",
+        "docs/REPORT_DESIGN_PLAN.md: owner-approved planned presentation requirement, not renderer implementation."
       ],
       "verificationEvidence": [
         "operational-reports-formats"
       ],
       "verificationNeeded": [
-        "Open output in a spreadsheet and PDF reader; print and compare against the source report."
+        "Open output in a spreadsheet and PDF reader; print and compare against the source report.",
+        "Planned owner request: polished, aesthetically designed reports by default; unchecked Use simple report design checkbox switches preview/PDF/print/styled XLSX to conventional presentation with identical data. Consult relevant installed design/document/PDF/spreadsheet skills, implement both modes and visually verify representative outputs; not yet implemented. CSV remains data-only."
       ]
     },
     {
@@ -3039,6 +3041,13 @@
     }
   ],
   "recentActivity": [
+    {
+      "kind": "progress",
+      "at": "2026-11-20T06:04:24.274Z",
+      "taskId": "RPT-FORMATS",
+      "title": "Polished reports and optional simple design added to work plan",
+      "detail": "Documentation only. Default professionally designed reports, plus unchecked Use simple report design checkbox for conventional layouts. Apply consistently to preview/PDF/print/XLSX with identical data and relevant development skills. No renderer/UI changes or completion credit; BAK-RESTORE next milestone preserved."
+    },
     {
       "kind": "completed",
       "at": "2026-11-20T05:38:00.000Z",
