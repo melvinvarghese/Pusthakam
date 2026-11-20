@@ -27,7 +27,7 @@ pub fn reports_stock_by_location(state: State<'_, AppState>) -> AppResult<Vec<St
 #[tauri::command]
 pub fn reports_fine_summary(state: State<'_, AppState>) -> AppResult<Vec<FineSummary>> {
     state.require("reports.read")?;
-    state.with_conn(|conn| reports::fine_summary(conn))
+    state.with_conn(reports::fine_summary)
 }
 
 #[tauri::command]
@@ -67,6 +67,7 @@ pub fn reports_loss_damage_list(state: State<'_, AppState>, from: String, to: St
 }
 
 #[tauri::command]
+#[allow(clippy::too_many_arguments)]
 pub fn reports_export_file(
     state: State<'_, AppState>,
     format: String,

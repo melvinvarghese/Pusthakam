@@ -266,6 +266,7 @@ pub fn preview(conn: &Connection, encoded: &str) -> AppResult<Preview> {
         fingerprint,
     })
 }
+#[allow(clippy::too_many_arguments)]
 fn provenance(
     conn: &Connection,
     batch: i64,

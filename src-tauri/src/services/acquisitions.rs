@@ -673,6 +673,7 @@ pub fn update_order_status(conn: &mut Connection, id: i64, status: String, invoi
     Ok(())
 }
 
+#[allow(clippy::type_complexity)]
 pub fn receive_order_item(
     conn: &mut Connection,
     input: ReceiveItemInput,

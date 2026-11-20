@@ -204,7 +204,7 @@ pub fn get_or_init_config(conn: &Connection) -> AppResult<LanConfig> {
         let mut random_bytes = [0u8; 32];
         rand_core::OsRng.fill_bytes(&mut random_bytes);
         let mut hasher = Sha256::new();
-        hasher.update(&random_bytes);
+        hasher.update(random_bytes);
         hasher.update(row.3.as_bytes());
         let hash = hasher.finalize();
         let fingerprint = hash.iter().map(|b| format!("{b:02x}")).collect::<Vec<_>>().join("");
@@ -624,6 +624,7 @@ pub fn opac_search(
     })
 }
 
+#[allow(clippy::type_complexity)]
 pub fn opac_get_record(conn: &Connection, id: i64) -> AppResult<Option<PublicOpacItem>> {
     let row: Result<(String, Option<String>, Option<String>, Option<i64>, Option<String>, Option<String>), _> = conn.query_row(
         "SELECT title, subtitle, publisher, publication_year, COALESCE(isbn13, isbn10) as isbn, classification_number
@@ -1090,18 +1091,16 @@ fn handle_http_connection(mut stream: TcpStream, db_path: &PathBuf) -> std::io::
         let browser_staff_on = config.as_ref().map(|c| c.enabled && c.browser_staff_enabled).unwrap_or(false);
 
         let html = if !browser_staff_on {
-            format!(
-                r#"<!DOCTYPE html>
+            r#"<!DOCTYPE html>
 <html lang="en">
 <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Access Disabled</title>
-<style>body {{ font-family: sans-serif; background: #f8fafc; color: #1e293b; padding: 40px 20px; text-align: center; }}
-.card {{ max-width: 500px; margin: 0 auto; background: white; padding: 32px; border-radius: 12px; border: 1px solid #e2e8f0; }}
-h1 {{ color: #dc2626; font-size: 20px; }}
-p {{ color: #64748b; font-size: 15px; line-height: 1.5; }}
+<style>body { font-family: sans-serif; background: #f8fafc; color: #1e293b; padding: 40px 20px; text-align: center; }
+.card { max-width: 500px; margin: 0 auto; background: white; padding: 32px; border-radius: 12px; border: 1px solid #e2e8f0; }
+h1 { color: #dc2626; font-size: 20px; }
+p { color: #64748b; font-size: 15px; line-height: 1.5; }
 </style></head>
 <body><div class="card"><h1>Browser Staff Access Disabled</h1>
-<p>The library administrator has not enabled browser staff access for this server.<br/>Enable it in <strong>Settings &rarr; Local Network</strong> on the main desktop app.</p></div></body></html>"#
-            )
+<p>The library administrator has not enabled browser staff access for this server.<br/>Enable it in <strong>Settings &rarr; Local Network</strong> on the main desktop app.</p></div></body></html>"#.to_string()
         } else {
             format!(
                 r#"<!DOCTYPE html>
