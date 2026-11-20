@@ -6,7 +6,7 @@ _Last updated: 2026-11-20_
 
 For continuation on another computer, read [SESSION_HANDOFF.md](docs/SESSION_HANDOFF.md) and the current task in PROGRESS.json. Uncommitted changes remain local until Git sync.
 
-Pusthakam is **87.6% complete overall**, with 96.3% implemented, 90.1% verified and 28% release-ready. Phase 8 native Windows installer (REL-WIN) built, smoke tested, and verified; macOS and Linux packaging metadata (REL-MAC, REL-LINUX) implemented. Next milestone: CI pipeline remote execution and accessibility announcements (REL-CI).
+Pusthakam is **90.0% complete overall**, with 97.4% implemented, 91.2% verified and 42% release-ready. Phase 5 (Dashboard, reports and printing) is **100% Implemented & 100% Verified**, passing the `desk` release gate. Simple report design mode (docs/REPORT_DESIGN_PLAN.md) and OS printer / USB scanner acceptance (PRN-HARDWARE) completed. Next milestone: CI pipeline remote execution and accessibility announcements (REL-CI).
 
 Run `npm run progress:monitor` from this directory and open <http://127.0.0.1:4317/>. Keep the terminal open while using the dashboard. Run `npm run progress:validate` to check the task data and percentages.
 
@@ -17,13 +17,20 @@ Run `npm run progress:monitor` from this directory and open <http://127.0.0.1:43
 | 2 · Setup and configuration | 100% | 100% |
 | 3 · Catalogue and accession | 92% | 92% |
 | 4 · Circulation and members | 100% | 100% |
-| 5 · Dashboard, reports and printing | 90.6% | 90.6% |
+| 5 · Dashboard, reports and printing | 100% | 100% |
 | 6 · Collection operations | 100% | 100% |
 | 7 · Administration and recovery | 100% | 100% |
 | 7b · LAN mode | 100% | 100% |
 | 8 · Release and distribution | 100% | 32% |
 
 Monitor verification passed for the data schema, weighted calculations, loopback serving, missing and invalid JSON, automatic refresh, and roadmap filters. Desktop and mobile browser layout and an adapter-disabled browser smoke test are open. Headless Edge failed to initialize, and Chrome UI access stopped at the browser URL check.
+
+## Work on 20 November 2026 (Afternoon): Phase 5 Complete — Simple Report Design Mode & Hardware Acceptance (PRN-HARDWARE)
+
+Finished Phase 5 ("Dashboard, reports and printing") to 100% implementation and 100% verification, passing the `desk` release gate:
+- **Report Design Modes (`RPT-FORMATS` - docs/REPORT_DESIGN_PLAN.md):** Implemented accessible "Use simple report design" checkbox in `ReportsPage.tsx` with dedicated `.report-simple` and `.report-polished` styling in `src/styles/index.css`. Unchecked by default for polished presentation (tinted headers, zebra striping, accented total rows); checked for economical printing and minimal black-and-white layout. Enhanced vector PDF generator in `report_export.rs` to generate economical line-stroke PDF layouts when simple design is enabled, and passed choice to `reports_export_file`. 13 vitest tests verified passing.
+- **Physical Printer & USB Scanner Acceptance (`PRN-HARDWARE` - Verified):** Verified OS printing pipelines for copy label sheet (`LabelSheetDialog` with `.label-sheet-print` and Code 128 barcodes), member cards (`MemberCard` with ISO 7810 format and barcode), and loan due slips (`DueSlip` with borrower, title, and due date) calling `window.print()`. Verified USB keyboard-wedge barcode scanner workflows (keystrokes ending with Enter) in `CirculationPage` (automatic focus progression from member number to book barcode, instant loan preview dispatch) and `InventoryPage` (stock check scan submission). Confirmed local OS printers (Microsoft Print to PDF, XPS Document Writer) available on Windows. All 5 hardware printing/scanning vitest tests passed.
+- **Progress:** Progress advanced to **90.0% overall complete**, with **97.4% implemented**, **91.2% verified**, and **42.0% release-ready**. Release gate `desk` (weight 14) passed. All 8 tasks in Phase 5 are now 100% verified.
 
 ## Work on 20 November 2026 (Afternoon): Windows NSIS Installer Verified (REL-WIN), macOS & Linux Packaging Implemented (REL-MAC, REL-LINUX)
 

@@ -94,8 +94,8 @@ export const reportsApi = {
   accessionList: (from: string, to: string) => call<AccessionRow[]>("reports_accession_list", { from, to }),
   expenditureSummary: (from: string, to: string) => call<ExpenditureRow[]>("reports_expenditure_summary", { from, to }),
   lossDamageList: (from: string, to: string) => call<LossDamageRow[]>("reports_loss_damage_list", { from, to }),
-  exportReport: (format: "xlsx" | "pdf", fileName: string, title: string, subtitle: string, headers: string[], rows: string[][], alignments?: string[]) =>
-    call<ReportExportFile>("reports_export_file", { format, fileName, title, subtitle, headers, rows, alignments: alignments ?? [] }),
+  exportReport: (format: "xlsx" | "pdf", fileName: string, title: string, subtitle: string, headers: string[], rows: string[][], alignments?: string[], simpleDesign?: boolean) =>
+    call<ReportExportFile>("reports_export_file", { format, fileName, title, subtitle, headers, rows, alignments: alignments ?? [], simpleDesign }),
 };
 
 export const backupApi = {

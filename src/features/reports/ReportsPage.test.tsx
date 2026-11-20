@@ -223,3 +223,46 @@ it("exports report to XLSX and PDF matching row counts and totals", async () => 
   expect(downloads).toHaveLength(2);
   expect(downloads[1]).toMatch(/^circulation-.*\.pdf$/);
 });
+
+it("supports toggling simple report design mode for preview, printing and export", async () => {
+  vi.mocked(invoke).mockImplementation(async (cmd, args) => {
+    if (cmd === "reports_circulation_activity") {
+      return [{ date: "2026-11-16", issued: 3, returned: 2, lost: 0, renewed: 1, reservations: 4 }];
+    }
+    if (cmd === "reports_export_file") {
+      const a = args as { format: string; simpleDesign?: boolean };
+      expect(a.simpleDesign).toBe(true);
+      return { fileName: "report.pdf", mimeType: "application/pdf", dataBase64: "JVBERi0xLjQK" };
+    }
+    return [];
+  });
+
+  const createObjectURL = vi.fn((_blob: Blob) => "blob:test");
+  vi.stubGlobal("URL", Object.assign(class extends URL {}, { createObjectURL, revokeObjectURL: vi.fn() }));
+  vi.spyOn(HTMLAnchorElement.prototype, "click").mockImplementation(() => {});
+
+  const { container } = renderReports();
+  expect(await screen.findByRole("rowheader", { name: "2026-11-16" })).toBeInTheDocument();
+
+  const checkbox = screen.getByRole("checkbox", { name: "Use simple report design" });
+  expect(checkbox).not.toBeChecked();
+  expect(container.querySelector(".report-polished")).toBeInTheDocument();
+
+  // Toggle simple report design
+  await userEvent.click(checkbox);
+  expect(checkbox).toBeChecked();
+  expect(container.querySelector(".report-simple")).toBeInTheDocument();
+
+  // Print in simple design mode
+  const print = vi.spyOn(window, "print").mockImplementation(() => {
+    const printEl = document.querySelector("body > .report-print");
+    expect(printEl).toHaveClass("report-simple");
+    window.dispatchEvent(new Event("afterprint"));
+  });
+  await userEvent.click(screen.getByRole("button", { name: "Print report" }));
+  expect(print).toHaveBeenCalledOnce();
+
+  // Export PDF with simpleDesign
+  await userEvent.click(screen.getByRole("button", { name: "Export PDF" }));
+  expect(vi.mocked(invoke)).toHaveBeenCalledWith("reports_export_file", expect.objectContaining({ simpleDesign: true }));
+});

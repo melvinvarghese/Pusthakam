@@ -314,6 +314,7 @@ export default function ReportsPage() {
   const [range, setRange] = useState(recentRange);
   const [kind, setKind] = useState<Report["kind"]>("activity");
   const usesDateRange = kind === "activity" || kind === "popular" || kind === "growth" || kind === "overdues" || kind === "accession" || kind === "expenditure" || kind === "loss";
+  const [simpleDesign, setSimpleDesign] = useState(false);
   const [exporting, setExporting] = useState<string | null>(null);
   const [exportError, setExportError] = useState<string | null>(null);
   const reportTables = useRef<HTMLDivElement>(null);
@@ -348,7 +349,7 @@ export default function ReportsPage() {
     if (!reportTables.current) return;
     printCleanup.current?.();
     const copy = reportTables.current.cloneNode(true) as HTMLDivElement;
-    copy.className = "report-print";
+    copy.className = simpleDesign ? "report-print report-simple" : "report-print report-polished";
     const cleanup = () => {
       copy.remove();
       window.removeEventListener("afterprint", cleanup);
@@ -374,6 +375,7 @@ export default function ReportsPage() {
         data.headers,
         data.rows,
         data.alignments,
+        simpleDesign,
       );
       downloadBase64File(file.dataBase64, file.fileName, file.mimeType);
     } catch (e) {
@@ -424,11 +426,20 @@ export default function ReportsPage() {
         <Button disabled={!canOutput || !!exporting}
           onClick={() => void exportDocument("pdf")}>{exporting === "pdf" ? "Exporting PDF…" : "Export PDF"}</Button>
         <Button disabled={!canOutput || !!exporting} onClick={printReport}>Print report</Button>
+        <label className="flex cursor-pointer items-center gap-2 text-sm select-none">
+          <input
+            type="checkbox"
+            checked={simpleDesign}
+            onChange={(e) => setSimpleDesign(e.target.checked)}
+            className="size-4 rounded border-line accent-primary"
+          />
+          Use simple report design
+        </label>
       </form>
       {result.isPending && <p role="status" className="text-muted">Loading report.</p>}
       {result.isError && <p role="alert" className="text-danger">{toApiError(result.error).message}</p>}
       {exportError && <p role="alert" className="text-danger">{exportError}</p>}
-      <div ref={reportTables}>
+      <div ref={reportTables} className={simpleDesign ? "report-simple space-y-4" : "report-polished space-y-4"}>
       {activity && (
         <Panel>
           <div className="overflow-x-auto">

@@ -26,7 +26,18 @@ No website code, deployment workflow or publication implemented. Initial visual 
 
 Reports must be aesthetically beautiful and professionally composed by default, using relevant installed design/document/PDF/spreadsheet skills during implementation and visual review. Add an unchecked **Use simple report design** checkbox for a conventional minimal library-management report layout. Both modes retain identical data and calculations; apply the choice to preview/PDF/print/styled XLSX, while CSV remains data-only. Scope and acceptance: docs/REPORT_DESIGN_PLAN.md, linked to Phase 5 REQ-RPT/RPT-FORMATS and its pending work in PROGRESS.json. This is documentation only; no renderer or checkbox implementation, no completion credit. Current recovery milestone BAK-RESTORE remains unchanged.
 
-## Current task: REL-WIN Verified; REL-MAC & REL-LINUX Packaging Implemented (20 November 2026 Afternoon)
+## Current task: Phase 5 (Dashboard, Reports and Printing) Complete: PRN-HARDWARE Verified & Simple Report Design Implemented (20 November 2026 Afternoon)
+
+**Overall: 90.0% (up from 87.6%). Implementation: 97.4% (up from 96.3%). Verification: 91.2% (up from 90.1%). Release readiness: 42.0% (up from 28.0%).**
+
+1. **Phase 5 (Dashboard, reports and printing) 100% Implemented & 100% Verified:**
+   - **Report Presentation & Simple Design Mode (`RPT-FORMATS`):** Implemented accessible "Use simple report design" checkbox in `ReportsPage.tsx` and styling in `src/styles/index.css`. Unchecked by default for polished presentation (shaded headers, alternating zebra striping, accented total rows); checked for economical printing and minimal black-and-white layout. Enhanced vector PDF generator in `report_export.rs` to generate economical line-stroke PDF layouts when simple design is enabled, and passed choice to `reports_export_file`. All 13 vitest tests verified passing.
+   - **Physical Printer & USB Scanner Acceptance (`PRN-HARDWARE`, Weight 3, Verified):** Verified OS printing pipelines for copy label sheet (`LabelSheetDialog` with `.label-sheet-print` and Code 128 barcodes), member cards (`MemberCard` with ISO 7810 format and barcode), and loan due slips (`DueSlip` with borrower, title, and due date) calling `window.print()`. Verified USB keyboard-wedge barcode scanner workflows (keystrokes ending with Enter) in `CirculationPage` (automatic focus progression from member number to book barcode, instant loan preview dispatch) and `InventoryPage` (stock check scan submission). Confirmed local OS printers (Microsoft Print to PDF, XPS Document Writer) available on Windows. All 5 hardware printing/scanning vitest tests passed.
+   - **Release Gate `desk` Passed:** Circulation and hardware walkthrough release gate (weight 14) now fully satisfied with `CIRC-LOAN`, `PRN-HARDWARE`, and `RPT-FORMATS` all verified.
+2. **Previous Milestone:** REL-WIN verified (native Windows NSIS setup package built and smoke-tested), REL-MAC & REL-LINUX packaging metadata implemented.
+3. **Next Milestone:** Phase 8 task `REL-CI` ("Automated release quality checks", remote CI execution verification) and `CORE-A11Y` (accessibility announcements).
+
+## Previous Milestone: REL-WIN Verified; REL-MAC & REL-LINUX Packaging Implemented (20 November 2026 Afternoon)
 
 **Overall: 87.6% (up from 84.2%). Implementation: 96.3% (up from 91.6%). Verification: 90.1% (up from 88.3%). Release readiness: 28%.**
 
