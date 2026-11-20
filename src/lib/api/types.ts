@@ -272,6 +272,302 @@ export interface ReceiveResult {
   createdCopies: CreatedCopyInfo[];
 }
 
+// ----- serials / periodicals -----
+
+export interface SerialSubscription {
+  id: number;
+  title: string;
+  issn: string | null;
+  publisher: string | null;
+  frequency: string;
+  vendorId: number | null;
+  vendorName: string | null;
+  budgetId: number | null;
+  budgetName: string | null;
+  costMinor: number;
+  currency: string;
+  startDate: string;
+  endDate: string;
+  status: "active" | "expired" | "cancelled";
+  notes: string | null;
+  archived: boolean;
+  totalIssuesCount: number;
+  receivedIssuesCount: number;
+  missingIssuesCount: number;
+  expectedIssuesCount: number;
+  createdAt: string;
+}
+
+export interface SaveSubscriptionInput {
+  id?: number | null;
+  title: string;
+  issn?: string | null;
+  publisher?: string | null;
+  frequency: string;
+  vendorId?: number | null;
+  budgetId?: number | null;
+  costMinor?: number | null;
+  currency?: string | null;
+  startDate: string;
+  endDate: string;
+  notes?: string | null;
+  autoGenerateIssues?: boolean | null;
+  issuePatternPrefix?: string | null;
+}
+
+export interface SerialIssue {
+  id: number;
+  subscriptionId: number;
+  subscriptionTitle: string;
+  issueNumber: string;
+  expectedDate: string;
+  receivedDate: string | null;
+  status: "expected" | "received" | "missing" | "claimed" | "cancelled";
+  barcode: string | null;
+  accessionNo: string | null;
+  physicalItemId: number | null;
+  claimCount: number;
+  claimDate: string | null;
+  notes: string | null;
+  receivedBy: number | null;
+  createdAt: string;
+}
+
+export interface AddIssueInput {
+  subscriptionId: number;
+  issueNumber: string;
+  expectedDate: string;
+  notes?: string | null;
+}
+
+export interface CheckInIssueInput {
+  issueId: number;
+  receivedDate?: string | null;
+  accessionCopy?: boolean | null;
+  itemCategoryId?: number | null;
+  locationId?: number | null;
+  notes?: string | null;
+}
+
+export interface CheckInResult {
+  issueId: number;
+  status: string;
+  receivedDate: string;
+  accessionNo: string | null;
+  barcode: string | null;
+  copyId: number | null;
+}
+
+export interface SubscriptionFilter {
+  status?: string | null;
+  search?: string | null;
+}
+
+export interface IssueFilter {
+  subscriptionId?: number | null;
+  status?: string | null;
+  startDate?: string | null;
+  endDate?: string | null;
+}
+
+export interface SerialRenewal {
+  id: number;
+  subscriptionId: number;
+  startDate: string;
+  endDate: string;
+  costMinor: number;
+  currency: string;
+  budgetId: number | null;
+  budgetName: string | null;
+  notes: string | null;
+  createdAt: string;
+}
+
+export interface RenewSubscriptionInput {
+  subscriptionId: number;
+  startDate: string;
+  endDate: string;
+  costMinor: number;
+  currency?: string | null;
+  budgetId?: number | null;
+  notes?: string | null;
+  autoGenerateIssues?: boolean | null;
+  issuePatternPrefix?: string | null;
+}
+
+export interface SerialsExpenditureItem {
+  id: number;
+  subscriptionId: number;
+  title: string;
+  issn: string | null;
+  itemType: "initial" | "renewal";
+  date: string;
+  startDate: string;
+  endDate: string;
+  costMinor: number;
+  currency: string;
+  budgetId: number | null;
+  budgetName: string | null;
+  notes: string | null;
+}
+
+export interface SerialsExpenditureSummary {
+  fromDate: string | null;
+  toDate: string | null;
+  totalSpendMinor: number;
+  currency: string;
+  itemCount: number;
+  items: SerialsExpenditureItem[];
+}
+
+export interface ExpiringSubscription {
+  subscription: SerialSubscription;
+  daysRemaining: number;
+  isOverdue: boolean;
+}
+
+// ----- classification & authorities -----
+
+export interface ClassificationScheme {
+  id: number;
+  code: string;
+  name: string;
+  description?: string | null;
+  isCustom?: boolean;
+  entryCount?: number;
+  recordCount?: number;
+}
+
+export interface ClassificationSchemeInput {
+  id?: number | null;
+  code: string;
+  name: string;
+  description?: string | null;
+}
+
+export interface ClassificationEntry {
+  id: number;
+  schemeId: number;
+  schemeCode: string;
+  code: string;
+  parentCode: string | null;
+  title: string;
+  description: string | null;
+  isCustom: boolean;
+  recordCount: number;
+}
+
+export interface ClassificationEntryInput {
+  id?: number | null;
+  schemeId: number;
+  code: string;
+  parentCode?: string | null;
+  title: string;
+  description?: string | null;
+}
+
+export interface AuthorAuthority {
+  id: number;
+  name: string;
+  sortName: string | null;
+  kind: "personal" | "corporate" | "meeting" | "uniform_title" | string;
+  birthYear: number | null;
+  deathYear: number | null;
+  authorityNote: string | null;
+  variantNames: string | null;
+  marcTag: string;
+  recordCount: number;
+  createdAt: string;
+  updatedAt: string | null;
+}
+
+export interface AuthorAuthorityInput {
+  id?: number | null;
+  name: string;
+  sortName?: string | null;
+  kind?: string | null;
+  birthYear?: number | null;
+  deathYear?: number | null;
+  authorityNote?: string | null;
+  variantNames?: string | null;
+  marcTag?: string | null;
+}
+
+export interface PublisherAuthority {
+  id: number;
+  name: string;
+  place: string | null;
+  notes: string | null;
+  marcTag: string;
+  recordCount: number;
+  createdAt: string;
+  updatedAt: string | null;
+}
+
+export interface PublisherAuthorityInput {
+  id?: number | null;
+  name: string;
+  place?: string | null;
+  notes?: string | null;
+  marcTag?: string | null;
+}
+
+export interface SubjectAuthority {
+  id: number;
+  heading: string;
+  scheme: string;
+  scopeNote: string | null;
+  broaderTerm: string | null;
+  narrowerTerms: string | null;
+  seeAlso: string | null;
+  marcTag: string;
+  recordCount: number;
+  updatedAt: string | null;
+}
+
+export interface SubjectAuthorityInput {
+  id?: number | null;
+  heading: string;
+  scheme?: string | null;
+  scopeNote?: string | null;
+  broaderTerm?: string | null;
+  narrowerTerms?: string | null;
+  seeAlso?: string | null;
+  marcTag?: string | null;
+}
+
+export interface MarcMapping {
+  id: number;
+  authorityType: string;
+  marcTag: string;
+  subfieldCode: string;
+  description: string;
+  targetField: string;
+  isDefault: boolean;
+}
+
+export interface MarcMappingInput {
+  id?: number | null;
+  authorityType: string;
+  marcTag: string;
+  subfieldCode: string;
+  description: string;
+  targetField: string;
+}
+
+export interface MarcTestInput {
+  rawMarcLine: string;
+}
+
+export interface MarcTestResult {
+  tag: string;
+  indicators: string;
+  subfields: Record<string, string>;
+  matchedMappings: MarcMapping[];
+  mappedAuthorityType: string | null;
+  targetFields: Record<string, string>;
+}
+
 // ----- sign-in and setup -----
 
 export interface Session {
@@ -343,8 +639,6 @@ export interface Policy {
   fineCapMinor: number | null;
   reservationHoldDays: number;
 }
-
-export interface ClassificationScheme { id: number; code: string; name: string }
 
 export interface ConfigOverview {
   library: Library | null;
@@ -872,3 +1166,97 @@ export interface RenewalImportPreview {
   problems: string[];
   fingerprint: string;
 }
+
+// ============================================================================
+// LAN Multi-computer Mode & OPAC Types
+// ============================================================================
+
+export interface LanConfig {
+  enabled: boolean;
+  bindAddress: string;
+  port: number;
+  serverName: string;
+  serverFingerprint: string;
+  opacEnabled: boolean;
+  browserStaffEnabled: boolean;
+  activeInterfaces: string[];
+}
+
+export interface UpdateLanConfigInput {
+  enabled: boolean;
+  bindAddress: string;
+  port: number;
+  serverName: string;
+  opacEnabled: boolean;
+  browserStaffEnabled: boolean;
+}
+
+export interface LanPairingCode {
+  code: string;
+  expiresAt: string;
+  createdAt: string;
+  isValid: boolean;
+}
+
+export interface PairedClient {
+  clientId: string;
+  clientName: string;
+  deviceKind: string;
+  ipAddress?: string;
+  pairedAt: string;
+  lastSeenAt: string;
+  revokedAt?: string;
+}
+
+export interface PairRequest {
+  pairingCode: string;
+  clientName: string;
+  deviceKind?: string;
+  clientIp?: string;
+}
+
+export interface PairResponse {
+  clientId: string;
+  serverName: string;
+  serverFingerprint: string;
+}
+
+export interface LanLoginRequest {
+  clientId: string;
+  serverFingerprint: string;
+  username: string;
+  password: string;
+}
+
+export interface LanLoginResponse {
+  token: string;
+  expiresAt: string;
+  userId: number;
+  username: string;
+  displayName: string;
+  role: string;
+  permissions: string[];
+}
+
+export interface PublicOpacItem {
+  id: number;
+  title: string;
+  subtitle?: string;
+  authors: string[];
+  publisher?: string;
+  year?: number;
+  isbn?: string;
+  classification?: string;
+  subjects: string[];
+  availableCopies: number;
+  totalCopies: number;
+  locations: string[];
+}
+
+export interface PublicOpacSearchResult {
+  items: PublicOpacItem[];
+  total: number;
+  page: number;
+  pageSize: number;
+}
+

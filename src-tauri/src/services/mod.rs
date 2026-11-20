@@ -32,3 +32,6 @@ pub mod renewal_import;
 pub mod history_import;
 pub mod report_export;
 pub mod acquisitions;
+pub mod serials;
+pub mod classification;
+pub mod lan;

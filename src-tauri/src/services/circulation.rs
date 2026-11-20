@@ -7,28 +7,28 @@ use serde::{Deserialize, Serialize};
 #[derive(Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct IssuePreview {
-    member_id: i64,
-    item_id: i64,
-    member_name: String,
-    title: String,
-    due_on: String,
+    pub member_id: i64,
+    pub item_id: i64,
+    pub member_name: String,
+    pub title: String,
+    pub due_on: String,
     #[serde(skip)]
-    item_category_id: i64,
+    pub item_category_id: i64,
     #[serde(skip)]
-    reservation_id: Option<i64>,
+    pub reservation_id: Option<i64>,
     #[serde(skip)]
-    member_category_id: i64,
+    pub member_category_id: i64,
 }
 
 #[derive(Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct ReturnPreview {
-    loan_id: i64,
-    member_name: String,
-    title: String,
-    due_on: String,
+    pub loan_id: i64,
+    pub member_name: String,
+    pub title: String,
+    pub due_on: String,
     #[serde(skip_serializing_if = "Option::is_none")]
-    estimated_fine: Option<fines::FineAmount>,
+    pub estimated_fine: Option<fines::FineAmount>,
 }
 
 #[derive(Default, Deserialize)]

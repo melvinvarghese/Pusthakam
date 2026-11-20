@@ -50,8 +50,8 @@ describe("AppShell", () => {
 
   it("shows an honest not-available page for unbuilt modules", async () => {
     renderApp();
-    await userEvent.click(within(screen.getByRole("navigation", { name: "Primary" })).getByRole("link", { name: "Periodicals" }));
-    expect(screen.getByRole("heading", { name: /Periodicals is not available yet/ })).toBeInTheDocument();
+    await userEvent.click(within(screen.getByRole("navigation", { name: "Primary" })).getByRole("link", { name: "Barcode & Printing" }));
+    expect(screen.getByRole("heading", { name: /Barcode & Printing is not available yet/ })).toBeInTheDocument();
   });
 
   it("shows who is signed in and lets them sign out", () => {

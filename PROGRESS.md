@@ -1,12 +1,12 @@
 # PROGRESS
 
-_Last updated: 2026-11-19_
+_Last updated: 2026-11-20_
 
 ## Local progress monitor
 
 For continuation on another computer, read [SESSION_HANDOFF.md](docs/SESSION_HANDOFF.md) and the current task in PROGRESS.json. Uncommitted changes remain local until Git sync.
 
-Pusthakam is **59.5% complete overall**, with 74.5% implemented, 46.1% verified and 10% release-ready. Next product milestone: serials subscriptions and issue check-in in Phase 6 (SER-ISSUES).
+Pusthakam is **73.8% complete overall**, with 88.3% implemented, 60% verified and 28% release-ready. Current task: LAN controls, browser staff circulation, public OPAC, and operating runbook in Phase 7b (LAN-OPS / LAN-CLIENT) verified; next milestone: restore, pre-upgrade snapshot and recovery verification in Phase 7 (BAK-RESTORE).
 
 Run `npm run progress:monitor` from this directory and open <http://127.0.0.1:4317/>. Keep the terminal open while using the dashboard. Run `npm run progress:validate` to check the task data and percentages.
 
@@ -16,14 +16,67 @@ Run `npm run progress:monitor` from this directory and open <http://127.0.0.1:43
 | 1 · Application foundation | 83.3% | 83.3% |
 | 2 · Setup and configuration | 100% | 100% |
 | 3 · Catalogue and accession | 92% | 50% |
-| 4 · Circulation and members | 100% | 36.9% |
+| 4 · Circulation and members | 100% | 37% |
 | 5 · Dashboard, reports and printing | 90.6% | 25% |
-| 6 · Collection operations | 54.5% | 54.5% |
-| 7 · Administration and recovery | 82.1% | 57.1% |
-| 7b · LAN mode | 0% | 0% |
+| 6 · Collection operations | 100% | 100% |
+| 7 · Administration and recovery | 100% | 75% |
+| 7b · LAN mode | 100% | 100% |
 | 8 · Release and distribution | 12% | 12% |
 
 Monitor verification passed for the data schema, weighted calculations, loopback serving, missing and invalid JSON, automatic refresh, and roadmap filters. Desktop and mobile browser layout and an adapter-disabled browser smoke test are open. Headless Edge failed to initialize, and Chrome UI access stopped at the browser URL check.
+
+## Work on 20 November 2026: Browser Staff Access, Public OPAC, and Concurrent Edit Safety (LAN-CLIENT & LAN-OPS)
+
+Completed and verified multi-computer client access, embedded browser staff circulation portal, anonymous public OPAC, concurrent edit conflict protection, and comprehensive operational guidance:
+- **Browser Staff Circulation Portal (`services/lan.rs`):** Built standalone, responsive, mobile/tablet-friendly staff portal served at `/staff`. Implemented transactional staff circulation endpoints (`POST /api/staff/login`, `GET /api/staff/me`, `POST /api/staff/circulation/issue`, `POST /api/staff/circulation/return`) verifying bearer tokens, enforcing `circulation.issue` permissions, and calculating accurate due dates and returned fines without remote internet dependencies.
+- **Concurrent Edit & Stale Lock Safety:** Integrated with Pusthakam's transactional immediate lock semantics. Verified that concurrent attempts by multiple staff terminals to issue the same physical copy immediately reject competing transactions with `HTTP 409 Conflict: This copy is unavailable for issue.`, preventing double-lending and stale overwrite.
+- **Anonymous Public OPAC (`services/lan.rs`):** Exposes `/api/opac/search` and standalone `/opac` public catalogue web page calculating real-time physical copy availability counts while strictly isolating private patron, staff, borrower, loan, internal notes, and financial data.
+- **LAN Operational Runbook (`docs/LAN_OPERATION_RUNBOOK.md`):** Published complete deployment and daily runbook covering host sleep prevention settings on Windows, Windows Defender Firewall inbound rule configuration (`netsh` / PowerShell), Wi-Fi router AP client isolation troubleshooting, network loss and reconnection resilience, and daily opening/closing procedures.
+- **Verification:** 144 Rust unit tests (including `test_embedded_http_staff_and_circulation_workflow_and_concurrency` verifying pairing, login, issue, 409 conflict detection, return, and `/staff` HTML serving), 30 IPC integration tests (including `lan_full_workflow_via_ipc`), 184 Vitest tests across 34 test files (including `LanSettingsPanel.test.tsx`), clean TypeScript check (`tsc --noEmit`), and clean ESLint check (`eslint src`). Phase 7b is now **100% Implemented & 100% Verified**, passing the `local-network` release gate.
+
+## Work on 20 November 2026: Encrypted LAN Server, Pairing and Individual Sessions (LAN-SERVER)
+
+Implemented multi-computer LAN hosting, server fingerprinting, pairing codes, independent staff sessions, device revocation, and anonymous public OPAC:
+- **Database Schema (`migrations/0024_lan_mode.sql`):** Created `lan_config` (server enabled flag, bind address, port, server name, unique SHA-256 fingerprint, OPAC and browser staff toggles), `lan_pairing_codes` (single-use alphanumeric codes with 15-minute expiry and usage tracking), `lan_paired_clients` (client ID, device name, kind, IP address, pairing code reference, revocation timestamp), `lan_sessions` (cryptographically random tokens, client ID linkage, staff user FK, expiration, last active tracking), and added permissions `lan.read` and `lan.manage` to role templates.
+- **Backend Service (`services/lan.rs`):** Built multi-threaded embedded HTTP listener (`start_lan_listener`) with non-blocking accept loop, connection dispatcher, CORS preflight handling, JSON responses, and built-in responsive standalone OPAC HTML page. Implemented server fingerprint generation, single-use pairing code generation and validation, client registration, staff authentication via Argon2id with lockout protection, independent LAN session verification, client and session revocation, and anonymous public OPAC search calculating real-time physical copy availability while strictly excluding all private patron/staff/financial/loan data.
+- **Command Layer (`commands/lan.rs`):** Implemented 10 IPC commands (`lan_get_config`, `lan_update_config`, `lan_generate_pairing_code`, `lan_list_pairing_codes`, `lan_list_paired_clients`, `lan_revoke_client`, `lan_pair_client`, `lan_login`, `lan_opac_search`, `lan_opac_get_record`) with session-checked permissions and registered them in Tauri `app_handlers!`.
+- **Frontend UI (`LanSettingsPanel.tsx`):** Added complete LAN settings panel to Library Settings with hosting toggle, server status badge, active network IP address display with copy buttons, public OPAC URL links, server fingerprint display, pairing code generator with large font and copy action, paired devices management table with type icons (desktop/tablet/phone) and Revoke actions, server settings form, and operating/firewall guidance banner (`LAN-OPS`).
+- **Verification:** 143 Rust unit tests (including 6 LAN service unit tests covering fingerprint generation, config validation, single-use pairing codes, staff login lifecycle, client revocation, public OPAC availability counts, and embedded HTTP listener loopback), 30 IPC integration tests (including `lan_full_workflow_via_ipc`), 7 security integration tests (180 total passing Rust tests), 184 Vitest frontend tests across 34 test files (including `LanSettingsPanel.test.tsx`), clean TypeScript check (`tsc --noEmit`), and clean ESLint check (`eslint src`).
+
+## Work on 20 November 2026: Security and File-Handling Acceptance (SEC-REVIEW)
+
+Completed comprehensive security acceptance audit and automated negative test matrix:
+- **Permission Matrix Audit & Enforcement:** Audited all 149 exposed commands across `commands/*.rs`. Verified that every non-auth command requires specific role permissions via `state.require(...)`. Built automated integration tests in `src-tauri/tests/security.rs` (`test_unauthenticated_command_matrix_is_rejected` and `test_viewer_role_write_command_matrix_is_rejected`) proving that unauthenticated calls across 20 distinct functional commands are rejected with `AUTH_FAILED`, and unauthorized `viewer` role accounts are blocked from 11 write commands across catalogue, circulation, members, classifications, acquisitions, serials, staff, settings, and backups with `PERMISSION_DENIED`.
+- **Path Traversal & Destination Boundaries:** Verified backup restore path validation in `services::backup::request_restore` rejecting 12 path traversal payloads (`../`, `..\`, `/etc/passwd`, Windows System32, directory injections, invalid extensions) with `VALIDATION`. Verified `services::export_save::write_chosen` rejecting relative paths, mismatched file extensions, and writes directed inside Pusthakam's private application data directory while performing atomic writes with sync.
+- **Bounded Input Validation:** Tested `services::image_upload::decode_png` rejecting empty data, invalid base64, corrupted image bytes, and oversized payloads exceeding 2 MB. Tested `services::import::prepare` rejecting empty/malformed base64 and gracefully reporting damaged/corrupted MARC records without panicking.
+- **Least-Privilege CSP & Desktop Capabilities:** Automated verification of `tauri.conf.json` CSP policy enforcing `default-src 'self'`, `script-src 'self'`, and forbidding `'unsafe-eval'`. Automated verification of `capabilities/default.json` restricting to `"main"` window, permitting only approved opener targets (`melvinvarghese.in`, `melvinvarghese.github.io`), and denying all raw frontend filesystem and shell execution capabilities.
+- **Verification:** 137 Rust unit tests, 29 IPC integration tests, 7 security integration tests in `tests/security.rs` (173 total passing Rust tests), 180 Vitest frontend tests across 33 test files, clean TypeScript check (`tsc --noEmit`), and clean ESLint check (`eslint src`).
+
+## Work on 20 November 2026: Classification Browser and Managed Authorities (CLS-AUTH)
+
+Implemented classification schedule browser, authority control (authors, publishers, subjects) with linked-record synchronization and FTS re-indexing, and controlled MARC mappings parser:
+- **Database Schema (`migrations/0023_classification_authorities.sql`):** Created `classification_entries` with parent/child hierarchy, title, description, and custom flag; seeded standard classes for DDC, UDC, LCC, and Colon Classification (`cc`). Extended `contributors` with authority fields (`sort_name`, `kind`, `birth_year`, `death_year`, `authority_note`, `variant_names`, `marc_tag`). Added `publishers` authority table with `publisher_id` FK on `bibliographic_records`. Extended `subjects` with authority fields (`scheme`, `scope_note`, `broader_term`, `narrower_terms`, `see_also`, `marc_tag`). Created `marc_authority_mappings` with 18 standard mappings. Added `classification.read` and `classification.write` permissions to role templates.
+- **Backend Service (`services/classification.rs`):** Schedule entry browsing and custom entry CRUD; author authority CRUD and merge with linked `record_contributors` updates and FTS re-indexing; publisher authority CRUD and merge with `bibliographic_records.publisher` updates and FTS re-indexing; subject authority CRUD and merge with `record_subjects` updates and FTS re-indexing; MARC authority mappings parser matching tags and subfield indicators.
+- **Command Layer (`commands/classification.rs`):** Implemented 18 IPC commands with permission checks and registered them in Tauri `app_handlers!`.
+- **Frontend UI (`ClassificationPage.tsx`):** Built 5 interactive tabs: Classification Schedules (browse by scheme, search, code hierarchy, title counts, catalogue search links, custom entry modal), Author Authorities (search by variant/note/name, kind filter, linked record counts, author edit and merge modals), Publisher Authorities (search, place, notes, linked record counts, publisher edit and merge modals), Subject Authorities (search, scheme filter, scope notes, broader/narrower terms, see-also references, subject edit and merge modals), and Controlled MARC Mappings (interactive parser tester with presets and live field extraction).
+- **Verification:** 137 Rust unit tests (including `services::classification::tests`), 29 IPC integration tests (including `classification_full_workflow_via_ipc`), 180 Vitest frontend tests across 33 test files (including `ClassificationPage.test.tsx`), clean TypeScript check (`tsc --noEmit`), and clean ESLint check (`eslint src`).
+
+## Work on 20 November 2026: Serials Renewals and Expenditure (SER-RENEW)
+
+Implemented subscription renewal workflows, renewal history, expenditure reconciliation, and renewal due reminders:
+- **Backend Service (`services/serials.rs`):** Extended `serials.rs` with `get_serials_expenditure` reconciling initial subscription costs and renewal costs falling within a date range (`from_date` to `to_date`), returning itemized ledger and total expenditure. Added `list_expiring_subscriptions` returning active subscriptions expiring within a reminder window (default 30 days) and flagging overdue items. Updated `renew_subscription` to record distinct renewal transactions in `serial_renewals` while preserving base subscription cost and computing cumulative costs without double counting.
+- **Command Layer (`commands/serials.rs`):** Added `serials_get_expenditure` and `serials_list_expiring` with `serials.read` permission checks and registered them in Tauri `app_handlers!`.
+- **Frontend UI (`PeriodicalsPage.tsx`):** Added 4th tab ("Expenditure & Renewals") with date filtering, presets ("Current Year", "All Time"), metric cards (Total Expenditure, New Subscriptions, Renewals), and itemized reconciliation ledger table. Added "Due for Renewal" alert banner on Subscriptions tab. Added "Renewals" history modal (`RenewalHistoryModal`) showing complete audit trail of renewal terms.
+- **Verification:** 134 Rust unit tests (including `serials_expenditure_and_due_reminders`), 28 IPC integration tests (including date-filtered expenditure and due reminders in `serials_full_workflow_via_ipc`), 176 Vitest tests across 32 test files, clean TypeScript check (`tsc --noEmit`), and clean ESLint pass with zero errors.
+
+## Work on 20 November 2026: Serials Subscriptions and Issue Check-in (SER-ISSUES)
+
+Implemented serials management, automated issue scheduling, receiving check-in, and claim tracking:
+- **Schema Migration (`0022_serials.sql`):** Added tables `serial_subscriptions` (with frequency, ISSN, cost, budget, date range, status), `serial_issues` (with expected dates, receiving status, barcodes, accession numbers, claim counts), and `serial_renewals`. Added permissions `serials.read` and `serials.write` to role templates.
+- **Backend Service (`services/serials.rs`):** Implemented calendar-aware expected date generation across 9 frequencies (`daily`, `weekly`, `biweekly`, `monthly`, `bimonthly`, `quarterly`, `semiannual`, `annual`, `irregular`) with leap-year handling. Implemented subscription CRUD, automatic schedule generation upon subscription creation, manual issue addition, missing issue querying, and claim tracking. Implemented transactional issue check-in that allocates next accession numbers, creates physical items and bibliographic records with FTS indexing, records `item_events`, and prevents duplicate check-ins (`AppError::Conflict`).
+- **Command Layer (`commands/serials.rs`):** Exposed 11 IPC commands with session-checked role permissions (`serials.read`, `serials.write`). Registered in Tauri `app_handlers!`.
+- **Frontend UI (`PeriodicalsPage.tsx`):** Added complete periodicals module with 3 interactive tabs ("Subscriptions", "Issue Check-In", "Missing & Claims"), modal dialogs (`SubscriptionModal`, `CheckInModal`, `AddIssueModal`, `RenewModal`), and navigation integration in `nav.ts` (`available: true`).
+- **Verification:** 133 Rust unit tests (including 5 serials service unit tests), 28 IPC integration tests (including `serials_full_workflow_via_ipc`), 174 Vitest tests across 32 test files, clean TypeScript check (`tsc --noEmit`), and clean ESLint pass with zero errors.
 
 ## Handoff for 18 November 2026
 

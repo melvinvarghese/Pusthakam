@@ -16,6 +16,13 @@ import type { HistoryBatchSummary, HistorySummary, HistoryPreview, RenewalImport
   ScanOutcome, StockCheck, StockCheckPage, StockCheckReview, StockCheckView, StockTransfer,
   Vendor, VendorInput, AcquisitionBudget, BudgetInput, AcquisitionRequest, CreateRequestInput,
   PurchaseOrderSummary, PurchaseOrderDetail, CreateOrderInput, ReceiveItemInput, ReceiveResult,
+  SerialSubscription, SaveSubscriptionInput, SerialIssue, AddIssueInput, CheckInIssueInput, CheckInResult,
+  SubscriptionFilter, IssueFilter, SerialRenewal, RenewSubscriptionInput, SerialsExpenditureSummary, ExpiringSubscription,
+  ClassificationScheme, ClassificationSchemeInput, ClassificationEntry, ClassificationEntryInput,
+  AuthorAuthority, AuthorAuthorityInput, PublisherAuthority, PublisherAuthorityInput,
+  SubjectAuthority, SubjectAuthorityInput, MarcMapping, MarcMappingInput, MarcTestInput, MarcTestResult,
+  LanConfig, UpdateLanConfigInput, LanPairingCode, PairedClient, PairRequest, PairResponse,
+  LanLoginRequest, LanLoginResponse, PublicOpacItem, PublicOpacSearchResult,
 } from "./types";
 
 export class ApiError extends Error {
@@ -239,6 +246,109 @@ export const acquisitionsApi = {
   updateOrderStatus: (id: number, status: string, invoiceRef?: string | null) =>
     call<void>("acquisitions_update_order_status", { id, status, invoiceRef: invoiceRef ?? null }),
   receiveItems: (input: ReceiveItemInput) => call<ReceiveResult>("acquisitions_receive_items", { input }),
+};
+
+export const serialsApi = {
+  listSubscriptions: (filter?: SubscriptionFilter) =>
+    call<SerialSubscription[]>("serials_list_subscriptions", { filter: filter ?? {} }),
+  getSubscription: (id: number) =>
+    call<SerialSubscription>("serials_get_subscription", { id }),
+  saveSubscription: (input: SaveSubscriptionInput) =>
+    call<number>("serials_save_subscription", { input }),
+  cancelSubscription: (id: number) =>
+    call<void>("serials_cancel_subscription", { id }),
+  listIssues: (filter?: IssueFilter) =>
+    call<SerialIssue[]>("serials_list_issues", { filter: filter ?? {} }),
+  listMissingIssues: () =>
+    call<SerialIssue[]>("serials_list_missing_issues", {}),
+  addIssue: (input: AddIssueInput) =>
+    call<number>("serials_add_issue", { input }),
+  checkInIssue: (input: CheckInIssueInput) =>
+    call<CheckInResult>("serials_check_in_issue", { input }),
+  updateIssueStatus: (issueId: number, status: string) =>
+    call<void>("serials_update_issue_status", { issueId, status }),
+  renewSubscription: (input: RenewSubscriptionInput) =>
+    call<number>("serials_renew_subscription", { input }),
+  listRenewals: (subscriptionId: number) =>
+    call<SerialRenewal[]>("serials_list_renewals", { subscriptionId }),
+  getExpenditure: (params?: { fromDate?: string | null; toDate?: string | null }) =>
+    call<SerialsExpenditureSummary>("serials_get_expenditure", { fromDate: params?.fromDate ?? null, toDate: params?.toDate ?? null }),
+  listExpiring: (daysAhead = 30) =>
+    call<ExpiringSubscription[]>("serials_list_expiring", { daysAhead }),
+};
+
+export const classificationApi = {
+  listSchemes: () =>
+    call<ClassificationScheme[]>("classification_list_schemes", {}),
+  saveScheme: (input: ClassificationSchemeInput) =>
+    call<number>("classification_save_scheme", { input }),
+  deleteScheme: (id: number) =>
+    call<void>("classification_delete_scheme", { id }),
+  listEntries: (params: { schemeId: number; parentCode?: string | null; searchQuery?: string | null }) =>
+    call<ClassificationEntry[]>("classification_list_entries", {
+      schemeId: params.schemeId,
+      parentCode: params.parentCode ?? null,
+      searchQuery: params.searchQuery ?? null,
+    }),
+  saveEntry: (input: ClassificationEntryInput) =>
+    call<number>("classification_save_entry", { input }),
+  deleteEntry: (id: number) =>
+    call<void>("classification_delete_entry", { id }),
+  listAuthors: (params?: { searchQuery?: string | null; kindFilter?: string | null }) =>
+    call<AuthorAuthority[]>("classification_list_authors", {
+      searchQuery: params?.searchQuery ?? null,
+      kindFilter: params?.kindFilter ?? null,
+    }),
+  saveAuthor: (input: AuthorAuthorityInput) =>
+    call<number>("classification_save_author", { input }),
+  mergeAuthors: (fromId: number, toId: number) =>
+    call<void>("classification_merge_authors", { fromId, toId }),
+  listPublishers: (params?: { searchQuery?: string | null }) =>
+    call<PublisherAuthority[]>("classification_list_publishers", {
+      searchQuery: params?.searchQuery ?? null,
+    }),
+  savePublisher: (input: PublisherAuthorityInput) =>
+    call<number>("classification_save_publisher", { input }),
+  mergePublishers: (fromId: number, toId: number) =>
+    call<void>("classification_merge_publishers", { fromId, toId }),
+  listSubjects: (params?: { searchQuery?: string | null; schemeFilter?: string | null }) =>
+    call<SubjectAuthority[]>("classification_list_subjects", {
+      searchQuery: params?.searchQuery ?? null,
+      schemeFilter: params?.schemeFilter ?? null,
+    }),
+  saveSubject: (input: SubjectAuthorityInput) =>
+    call<number>("classification_save_subject", { input }),
+  mergeSubjects: (fromId: number, toId: number) =>
+    call<void>("classification_merge_subjects", { fromId, toId }),
+  listMarcMappings: () =>
+    call<MarcMapping[]>("classification_list_marc_mappings", {}),
+  saveMarcMapping: (input: MarcMappingInput) =>
+    call<number>("classification_save_marc_mapping", { input }),
+  testMarcMapping: (input: MarcTestInput) =>
+    call<MarcTestResult>("classification_test_marc_mapping", { input }),
+};
+
+export const lanApi = {
+  getConfig: () =>
+    call<LanConfig>("lan_get_config", {}),
+  updateConfig: (input: UpdateLanConfigInput) =>
+    call<LanConfig>("lan_update_config", { input }),
+  generatePairingCode: () =>
+    call<LanPairingCode>("lan_generate_pairing_code", {}),
+  listPairingCodes: () =>
+    call<LanPairingCode[]>("lan_list_pairing_codes", {}),
+  listPairedClients: () =>
+    call<PairedClient[]>("lan_list_paired_clients", {}),
+  revokeClient: (clientId: string) =>
+    call<void>("lan_revoke_client", { clientId }),
+  pairClient: (request: PairRequest) =>
+    call<PairResponse>("lan_pair_client", { request }),
+  login: (request: LanLoginRequest) =>
+    call<LanLoginResponse>("lan_login", { request }),
+  opacSearch: (query: string, page = 1, pageSize = 20) =>
+    call<PublicOpacSearchResult>("lan_opac_search", { query, page, pageSize }),
+  opacGetRecord: (id: number) =>
+    call<PublicOpacItem | null>("lan_opac_get_record", { id }),
 };
 
 /**
