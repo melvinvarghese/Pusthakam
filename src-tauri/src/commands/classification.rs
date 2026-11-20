@@ -30,10 +30,7 @@ pub fn classification_save_scheme(
 }
 
 #[tauri::command]
-pub fn classification_delete_scheme(
-    state: State<'_, AppState>,
-    id: i64,
-) -> AppResult<()> {
+pub fn classification_delete_scheme(state: State<'_, AppState>, id: i64) -> AppResult<()> {
     let session = state.require("classification.write")?;
     classification::delete_custom_scheme(&*state.conn()?, &session, id)
 }
@@ -66,10 +63,7 @@ pub fn classification_save_entry(
 }
 
 #[tauri::command]
-pub fn classification_delete_entry(
-    state: State<'_, AppState>,
-    id: i64,
-) -> AppResult<()> {
+pub fn classification_delete_entry(state: State<'_, AppState>, id: i64) -> AppResult<()> {
     let session = state.require("classification.write")?;
     classification::delete_custom_entry(&*state.conn()?, &session, id)
 }

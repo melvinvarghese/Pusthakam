@@ -197,7 +197,11 @@ fn friendly(e: rusqlite::Error, duplicate: &str) -> AppError {
     if let rusqlite::Error::SqliteFailure(f, _) = &e {
         match f.extended_code {
             2067 | 1555 => return AppError::Conflict(duplicate.to_string()),
-            787 => return AppError::Validation("That choice no longer exists. Reload and try again.".into()),
+            787 => {
+                return AppError::Validation(
+                    "That choice no longer exists. Reload and try again.".into(),
+                )
+            }
             _ => {}
         }
     }
@@ -209,26 +213,38 @@ const NOW: &str = "strftime('%Y-%m-%dT%H:%M:%SZ','now')";
 // ---------- reads ----------
 
 fn named(conn: &Connection, table: &str) -> AppResult<Vec<Named>> {
-    let sql = format!("SELECT id, name, description, archived_at IS NOT NULL FROM {table} ORDER BY name");
+    let sql =
+        format!("SELECT id, name, description, archived_at IS NOT NULL FROM {table} ORDER BY name");
     let mut stmt = conn.prepare(&sql)?;
     let rows = stmt
-        .query_map([], |r| Ok(Named { id: r.get(0)?, name: r.get(1)?, description: r.get(2)?, archived: r.get(3)? }))?
+        .query_map([], |r| {
+            Ok(Named {
+                id: r.get(0)?,
+                name: r.get(1)?,
+                description: r.get(2)?,
+                archived: r.get(3)?,
+            })
+        })?
         .collect::<Result<Vec<_>, _>>()?;
     Ok(rows)
 }
 
 pub fn library(conn: &Connection) -> AppResult<Option<Library>> {
     Ok(conn
-        .query_row("SELECT name, profile, address, contact, currency, locale FROM libraries WHERE id = 1", [], |r| {
-            Ok(Library {
-                name: r.get(0)?,
-                profile: r.get(1)?,
-                address: r.get(2)?,
-                contact: r.get(3)?,
-                currency: r.get(4)?,
-                locale: r.get(5)?,
-            })
-        })
+        .query_row(
+            "SELECT name, profile, address, contact, currency, locale FROM libraries WHERE id = 1",
+            [],
+            |r| {
+                Ok(Library {
+                    name: r.get(0)?,
+                    profile: r.get(1)?,
+                    address: r.get(2)?,
+                    contact: r.get(3)?,
+                    currency: r.get(4)?,
+                    locale: r.get(5)?,
+                })
+            },
+        )
         .optional()?)
 }
 
@@ -275,7 +291,13 @@ pub fn overview(conn: &Connection) -> AppResult<Overview> {
         .collect::<Result<Vec<_>, _>>()?;
     let classification_schemes = conn
         .prepare("SELECT id, code, name FROM classification_schemes ORDER BY id")?
-        .query_map([], |r| Ok(Scheme { id: r.get(0)?, code: r.get(1)?, name: r.get(2)? }))?
+        .query_map([], |r| {
+            Ok(Scheme {
+                id: r.get(0)?,
+                code: r.get(1)?,
+                name: r.get(2)?,
+            })
+        })?
         .collect::<Result<Vec<_>, _>>()?;
     Ok(Overview {
         library: library(conn)?,
@@ -291,7 +313,11 @@ pub fn overview(conn: &Connection) -> AppResult<Overview> {
 
 // ---------- writes ----------
 
-pub fn update_library(conn: &Connection, actor: Option<&Session>, input: &LibraryInput) -> AppResult<()> {
+pub fn update_library(
+    conn: &Connection,
+    actor: Option<&Session>,
+    input: &LibraryInput,
+) -> AppResult<()> {
     let name = required("Library name", &input.name, 120)?;
     if crate::domain::profiles::defaults_for(&input.profile).is_none() {
         return Err(AppError::Validation("Choose a library type.".into()));
@@ -308,13 +334,27 @@ pub fn update_library(conn: &Connection, actor: Option<&Session>, input: &Librar
         (&name, &input.profile, &address, &contact, &currency, &locale),
     )?;
     if n == 0 {
-        return Err(AppError::NotFound("The library has not been set up yet.".into()));
+        return Err(AppError::NotFound(
+            "The library has not been set up yet.".into(),
+        ));
     }
-    audit::record(conn, actor, "config.library_updated", "library", Some(1), "Library details updated")?;
+    audit::record(
+        conn,
+        actor,
+        "config.library_updated",
+        "library",
+        Some(1),
+        "Library details updated",
+    )?;
     Ok(())
 }
 
-pub fn save_named(conn: &Connection, actor: Option<&Session>, kind: NamedKind, input: &NamedInput) -> AppResult<i64> {
+pub fn save_named(
+    conn: &Connection,
+    actor: Option<&Session>,
+    kind: NamedKind,
+    input: &NamedInput,
+) -> AppResult<i64> {
     let name = required("Name", &input.name, 80)?;
     let description = optional("Description", input.description.as_deref(), 300)?;
     let table = kind.table();
@@ -323,27 +363,46 @@ pub fn save_named(conn: &Connection, actor: Option<&Session>, kind: NamedKind, i
         Some(id) => {
             let n = conn
                 .execute(
-                    &format!("UPDATE {table} SET name=?1, description=?2, updated_at={NOW} WHERE id=?3"),
+                    &format!(
+                        "UPDATE {table} SET name=?1, description=?2, updated_at={NOW} WHERE id=?3"
+                    ),
                     (&name, &description, id),
                 )
                 .map_err(|e| friendly(e, &dup))?;
             if n == 0 {
-                return Err(AppError::NotFound(format!("That {} no longer exists.", kind.label())));
+                return Err(AppError::NotFound(format!(
+                    "That {} no longer exists.",
+                    kind.label()
+                )));
             }
             id
         }
         None => {
             // `locations` has no updated_at default issue: all three tables share these columns.
-            conn.execute(&format!("INSERT INTO {table} (name, description) VALUES (?1, ?2)"), (&name, &description))
-                .map_err(|e| friendly(e, &dup))?;
+            conn.execute(
+                &format!("INSERT INTO {table} (name, description) VALUES (?1, ?2)"),
+                (&name, &description),
+            )
+            .map_err(|e| friendly(e, &dup))?;
             conn.last_insert_rowid()
         }
     };
-    audit::record(conn, actor, "config.saved", table, Some(id), &format!("Saved {} \"{}\"", kind.label(), name))?;
+    audit::record(
+        conn,
+        actor,
+        "config.saved",
+        table,
+        Some(id),
+        &format!("Saved {} \"{}\"", kind.label(), name),
+    )?;
     Ok(id)
 }
 
-pub fn save_member_category(conn: &Connection, actor: Option<&Session>, input: &MemberCategoryInput) -> AppResult<i64> {
+pub fn save_member_category(
+    conn: &Connection,
+    actor: Option<&Session>,
+    input: &MemberCategoryInput,
+) -> AppResult<i64> {
     let name = required("Name", &input.name, 80)?;
     let description = optional("Description", input.description.as_deref(), 300)?;
     let days = in_range("Membership period (days)", input.membership_days, 1, 36500)?;
@@ -357,7 +416,9 @@ pub fn save_member_category(conn: &Connection, actor: Option<&Session>, input: &
                 )
                 .map_err(|e| friendly(e, &dup))?;
             if n == 0 {
-                return Err(AppError::NotFound("That member category no longer exists.".into()));
+                return Err(AppError::NotFound(
+                    "That member category no longer exists.".into(),
+                ));
             }
             id
         }
@@ -370,11 +431,22 @@ pub fn save_member_category(conn: &Connection, actor: Option<&Session>, input: &
             conn.last_insert_rowid()
         }
     };
-    audit::record(conn, actor, "config.saved", "member_categories", Some(id), &format!("Saved member category \"{name}\""))?;
+    audit::record(
+        conn,
+        actor,
+        "config.saved",
+        "member_categories",
+        Some(id),
+        &format!("Saved member category \"{name}\""),
+    )?;
     Ok(id)
 }
 
-pub fn save_shelf(conn: &Connection, actor: Option<&Session>, input: &ShelfInput) -> AppResult<i64> {
+pub fn save_shelf(
+    conn: &Connection,
+    actor: Option<&Session>,
+    input: &ShelfInput,
+) -> AppResult<i64> {
     let code = required("Shelf code", &input.code, 40)?;
     let description = optional("Description", input.description.as_deref(), 300)?;
     let dup = format!("Shelf \"{code}\" already exists in this location.");
@@ -400,7 +472,14 @@ pub fn save_shelf(conn: &Connection, actor: Option<&Session>, input: &ShelfInput
             conn.last_insert_rowid()
         }
     };
-    audit::record(conn, actor, "config.saved", "shelves", Some(id), &format!("Saved shelf \"{code}\""))?;
+    audit::record(
+        conn,
+        actor,
+        "config.saved",
+        "shelves",
+        Some(id),
+        &format!("Saved shelf \"{code}\""),
+    )?;
     Ok(id)
 }
 
@@ -412,10 +491,14 @@ pub fn save_policy(conn: &Connection, actor: Option<&Session>, p: &PolicyInput) 
     in_range("Fine grace days", p.fine_grace_days, 0, 365)?;
     in_range("Reservation hold (days)", p.reservation_hold_days, 1, 60)?;
     if p.fine_per_day_minor < 0 || p.fine_cap_minor.is_some_and(|c| c < 0) {
-        return Err(AppError::Validation("Fine amounts cannot be negative.".into()));
+        return Err(AppError::Validation(
+            "Fine amounts cannot be negative.".into(),
+        ));
     }
     if p.max_renewals > 0 && p.renewal_days == 0 {
-        return Err(AppError::Validation("Set a renewal period when renewals are allowed.".into()));
+        return Err(AppError::Validation(
+            "Set a renewal period when renewals are allowed.".into(),
+        ));
     }
     let dup = "A policy for that member category and item category already exists.";
     let id = match p.id {
@@ -453,7 +536,14 @@ pub fn save_policy(conn: &Connection, actor: Option<&Session>, p: &PolicyInput) 
             conn.last_insert_rowid()
         }
     };
-    audit::record(conn, actor, "config.saved", "circulation_policies", Some(id), "Saved circulation policy")?;
+    audit::record(
+        conn,
+        actor,
+        "config.saved",
+        "circulation_policies",
+        Some(id),
+        "Saved circulation policy",
+    )?;
     Ok(id)
 }
 
@@ -463,21 +553,47 @@ pub fn delete_policy(conn: &Connection, actor: Option<&Session>, id: i64) -> App
     if n == 0 {
         return Err(AppError::NotFound("That policy no longer exists.".into()));
     }
-    audit::record(conn, actor, "config.deleted", "circulation_policies", Some(id), "Deleted circulation policy")?;
+    audit::record(
+        conn,
+        actor,
+        "config.deleted",
+        "circulation_policies",
+        Some(id),
+        "Deleted circulation policy",
+    )?;
     Ok(())
 }
 
-pub fn set_archived(conn: &Connection, actor: Option<&Session>, kind: ArchiveKind, id: i64, archived: bool) -> AppResult<()> {
+pub fn set_archived(
+    conn: &Connection,
+    actor: Option<&Session>,
+    kind: ArchiveKind,
+    id: i64,
+    archived: bool,
+) -> AppResult<()> {
     let table = kind.table();
     let n = conn.execute(
-        &format!("UPDATE {table} SET archived_at = CASE WHEN ?1 THEN {NOW} ELSE NULL END WHERE id = ?2"),
+        &format!(
+            "UPDATE {table} SET archived_at = CASE WHEN ?1 THEN {NOW} ELSE NULL END WHERE id = ?2"
+        ),
         (archived, id),
     )?;
     if n == 0 {
         return Err(AppError::NotFound("That item no longer exists.".into()));
     }
-    let action = if archived { "config.archived" } else { "config.restored" };
-    audit::record(conn, actor, action, table, Some(id), if archived { "Archived" } else { "Restored" })?;
+    let action = if archived {
+        "config.archived"
+    } else {
+        "config.restored"
+    };
+    audit::record(
+        conn,
+        actor,
+        action,
+        table,
+        Some(id),
+        if archived { "Archived" } else { "Restored" },
+    )?;
     Ok(())
 }
 
@@ -498,20 +614,39 @@ mod tests {
     }
 
     fn named_input(name: &str) -> NamedInput {
-        NamedInput { id: None, name: name.into(), description: None }
+        NamedInput {
+            id: None,
+            name: name.into(),
+            description: None,
+        }
     }
 
     fn policy(member: i64, item: i64) -> PolicyInput {
         PolicyInput {
-            id: None, member_category_id: member, item_category_id: item, loan_days: 14, max_loans: 3,
-            max_renewals: 1, renewal_days: 7, fine_per_day_minor: 100, fine_grace_days: 1, fine_cap_minor: None,
+            id: None,
+            member_category_id: member,
+            item_category_id: item,
+            loan_days: 14,
+            max_loans: 3,
+            max_renewals: 1,
+            renewal_days: 7,
+            fine_per_day_minor: 100,
+            fine_grace_days: 1,
+            fine_cap_minor: None,
             reservation_hold_days: 3,
         }
     }
 
     fn make_categories(c: &Connection) -> (i64, i64) {
         let m = save_member_category(
-            c, None, &MemberCategoryInput { id: None, name: "Student".into(), description: None, membership_days: 365 },
+            c,
+            None,
+            &MemberCategoryInput {
+                id: None,
+                name: "Student".into(),
+                description: None,
+                membership_days: 365,
+            },
         )
         .unwrap();
         let i = save_named(c, None, NamedKind::ItemCategory, &named_input("General")).unwrap();
@@ -522,17 +657,42 @@ mod tests {
     fn names_are_trimmed_unique_case_insensitively_and_validated() {
         let (_t, c) = conn();
         let id = save_named(&c, None, NamedKind::Collection, &named_input("  Fiction ")).unwrap();
-        assert!(matches!(save_named(&c, None, NamedKind::Collection, &named_input("FICTION")), Err(AppError::Conflict(_))));
-        assert!(matches!(save_named(&c, None, NamedKind::Collection, &named_input("   ")), Err(AppError::Validation(_))));
+        assert!(matches!(
+            save_named(&c, None, NamedKind::Collection, &named_input("FICTION")),
+            Err(AppError::Conflict(_))
+        ));
+        assert!(matches!(
+            save_named(&c, None, NamedKind::Collection, &named_input("   ")),
+            Err(AppError::Validation(_))
+        ));
         // Same name is fine in a different kind of list.
         save_named(&c, None, NamedKind::Location, &named_input("Fiction")).unwrap();
         // Rename and update.
-        save_named(&c, None, NamedKind::Collection, &NamedInput { id: Some(id), name: "Novels".into(), description: Some("Stories".into()) }).unwrap();
+        save_named(
+            &c,
+            None,
+            NamedKind::Collection,
+            &NamedInput {
+                id: Some(id),
+                name: "Novels".into(),
+                description: Some("Stories".into()),
+            },
+        )
+        .unwrap();
         let o = overview(&c).unwrap();
         assert_eq!(o.collections[0].name, "Novels");
         assert_eq!(o.collections[0].description.as_deref(), Some("Stories"));
         assert!(matches!(
-            save_named(&c, None, NamedKind::Collection, &NamedInput { id: Some(9999), name: "X".into(), description: None }),
+            save_named(
+                &c,
+                None,
+                NamedKind::Collection,
+                &NamedInput {
+                    id: Some(9999),
+                    name: "X".into(),
+                    description: None
+                }
+            ),
             Err(AppError::NotFound(_))
         ));
     }
@@ -545,7 +705,10 @@ mod tests {
         assert!(overview(&c).unwrap().locations[0].archived);
         set_archived(&c, None, ArchiveKind::Location, id, false).unwrap();
         assert!(!overview(&c).unwrap().locations[0].archived);
-        assert!(matches!(set_archived(&c, None, ArchiveKind::Shelf, 77, true), Err(AppError::NotFound(_))));
+        assert!(matches!(
+            set_archived(&c, None, ArchiveKind::Shelf, 77, true),
+            Err(AppError::NotFound(_))
+        ));
     }
 
     #[test]
@@ -553,11 +716,22 @@ mod tests {
         let (_t, c) = conn();
         let a = save_named(&c, None, NamedKind::Location, &named_input("Main")).unwrap();
         let b = save_named(&c, None, NamedKind::Location, &named_input("Annex")).unwrap();
-        let shelf = |loc, code: &str| ShelfInput { id: None, location_id: loc, code: code.into(), description: None };
+        let shelf = |loc, code: &str| ShelfInput {
+            id: None,
+            location_id: loc,
+            code: code.into(),
+            description: None,
+        };
         save_shelf(&c, None, &shelf(a, "A1")).unwrap();
         save_shelf(&c, None, &shelf(b, "A1")).unwrap();
-        assert!(matches!(save_shelf(&c, None, &shelf(a, "a1")), Err(AppError::Conflict(_))));
-        assert!(matches!(save_shelf(&c, None, &shelf(999, "Z")), Err(AppError::Validation(_))));
+        assert!(matches!(
+            save_shelf(&c, None, &shelf(a, "a1")),
+            Err(AppError::Conflict(_))
+        ));
+        assert!(matches!(
+            save_shelf(&c, None, &shelf(999, "Z")),
+            Err(AppError::Validation(_))
+        ));
     }
 
     #[test]
@@ -565,19 +739,34 @@ mod tests {
         let (_t, c) = conn();
         let (m, i) = make_categories(&c);
         let id = save_policy(&c, None, &policy(m, i)).unwrap();
-        assert!(matches!(save_policy(&c, None, &policy(m, i)), Err(AppError::Conflict(_))));
+        assert!(matches!(
+            save_policy(&c, None, &policy(m, i)),
+            Err(AppError::Conflict(_))
+        ));
 
         let mut bad = policy(m, i);
         bad.loan_days = 0;
-        assert!(matches!(save_policy(&c, None, &bad), Err(AppError::Validation(_))));
+        assert!(matches!(
+            save_policy(&c, None, &bad),
+            Err(AppError::Validation(_))
+        ));
         let mut bad = policy(m, i);
         bad.max_renewals = 2;
         bad.renewal_days = 0;
-        assert!(matches!(save_policy(&c, None, &bad), Err(AppError::Validation(_))));
+        assert!(matches!(
+            save_policy(&c, None, &bad),
+            Err(AppError::Validation(_))
+        ));
         let mut bad = policy(m, i);
         bad.fine_per_day_minor = -1;
-        assert!(matches!(save_policy(&c, None, &bad), Err(AppError::Validation(_))));
-        assert!(matches!(save_policy(&c, None, &policy(999, i)), Err(AppError::Validation(_))));
+        assert!(matches!(
+            save_policy(&c, None, &bad),
+            Err(AppError::Validation(_))
+        ));
+        assert!(matches!(
+            save_policy(&c, None, &policy(999, i)),
+            Err(AppError::Validation(_))
+        ));
 
         let mut upd = policy(m, i);
         upd.id = Some(id);
@@ -589,35 +778,62 @@ mod tests {
 
         delete_policy(&c, None, id).unwrap();
         assert!(overview(&c).unwrap().policies.is_empty());
-        assert!(matches!(delete_policy(&c, None, id), Err(AppError::NotFound(_))));
+        assert!(matches!(
+            delete_policy(&c, None, id),
+            Err(AppError::NotFound(_))
+        ));
     }
 
     #[test]
     fn member_category_membership_period_is_bounded() {
         let (_t, c) = conn();
-        let bad = MemberCategoryInput { id: None, name: "X".into(), description: None, membership_days: 0 };
-        assert!(matches!(save_member_category(&c, None, &bad), Err(AppError::Validation(_))));
+        let bad = MemberCategoryInput {
+            id: None,
+            name: "X".into(),
+            description: None,
+            membership_days: 0,
+        };
+        assert!(matches!(
+            save_member_category(&c, None, &bad),
+            Err(AppError::Validation(_))
+        ));
     }
 
     #[test]
     fn library_details_can_be_updated_and_are_validated() {
         let (_t, c) = conn();
         let mut input = LibraryInput {
-            name: "  St. Mary's School Library ".into(), profile: "school".into(), address: Some("Kochi".into()),
-            contact: None, currency: "inr".into(), locale: "en".into(),
+            name: "  St. Mary's School Library ".into(),
+            profile: "school".into(),
+            address: Some("Kochi".into()),
+            contact: None,
+            currency: "inr".into(),
+            locale: "en".into(),
         };
         update_library(&c, None, &input).unwrap();
         let l = library(&c).unwrap().unwrap();
-        assert_eq!((l.name.as_str(), l.currency.as_str(), l.address.as_deref()), ("St. Mary's School Library", "INR", Some("Kochi")));
+        assert_eq!(
+            (l.name.as_str(), l.currency.as_str(), l.address.as_deref()),
+            ("St. Mary's School Library", "INR", Some("Kochi"))
+        );
         input.profile = "zoo".into();
-        assert!(matches!(update_library(&c, None, &input), Err(AppError::Validation(_))));
+        assert!(matches!(
+            update_library(&c, None, &input),
+            Err(AppError::Validation(_))
+        ));
     }
 
     #[test]
     fn every_change_is_audited() {
         let (_t, c) = conn();
         save_named(&c, None, NamedKind::Collection, &named_input("Fiction")).unwrap();
-        let n: i64 = c.query_row("SELECT count(*) FROM audit_events WHERE action = 'config.saved'", [], |r| r.get(0)).unwrap();
+        let n: i64 = c
+            .query_row(
+                "SELECT count(*) FROM audit_events WHERE action = 'config.saved'",
+                [],
+                |r| r.get(0),
+            )
+            .unwrap();
         assert_eq!(n, 1);
     }
 }

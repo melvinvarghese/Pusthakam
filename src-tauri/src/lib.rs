@@ -1,6 +1,6 @@
 pub mod commands;
-mod desktop_tray;
 pub mod db;
+mod desktop_tray;
 pub mod domain;
 pub mod error;
 pub mod logging;

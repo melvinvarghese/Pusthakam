@@ -7,7 +7,8 @@ pub const MAX_PREFIX: usize = 12;
 pub fn validate_prefix(prefix: &str) -> AppResult<String> {
     let p = prefix.trim();
     let ok = p.chars().count() <= MAX_PREFIX
-        && p.chars().all(|c| c.is_ascii_alphanumeric() || matches!(c, '-' | '_' | '/' | '.'));
+        && p.chars()
+            .all(|c| c.is_ascii_alphanumeric() || matches!(c, '-' | '_' | '/' | '.'));
     if ok {
         Ok(p.to_string())
     } else {
@@ -28,7 +29,9 @@ pub fn validate_code(label: &str, code: &str) -> AppResult<String> {
     if ok {
         Ok(c.to_string())
     } else {
-        Err(AppError::Validation(format!("{label} must be 1 to 40 letters, digits or symbols, with no spaces.")))
+        Err(AppError::Validation(format!(
+            "{label} must be 1 to 40 letters, digits or symbols, with no spaces."
+        )))
     }
 }
 
@@ -55,7 +58,11 @@ mod tests {
     fn codes_must_be_scannable() {
         assert!(validate_code("Barcode", "004217").is_ok());
         assert!(validate_code("Barcode", "A-1/b").is_ok());
-        assert_eq!(validate_code("Barcode", "  A1  ").unwrap(), "A1", "surrounding spaces are trimmed");
+        assert_eq!(
+            validate_code("Barcode", "  A1  ").unwrap(),
+            "A1",
+            "surrounding spaces are trimmed"
+        );
         for bad in ["", "   ", "has space", "ta\tb", "മലയാളം", &"9".repeat(41)] {
             assert!(validate_code("Barcode", bad).is_err(), "{bad:?}");
         }

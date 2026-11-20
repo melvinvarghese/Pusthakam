@@ -18,26 +18,48 @@ pub struct Transfer {
 }
 
 pub fn list(conn: &Connection, page: i64) -> AppResult<inventory::Page<Transfer>> {
-    let total: i64 = conn.query_row("SELECT count(*) FROM stock_transfers", [], |row| row.get(0))?;
+    let total: i64 =
+        conn.query_row("SELECT count(*) FROM stock_transfers", [], |row| row.get(0))?;
     let page = inventory::page_number(page, total);
     let mut stmt = conn.prepare(
         "SELECT id, barcode, title, source_label, destination_label, status, sent_at, finished_at
          FROM stock_transfers ORDER BY id DESC LIMIT ?1 OFFSET ?2",
     )?;
-    let rows = stmt.query_map(params![inventory::PAGE_SIZE, (page - 1) * inventory::PAGE_SIZE], |row| Ok(Transfer {
-        id: row.get(0)?, barcode: row.get(1)?, title: row.get(2)?, source: row.get(3)?,
-        destination: row.get(4)?, status: row.get(5)?, sent_at: row.get(6)?, finished_at: row.get(7)?,
-    }))?.collect::<Result<_, _>>()?;
-    Ok(inventory::Page { rows, total, page, page_size: inventory::PAGE_SIZE })
+    let rows = stmt
+        .query_map(
+            params![inventory::PAGE_SIZE, (page - 1) * inventory::PAGE_SIZE],
+            |row| {
+                Ok(Transfer {
+                    id: row.get(0)?,
+                    barcode: row.get(1)?,
+                    title: row.get(2)?,
+                    source: row.get(3)?,
+                    destination: row.get(4)?,
+                    status: row.get(5)?,
+                    sent_at: row.get(6)?,
+                    finished_at: row.get(7)?,
+                })
+            },
+        )?
+        .collect::<Result<_, _>>()?;
+    Ok(inventory::Page {
+        rows,
+        total,
+        page,
+        page_size: inventory::PAGE_SIZE,
+    })
 }
 
 pub fn ensure_idle(conn: &Connection, item_id: i64) -> AppResult<()> {
     let active: bool = conn.query_row(
         "SELECT EXISTS(SELECT 1 FROM stock_transfers WHERE item_id = ?1 AND status = 'in_transit')",
-        [item_id], |row| row.get(0),
+        [item_id],
+        |row| row.get(0),
     )?;
     if active {
-        return Err(AppError::Conflict("Receive or cancel the open transfer in Inventory before editing this copy.".into()));
+        return Err(AppError::Conflict(
+            "Receive or cancel the open transfer in Inventory before editing this copy.".into(),
+        ));
     }
     Ok(())
 }
@@ -49,13 +71,29 @@ fn label(location: String, shelf: Option<String>) -> String {
     }
 }
 
-fn history(conn: &Connection, actor: &Session, item_id: i64, action: &str, from: &str, to: &str) -> AppResult<()> {
-    conn.execute("INSERT INTO item_events (item_id, event_type, from_status, to_status, staff_user_id)
-        VALUES (?1, ?2, ?3, ?4, ?5)", params![item_id, action, from, to, actor.user_id])?;
+fn history(
+    conn: &Connection,
+    actor: &Session,
+    item_id: i64,
+    action: &str,
+    from: &str,
+    to: &str,
+) -> AppResult<()> {
+    conn.execute(
+        "INSERT INTO item_events (item_id, event_type, from_status, to_status, staff_user_id)
+        VALUES (?1, ?2, ?3, ?4, ?5)",
+        params![item_id, action, from, to, actor.user_id],
+    )?;
     Ok(())
 }
 
-pub fn send(conn: &mut Connection, actor: &Session, barcode: &str, location: i64, shelf: Option<i64>) -> AppResult<i64> {
+pub fn send(
+    conn: &mut Connection,
+    actor: &Session,
+    barcode: &str,
+    location: i64,
+    shelf: Option<i64>,
+) -> AppResult<i64> {
     let barcode = validate::required("Barcode", barcode, 120)?;
     let tx = conn.transaction_with_behavior(TransactionBehavior::Immediate)?;
     let item_id = reservations::copy_id(&tx, &barcode)?;
@@ -67,12 +105,17 @@ pub fn send(conn: &mut Connection, actor: &Session, barcode: &str, location: i64
         [item_id], |row| Ok((row.get(0)?, row.get(1)?, row.get(2)?, row.get(3)?, row.get(4)?, row.get(5)?)),
     )?;
     if status != "available" || archived {
-        return Err(AppError::Conflict("Only an available copy of an active record can be transferred.".into()));
+        return Err(AppError::Conflict(
+            "Only an available copy of an active record can be transferred.".into(),
+        ));
     }
-    let (source, source_name) = source.zip(source_name)
-        .ok_or_else(|| AppError::Validation("Assign the copy a sending location before transferring it.".into()))?;
+    let (source, source_name) = source.zip(source_name).ok_or_else(|| {
+        AppError::Validation("Assign the copy a sending location before transferring it.".into())
+    })?;
     if (source, source_shelf) == (location, shelf) {
-        return Err(AppError::Validation("Choose a different destination.".into()));
+        return Err(AppError::Validation(
+            "Choose a different destination.".into(),
+        ));
     }
     let (destination, destination_shelf) = inventory::active_place(&tx, location, shelf)?;
     tx.execute("UPDATE physical_items SET status = 'in_transit', updated_at = strftime('%Y-%m-%dT%H:%M:%SZ','now')
@@ -84,8 +127,22 @@ pub fn send(conn: &mut Connection, actor: &Session, barcode: &str, location: i64
         params![item_id, source, source_shelf, location, shelf, label(source_name, source_code),
             label(destination, destination_shelf), actor.user_id])?;
     let id = tx.last_insert_rowid();
-    history(&tx, actor, item_id, "transfer_sent", "available", "in_transit")?;
-    audit::record(&tx, Some(actor), "inventory.transfer_sent", "stock_transfer", Some(id), "Sent a copy transfer")?;
+    history(
+        &tx,
+        actor,
+        item_id,
+        "transfer_sent",
+        "available",
+        "in_transit",
+    )?;
+    audit::record(
+        &tx,
+        Some(actor),
+        "inventory.transfer_sent",
+        "stock_transfer",
+        Some(id),
+        "Sent a copy transfer",
+    )?;
     tx.commit()?;
     Ok(id)
 }
@@ -100,9 +157,19 @@ pub fn finish(conn: &mut Connection, actor: &Session, id: i64, receive: bool) ->
         inventory::active_place(&tx, destination, destination_shelf)?;
     }
     let (status, action, event, summary) = if receive {
-        ("received", "inventory.transfer_received", "transfer_received", "Received a copy transfer")
+        (
+            "received",
+            "inventory.transfer_received",
+            "transfer_received",
+            "Received a copy transfer",
+        )
     } else {
-        ("cancelled", "inventory.transfer_cancelled", "transfer_cancelled", "Cancelled a copy transfer")
+        (
+            "cancelled",
+            "inventory.transfer_cancelled",
+            "transfer_cancelled",
+            "Cancelled a copy transfer",
+        )
     };
     tx.execute("UPDATE stock_transfers SET status = ?2, finished_at = strftime('%Y-%m-%dT%H:%M:%SZ','now'),
         finished_by = ?3 WHERE id = ?1", params![id, status, actor.user_id])?;
@@ -112,7 +179,14 @@ pub fn finish(conn: &mut Connection, actor: &Session, id: i64, receive: bool) ->
         WHERE id = ?1", params![item, receive, destination, destination_shelf])?;
     history(&tx, actor, item, event, "in_transit", "available")?;
     reservations::refresh_copy(&tx, item)?;
-    audit::record(&tx, Some(actor), action, "stock_transfer", Some(id), summary)?;
+    audit::record(
+        &tx,
+        Some(actor),
+        action,
+        "stock_transfer",
+        Some(id),
+        summary,
+    )?;
     tx.commit()?;
     Ok(())
 }

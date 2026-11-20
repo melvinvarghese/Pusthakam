@@ -18,13 +18,19 @@ pub fn open_with_pre_upgrade(
 ) -> AppResult<Connection> {
     let mut conn = Connection::open(path)?;
     configure(&conn)?;
-    let has_history = conn.query_row(
-        "SELECT 1 FROM sqlite_schema WHERE type = 'table' AND name = 'schema_migrations'",
-        [], |_| Ok(()),
-    ).optional()?.is_some();
+    let has_history = conn
+        .query_row(
+            "SELECT 1 FROM sqlite_schema WHERE type = 'table' AND name = 'schema_migrations'",
+            [],
+            |_| Ok(()),
+        )
+        .optional()?
+        .is_some();
     if has_history {
         let version: i64 = conn.query_row(
-            "SELECT coalesce(max(version), 0) FROM schema_migrations", [], |row| row.get(0),
+            "SELECT coalesce(max(version), 0) FROM schema_migrations",
+            [],
+            |row| row.get(0),
         )?;
         if version > 0 && version < migrations::latest_version() {
             snapshot(&conn)?;
@@ -57,26 +63,47 @@ mod tests {
             let mut conn = Connection::open(&paths.database).unwrap();
             configure(&conn).unwrap();
             migrations::run(&mut conn, previous).unwrap();
-            conn.execute("INSERT INTO application_settings (key, value) VALUES ('test', '17')", []).unwrap();
+            conn.execute(
+                "INSERT INTO application_settings (key, value) VALUES ('test', '17')",
+                [],
+            )
+            .unwrap();
             conn.execute("INSERT INTO bibliographic_records (id, title) VALUES (42, 'Phase 1 upgrade fixture')", []).unwrap();
         }
         let result = open_with_pre_upgrade(&paths.database, |_| {
-            Err(crate::error::AppError::Validation("Backup location unavailable.".into()))
+            Err(crate::error::AppError::Validation(
+                "Backup location unavailable.".into(),
+            ))
         });
         assert!(result.is_err());
         {
             let conn = Connection::open(&paths.database).unwrap();
-            let version: i64 = conn.query_row("SELECT max(version) FROM schema_migrations", [], |r| r.get(0)).unwrap();
+            let version: i64 = conn
+                .query_row("SELECT max(version) FROM schema_migrations", [], |r| {
+                    r.get(0)
+                })
+                .unwrap();
             assert_eq!(version, previous_version);
         }
         let upgraded = open_with_pre_upgrade(&paths.database, |conn| {
             crate::services::backup::create(conn, &paths.backups)?;
             Ok(())
-        }).unwrap();
-        let version: i64 = upgraded.query_row("SELECT max(version) FROM schema_migrations", [], |r| r.get(0)).unwrap();
+        })
+        .unwrap();
+        let version: i64 = upgraded
+            .query_row("SELECT max(version) FROM schema_migrations", [], |r| {
+                r.get(0)
+            })
+            .unwrap();
         assert_eq!(version, migrations::latest_version());
-        let saved = std::fs::read_dir(&paths.backups).unwrap().next().unwrap().unwrap().path();
-        let snapshot = Connection::open_with_flags(saved, rusqlite::OpenFlags::SQLITE_OPEN_READ_ONLY).unwrap();
+        let saved = std::fs::read_dir(&paths.backups)
+            .unwrap()
+            .next()
+            .unwrap()
+            .unwrap()
+            .path();
+        let snapshot =
+            Connection::open_with_flags(saved, rusqlite::OpenFlags::SQLITE_OPEN_READ_ONLY).unwrap();
         let (version, value): (i64, String) = snapshot.query_row(
             "SELECT (SELECT max(version) FROM schema_migrations), value FROM application_settings WHERE key = 'test'",
             [], |r| Ok((r.get(0)?, r.get(1)?)),
@@ -87,13 +114,19 @@ mod tests {
 
         let reopened = open_with_pre_upgrade(&paths.database, |_| {
             panic!("Restarting at the current schema must not create another upgrade snapshot")
-        }).unwrap();
-        let (version, title): (i64, String) = reopened.query_row(
-            "SELECT (SELECT max(version) FROM schema_migrations), title
+        })
+        .unwrap();
+        let (version, title): (i64, String) = reopened
+            .query_row(
+                "SELECT (SELECT max(version) FROM schema_migrations), title
              FROM bibliographic_records WHERE id = 42",
-            [], |row| Ok((row.get(0)?, row.get(1)?)),
-        ).unwrap();
-        let integrity: String = reopened.query_row("PRAGMA integrity_check(1)", [], |row| row.get(0)).unwrap();
+                [],
+                |row| Ok((row.get(0)?, row.get(1)?)),
+            )
+            .unwrap();
+        let integrity: String = reopened
+            .query_row("PRAGMA integrity_check(1)", [], |row| row.get(0))
+            .unwrap();
         assert_eq!(version, migrations::latest_version());
         assert_eq!(title, "Phase 1 upgrade fixture");
         assert_eq!(integrity, "ok");
@@ -103,8 +136,12 @@ mod tests {
     fn open_sets_required_pragmas() {
         let tmp = tempfile::tempdir().unwrap();
         let conn = open(&tmp.path().join("t.db")).unwrap();
-        let fk: i64 = conn.query_row("PRAGMA foreign_keys", [], |r| r.get(0)).unwrap();
-        let jm: String = conn.query_row("PRAGMA journal_mode", [], |r| r.get(0)).unwrap();
+        let fk: i64 = conn
+            .query_row("PRAGMA foreign_keys", [], |r| r.get(0))
+            .unwrap();
+        let jm: String = conn
+            .query_row("PRAGMA journal_mode", [], |r| r.get(0))
+            .unwrap();
         assert_eq!(fk, 1);
         assert_eq!(jm.to_lowercase(), "wal");
     }
@@ -123,7 +160,11 @@ mod tests {
         } // connection dropped = app closed
         let conn = open(&path).unwrap();
         let v: String = conn
-            .query_row("SELECT value FROM application_settings WHERE key='theme'", [], |r| r.get(0))
+            .query_row(
+                "SELECT value FROM application_settings WHERE key='theme'",
+                [],
+                |r| r.get(0),
+            )
             .unwrap();
         assert_eq!(v, "\"dark\"");
     }
@@ -132,10 +173,14 @@ mod tests {
     fn fts5_is_available() {
         let tmp = tempfile::tempdir().unwrap();
         let conn = open(&tmp.path().join("fts.db")).unwrap();
-        conn.execute_batch("CREATE VIRTUAL TABLE t USING fts5(title); INSERT INTO t VALUES ('Malayalam grammar');")
-            .unwrap();
+        conn.execute_batch(
+            "CREATE VIRTUAL TABLE t USING fts5(title); INSERT INTO t VALUES ('Malayalam grammar');",
+        )
+        .unwrap();
         let n: i64 = conn
-            .query_row("SELECT count(*) FROM t WHERE t MATCH 'gram*'", [], |r| r.get(0))
+            .query_row("SELECT count(*) FROM t WHERE t MATCH 'gram*'", [], |r| {
+                r.get(0)
+            })
             .unwrap();
         assert_eq!(n, 1);
     }
@@ -149,7 +194,9 @@ mod tests {
             [],
         )
         .unwrap();
-        assert!(conn.execute("UPDATE audit_events SET summary='tampered'", []).is_err());
+        assert!(conn
+            .execute("UPDATE audit_events SET summary='tampered'", [])
+            .is_err());
         assert!(conn.execute("DELETE FROM audit_events", []).is_err());
     }
 }

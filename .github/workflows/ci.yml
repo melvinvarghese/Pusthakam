@@ -36,6 +36,9 @@ jobs:
       - name: Progress monitor data validation
         run: node tools/progress-monitor/validate.mjs
 
+      - name: Production bundle build
+        run: npm run build
+
   rust-checks:
     name: Rust Clippy, Unit & Integration Tests
     runs-on: windows-latest
@@ -52,6 +55,9 @@ jobs:
         uses: swatinem/rust-cache@v2
         with:
           workspaces: src-tauri
+
+      - name: Rust Formatting (cargo fmt --check)
+        run: cargo fmt --manifest-path src-tauri/Cargo.toml -- --check
 
       - name: Cargo Clippy (-D warnings)
         run: cargo clippy --manifest-path src-tauri/Cargo.toml -- -D warnings

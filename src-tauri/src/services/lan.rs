@@ -207,7 +207,11 @@ pub fn get_or_init_config(conn: &Connection) -> AppResult<LanConfig> {
         hasher.update(random_bytes);
         hasher.update(row.3.as_bytes());
         let hash = hasher.finalize();
-        let fingerprint = hash.iter().map(|b| format!("{b:02x}")).collect::<Vec<_>>().join("");
+        let fingerprint = hash
+            .iter()
+            .map(|b| format!("{b:02x}"))
+            .collect::<Vec<_>>()
+            .join("");
         let formatted_fingerprint = fingerprint[..32].to_uppercase();
 
         conn.execute(
@@ -287,11 +291,10 @@ pub fn generate_pairing_code(conn: &Connection, session: &Session) -> AppResult<
         |r| r.get(0),
     )?;
 
-    let created_at: String = conn.query_row(
-        "SELECT strftime('%Y-%m-%dT%H:%M:%SZ', 'now')",
-        [],
-        |r| r.get(0),
-    )?;
+    let created_at: String =
+        conn.query_row("SELECT strftime('%Y-%m-%dT%H:%M:%SZ', 'now')", [], |r| {
+            r.get(0)
+        })?;
 
     conn.execute(
         "INSERT INTO lan_pairing_codes (code, created_by_staff_id, expires_at, created_at)
@@ -338,7 +341,9 @@ pub fn list_pairing_codes(conn: &Connection, session: &Session) -> AppResult<Vec
 pub fn pair_client(conn: &Connection, req: &PairRequest) -> AppResult<PairResponse> {
     let config = get_or_init_config(conn)?;
     if !config.enabled {
-        return Err(AppError::Conflict("LAN hosting is currently disabled on this server.".into()));
+        return Err(AppError::Conflict(
+            "LAN hosting is currently disabled on this server.".into(),
+        ));
     }
 
     let code = req.pairing_code.trim().to_uppercase();
@@ -350,12 +355,18 @@ pub fn pair_client(conn: &Connection, req: &PairRequest) -> AppResult<PairRespon
     ).ok();
 
     if valid_code.is_none() {
-        return Err(AppError::Validation("Invalid, expired or already used pairing code.".into()));
+        return Err(AppError::Validation(
+            "Invalid, expired or already used pairing code.".into(),
+        ));
     }
 
     let mut id_bytes = [0u8; 16];
     rand_core::OsRng.fill_bytes(&mut id_bytes);
-    let client_id = id_bytes.iter().map(|b| format!("{b:02x}")).collect::<Vec<_>>().join("");
+    let client_id = id_bytes
+        .iter()
+        .map(|b| format!("{b:02x}"))
+        .collect::<Vec<_>>()
+        .join("");
 
     conn.execute(
         "UPDATE lan_pairing_codes SET used_at = strftime('%Y-%m-%dT%H:%M:%SZ', 'now'), used_by_client_id = ?1
@@ -436,11 +447,15 @@ pub fn revoke_client(conn: &Connection, session: &Session, client_id: &str) -> A
 pub fn lan_login(conn: &Connection, req: &LanLoginRequest) -> AppResult<LanLoginResponse> {
     let config = get_or_init_config(conn)?;
     if !config.enabled {
-        return Err(AppError::Conflict("LAN hosting is currently disabled on this server.".into()));
+        return Err(AppError::Conflict(
+            "LAN hosting is currently disabled on this server.".into(),
+        ));
     }
 
     if req.server_fingerprint != config.server_fingerprint {
-        return Err(AppError::Validation("Server fingerprint mismatch. Please re-pair this device.".into()));
+        return Err(AppError::Validation(
+            "Server fingerprint mismatch. Please re-pair this device.".into(),
+        ));
     }
 
     let client_status: Result<(Option<String>,), _> = conn.query_row(
@@ -451,10 +466,14 @@ pub fn lan_login(conn: &Connection, req: &LanLoginRequest) -> AppResult<LanLogin
 
     match client_status {
         Ok((Some(_),)) => {
-            return Err(AppError::Permission("This device has been revoked by the library administrator.".into()));
+            return Err(AppError::Permission(
+                "This device has been revoked by the library administrator.".into(),
+            ));
         }
         Err(_) => {
-            return Err(AppError::Permission("Device is not paired with this server.".into()));
+            return Err(AppError::Permission(
+                "Device is not paired with this server.".into(),
+            ));
         }
         _ => {}
     }
@@ -463,7 +482,11 @@ pub fn lan_login(conn: &Connection, req: &LanLoginRequest) -> AppResult<LanLogin
 
     let mut token_bytes = [0u8; 32];
     rand_core::OsRng.fill_bytes(&mut token_bytes);
-    let token = token_bytes.iter().map(|b| format!("{b:02x}")).collect::<Vec<_>>().join("");
+    let token = token_bytes
+        .iter()
+        .map(|b| format!("{b:02x}"))
+        .collect::<Vec<_>>()
+        .join("");
 
     let expires_at: String = conn.query_row(
         "SELECT strftime('%Y-%m-%dT%H:%M:%SZ', 'now', '+24 hours')",
@@ -509,11 +532,17 @@ pub fn verify_lan_session(conn: &Connection, token: &str) -> AppResult<(Session,
 
     let (user_id, client_id, session_revoked, client_revoked) = match session_row {
         Ok(row) => row,
-        Err(_) => return Err(AppError::Auth("Invalid or expired session. Please sign in again.".into())),
+        Err(_) => {
+            return Err(AppError::Auth(
+                "Invalid or expired session. Please sign in again.".into(),
+            ))
+        }
     };
 
     if session_revoked.is_some() || client_revoked.is_some() {
-        return Err(AppError::Permission("This session or device has been revoked.".into()));
+        return Err(AppError::Permission(
+            "This session or device has been revoked.".into(),
+        ));
     }
 
     conn.execute(
@@ -545,7 +574,9 @@ pub fn opac_search(
 ) -> AppResult<PublicOpacSearchResult> {
     let config = get_or_init_config(conn)?;
     if !config.enabled || !config.opac_enabled {
-        return Err(AppError::Permission("Public OPAC access is currently disabled.".into()));
+        return Err(AppError::Permission(
+            "Public OPAC access is currently disabled.".into(),
+        ));
     }
 
     let p = page.max(1);
@@ -561,7 +592,7 @@ pub fn opac_search(
         )?;
         let mut stmt = conn.prepare(
             "SELECT id FROM bibliographic_records WHERE archived_at IS NULL
-             ORDER BY title COLLATE NOCASE ASC LIMIT ?1 OFFSET ?2"
+             ORDER BY title COLLATE NOCASE ASC LIMIT ?1 OFFSET ?2",
         )?;
         let rows = stmt.query_map(params![ps, offset], |r| r.get::<_, i64>(0))?;
         let mut ids = Vec::new();
@@ -573,7 +604,13 @@ pub fn opac_search(
         // Build sanitized search term
         let escaped = query_clean
             .chars()
-            .map(|ch| if ch.is_alphanumeric() || ch == ' ' { ch } else { ' ' })
+            .map(|ch| {
+                if ch.is_alphanumeric() || ch == ' ' {
+                    ch
+                } else {
+                    ' '
+                }
+            })
             .collect::<String>();
         let fts_query = escaped
             .split_whitespace()
@@ -584,21 +621,23 @@ pub fn opac_search(
         if fts_query.is_empty() {
             (0, Vec::new())
         } else {
-            let count: i64 = conn.query_row(
-                "SELECT COUNT(DISTINCT r.id)
+            let count: i64 = conn
+                .query_row(
+                    "SELECT COUNT(DISTINCT r.id)
                  FROM bibliographic_records r
                  JOIN catalogue_fts f ON f.rowid = r.id
                  WHERE r.archived_at IS NULL AND catalogue_fts MATCH ?1",
-                [&fts_query],
-                |r| r.get(0),
-            ).unwrap_or(0);
+                    [&fts_query],
+                    |r| r.get(0),
+                )
+                .unwrap_or(0);
 
             let mut stmt = conn.prepare(
                 "SELECT DISTINCT r.id
                  FROM bibliographic_records r
                  JOIN catalogue_fts f ON f.rowid = r.id
                  WHERE r.archived_at IS NULL AND catalogue_fts MATCH ?1
-                 ORDER BY r.title COLLATE NOCASE ASC LIMIT ?2 OFFSET ?3"
+                 ORDER BY r.title COLLATE NOCASE ASC LIMIT ?2 OFFSET ?3",
             )?;
             let rows = stmt.query_map(params![fts_query, ps, offset], |r| r.get::<_, i64>(0))?;
             let mut ids = Vec::new();
@@ -643,7 +682,7 @@ pub fn opac_get_record(conn: &Connection, id: i64) -> AppResult<Option<PublicOpa
     let mut contrib_stmt = conn.prepare(
         "SELECT c.name FROM record_contributors rc
          JOIN contributors c ON c.id = rc.contributor_id
-         WHERE rc.record_id = ?1 ORDER BY rc.position ASC"
+         WHERE rc.record_id = ?1 ORDER BY rc.position ASC",
     )?;
     let author_rows = contrib_stmt.query_map([id], |r| r.get::<_, String>(0))?;
     let mut authors = Vec::new();
@@ -655,7 +694,7 @@ pub fn opac_get_record(conn: &Connection, id: i64) -> AppResult<Option<PublicOpa
     let mut subj_stmt = conn.prepare(
         "SELECT s.heading FROM record_subjects rs
          JOIN subjects s ON s.id = rs.subject_id
-         WHERE rs.record_id = ?1 ORDER BY s.heading ASC"
+         WHERE rs.record_id = ?1 ORDER BY s.heading ASC",
     )?;
     let subj_rows = subj_stmt.query_map([id], |r| r.get::<_, String>(0))?;
     let mut subjects = Vec::new();
@@ -664,21 +703,23 @@ pub fn opac_get_record(conn: &Connection, id: i64) -> AppResult<Option<PublicOpa
     }
 
     // Physical copies availability (only public counts)
-    let (total_copies, available_copies): (i64, i64) = conn.query_row(
-        "SELECT
+    let (total_copies, available_copies): (i64, i64) = conn
+        .query_row(
+            "SELECT
             COUNT(*),
             COALESCE(SUM(CASE WHEN status = 'available' THEN 1 ELSE 0 END), 0)
          FROM physical_items
          WHERE record_id = ?1 AND status NOT IN ('withdrawn', 'deleted')",
-        [id],
-        |r| Ok((r.get(0)?, r.get(1)?)),
-    ).unwrap_or((0, 0));
+            [id],
+            |r| Ok((r.get(0)?, r.get(1)?)),
+        )
+        .unwrap_or((0, 0));
 
     // Shelving locations
     let mut loc_stmt = conn.prepare(
         "SELECT DISTINCT l.name FROM physical_items pi
          JOIN locations l ON l.id = pi.location_id
-         WHERE pi.record_id = ?1 ORDER BY l.name ASC"
+         WHERE pi.record_id = ?1 ORDER BY l.name ASC",
     )?;
     let loc_rows = loc_stmt.query_map([id], |r| r.get::<_, String>(0))?;
     let mut locations = Vec::new();
@@ -733,9 +774,8 @@ pub fn start_lan_listener(
     port: u16,
 ) -> AppResult<LanServerHandle> {
     let addr = format!("{bind_address}:{port}");
-    let listener = TcpListener::bind(&addr).map_err(|e| {
-        AppError::Internal(format!("Failed to bind LAN listener to {addr}: {e}"))
-    })?;
+    let listener = TcpListener::bind(&addr)
+        .map_err(|e| AppError::Internal(format!("Failed to bind LAN listener to {addr}: {e}")))?;
 
     listener.set_nonblocking(true).map_err(AppError::Io)?;
 
@@ -840,7 +880,8 @@ fn handle_http_connection(mut stream: TcpStream, db_path: &PathBuf) -> std::io::
                 }
             },
             Err(e) => {
-                let json = serde_json::json!({ "error": format!("Invalid JSON request: {e}") }).to_string();
+                let json = serde_json::json!({ "error": format!("Invalid JSON request: {e}") })
+                    .to_string();
                 return send_json(&mut stream, 400, &json);
             }
         }
@@ -856,7 +897,9 @@ fn handle_http_connection(mut stream: TcpStream, db_path: &PathBuf) -> std::io::
             }
         };
         if !config.enabled || !config.browser_staff_enabled {
-            let json = serde_json::json!({ "error": "Browser staff access is currently disabled." }).to_string();
+            let json =
+                serde_json::json!({ "error": "Browser staff access is currently disabled." })
+                    .to_string();
             return send_json(&mut stream, 403, &json);
         }
 
@@ -880,7 +923,8 @@ fn handle_http_connection(mut stream: TcpStream, db_path: &PathBuf) -> std::io::
                 }
             },
             Err(e) => {
-                let json = serde_json::json!({ "error": format!("Invalid JSON request: {e}") }).to_string();
+                let json = serde_json::json!({ "error": format!("Invalid JSON request: {e}") })
+                    .to_string();
                 return send_json(&mut stream, 400, &json);
             }
         }
@@ -891,7 +935,8 @@ fn handle_http_connection(mut stream: TcpStream, db_path: &PathBuf) -> std::io::
         let token = match extract_bearer_token(&request_str) {
             Some(t) => t,
             None => {
-                let json = serde_json::json!({ "error": "Missing Authorization header" }).to_string();
+                let json =
+                    serde_json::json!({ "error": "Missing Authorization header" }).to_string();
                 return send_json(&mut stream, 401, &json);
             }
         };
@@ -906,7 +951,8 @@ fn handle_http_connection(mut stream: TcpStream, db_path: &PathBuf) -> std::io::
                     "role": session.role,
                     "permissions": perms,
                     "clientId": client_id,
-                }).to_string();
+                })
+                .to_string();
                 return send_json(&mut stream, 200, &json);
             }
             Err(e) => {
@@ -921,7 +967,8 @@ fn handle_http_connection(mut stream: TcpStream, db_path: &PathBuf) -> std::io::
         let token = match extract_bearer_token(&request_str) {
             Some(t) => t,
             None => {
-                let json = serde_json::json!({ "error": "Missing Authorization header" }).to_string();
+                let json =
+                    serde_json::json!({ "error": "Missing Authorization header" }).to_string();
                 return send_json(&mut stream, 401, &json);
             }
         };
@@ -942,7 +989,11 @@ fn handle_http_connection(mut stream: TcpStream, db_path: &PathBuf) -> std::io::
         let issue_req: Result<StaffIssueRequest, _> = serde_json::from_str(body);
         match issue_req {
             Ok(req) => {
-                let preview_res = crate::services::circulation::prepare_issue(&mut conn, &req.member_number, &req.barcode);
+                let preview_res = crate::services::circulation::prepare_issue(
+                    &mut conn,
+                    &req.member_number,
+                    &req.barcode,
+                );
                 match preview_res {
                     Ok(preview) => {
                         match crate::services::circulation::issue(
@@ -968,7 +1019,8 @@ fn handle_http_connection(mut stream: TcpStream, db_path: &PathBuf) -> std::io::
                                     AppError::Validation(_) => 400,
                                     _ => 500,
                                 };
-                                let json = serde_json::json!({ "error": e.to_string() }).to_string();
+                                let json =
+                                    serde_json::json!({ "error": e.to_string() }).to_string();
                                 return send_json(&mut stream, status, &json);
                             }
                         }
@@ -986,7 +1038,8 @@ fn handle_http_connection(mut stream: TcpStream, db_path: &PathBuf) -> std::io::
                 }
             }
             Err(e) => {
-                let json = serde_json::json!({ "error": format!("Invalid JSON request: {e}") }).to_string();
+                let json = serde_json::json!({ "error": format!("Invalid JSON request: {e}") })
+                    .to_string();
                 return send_json(&mut stream, 400, &json);
             }
         }
@@ -997,7 +1050,8 @@ fn handle_http_connection(mut stream: TcpStream, db_path: &PathBuf) -> std::io::
         let token = match extract_bearer_token(&request_str) {
             Some(t) => t,
             None => {
-                let json = serde_json::json!({ "error": "Missing Authorization header" }).to_string();
+                let json =
+                    serde_json::json!({ "error": "Missing Authorization header" }).to_string();
                 return send_json(&mut stream, 401, &json);
             }
         };
@@ -1022,11 +1076,18 @@ fn handle_http_connection(mut stream: TcpStream, db_path: &PathBuf) -> std::io::
                 match preview_res {
                     Ok(preview) => {
                         let condition = match req.condition.as_deref() {
-                            Some("damaged") => crate::services::circulation::ReturnCondition::Damaged,
+                            Some("damaged") => {
+                                crate::services::circulation::ReturnCondition::Damaged
+                            }
                             Some("lost") => crate::services::circulation::ReturnCondition::Lost,
                             _ => crate::services::circulation::ReturnCondition::Available,
                         };
-                        match crate::services::circulation::return_copy(&mut conn, &session, preview.loan_id, condition) {
+                        match crate::services::circulation::return_copy(
+                            &mut conn,
+                            &session,
+                            preview.loan_id,
+                            condition,
+                        ) {
                             Ok(fine) => {
                                 let resp = StaffReturnResponse {
                                     success: true,
@@ -1044,7 +1105,8 @@ fn handle_http_connection(mut stream: TcpStream, db_path: &PathBuf) -> std::io::
                                     AppError::Validation(_) => 400,
                                     _ => 500,
                                 };
-                                let json = serde_json::json!({ "error": e.to_string() }).to_string();
+                                let json =
+                                    serde_json::json!({ "error": e.to_string() }).to_string();
                                 return send_json(&mut stream, status, &json);
                             }
                         }
@@ -1062,7 +1124,8 @@ fn handle_http_connection(mut stream: TcpStream, db_path: &PathBuf) -> std::io::
                 }
             }
             Err(e) => {
-                let json = serde_json::json!({ "error": format!("Invalid JSON request: {e}") }).to_string();
+                let json = serde_json::json!({ "error": format!("Invalid JSON request: {e}") })
+                    .to_string();
                 return send_json(&mut stream, 400, &json);
             }
         }
@@ -1071,7 +1134,9 @@ fn handle_http_connection(mut stream: TcpStream, db_path: &PathBuf) -> std::io::
     // Route: GET /api/opac/search?q=...
     if method == "GET" && uri.starts_with("/api/opac/search") {
         let q = extract_query_param(uri, "q").unwrap_or_default();
-        let page = extract_query_param(uri, "page").and_then(|p| p.parse().ok()).unwrap_or(1);
+        let page = extract_query_param(uri, "page")
+            .and_then(|p| p.parse().ok())
+            .unwrap_or(1);
         match opac_search(&conn, &q, page, 20) {
             Ok(res) => {
                 let json = serde_json::to_string(&res).unwrap_or_default();
@@ -1087,8 +1152,14 @@ fn handle_http_connection(mut stream: TcpStream, db_path: &PathBuf) -> std::io::
     // Route: GET /staff -> Mobile/Tablet Friendly Staff Portal HTML Page
     if method == "GET" && uri == "/staff" {
         let config = get_or_init_config(&conn).ok();
-        let server_name = config.as_ref().map(|c| c.server_name.as_str()).unwrap_or("Pusthakam Staff Portal");
-        let browser_staff_on = config.as_ref().map(|c| c.enabled && c.browser_staff_enabled).unwrap_or(false);
+        let server_name = config
+            .as_ref()
+            .map(|c| c.server_name.as_str())
+            .unwrap_or("Pusthakam Staff Portal");
+        let browser_staff_on = config
+            .as_ref()
+            .map(|c| c.enabled && c.browser_staff_enabled)
+            .unwrap_or(false);
 
         let html = if !browser_staff_on {
             r#"<!DOCTYPE html>
@@ -1369,7 +1440,10 @@ init();
     // Route: GET / or /opac -> Minimal Standalone OPAC HTML Page
     if method == "GET" && (uri == "/" || uri == "/opac") {
         let config = get_or_init_config(&conn).ok();
-        let server_name = config.as_ref().map(|c| c.server_name.as_str()).unwrap_or("Pusthakam OPAC");
+        let server_name = config
+            .as_ref()
+            .map(|c| c.server_name.as_str())
+            .unwrap_or("Pusthakam OPAC");
         let html = format!(
             r#"<!DOCTYPE html>
 <html lang="en">
@@ -1535,7 +1609,13 @@ mod tests {
             username: "admin".into(),
             display_name: "Admin".into(),
             role: "administrator".into(),
-            permissions: ["lan.read".into(), "lan.manage".into(), "catalogue.write".into()].into_iter().collect(),
+            permissions: [
+                "lan.read".into(),
+                "lan.manage".into(),
+                "catalogue.write".into(),
+            ]
+            .into_iter()
+            .collect(),
             revision: 1,
         }
     }
@@ -1546,7 +1626,9 @@ mod tests {
             username: "librarian".into(),
             display_name: "Librarian".into(),
             role: "librarian".into(),
-            permissions: ["lan.read".into(), "catalogue.read".into()].into_iter().collect(),
+            permissions: ["lan.read".into(), "catalogue.read".into()]
+                .into_iter()
+                .collect(),
             revision: 1,
         }
     }
@@ -1558,7 +1640,10 @@ mod tests {
         assert_eq!(config.port, 4318);
         assert!(!config.enabled);
         assert!(!config.server_fingerprint.is_empty());
-        assert_ne!(config.server_fingerprint, "initial-unconfigured-fingerprint");
+        assert_ne!(
+            config.server_fingerprint,
+            "initial-unconfigured-fingerprint"
+        );
 
         // Re-reading config retains the same fingerprint
         let config2 = get_or_init_config(&conn).unwrap();
@@ -1603,14 +1688,19 @@ mod tests {
         let admin = admin_session();
 
         // Enable LAN first
-        update_config(&conn, &admin, &UpdateLanConfigInput {
-            enabled: true,
-            bind_address: "127.0.0.1".into(),
-            port: 4318,
-            server_name: "Test Lib".into(),
-            opac_enabled: true,
-            browser_staff_enabled: true,
-        }).unwrap();
+        update_config(
+            &conn,
+            &admin,
+            &UpdateLanConfigInput {
+                enabled: true,
+                bind_address: "127.0.0.1".into(),
+                port: 4318,
+                server_name: "Test Lib".into(),
+                opac_enabled: true,
+                browser_staff_enabled: true,
+            },
+        )
+        .unwrap();
 
         // Generate pairing code
         let code_obj = generate_pairing_code(&conn, &admin).unwrap();
@@ -1650,26 +1740,42 @@ mod tests {
         let admin = admin_session();
 
         // Enable LAN
-        let config = update_config(&conn, &admin, &UpdateLanConfigInput {
-            enabled: true,
-            bind_address: "127.0.0.1".into(),
-            port: 4318,
-            server_name: "Test Lib".into(),
-            opac_enabled: true,
-            browser_staff_enabled: true,
-        }).unwrap();
+        let config = update_config(
+            &conn,
+            &admin,
+            &UpdateLanConfigInput {
+                enabled: true,
+                bind_address: "127.0.0.1".into(),
+                port: 4318,
+                server_name: "Test Lib".into(),
+                opac_enabled: true,
+                browser_staff_enabled: true,
+            },
+        )
+        .unwrap();
 
         // Pair a client
         let code = generate_pairing_code(&conn, &admin).unwrap();
-        let paired = pair_client(&conn, &PairRequest {
-            pairing_code: code.code,
-            client_name: "Librarian Tablet".into(),
-            device_kind: Some("tablet".into()),
-            client_ip: Some("192.168.1.102".into()),
-        }).unwrap();
+        let paired = pair_client(
+            &conn,
+            &PairRequest {
+                pairing_code: code.code,
+                client_name: "Librarian Tablet".into(),
+                device_kind: Some("tablet".into()),
+                client_ip: Some("192.168.1.102".into()),
+            },
+        )
+        .unwrap();
 
         // Create a staff user
-        auth::create_user(&conn, "staff_user", "Staff Member", "secret_passphrase_123", "librarian").unwrap();
+        auth::create_user(
+            &conn,
+            "staff_user",
+            "Staff Member",
+            "secret_passphrase_123",
+            "librarian",
+        )
+        .unwrap();
 
         // 1. Login with fingerprint mismatch fails
         let bad_fp_req = LanLoginRequest {
@@ -1719,14 +1825,19 @@ mod tests {
         let admin = admin_session();
 
         // Enable LAN & OPAC
-        update_config(&conn, &admin, &UpdateLanConfigInput {
-            enabled: true,
-            bind_address: "127.0.0.1".into(),
-            port: 4318,
-            server_name: "Central Library".into(),
-            opac_enabled: true,
-            browser_staff_enabled: true,
-        }).unwrap();
+        update_config(
+            &conn,
+            &admin,
+            &UpdateLanConfigInput {
+                enabled: true,
+                bind_address: "127.0.0.1".into(),
+                port: 4318,
+                server_name: "Central Library".into(),
+                opac_enabled: true,
+                browser_staff_enabled: true,
+            },
+        )
+        .unwrap();
 
         // Insert a catalogue record with physical copies
         conn.execute(
@@ -1736,14 +1847,26 @@ mod tests {
         ).unwrap();
 
         // Insert contributors
-        conn.execute("INSERT INTO contributors (id, name) VALUES (201, 'Thomas H. Cormen')", []).unwrap();
+        conn.execute(
+            "INSERT INTO contributors (id, name) VALUES (201, 'Thomas H. Cormen')",
+            [],
+        )
+        .unwrap();
         conn.execute("INSERT INTO record_contributors (record_id, contributor_id, role, position) VALUES (101, 201, 'author', 1)", []).unwrap();
 
         // Insert shelving location
-        conn.execute("INSERT INTO locations (id, name) VALUES (301, 'Computer Science Stack')", []).unwrap();
+        conn.execute(
+            "INSERT INTO locations (id, name) VALUES (301, 'Computer Science Stack')",
+            [],
+        )
+        .unwrap();
 
         // Insert item category
-        conn.execute("INSERT INTO item_categories (id, name) VALUES (401, 'General Book')", []).unwrap();
+        conn.execute(
+            "INSERT INTO item_categories (id, name) VALUES (401, 'General Book')",
+            [],
+        )
+        .unwrap();
 
         // Insert physical items: 2 available, 1 issued
         conn.execute("INSERT INTO physical_items (record_id, location_id, item_category_id, barcode, accession_no, status) VALUES (101, 301, 401, 'ALG-001', 'ACC-1', 'available')", []).unwrap();
@@ -1761,14 +1884,19 @@ mod tests {
         assert_eq!(item.locations, vec!["Computer Science Stack"]);
 
         // Turn off OPAC and assert access is denied
-        update_config(&conn, &admin, &UpdateLanConfigInput {
-            enabled: true,
-            bind_address: "127.0.0.1".into(),
-            port: 4318,
-            server_name: "Central Library".into(),
-            opac_enabled: false,
-            browser_staff_enabled: true,
-        }).unwrap();
+        update_config(
+            &conn,
+            &admin,
+            &UpdateLanConfigInput {
+                enabled: true,
+                bind_address: "127.0.0.1".into(),
+                port: 4318,
+                server_name: "Central Library".into(),
+                opac_enabled: false,
+                browser_staff_enabled: true,
+            },
+        )
+        .unwrap();
 
         assert!(opac_search(&conn, "", 1, 10).is_err());
     }
@@ -1780,21 +1908,28 @@ mod tests {
         let admin = admin_session();
 
         // Enable LAN & OPAC
-        update_config(&conn, &admin, &UpdateLanConfigInput {
-            enabled: true,
-            bind_address: "127.0.0.1".into(),
-            port: 4399,
-            server_name: "Test HTTP Server".into(),
-            opac_enabled: true,
-            browser_staff_enabled: true,
-        }).unwrap();
+        update_config(
+            &conn,
+            &admin,
+            &UpdateLanConfigInput {
+                enabled: true,
+                bind_address: "127.0.0.1".into(),
+                port: 4399,
+                server_name: "Test HTTP Server".into(),
+                opac_enabled: true,
+                browser_staff_enabled: true,
+            },
+        )
+        .unwrap();
 
         // Start server on free loopback port
         let mut handle = start_lan_listener(db_path, "127.0.0.1", 4399).unwrap();
 
         // Connect over standard TcpStream to verify HTTP response
         let mut client = TcpStream::connect("127.0.0.1:4399").unwrap();
-        client.write_all(b"GET /api/lan/status HTTP/1.1\r\nHost: localhost\r\n\r\n").unwrap();
+        client
+            .write_all(b"GET /api/lan/status HTTP/1.1\r\nHost: localhost\r\n\r\n")
+            .unwrap();
 
         let mut resp_buf = [0u8; 1024];
         let n = client.read(&mut resp_buf).unwrap();
@@ -1804,7 +1939,9 @@ mod tests {
 
         // Test OPAC HTML page response
         let mut client_html = TcpStream::connect("127.0.0.1:4399").unwrap();
-        client_html.write_all(b"GET /opac HTTP/1.1\r\nHost: localhost\r\n\r\n").unwrap();
+        client_html
+            .write_all(b"GET /opac HTTP/1.1\r\nHost: localhost\r\n\r\n")
+            .unwrap();
         let mut html_buf = [0u8; 2048];
         let n_html = client_html.read(&mut html_buf).unwrap();
         let html_resp = String::from_utf8_lossy(&html_buf[..n_html]);
@@ -1824,23 +1961,44 @@ mod tests {
 
         // Seed library, member, record, copy, and circulation policy
         conn.execute("INSERT OR IGNORE INTO libraries (id, name, profile, currency, locale) VALUES (1, 'Test Lib', 'school', 'INR', 'en')", []).unwrap();
-        conn.execute("INSERT INTO member_categories (id, name, membership_days) VALUES (1, 'General', 365)", []).unwrap();
-        conn.execute("INSERT INTO item_categories (id, name) VALUES (1, 'Book')", []).unwrap();
+        conn.execute(
+            "INSERT INTO member_categories (id, name, membership_days) VALUES (1, 'General', 365)",
+            [],
+        )
+        .unwrap();
+        conn.execute(
+            "INSERT INTO item_categories (id, name) VALUES (1, 'Book')",
+            [],
+        )
+        .unwrap();
         conn.execute("INSERT INTO circulation_policies (member_category_id, item_category_id, loan_days, max_loans, max_renewals, renewal_days, fine_per_day_minor, fine_grace_days, fine_cap_minor) VALUES (1, 1, 14, 5, 2, 7, 100, 1, 500)", []).unwrap();
         conn.execute("INSERT INTO members (id, category_id, member_number, name, expires_on) VALUES (1, 1, 'MEM-001', 'Test Member', date('now', '+30 days'))", []).unwrap();
-        conn.execute("INSERT INTO locations (id, name) VALUES (1, 'Main Shelf')", []).unwrap();
-        conn.execute("INSERT INTO bibliographic_records (id, title) VALUES (1, 'Rust In Action')", []).unwrap();
+        conn.execute(
+            "INSERT INTO locations (id, name) VALUES (1, 'Main Shelf')",
+            [],
+        )
+        .unwrap();
+        conn.execute(
+            "INSERT INTO bibliographic_records (id, title) VALUES (1, 'Rust In Action')",
+            [],
+        )
+        .unwrap();
         conn.execute("INSERT INTO physical_items (id, record_id, location_id, item_category_id, barcode, accession_no, status) VALUES (1, 1, 1, 1, 'BAR-1001', 'ACC-1001', 'available')", []).unwrap();
 
         // Enable LAN, OPAC, and Browser Staff
-        update_config(&conn, &admin, &UpdateLanConfigInput {
-            enabled: true,
-            bind_address: "127.0.0.1".into(),
-            port: 4488,
-            server_name: "Circulation Server".into(),
-            opac_enabled: true,
-            browser_staff_enabled: true,
-        }).unwrap();
+        update_config(
+            &conn,
+            &admin,
+            &UpdateLanConfigInput {
+                enabled: true,
+                bind_address: "127.0.0.1".into(),
+                port: 4488,
+                server_name: "Circulation Server".into(),
+                opac_enabled: true,
+                browser_staff_enabled: true,
+            },
+        )
+        .unwrap();
 
         let pair_code = generate_pairing_code(&conn, &admin).unwrap();
 
@@ -1862,11 +2020,17 @@ mod tests {
             "pairingCode": pair_code.code,
             "clientName": "Staff iPad",
             "deviceKind": "tablet"
-        }).to_string();
-        let pair_req = format!("POST /api/lan/pair HTTP/1.1\r\nHost: localhost\r\nContent-Length: {}\r\n\r\n{}", pair_body.len(), pair_body);
+        })
+        .to_string();
+        let pair_req = format!(
+            "POST /api/lan/pair HTTP/1.1\r\nHost: localhost\r\nContent-Length: {}\r\n\r\n{}",
+            pair_body.len(),
+            pair_body
+        );
         let pair_resp = send_req(&pair_req);
         assert!(pair_resp.starts_with("HTTP/1.1 200 OK"));
-        let pair_json: serde_json::Value = serde_json::from_str(pair_resp.split("\r\n\r\n").nth(1).unwrap()).unwrap();
+        let pair_json: serde_json::Value =
+            serde_json::from_str(pair_resp.split("\r\n\r\n").nth(1).unwrap()).unwrap();
         let client_id = pair_json["clientId"].as_str().unwrap();
         let server_fp = pair_json["serverFingerprint"].as_str().unwrap();
 
@@ -1876,15 +2040,24 @@ mod tests {
             "serverFingerprint": server_fp,
             "username": "admin",
             "password": "admin_pass_123"
-        }).to_string();
-        let login_req = format!("POST /api/staff/login HTTP/1.1\r\nHost: localhost\r\nContent-Length: {}\r\n\r\n{}", login_body.len(), login_body);
+        })
+        .to_string();
+        let login_req = format!(
+            "POST /api/staff/login HTTP/1.1\r\nHost: localhost\r\nContent-Length: {}\r\n\r\n{}",
+            login_body.len(),
+            login_body
+        );
         let login_resp = send_req(&login_req);
         assert!(login_resp.starts_with("HTTP/1.1 200 OK"));
-        let login_json: serde_json::Value = serde_json::from_str(login_resp.split("\r\n\r\n").nth(1).unwrap()).unwrap();
+        let login_json: serde_json::Value =
+            serde_json::from_str(login_resp.split("\r\n\r\n").nth(1).unwrap()).unwrap();
         let token = login_json["token"].as_str().unwrap();
 
         // 3. Verify session over HTTP GET /api/staff/me
-        let me_req = format!("GET /api/staff/me HTTP/1.1\r\nHost: localhost\r\nAuthorization: Bearer {}\r\n\r\n", token);
+        let me_req = format!(
+            "GET /api/staff/me HTTP/1.1\r\nHost: localhost\r\nAuthorization: Bearer {}\r\n\r\n",
+            token
+        );
         let me_resp = send_req(&me_req);
         assert!(me_resp.starts_with("HTTP/1.1 200 OK"));
         assert!(me_resp.contains("\"username\":\"admin\""));
@@ -1898,11 +2071,17 @@ mod tests {
         let issue_body = serde_json::json!({
             "memberNumber": "MEM-001",
             "barcode": "BAR-1001"
-        }).to_string();
+        })
+        .to_string();
         let issue_req = format!("POST /api/staff/circulation/issue HTTP/1.1\r\nHost: localhost\r\nAuthorization: Bearer {}\r\nContent-Length: {}\r\n\r\n{}", token, issue_body.len(), issue_body);
         let issue_resp = send_req(&issue_req);
-        assert!(issue_resp.starts_with("HTTP/1.1 200 OK"), "Unexpected issue response: {}", issue_resp);
-        let issue_json: serde_json::Value = serde_json::from_str(issue_resp.split("\r\n\r\n").nth(1).unwrap()).unwrap();
+        assert!(
+            issue_resp.starts_with("HTTP/1.1 200 OK"),
+            "Unexpected issue response: {}",
+            issue_resp
+        );
+        let issue_json: serde_json::Value =
+            serde_json::from_str(issue_resp.split("\r\n\r\n").nth(1).unwrap()).unwrap();
         assert_eq!(issue_json["success"], true);
         assert_eq!(issue_json["title"], "Rust In Action");
 
@@ -1915,11 +2094,13 @@ mod tests {
         let return_body = serde_json::json!({
             "barcode": "BAR-1001",
             "condition": "available"
-        }).to_string();
+        })
+        .to_string();
         let return_req = format!("POST /api/staff/circulation/return HTTP/1.1\r\nHost: localhost\r\nAuthorization: Bearer {}\r\nContent-Length: {}\r\n\r\n{}", token, return_body.len(), return_body);
         let return_resp = send_req(&return_req);
         assert!(return_resp.starts_with("HTTP/1.1 200 OK"));
-        let return_json: serde_json::Value = serde_json::from_str(return_resp.split("\r\n\r\n").nth(1).unwrap()).unwrap();
+        let return_json: serde_json::Value =
+            serde_json::from_str(return_resp.split("\r\n\r\n").nth(1).unwrap()).unwrap();
         assert_eq!(return_json["success"], true);
         assert_eq!(return_json["title"], "Rust In Action");
 
@@ -1934,4 +2115,3 @@ mod tests {
         handle.stop();
     }
 }
-

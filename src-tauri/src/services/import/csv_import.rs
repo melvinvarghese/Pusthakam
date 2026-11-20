@@ -10,39 +10,147 @@ use std::collections::HashMap;
 pub const FIELDS: &[(&str, &[&str])] = &[
     ("title", &["title", "booktitle", "name", "titleproper"]),
     ("subtitle", &["subtitle", "othertitleinformation"]),
-    ("author", &["author", "authors", "mainauthor", "creator", "writer", "authorname"]),
-    ("additionalAuthors", &["additionalauthors", "coauthor", "coauthors", "otherauthors", "contributors"]),
+    (
+        "author",
+        &[
+            "author",
+            "authors",
+            "mainauthor",
+            "creator",
+            "writer",
+            "authorname",
+        ],
+    ),
+    (
+        "additionalAuthors",
+        &[
+            "additionalauthors",
+            "coauthor",
+            "coauthors",
+            "otherauthors",
+            "contributors",
+        ],
+    ),
     ("publisher", &["publisher", "publishername"]),
-    ("place", &["place", "publicationplace", "placeofpublication", "city"]),
-    ("year", &["year", "publicationyear", "pubyear", "publishedyear", "yearofpublication", "date"]),
+    (
+        "place",
+        &["place", "publicationplace", "placeofpublication", "city"],
+    ),
+    (
+        "year",
+        &[
+            "year",
+            "publicationyear",
+            "pubyear",
+            "publishedyear",
+            "yearofpublication",
+            "date",
+        ],
+    ),
     ("isbn", &["isbn", "isbn13", "isbn10", "isbnnumber"]),
     ("edition", &["edition", "editionstatement"]),
     ("language", &["language", "lang"]),
-    ("pagination", &["pages", "pagination", "pagecount", "extent", "numberofpages"]),
+    (
+        "pagination",
+        &[
+            "pages",
+            "pagination",
+            "pagecount",
+            "extent",
+            "numberofpages",
+        ],
+    ),
     ("series", &["series", "seriestitle"]),
-    ("subjects", &["subject", "subjects", "subjectheadings", "topic", "topics"]),
+    (
+        "subjects",
+        &["subject", "subjects", "subjectheadings", "topic", "topics"],
+    ),
     ("keywords", &["keywords", "keyword", "tags"]),
-    ("classification", &["ddc", "classification", "classificationnumber", "deweynumber", "dewey", "classno", "classnumber"]),
+    (
+        "classification",
+        &[
+            "ddc",
+            "classification",
+            "classificationnumber",
+            "deweynumber",
+            "dewey",
+            "classno",
+            "classnumber",
+        ],
+    ),
     ("classificationScheme", &["classificationscheme"]),
     ("physical", &["physicaldescription"]),
-    ("callNumber", &["callnumber", "callno", "shelfmark", "callnum"]),
+    (
+        "callNumber",
+        &["callnumber", "callno", "shelfmark", "callnum"],
+    ),
     ("barcode", &["barcode", "itembarcode", "bookbarcode"]),
-    ("accession", &["accessionnumber", "accessionno", "accno", "accession", "accessionnum"]),
+    (
+        "accession",
+        &[
+            "accessionnumber",
+            "accessionno",
+            "accno",
+            "accession",
+            "accessionnum",
+        ],
+    ),
     ("price", &["price", "cost", "amount", "mrp"]),
     ("location", &["location", "branch", "library", "section"]),
     ("shelf", &["shelf", "shelfcode", "shelflocation", "rack"]),
     ("collection", &["collection", "collectioncode"]),
-    ("category", &["category", "itemtype", "itemcategory", "type", "materialtype"]),
-    ("dateAcquired", &["dateacquired", "acquisitiondate", "dateaccessioned", "accessioned", "dateofpurchase", "purchasedate"]),
-    ("vendor", &["vendor", "source", "supplier", "donor", "sourceofacquisition"]),
+    (
+        "category",
+        &[
+            "category",
+            "itemtype",
+            "itemcategory",
+            "type",
+            "materialtype",
+        ],
+    ),
+    (
+        "dateAcquired",
+        &[
+            "dateacquired",
+            "acquisitiondate",
+            "dateaccessioned",
+            "accessioned",
+            "dateofpurchase",
+            "purchasedate",
+        ],
+    ),
+    (
+        "vendor",
+        &[
+            "vendor",
+            "source",
+            "supplier",
+            "donor",
+            "sourceofacquisition",
+        ],
+    ),
     ("status", &["status", "itemstatus", "condition"]),
-    ("copies", &["copies", "numberofcopies", "noofcopies", "quantity", "qty", "copy"]),
+    (
+        "copies",
+        &[
+            "copies",
+            "numberofcopies",
+            "noofcopies",
+            "quantity",
+            "qty",
+            "copy",
+        ],
+    ),
     ("notes", &["notes", "note", "remarks", "comments"]),
     ("abstract", &["abstract", "summary", "description"]),
 ];
 
 fn norm(h: &str) -> String {
-    h.chars().filter(|c| c.is_alphanumeric()).collect::<String>().to_lowercase()
+    h.chars()
+        .filter(|c| c.is_alphanumeric())
+        .collect::<String>()
+        .to_lowercase()
 }
 
 /// Guesses which column holds which field. Each column and each field is used at most once.
@@ -50,7 +158,11 @@ pub fn auto_mapping(headers: &[String]) -> HashMap<String, String> {
     let mut map = HashMap::new();
     let mut used = vec![false; headers.len()];
     for (key, aliases) in FIELDS {
-        if let Some(i) = headers.iter().enumerate().position(|(i, h)| !used[i] && aliases.contains(&norm(h).as_str())) {
+        if let Some(i) = headers
+            .iter()
+            .enumerate()
+            .position(|(i, h)| !used[i] && aliases.contains(&norm(h).as_str()))
+        {
             used[i] = true;
             map.insert((*key).to_string(), headers[i].clone());
         }
@@ -76,16 +188,25 @@ fn detect_delimiter(text: &str) -> u8 {
 }
 
 fn split_list(s: &str) -> Vec<String> {
-    s.split([';', '|', '\n']).map(|x| x.trim().to_string()).filter(|x| !x.is_empty()).collect()
+    s.split([';', '|', '\n'])
+        .map(|x| x.trim().to_string())
+        .filter(|x| !x.is_empty())
+        .collect()
 }
 
 fn status_from_text(s: &str) -> Option<String> {
     let t = s.to_ascii_lowercase();
-    if t.contains("lost") { Some("lost".into()) }
-    else if t.contains("damag") { Some("damaged".into()) }
-    else if t.contains("withdraw") || t.contains("discard") { Some("withdrawn".into()) }
-    else if t.contains("repair") { Some("in_repair".into()) }
-    else { None }
+    if t.contains("lost") {
+        Some("lost".into())
+    } else if t.contains("damag") {
+        Some("damaged".into())
+    } else if t.contains("withdraw") || t.contains("discard") {
+        Some("withdrawn".into())
+    } else if t.contains("repair") {
+        Some("in_repair".into())
+    } else {
+        None
+    }
 }
 
 pub struct CsvResult {
@@ -100,18 +221,40 @@ pub fn parse_csv(bytes: &[u8], mapping_override: Option<&HashMap<String, String>
     parse_delimited(&text, detect_delimiter(&text), mapping_override)
 }
 
-pub(super) fn parse_table_csv(bytes: &[u8], mapping: Option<&HashMap<String, String>>) -> CsvResult {
+pub(super) fn parse_table_csv(
+    bytes: &[u8],
+    mapping: Option<&HashMap<String, String>>,
+) -> CsvResult {
     parse_delimited(&decode(bytes), b',', mapping)
 }
 
-fn parse_delimited(text: &str, delimiter: u8, mapping_override: Option<&HashMap<String, String>>) -> CsvResult {
-    let mut rdr = csv::ReaderBuilder::new().delimiter(delimiter).flexible(true).has_headers(true).from_reader(text.as_bytes());
+fn parse_delimited(
+    text: &str,
+    delimiter: u8,
+    mapping_override: Option<&HashMap<String, String>>,
+) -> CsvResult {
+    let mut rdr = csv::ReaderBuilder::new()
+        .delimiter(delimiter)
+        .flexible(true)
+        .has_headers(true)
+        .from_reader(text.as_bytes());
     let headers: Vec<String> = match rdr.headers() {
         Ok(h) => h.iter().map(|s| s.trim().to_string()).collect(),
-        Err(e) => return CsvResult { records: vec![], headers: vec![], mapping: HashMap::new(), errors: vec![format!("The file could not be read as CSV: {e}")] },
+        Err(e) => {
+            return CsvResult {
+                records: vec![],
+                headers: vec![],
+                mapping: HashMap::new(),
+                errors: vec![format!("The file could not be read as CSV: {e}")],
+            }
+        }
     };
     let mapping = match mapping_override {
-        Some(m) => m.iter().filter(|(_, h)| headers.contains(h)).map(|(k, v)| (k.clone(), v.clone())).collect(),
+        Some(m) => m
+            .iter()
+            .filter(|(_, h)| headers.contains(h))
+            .map(|(k, v)| (k.clone(), v.clone()))
+            .collect(),
         None => auto_mapping(&headers),
     };
     let index: HashMap<&str, usize> = mapping
@@ -135,25 +278,46 @@ fn parse_delimited(text: &str, delimiter: u8, mapping_override: Option<&HashMap<
         if row.iter().all(|c| c.trim().is_empty()) {
             continue;
         }
-        let get = |k: &str| index.get(k).and_then(|&c| row.get(c)).map(str::trim).filter(|s| !s.is_empty());
+        let get = |k: &str| {
+            index
+                .get(k)
+                .and_then(|&c| row.get(c))
+                .map(str::trim)
+                .filter(|s| !s.is_empty())
+        };
 
-        let mut r = ImportRecord { row: line, ..Default::default() };
+        let mut r = ImportRecord {
+            row: line,
+            ..Default::default()
+        };
         r.title = get("title").unwrap_or("").to_string();
         r.subtitle = get("subtitle").map(String::from);
         for a in get("author").map(split_list).unwrap_or_default() {
-            r.contributors.push(ContributorDto { name: a, role: "author".into() });
+            r.contributors.push(ContributorDto {
+                name: a,
+                role: "author".into(),
+            });
         }
         for a in get("additionalAuthors").map(split_list).unwrap_or_default() {
-            r.contributors.push(ContributorDto { name: a, role: "additional_author".into() });
+            r.contributors.push(ContributorDto {
+                name: a,
+                role: "additional_author".into(),
+            });
         }
         r.publisher = get("publisher").map(String::from);
         r.place = get("place").map(String::from);
         if let Some(y) = get("year") {
             // Accept "1999" or "1999-05-01" / "May 1999": use the first four digits in a row.
-            let digits: String = y.chars().skip_while(|c| !c.is_ascii_digit()).take_while(|c| c.is_ascii_digit()).collect();
+            let digits: String = y
+                .chars()
+                .skip_while(|c| !c.is_ascii_digit())
+                .take_while(|c| c.is_ascii_digit())
+                .collect();
             match digits.parse::<i64>() {
                 Ok(v) if digits.len() == 4 && (1000..=2200).contains(&v) => r.year = Some(v),
-                _ => r.warnings.push(format!("The year \"{y}\" was not understood and was left empty.")),
+                _ => r.warnings.push(format!(
+                    "The year \"{y}\" was not understood and was left empty."
+                )),
             }
         }
         r.isbn = get("isbn").map(String::from);
@@ -172,11 +336,22 @@ fn parse_delimited(text: &str, delimiter: u8, mapping_override: Option<&HashMap<
         // Copies: one row = one copy when it has a barcode/accession, or N unnumbered copies from a count column.
         let barcode = get("barcode").map(String::from);
         let accession = get("accession").map(String::from);
-        let count = get("copies").and_then(|c| c.parse::<usize>().ok()).unwrap_or(1).clamp(1, 500);
-        let has_copy_data = barcode.is_some() || accession.is_some() || get("copies").is_some() || get("callNumber").is_some() || get("location").is_some();
+        let count = get("copies")
+            .and_then(|c| c.parse::<usize>().ok())
+            .unwrap_or(1)
+            .clamp(1, 500);
+        let has_copy_data = barcode.is_some()
+            || accession.is_some()
+            || get("copies").is_some()
+            || get("callNumber").is_some()
+            || get("location").is_some();
         if has_copy_data && get("copies") != Some("0") {
             let make = |barcode: Option<String>, accession: Option<String>| -> ImportCopy {
-                let mut c = ImportCopy { barcode, accession, ..Default::default() };
+                let mut c = ImportCopy {
+                    barcode,
+                    accession,
+                    ..Default::default()
+                };
                 c.call_number = get("callNumber").map(String::from);
                 c.location = get("location").map(String::from);
                 c.shelf = get("shelf").map(String::from);
@@ -195,12 +370,19 @@ fn parse_delimited(text: &str, delimiter: u8, mapping_override: Option<&HashMap<
             };
             if let Some(d) = get("dateAcquired") {
                 match validate::date("Date", d) {
-                    Ok(v) => copies.iter_mut().for_each(|c| c.acquisition_date = Some(v.clone())),
-                    Err(_) => r.warnings.push(format!("The date \"{d}\" is not YYYY-MM-DD and was left empty.")),
+                    Ok(v) => copies
+                        .iter_mut()
+                        .for_each(|c| c.acquisition_date = Some(v.clone())),
+                    Err(_) => r.warnings.push(format!(
+                        "The date \"{d}\" is not YYYY-MM-DD and was left empty."
+                    )),
                 }
             }
             if get("price").is_some() && copies[0].price_minor.is_none() {
-                r.warnings.push(format!("The price \"{}\" was not understood and was left empty.", get("price").unwrap_or("")));
+                r.warnings.push(format!(
+                    "The price \"{}\" was not understood and was left empty.",
+                    get("price").unwrap_or("")
+                ));
             }
             r.copies = copies;
         }
@@ -212,7 +394,10 @@ fn parse_delimited(text: &str, delimiter: u8, mapping_override: Option<&HashMap<
             None => format!(
                 "t:{}|{}|{}",
                 r.title.to_lowercase(),
-                r.contributors.first().map(|c| c.name.to_lowercase()).unwrap_or_default(),
+                r.contributors
+                    .first()
+                    .map(|c| c.name.to_lowercase())
+                    .unwrap_or_default(),
                 r.year.map(|y| y.to_string()).unwrap_or_default()
             ),
         };
@@ -228,7 +413,12 @@ fn parse_delimited(text: &str, delimiter: u8, mapping_override: Option<&HashMap<
             }
         }
     }
-    CsvResult { records: out, headers, mapping, errors }
+    CsvResult {
+        records: out,
+        headers,
+        mapping,
+        errors,
+    }
 }
 
 #[cfg(test)]
@@ -245,9 +435,19 @@ mod tests {
         assert_eq!(r.mapping["title"], "Book Title");
         assert_eq!(r.mapping["callNumber"], "Call No.");
         let rec = &r.records[0];
-        assert_eq!((rec.title.as_str(), rec.year, rec.publisher.as_deref()), ("Balyakalasakhi", Some(1944), Some("DC Books")));
+        assert_eq!(
+            (rec.title.as_str(), rec.year, rec.publisher.as_deref()),
+            ("Balyakalasakhi", Some(1944), Some("DC Books"))
+        );
         assert_eq!(rec.copies.len(), 1);
-        assert_eq!((rec.copies[0].barcode.as_deref(), rec.copies[0].price_minor, rec.copies[0].call_number.as_deref()), (Some("B1"), Some(25050), Some("894.8123 BAS")));
+        assert_eq!(
+            (
+                rec.copies[0].barcode.as_deref(),
+                rec.copies[0].price_minor,
+                rec.copies[0].call_number.as_deref()
+            ),
+            (Some("B1"), Some(25050), Some("894.8123 BAS"))
+        );
     }
 
     #[test]
@@ -267,7 +467,11 @@ mod tests {
         assert_eq!(r.records.len(), 2);
         assert_eq!(r.records[0].copies.len(), 2);
         let by_isbn = parse("title,isbn,barcode\nA,0-306-40615-2,1\nA again,9780306406157,2\n");
-        assert_eq!(by_isbn.records.len(), 1, "same ISBN in either form groups together");
+        assert_eq!(
+            by_isbn.records.len(),
+            1,
+            "same ISBN in either form groups together"
+        );
     }
 
     #[test]
@@ -276,7 +480,10 @@ mod tests {
         assert_eq!(r.records[0].copies.len(), 3);
         assert!(r.records[0].copies.iter().all(|c| c.barcode.is_none()));
         let none = parse("title,author\nBook,X\n");
-        assert!(none.records[0].copies.is_empty(), "no copy columns means a title-only record");
+        assert!(
+            none.records[0].copies.is_empty(),
+            "no copy columns means a title-only record"
+        );
     }
 
     #[test]
@@ -290,8 +497,20 @@ mod tests {
     #[test]
     fn authors_split_on_semicolons_and_keep_surname_first_names_intact() {
         let r = parse("title,author,additional authors\nBook,\"Roy, Arundhati; Kalam, A. P. J.\",\"Nair, X|Menon, Y\"\n");
-        let names: Vec<_> = r.records[0].contributors.iter().map(|c| (c.name.as_str(), c.role.as_str())).collect();
-        assert_eq!(names, [("Roy, Arundhati", "author"), ("Kalam, A. P. J.", "author"), ("Nair, X", "additional_author"), ("Menon, Y", "additional_author")]);
+        let names: Vec<_> = r.records[0]
+            .contributors
+            .iter()
+            .map(|c| (c.name.as_str(), c.role.as_str()))
+            .collect();
+        assert_eq!(
+            names,
+            [
+                ("Roy, Arundhati", "author"),
+                ("Kalam, A. P. J.", "author"),
+                ("Nair, X", "additional_author"),
+                ("Menon, Y", "additional_author")
+            ]
+        );
     }
 
     #[test]

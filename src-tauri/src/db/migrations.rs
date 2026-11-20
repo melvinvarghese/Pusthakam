@@ -13,34 +13,133 @@ pub struct Migration {
 }
 
 pub const MIGRATIONS: &[Migration] = &[
-    Migration { version: 1, name: "core", sql: include_str!("../../migrations/0001_core.sql") },
-    Migration { version: 2, name: "config", sql: include_str!("../../migrations/0002_config.sql") },
-    Migration { version: 3, name: "auth", sql: include_str!("../../migrations/0003_auth.sql") },
-    Migration { version: 4, name: "catalogue", sql: include_str!("../../migrations/0004_catalogue.sql") },
-    Migration { version: 5, name: "members", sql: include_str!("../../migrations/0005_members.sql") },
-    Migration { version: 6, name: "loans", sql: include_str!("../../migrations/0006_loans.sql") },
-    Migration { version: 7, name: "loan_renewals", sql: include_str!("../../migrations/0007_loan_renewals.sql") },
-    Migration { version: 8, name: "reservations", sql: include_str!("../../migrations/0008_reservations.sql") },
-    Migration { version: 9, name: "fines", sql: include_str!("../../migrations/0009_fines.sql") },
-    Migration { version: 10, name: "loan_return_condition", sql: include_str!("../../migrations/0010_loan_return_condition.sql") },
-    Migration { version: 11, name: "member_photos", sql: include_str!("../../migrations/0011_member_photos.sql") },
-    Migration { version: 12, name: "staff_session_revision", sql: include_str!("../../migrations/0012_staff_session_revision.sql") },
-    Migration { version: 13, name: "administrator_recovery", sql: include_str!("../../migrations/0013_administrator_recovery.sql") },
-    Migration { version: 14, name: "stock_checks", sql: include_str!("../../migrations/0014_stock_checks.sql") },
-    Migration { version: 15, name: "stock_transfers", sql: include_str!("../../migrations/0015_stock_transfers.sql") },
-    Migration { version: 16, name: "book_covers", sql: include_str!("../../migrations/0016_book_covers.sql") },
-    Migration { version: 17, name: "calendar_closed_weekdays", sql: include_str!("../../migrations/0017_calendar_closed_weekdays.sql") },
-    Migration { version: 18, name: "loan_import_provenance", sql: include_str!("../../migrations/0018_loan_import_provenance.sql") },
-    Migration { version: 19, name: "renewal_import_provenance", sql: include_str!("../../migrations/0019_renewal_import_provenance.sql") },
-    Migration { version: 20, name: "history_bundle_import", sql: include_str!("../../migrations/0020_history_bundle_import.sql") },
-    Migration { version: 21, name: "acquisitions", sql: include_str!("../../migrations/0021_acquisitions.sql") },
-    Migration { version: 22, name: "serials", sql: include_str!("../../migrations/0022_serials.sql") },
-    Migration { version: 23, name: "classification_authorities", sql: include_str!("../../migrations/0023_classification_authorities.sql") },
-    Migration { version: 24, name: "lan_mode", sql: include_str!("../../migrations/0024_lan_mode.sql") },
+    Migration {
+        version: 1,
+        name: "core",
+        sql: include_str!("../../migrations/0001_core.sql"),
+    },
+    Migration {
+        version: 2,
+        name: "config",
+        sql: include_str!("../../migrations/0002_config.sql"),
+    },
+    Migration {
+        version: 3,
+        name: "auth",
+        sql: include_str!("../../migrations/0003_auth.sql"),
+    },
+    Migration {
+        version: 4,
+        name: "catalogue",
+        sql: include_str!("../../migrations/0004_catalogue.sql"),
+    },
+    Migration {
+        version: 5,
+        name: "members",
+        sql: include_str!("../../migrations/0005_members.sql"),
+    },
+    Migration {
+        version: 6,
+        name: "loans",
+        sql: include_str!("../../migrations/0006_loans.sql"),
+    },
+    Migration {
+        version: 7,
+        name: "loan_renewals",
+        sql: include_str!("../../migrations/0007_loan_renewals.sql"),
+    },
+    Migration {
+        version: 8,
+        name: "reservations",
+        sql: include_str!("../../migrations/0008_reservations.sql"),
+    },
+    Migration {
+        version: 9,
+        name: "fines",
+        sql: include_str!("../../migrations/0009_fines.sql"),
+    },
+    Migration {
+        version: 10,
+        name: "loan_return_condition",
+        sql: include_str!("../../migrations/0010_loan_return_condition.sql"),
+    },
+    Migration {
+        version: 11,
+        name: "member_photos",
+        sql: include_str!("../../migrations/0011_member_photos.sql"),
+    },
+    Migration {
+        version: 12,
+        name: "staff_session_revision",
+        sql: include_str!("../../migrations/0012_staff_session_revision.sql"),
+    },
+    Migration {
+        version: 13,
+        name: "administrator_recovery",
+        sql: include_str!("../../migrations/0013_administrator_recovery.sql"),
+    },
+    Migration {
+        version: 14,
+        name: "stock_checks",
+        sql: include_str!("../../migrations/0014_stock_checks.sql"),
+    },
+    Migration {
+        version: 15,
+        name: "stock_transfers",
+        sql: include_str!("../../migrations/0015_stock_transfers.sql"),
+    },
+    Migration {
+        version: 16,
+        name: "book_covers",
+        sql: include_str!("../../migrations/0016_book_covers.sql"),
+    },
+    Migration {
+        version: 17,
+        name: "calendar_closed_weekdays",
+        sql: include_str!("../../migrations/0017_calendar_closed_weekdays.sql"),
+    },
+    Migration {
+        version: 18,
+        name: "loan_import_provenance",
+        sql: include_str!("../../migrations/0018_loan_import_provenance.sql"),
+    },
+    Migration {
+        version: 19,
+        name: "renewal_import_provenance",
+        sql: include_str!("../../migrations/0019_renewal_import_provenance.sql"),
+    },
+    Migration {
+        version: 20,
+        name: "history_bundle_import",
+        sql: include_str!("../../migrations/0020_history_bundle_import.sql"),
+    },
+    Migration {
+        version: 21,
+        name: "acquisitions",
+        sql: include_str!("../../migrations/0021_acquisitions.sql"),
+    },
+    Migration {
+        version: 22,
+        name: "serials",
+        sql: include_str!("../../migrations/0022_serials.sql"),
+    },
+    Migration {
+        version: 23,
+        name: "classification_authorities",
+        sql: include_str!("../../migrations/0023_classification_authorities.sql"),
+    },
+    Migration {
+        version: 24,
+        name: "lan_mode",
+        sql: include_str!("../../migrations/0024_lan_mode.sql"),
+    },
 ];
 
 pub fn checksum(sql: &str) -> String {
-    Sha256::digest(sql.as_bytes()).iter().map(|b| format!("{b:02x}")).collect()
+    Sha256::digest(sql.as_bytes())
+        .iter()
+        .map(|b| format!("{b:02x}"))
+        .collect()
 }
 
 /// Latest version defined in this build.
@@ -61,7 +160,11 @@ pub fn run(conn: &mut Connection, migrations: &[Migration]) -> AppResult<i64> {
     )?;
 
     // Refuse to open a database created by a newer version of the app.
-    let current: i64 = conn.query_row("SELECT COALESCE(MAX(version),0) FROM schema_migrations", [], |r| r.get(0))?;
+    let current: i64 = conn.query_row(
+        "SELECT COALESCE(MAX(version),0) FROM schema_migrations",
+        [],
+        |r| r.get(0),
+    )?;
     let newest_known = migrations.last().map(|m| m.version).unwrap_or(0);
     if current > newest_known {
         return Err(AppError::Conflict(format!(
@@ -72,7 +175,11 @@ pub fn run(conn: &mut Connection, migrations: &[Migration]) -> AppResult<i64> {
 
     for m in migrations {
         let existing: Option<String> = conn
-            .query_row("SELECT checksum FROM schema_migrations WHERE version = ?1", [m.version], |r| r.get(0))
+            .query_row(
+                "SELECT checksum FROM schema_migrations WHERE version = ?1",
+                [m.version],
+                |r| r.get(0),
+            )
             .optional()?;
         let sum = checksum(m.sql);
         match existing {
@@ -95,7 +202,11 @@ pub fn run(conn: &mut Connection, migrations: &[Migration]) -> AppResult<i64> {
             }
         }
     }
-    Ok(conn.query_row("SELECT COALESCE(MAX(version),0) FROM schema_migrations", [], |r| r.get(0))?)
+    Ok(conn.query_row(
+        "SELECT COALESCE(MAX(version),0) FROM schema_migrations",
+        [],
+        |r| r.get(0),
+    )?)
 }
 
 #[cfg(test)]
@@ -112,7 +223,9 @@ mod tests {
     fn fresh_database_gets_all_migrations() {
         let mut c = mem();
         assert_eq!(run(&mut c, MIGRATIONS).unwrap(), latest_version());
-        let n: i64 = c.query_row("SELECT count(*) FROM schema_migrations", [], |r| r.get(0)).unwrap();
+        let n: i64 = c
+            .query_row("SELECT count(*) FROM schema_migrations", [], |r| r.get(0))
+            .unwrap();
         assert_eq!(n as usize, MIGRATIONS.len());
     }
 
@@ -121,7 +234,9 @@ mod tests {
         let mut c = mem();
         run(&mut c, MIGRATIONS).unwrap();
         run(&mut c, MIGRATIONS).unwrap();
-        let n: i64 = c.query_row("SELECT count(*) FROM schema_migrations", [], |r| r.get(0)).unwrap();
+        let n: i64 = c
+            .query_row("SELECT count(*) FROM schema_migrations", [], |r| r.get(0))
+            .unwrap();
         assert_eq!(n as usize, MIGRATIONS.len());
     }
 
@@ -130,9 +245,19 @@ mod tests {
         let mut c = mem();
         run(&mut c, MIGRATIONS).unwrap();
         let next = latest_version() + 1;
-        let mut all: Vec<Migration> =
-            MIGRATIONS.iter().map(|m| Migration { version: m.version, name: m.name, sql: m.sql }).collect();
-        all.push(Migration { version: next, name: "extra", sql: "CREATE TABLE extra (id INTEGER PRIMARY KEY);" });
+        let mut all: Vec<Migration> = MIGRATIONS
+            .iter()
+            .map(|m| Migration {
+                version: m.version,
+                name: m.name,
+                sql: m.sql,
+            })
+            .collect();
+        all.push(Migration {
+            version: next,
+            name: "extra",
+            sql: "CREATE TABLE extra (id INTEGER PRIMARY KEY);",
+        });
         assert_eq!(run(&mut c, &all).unwrap(), next);
         c.execute("INSERT INTO extra DEFAULT VALUES", []).unwrap();
     }
@@ -164,22 +289,37 @@ mod tests {
             [], |r| Ok((r.get(0)?, r.get(1)?, r.get(2)?, r.get(3)?)),
         ).unwrap();
         assert_eq!(terms, (150, 2, 800, "INR".into()));
-        let count: i64 = c.query_row("SELECT count(*) FROM loan_fine_terms", [], |r| r.get(0)).unwrap();
+        let count: i64 = c
+            .query_row("SELECT count(*) FROM loan_fine_terms", [], |r| r.get(0))
+            .unwrap();
         assert_eq!(count, 1);
-        let closed: (String, String) = c.query_row(
-            "SELECT returned_at, return_condition FROM loans WHERE id = 2", [],
-            |r| Ok((r.get(0)?, r.get(1)?)),
-        ).unwrap();
+        let closed: (String, String) = c
+            .query_row(
+                "SELECT returned_at, return_condition FROM loans WHERE id = 2",
+                [],
+                |r| Ok((r.get(0)?, r.get(1)?)),
+            )
+            .unwrap();
         assert_eq!(closed, ("2026-10-12T00:00:00Z".into(), "available".into()));
-        assert_eq!(c.query_row("SELECT count(*) FROM fines", [], |r| r.get::<_, i64>(0)).unwrap(), 0);
+        assert_eq!(
+            c.query_row("SELECT count(*) FROM fines", [], |r| r.get::<_, i64>(0))
+                .unwrap(),
+            0
+        );
     }
 
     #[test]
     fn tampered_migration_is_rejected() {
         let mut c = mem();
         run(&mut c, MIGRATIONS).unwrap();
-        let mut tampered: Vec<Migration> =
-            MIGRATIONS.iter().map(|m| Migration { version: m.version, name: m.name, sql: m.sql }).collect();
+        let mut tampered: Vec<Migration> = MIGRATIONS
+            .iter()
+            .map(|m| Migration {
+                version: m.version,
+                name: m.name,
+                sql: m.sql,
+            })
+            .collect();
         tampered[0].sql = "CREATE TABLE evil (id INTEGER);";
         let err = run(&mut c, &tampered).unwrap_err();
         assert!(matches!(err, AppError::Internal(_)));
@@ -195,11 +335,17 @@ mod tests {
         }];
         assert!(run(&mut c, &bad).is_err());
         let exists: Option<String> = c
-            .query_row("SELECT name FROM sqlite_master WHERE name='half'", [], |r| r.get(0))
+            .query_row(
+                "SELECT name FROM sqlite_master WHERE name='half'",
+                [],
+                |r| r.get(0),
+            )
             .optional()
             .unwrap();
         assert!(exists.is_none(), "partial migration must not persist");
-        let n: i64 = c.query_row("SELECT count(*) FROM schema_migrations", [], |r| r.get(0)).unwrap();
+        let n: i64 = c
+            .query_row("SELECT count(*) FROM schema_migrations", [], |r| r.get(0))
+            .unwrap();
         assert_eq!(n, 0);
     }
 
@@ -207,8 +353,15 @@ mod tests {
     fn database_from_newer_app_is_refused() {
         let mut c = mem();
         run(&mut c, MIGRATIONS).unwrap();
-        c.execute("INSERT INTO schema_migrations (version, name, checksum) VALUES (999,'future','x')", []).unwrap();
-        assert!(matches!(run(&mut c, MIGRATIONS).unwrap_err(), AppError::Conflict(_)));
+        c.execute(
+            "INSERT INTO schema_migrations (version, name, checksum) VALUES (999,'future','x')",
+            [],
+        )
+        .unwrap();
+        assert!(matches!(
+            run(&mut c, MIGRATIONS).unwrap_err(),
+            AppError::Conflict(_)
+        ));
     }
 
     #[test]

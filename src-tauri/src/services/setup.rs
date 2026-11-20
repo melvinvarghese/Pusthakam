@@ -35,8 +35,12 @@ pub struct SetupInput {
 }
 
 pub fn status(conn: &Connection) -> AppResult<SetupStatus> {
-    let configured: bool = conn.query_row("SELECT EXISTS(SELECT 1 FROM libraries)", [], |r| r.get(0))?;
-    Ok(SetupStatus { configured, profiles: profiles::PROFILES.to_vec() })
+    let configured: bool =
+        conn.query_row("SELECT EXISTS(SELECT 1 FROM libraries)", [], |r| r.get(0))?;
+    Ok(SetupStatus {
+        configured,
+        profiles: profiles::PROFILES.to_vec(),
+    })
 }
 
 /// Runs the whole setup atomically. Returns the new administrator's user id.
@@ -53,12 +57,16 @@ pub fn complete(conn: &mut Connection, input: &SetupInput) -> AppResult<i64> {
     validate::required("Your name", &input.admin.display_name, 80)?;
     validate::password(&input.admin.password)?;
     if input.fine_per_day_minor < 0 {
-        return Err(AppError::Validation("The late fine cannot be negative.".into()));
+        return Err(AppError::Validation(
+            "The late fine cannot be negative.".into(),
+        ));
     }
 
     let tx = conn.transaction_with_behavior(TransactionBehavior::Immediate)?;
     if status(&tx)?.configured {
-        return Err(AppError::Conflict("This library has already been set up.".into()));
+        return Err(AppError::Conflict(
+            "This library has already been set up.".into(),
+        ));
     }
 
     tx.execute(
@@ -80,26 +88,61 @@ pub fn complete(conn: &mut Connection, input: &SetupInput) -> AppResult<i64> {
             let id = config::save_member_category(
                 &tx,
                 Some(&session),
-                &config::MemberCategoryInput { id: None, name: m.name.into(), description: None, membership_days: m.membership_days },
+                &config::MemberCategoryInput {
+                    id: None,
+                    name: m.name.into(),
+                    description: None,
+                    membership_days: m.membership_days,
+                },
             )?;
             member_ids.insert(m.name, id);
         }
         let mut item_ids = std::collections::HashMap::new();
-        for n in defaults.lendable_items.iter().chain(defaults.reference_items.iter()) {
-            let id = config::save_named(&tx, Some(&session), config::NamedKind::ItemCategory,
-                &config::NamedInput { id: None, name: (*n).into(), description: None })?;
+        for n in defaults
+            .lendable_items
+            .iter()
+            .chain(defaults.reference_items.iter())
+        {
+            let id = config::save_named(
+                &tx,
+                Some(&session),
+                config::NamedKind::ItemCategory,
+                &config::NamedInput {
+                    id: None,
+                    name: (*n).into(),
+                    description: None,
+                },
+            )?;
             item_ids.insert(*n, id);
         }
         for n in &defaults.collections {
-            config::save_named(&tx, Some(&session), config::NamedKind::Collection,
-                &config::NamedInput { id: None, name: (*n).into(), description: None })?;
+            config::save_named(
+                &tx,
+                Some(&session),
+                config::NamedKind::Collection,
+                &config::NamedInput {
+                    id: None,
+                    name: (*n).into(),
+                    description: None,
+                },
+            )?;
         }
         for n in &defaults.locations {
-            config::save_named(&tx, Some(&session), config::NamedKind::Location,
-                &config::NamedInput { id: None, name: (*n).into(), description: None })?;
+            config::save_named(
+                &tx,
+                Some(&session),
+                config::NamedKind::Location,
+                &config::NamedInput {
+                    id: None,
+                    name: (*n).into(),
+                    description: None,
+                },
+            )?;
         }
         for p in &defaults.policies {
-            let (Some(&m), Some(&i)) = (member_ids.get(p.member), item_ids.get(p.item)) else { continue };
+            let (Some(&m), Some(&i)) = (member_ids.get(p.member), item_ids.get(p.item)) else {
+                continue;
+            };
             config::save_policy(
                 &tx,
                 Some(&session),
@@ -121,7 +164,14 @@ pub fn complete(conn: &mut Connection, input: &SetupInput) -> AppResult<i64> {
     }
 
     settings::set(&tx, "classification.default", "\"ddc\"")?;
-    audit::record(&tx, Some(&session), "setup.completed", "library", Some(1), "Library set up")?;
+    audit::record(
+        &tx,
+        Some(&session),
+        "setup.completed",
+        "library",
+        Some(1),
+        "Library set up",
+    )?;
     tx.commit()?;
     Ok(admin_id)
 }
@@ -140,17 +190,26 @@ mod tests {
     fn input(profile: &str) -> SetupInput {
         SetupInput {
             library: config::LibraryInput {
-                name: "Demo Library".into(), profile: profile.into(), address: None, contact: None,
-                currency: "INR".into(), locale: "en".into(),
+                name: "Demo Library".into(),
+                profile: profile.into(),
+                address: None,
+                contact: None,
+                currency: "INR".into(),
+                locale: "en".into(),
             },
-            admin: AdminInput { username: "admin".into(), display_name: "Head Librarian".into(), password: "a long passphrase".into() },
+            admin: AdminInput {
+                username: "admin".into(),
+                display_name: "Head Librarian".into(),
+                password: "a long passphrase".into(),
+            },
             apply_profile_defaults: true,
             fine_per_day_minor: 100,
         }
     }
 
     fn count(c: &Connection, table: &str) -> i64 {
-        c.query_row(&format!("SELECT count(*) FROM {table}"), [], |r| r.get(0)).unwrap()
+        c.query_row(&format!("SELECT count(*) FROM {table}"), [], |r| r.get(0))
+            .unwrap()
     }
 
     #[test]
@@ -168,21 +227,38 @@ mod tests {
         assert!(status(&c).unwrap().configured);
         let o = config::overview(&c).unwrap();
         assert_eq!(o.library.unwrap().name, "Demo Library");
-        let members: Vec<_> = o.member_categories.iter().map(|m| m.name.as_str()).collect();
+        let members: Vec<_> = o
+            .member_categories
+            .iter()
+            .map(|m| m.name.as_str())
+            .collect();
         assert_eq!(members, ["Staff", "Student", "Teacher"]);
         assert_eq!(o.item_categories.len(), 2);
         assert_eq!(o.collections.len(), 2);
         assert_eq!(o.locations.len(), 1);
         assert_eq!(o.policies.len(), 3);
-        assert!(o.policies.iter().all(|p| p.fine_per_day_minor == 100 && p.fine_grace_days == 1));
+        assert!(o
+            .policies
+            .iter()
+            .all(|p| p.fine_per_day_minor == 100 && p.fine_grace_days == 1));
         // Reference items are not lendable: no policy for them.
-        let reference = o.item_categories.iter().find(|i| i.name == "Reference").unwrap().id;
+        let reference = o
+            .item_categories
+            .iter()
+            .find(|i| i.name == "Reference")
+            .unwrap()
+            .id;
         assert!(o.policies.iter().all(|p| p.item_category_id != reference));
         // The administrator can sign in and has full permissions.
         let s = auth::login(&c, "admin", "a long passphrase").unwrap();
         assert_eq!(s.user_id, admin);
         assert!(s.can("admin.settings") && s.can("admin.staff") && s.can("admin.backup"));
-        assert_eq!(settings::get(&c, "classification.default").unwrap().as_deref(), Some("\"ddc\""));
+        assert_eq!(
+            settings::get(&c, "classification.default")
+                .unwrap()
+                .as_deref(),
+            Some("\"ddc\"")
+        );
     }
 
     #[test]
@@ -212,7 +288,10 @@ mod tests {
         i.fine_per_day_minor = 0;
         complete(&mut c, &i).unwrap();
         let o = config::overview(&c).unwrap();
-        assert!(o.policies.iter().all(|p| p.fine_per_day_minor == 0 && p.fine_grace_days == 0));
+        assert!(o
+            .policies
+            .iter()
+            .all(|p| p.fine_per_day_minor == 0 && p.fine_grace_days == 0));
     }
 
     #[test]
@@ -221,7 +300,10 @@ mod tests {
         complete(&mut c, &input("school")).unwrap();
         let mut again = input("college");
         again.admin.username = "second".into();
-        assert!(matches!(complete(&mut c, &again), Err(AppError::Conflict(_))));
+        assert!(matches!(
+            complete(&mut c, &again),
+            Err(AppError::Conflict(_))
+        ));
         assert_eq!(count(&c, "staff_users"), 1);
         assert_eq!(count(&c, "member_categories"), 3);
     }
@@ -254,7 +336,11 @@ mod tests {
         c.execute_batch("CREATE TRIGGER block_staff BEFORE INSERT ON staff_users BEGIN SELECT RAISE(ABORT, 'blocked'); END;")
             .unwrap();
         assert!(complete(&mut c, &input("school")).is_err());
-        assert_eq!(count(&c, "libraries"), 0, "library row must roll back with the failed setup");
+        assert_eq!(
+            count(&c, "libraries"),
+            0,
+            "library row must roll back with the failed setup"
+        );
         assert_eq!(count(&c, "member_categories"), 0);
     }
 
@@ -263,7 +349,11 @@ mod tests {
         let (_t, mut c) = open();
         complete(&mut c, &input("school")).unwrap();
         let dump: String = c
-            .query_row("SELECT group_concat(action || ' ' || summary, '|') FROM audit_events", [], |r| r.get(0))
+            .query_row(
+                "SELECT group_concat(action || ' ' || summary, '|') FROM audit_events",
+                [],
+                |r| r.get(0),
+            )
             .unwrap();
         assert!(dump.contains("setup.completed"));
         assert!(!dump.contains("passphrase"));

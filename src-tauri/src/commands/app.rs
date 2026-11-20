@@ -20,8 +20,11 @@ pub struct AppInfo {
 #[tauri::command]
 pub fn app_info(state: State<'_, AppState>) -> AppResult<AppInfo> {
     let conn = state.conn()?;
-    let schema_version: i64 =
-        conn.query_row("SELECT COALESCE(MAX(version),0) FROM schema_migrations", [], |r| r.get(0))?;
+    let schema_version: i64 = conn.query_row(
+        "SELECT COALESCE(MAX(version),0) FROM schema_migrations",
+        [],
+        |r| r.get(0),
+    )?;
     debug_assert!(schema_version <= latest_version());
     Ok(AppInfo {
         version: env!("CARGO_PKG_VERSION").to_string(),

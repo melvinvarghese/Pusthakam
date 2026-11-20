@@ -71,7 +71,8 @@ impl Harness {
     }
 
     fn ok(&self, cmd: &str, body: Value) -> Value {
-        self.call(cmd, body).unwrap_or_else(|e| panic!("{cmd} failed: {e}"))
+        self.call(cmd, body)
+            .unwrap_or_else(|e| panic!("{cmd} failed: {e}"))
     }
 
     fn code(&self, cmd: &str, body: Value) -> String {
@@ -112,27 +113,63 @@ fn test_unauthenticated_command_matrix_is_rejected() {
 
     // Commands across different functional domains called without a session
     let commands_to_test = [
-        ("catalogue_search", json!({"query": {"page": 1, "pageSize": 25}})),
-        ("catalogue_save_record", json!({"input": {"title": "Forbidden", "contributors": [], "subjects": []}})),
+        (
+            "catalogue_search",
+            json!({"query": {"page": 1, "pageSize": 25}}),
+        ),
+        (
+            "catalogue_save_record",
+            json!({"input": {"title": "Forbidden", "contributors": [], "subjects": []}}),
+        ),
         ("catalogue_archive_records", json!({"ids": [1]})),
         ("circulation_prepare_return", json!({"barcode": "0001"})),
-        ("circulation_return", json!({"loanId": 1, "condition": null})),
-        ("members_list", json!({"search": "", "page": 1, "archived": false})),
-        ("members_save", json!({"input": {"memberNumber": "M-2", "name": "Eve", "categoryId": 1}})),
+        (
+            "circulation_return",
+            json!({"loanId": 1, "condition": null}),
+        ),
+        (
+            "members_list",
+            json!({"search": "", "page": 1, "archived": false}),
+        ),
+        (
+            "members_save",
+            json!({"input": {"memberNumber": "M-2", "name": "Eve", "categoryId": 1}}),
+        ),
         ("classification_list_schemes", json!({})),
-        ("classification_save_entry", json!({"input": {"schemeId": 1, "code": "001", "title": "Test"}})),
-        ("acquisitions_list_vendors", json!({"includeArchived": false})),
-        ("acquisitions_create_order", json!({"input": {"orderNumber": "ORD-1", "vendorId": 1, "items": []}})),
+        (
+            "classification_save_entry",
+            json!({"input": {"schemeId": 1, "code": "001", "title": "Test"}}),
+        ),
+        (
+            "acquisitions_list_vendors",
+            json!({"includeArchived": false}),
+        ),
+        (
+            "acquisitions_create_order",
+            json!({"input": {"orderNumber": "ORD-1", "vendorId": 1, "items": []}}),
+        ),
         ("serials_list_subscriptions", json!({"filter": {}})),
-        ("serials_save_subscription", json!({"input": {"title": "Periodical", "frequency": "monthly", "startDate": "2026-01-01", "endDate": "2026-12-31"}})),
+        (
+            "serials_save_subscription",
+            json!({"input": {"title": "Periodical", "frequency": "monthly", "startDate": "2026-01-01", "endDate": "2026-12-31"}}),
+        ),
         ("reports_stock_by_location", json!({})),
         ("backup_list", json!({})),
         ("backup_create", json!({})),
         ("staff_list", json!({})),
-        ("staff_create", json!({"input": {"username": "eve", "displayName": "Eve", "password": "pass", "role": "viewer"}})),
+        (
+            "staff_create",
+            json!({"input": {"username": "eve", "displayName": "Eve", "password": "pass", "role": "viewer"}}),
+        ),
         ("get_setting", json!({"key": "library.name"})),
-        ("set_setting", json!({"key": "library.name", "value": "Hacked"})),
-        ("audit_search", json!({"query": {"page": 1, "pageSize": 25}})),
+        (
+            "set_setting",
+            json!({"key": "library.name", "value": "Hacked"}),
+        ),
+        (
+            "audit_search",
+            json!({"query": {"page": 1, "pageSize": 25}}),
+        ),
     ];
 
     for (cmd, payload) in commands_to_test {
@@ -153,29 +190,69 @@ fn test_viewer_role_write_command_matrix_is_rejected() {
     {
         let state = h.webview.state::<AppState>();
         let conn = state.conn().unwrap();
-        auth::create_user(&conn, "viewer_user", "Viewer Staff", "viewer password 123", "viewer").unwrap();
+        auth::create_user(
+            &conn,
+            "viewer_user",
+            "Viewer Staff",
+            "viewer password 123",
+            "viewer",
+        )
+        .unwrap();
     }
 
     h.ok("logout", json!({}));
-    h.ok("login", json!({"username": "viewer_user", "password": "viewer password 123"}));
+    h.ok(
+        "login",
+        json!({"username": "viewer_user", "password": "viewer password 123"}),
+    );
 
     // Viewer should be able to read catalogue
-    let search = h.ok("catalogue_search", json!({"query": {"page": 1, "pageSize": 25}}));
+    let search = h.ok(
+        "catalogue_search",
+        json!({"query": {"page": 1, "pageSize": 25}}),
+    );
     assert!(search.is_object());
 
     // Viewer must NOT be permitted to perform write operations
     let write_commands = [
-        ("catalogue_save_record", json!({"input": {"title": "Unauthorized Book", "contributors": [], "subjects": []}})),
+        (
+            "catalogue_save_record",
+            json!({"input": {"title": "Unauthorized Book", "contributors": [], "subjects": []}}),
+        ),
         ("catalogue_archive_records", json!({"ids": [1]})),
-        ("circulation_return", json!({"loanId": 1, "condition": null})),
-        ("members_save", json!({"input": {"memberNumber": "M-99", "name": "Unauthorized Member", "categoryId": 1}})),
-        ("classification_save_entry", json!({"input": {"schemeId": 1, "code": "999", "title": "Unauthorized"}})),
-        ("acquisitions_create_order", json!({"input": {"orderNumber": "ORD-1", "vendorId": 1, "items": []}})),
-        ("serials_save_subscription", json!({"input": {"title": "Unauthorized Serial", "frequency": "monthly", "startDate": "2026-01-01", "endDate": "2026-12-31"}})),
+        (
+            "circulation_return",
+            json!({"loanId": 1, "condition": null}),
+        ),
+        (
+            "members_save",
+            json!({"input": {"memberNumber": "M-99", "name": "Unauthorized Member", "categoryId": 1}}),
+        ),
+        (
+            "classification_save_entry",
+            json!({"input": {"schemeId": 1, "code": "999", "title": "Unauthorized"}}),
+        ),
+        (
+            "acquisitions_create_order",
+            json!({"input": {"orderNumber": "ORD-1", "vendorId": 1, "items": []}}),
+        ),
+        (
+            "serials_save_subscription",
+            json!({"input": {"title": "Unauthorized Serial", "frequency": "monthly", "startDate": "2026-01-01", "endDate": "2026-12-31"}}),
+        ),
         ("backup_create", json!({})),
-        ("backup_request_restore", json!({"name": "pusthakam-backup.sqlite3"})),
-        ("staff_create", json!({"input": {"username": "intruder", "displayName": "Intruder", "password": "pass", "role": "admin"}})),
-        ("set_setting", json!({"key": "library.name", "value": "Defaced Name"})),
+        (
+            "backup_request_restore",
+            json!({"name": "pusthakam-backup.sqlite3"}),
+        ),
+        (
+            "staff_create",
+            json!({"input": {"username": "intruder", "displayName": "Intruder", "password": "pass", "role": "admin"}}),
+        ),
+        (
+            "set_setting",
+            json!({"key": "library.name", "value": "Defaced Name"}),
+        ),
     ];
 
     for (cmd, payload) in write_commands {
@@ -233,15 +310,18 @@ fn test_export_save_restricts_arbitrary_paths() {
     };
 
     // 1. Relative paths are rejected
-    let rel_res = export_save::write_chosen(Some(PathBuf::from("relative.csv")), &payload, &private_dir);
+    let rel_res =
+        export_save::write_chosen(Some(PathBuf::from("relative.csv")), &payload, &private_dir);
     assert!(rel_res.is_err());
 
     // 2. Mismatched extensions are rejected
-    let wrong_ext = export_save::write_chosen(Some(outside_dir.join("export.txt")), &payload, &private_dir);
+    let wrong_ext =
+        export_save::write_chosen(Some(outside_dir.join("export.txt")), &payload, &private_dir);
     assert!(wrong_ext.is_err());
 
     // 3. Writing inside private app directory is rejected
-    let inside_private = export_save::write_chosen(Some(private_dir.join("export.csv")), &payload, &private_dir);
+    let inside_private =
+        export_save::write_chosen(Some(private_dir.join("export.csv")), &payload, &private_dir);
     assert!(inside_private.is_err());
 
     // 4. Writing to safe external directory succeeds
@@ -321,11 +401,25 @@ fn test_csp_and_capabilities_least_privilege() {
         .expect("Failed to read tauri.conf.json");
     let tauri_conf: Value = serde_json::from_str(&tauri_conf_str).unwrap();
 
-    let csp = tauri_conf["app"]["security"]["csp"].as_str().expect("CSP must be present in tauri.conf.json");
-    assert!(csp.contains("default-src 'self'"), "CSP must enforce default-src 'self'");
-    assert!(csp.contains("script-src 'self'"), "CSP must enforce script-src 'self'");
-    assert!(!csp.contains("'unsafe-eval'"), "CSP must NOT allow 'unsafe-eval'");
-    assert!(!csp.contains("default-src *"), "CSP must NOT allow wildcard default-src");
+    let csp = tauri_conf["app"]["security"]["csp"]
+        .as_str()
+        .expect("CSP must be present in tauri.conf.json");
+    assert!(
+        csp.contains("default-src 'self'"),
+        "CSP must enforce default-src 'self'"
+    );
+    assert!(
+        csp.contains("script-src 'self'"),
+        "CSP must enforce script-src 'self'"
+    );
+    assert!(
+        !csp.contains("'unsafe-eval'"),
+        "CSP must NOT allow 'unsafe-eval'"
+    );
+    assert!(
+        !csp.contains("default-src *"),
+        "CSP must NOT allow wildcard default-src"
+    );
 
     // Read and verify capabilities/default.json
     let cap_str = std::fs::read_to_string("capabilities/default.json")
@@ -333,12 +427,27 @@ fn test_csp_and_capabilities_least_privilege() {
         .expect("Failed to read capabilities/default.json");
     let cap: Value = serde_json::from_str(&cap_str).unwrap();
 
-    let windows = cap["windows"].as_array().expect("Capabilities must specify windows");
-    assert_eq!(windows, &[Value::String("main".into())], "Capabilities must only apply to main window");
+    let windows = cap["windows"]
+        .as_array()
+        .expect("Capabilities must specify windows");
+    assert_eq!(
+        windows,
+        &[Value::String("main".into())],
+        "Capabilities must only apply to main window"
+    );
 
     // Permissions must not grant shell:default or fs:default
     let perms_str = serde_json::to_string(&cap["permissions"]).unwrap();
-    assert!(!perms_str.contains("shell:default"), "Must NOT grant shell:default capability");
-    assert!(!perms_str.contains("fs:default"), "Must NOT grant fs:default capability");
-    assert!(!perms_str.contains("fs:allow-"), "Must NOT grant unrestricted filesystem access");
+    assert!(
+        !perms_str.contains("shell:default"),
+        "Must NOT grant shell:default capability"
+    );
+    assert!(
+        !perms_str.contains("fs:default"),
+        "Must NOT grant fs:default capability"
+    );
+    assert!(
+        !perms_str.contains("fs:allow-"),
+        "Must NOT grant unrestricted filesystem access"
+    );
 }

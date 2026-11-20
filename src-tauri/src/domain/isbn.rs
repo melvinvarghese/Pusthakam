@@ -2,7 +2,10 @@
 
 /// Removes hyphens and spaces and upper-cases a trailing X.
 pub fn clean(raw: &str) -> String {
-    raw.chars().filter(|c| !c.is_whitespace() && *c != '-').collect::<String>().to_ascii_uppercase()
+    raw.chars()
+        .filter(|c| !c.is_whitespace() && *c != '-')
+        .collect::<String>()
+        .to_ascii_uppercase()
 }
 
 pub fn is_valid_isbn10(s: &str) -> bool {
@@ -27,8 +30,11 @@ pub fn is_valid_isbn13(s: &str) -> bool {
     if b.len() != 13 || !b.iter().all(u8::is_ascii_digit) {
         return false;
     }
-    let sum: u32 =
-        b.iter().enumerate().map(|(i, &c)| (c - b'0') as u32 * if i % 2 == 0 { 1 } else { 3 }).sum();
+    let sum: u32 = b
+        .iter()
+        .enumerate()
+        .map(|(i, &c)| (c - b'0') as u32 * if i % 2 == 0 { 1 } else { 3 })
+        .sum();
     sum % 10 == 0
 }
 
@@ -57,9 +63,17 @@ pub fn isbn13_to_10(isbn13: &str) -> Option<String> {
         return None;
     }
     let body = &isbn13[3..12];
-    let sum: u32 = body.bytes().enumerate().map(|(i, c)| (c - b'0') as u32 * (10 - i as u32)).sum();
+    let sum: u32 = body
+        .bytes()
+        .enumerate()
+        .map(|(i, c)| (c - b'0') as u32 * (10 - i as u32))
+        .sum();
     let check = (11 - sum % 11) % 11;
-    let ch = if check == 10 { 'X' } else { char::from_digit(check, 10).unwrap_or('0') };
+    let ch = if check == 10 {
+        'X'
+    } else {
+        char::from_digit(check, 10).unwrap_or('0')
+    };
     Some(format!("{body}{ch}"))
 }
 
@@ -96,15 +110,31 @@ mod tests {
         assert_eq!(isbn13_to_10("9780306406157").as_deref(), Some("0306406152"));
         assert_eq!(isbn10_to_13("080442957X").as_deref(), Some("9780804429573"));
         assert_eq!(isbn13_to_10("9780804429573").as_deref(), Some("080442957X"));
-        assert_eq!(isbn13_to_10("9791090636071"), None, "979 numbers have no ISBN-10");
+        assert_eq!(
+            isbn13_to_10("9791090636071"),
+            None,
+            "979 numbers have no ISBN-10"
+        );
     }
 
     #[test]
     fn both_forms_cleans_hyphens_and_lowercase_x() {
-        assert_eq!(both_forms("0-306-40615-2"), Some((Some("0306406152".into()), "9780306406157".into())));
-        assert_eq!(both_forms("978-0-306-40615-7"), Some((Some("0306406152".into()), "9780306406157".into())));
-        assert_eq!(both_forms("0-8044-2957-x"), Some((Some("080442957X".into()), "9780804429573".into())));
-        assert_eq!(both_forms("9791090636071"), Some((None, "9791090636071".into())));
+        assert_eq!(
+            both_forms("0-306-40615-2"),
+            Some((Some("0306406152".into()), "9780306406157".into()))
+        );
+        assert_eq!(
+            both_forms("978-0-306-40615-7"),
+            Some((Some("0306406152".into()), "9780306406157".into()))
+        );
+        assert_eq!(
+            both_forms("0-8044-2957-x"),
+            Some((Some("080442957X".into()), "9780804429573".into()))
+        );
+        assert_eq!(
+            both_forms("9791090636071"),
+            Some((None, "9791090636071".into()))
+        );
         assert_eq!(both_forms("12345"), None);
         assert_eq!(both_forms("0306406153"), None);
     }

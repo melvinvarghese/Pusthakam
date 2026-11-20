@@ -1,10 +1,8 @@
 use crate::error::{AppError, AppResult};
+use crate::services::image_upload::decode_png as decode_photo;
 use crate::services::{audit, auth::Session};
 use base64::{engine::general_purpose::STANDARD, Engine};
 use rusqlite::{params, Connection, OptionalExtension, TransactionBehavior};
-use crate::services::image_upload::decode_png as decode_photo;
-
-
 
 pub fn get(conn: &Connection, id: i64) -> AppResult<Option<String>> {
     let photo: Option<Vec<u8>> = conn.query_row(
@@ -19,7 +17,8 @@ pub fn set(conn: &mut Connection, actor: &Session, id: i64, data: Option<&str>) 
     let tx = conn.transaction_with_behavior(TransactionBehavior::Immediate)?;
     let active: bool = tx.query_row(
         "SELECT EXISTS(SELECT 1 FROM members WHERE id = ?1 AND archived_at IS NULL)",
-        [id], |r| r.get(0),
+        [id],
+        |r| r.get(0),
     )?;
     if !active {
         return Err(AppError::NotFound("Active member not found.".into()));

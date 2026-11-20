@@ -2,8 +2,16 @@
 //! wizard: every value is ordinary configuration that an administrator can edit afterwards.
 //! An item category with no policy row for a member category means "not lendable" (e.g. Reference).
 
-pub const PROFILES: [&str; 8] =
-    ["school", "college", "university", "public", "special", "research", "institutional", "private"];
+pub const PROFILES: [&str; 8] = [
+    "school",
+    "college",
+    "university",
+    "public",
+    "special",
+    "research",
+    "institutional",
+    "private",
+];
 
 pub struct MemberCategoryDef {
     pub name: &'static str,
@@ -30,11 +38,27 @@ pub struct ProfileDefaults {
 }
 
 fn mc(name: &'static str, membership_days: i64) -> MemberCategoryDef {
-    MemberCategoryDef { name, membership_days }
+    MemberCategoryDef {
+        name,
+        membership_days,
+    }
 }
 
-fn pol(member: &'static str, loan_days: i64, max_loans: i64, max_renewals: i64, renewal_days: i64) -> PolicyDef {
-    PolicyDef { member, item: "General", loan_days, max_loans, max_renewals, renewal_days }
+fn pol(
+    member: &'static str,
+    loan_days: i64,
+    max_loans: i64,
+    max_renewals: i64,
+    renewal_days: i64,
+) -> PolicyDef {
+    PolicyDef {
+        member,
+        item: "General",
+        loan_days,
+        max_loans,
+        max_renewals,
+        renewal_days,
+    }
 }
 
 /// Returns the starting configuration for a profile code, or `None` for an unknown profile.
@@ -42,14 +66,27 @@ pub fn defaults_for(profile: &str) -> Option<ProfileDefaults> {
     let (members, policies): (Vec<MemberCategoryDef>, Vec<PolicyDef>) = match profile {
         "school" => (
             vec![mc("Student", 365), mc("Teacher", 365), mc("Staff", 365)],
-            vec![pol("Student", 14, 3, 1, 7), pol("Teacher", 30, 10, 2, 14), pol("Staff", 14, 3, 1, 7)],
+            vec![
+                pol("Student", 14, 3, 1, 7),
+                pol("Teacher", 30, 10, 2, 14),
+                pol("Staff", 14, 3, 1, 7),
+            ],
         ),
         "college" => (
             vec![mc("Student", 365), mc("Faculty", 365), mc("Staff", 365)],
-            vec![pol("Student", 14, 3, 1, 7), pol("Faculty", 30, 10, 2, 14), pol("Staff", 14, 3, 1, 7)],
+            vec![
+                pol("Student", 14, 3, 1, 7),
+                pol("Faculty", 30, 10, 2, 14),
+                pol("Staff", 14, 3, 1, 7),
+            ],
         ),
         "university" => (
-            vec![mc("Undergraduate", 365), mc("Postgraduate", 365), mc("Researcher", 365), mc("Faculty", 365)],
+            vec![
+                mc("Undergraduate", 365),
+                mc("Postgraduate", 365),
+                mc("Researcher", 365),
+                mc("Faculty", 365),
+            ],
             vec![
                 pol("Undergraduate", 21, 5, 2, 7),
                 pol("Postgraduate", 30, 10, 2, 14),
@@ -67,7 +104,10 @@ pub fn defaults_for(profile: &str) -> Option<ProfileDefaults> {
         ),
         "research" => (
             vec![mc("Researcher", 365), mc("Staff", 365)],
-            vec![pol("Researcher", 30, 10, 2, 14), pol("Staff", 30, 10, 2, 14)],
+            vec![
+                pol("Researcher", 30, 10, 2, 14),
+                pol("Staff", 30, 10, 2, 14),
+            ],
         ),
         "institutional" => (
             vec![mc("Staff", 365), mc("Guest", 90)],
@@ -102,19 +142,38 @@ mod tests {
     fn policies_reference_real_categories_and_satisfy_database_rules() {
         for p in PROFILES {
             let d = defaults_for(p).unwrap();
-            assert!(!d.policies.is_empty(), "{p} needs at least one lendable policy");
+            assert!(
+                !d.policies.is_empty(),
+                "{p} needs at least one lendable policy"
+            );
             for pol in &d.policies {
-                assert!(d.member_categories.iter().any(|m| m.name == pol.member), "{p}: {}", pol.member);
+                assert!(
+                    d.member_categories.iter().any(|m| m.name == pol.member),
+                    "{p}: {}",
+                    pol.member
+                );
                 assert!(d.lendable_items.contains(&pol.item), "{p}: {}", pol.item);
                 assert!((1..=365).contains(&pol.loan_days) && pol.max_loans >= 1);
                 // Mirrors the CHECK constraint: renewals need a renewal period.
-                assert!(pol.max_renewals == 0 || pol.renewal_days > 0, "{p}: {}", pol.member);
+                assert!(
+                    pol.max_renewals == 0 || pol.renewal_days > 0,
+                    "{p}: {}",
+                    pol.member
+                );
             }
-            let names: Vec<_> = d.member_categories.iter().map(|m| m.name.to_lowercase()).collect();
+            let names: Vec<_> = d
+                .member_categories
+                .iter()
+                .map(|m| m.name.to_lowercase())
+                .collect();
             let mut dedup = names.clone();
             dedup.sort();
             dedup.dedup();
-            assert_eq!(names.len(), dedup.len(), "{p}: duplicate member category names");
+            assert_eq!(
+                names.len(),
+                dedup.len(),
+                "{p}: duplicate member category names"
+            );
         }
     }
 }

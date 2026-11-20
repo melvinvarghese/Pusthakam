@@ -8,6 +8,7 @@ import { Panel } from "@/components/ui/Panel";
 import { circulationApi, toApiError } from "@/lib/api";
 import type { IssuePreview, RenewalPreview, ReturnCondition, ReturnPreview } from "@/lib/api/types";
 import { formatMinor } from "@/lib/money";
+import { announce } from "@/lib/announcer";
 import { can, useSession } from "@/lib/session";
 import { OverdueLoans } from "./OverdueLoans";
 import { DueSlip } from "./DueSlip";
@@ -83,6 +84,7 @@ export function CirculationPage() {
         ? `Closed the loan for ${title}. Marked ${value.condition}.${fine ? ` Overdue fine: ${formatMinor(fine.amountMinor, fine.currency)}.` : ""}`
         : messages[value.mode];
       setMessage(conditionMessage);
+      announce(conditionMessage, "polite");
       setCompletedLoan(value.mode === "return" ? null : value);
       setReview(null);
       const barcode = formRef.current?.querySelector<HTMLInputElement>('input[name="barcode"]');
