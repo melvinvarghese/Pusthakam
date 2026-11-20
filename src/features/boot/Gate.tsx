@@ -1,10 +1,11 @@
-import type { ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { ApiError, authApi } from "@/lib/api";
 import { SessionContext } from "@/lib/session";
 import { LoginScreen } from "@/features/auth/LoginScreen";
 import { AuthLayout } from "@/features/auth/AuthLayout";
 import { SetupWizard } from "@/features/setup/SetupWizard";
+import { StartupSplashScreen } from "@/features/boot/StartupSplashScreen";
 
 function Message({ title, text }: { title: string; text: string }) {
   return (
@@ -17,12 +18,37 @@ function Message({ title, text }: { title: string; text: string }) {
   );
 }
 
+export interface GateProps {
+  children: ReactNode;
+  /**
+   * Minimum duration in milliseconds to display the startup splash screen.
+   * Defaults to 3000ms in production/development, or 0ms in automated test environments.
+   */
+  minSplashDurationMs?: number;
+}
+
 /**
- * Decides what to show first: the setup wizard on a fresh install, the sign-in screen when nobody is
- * signed in, otherwise the app. Sign-in state lives in the Rust backend, never in the browser.
+ * Decides what to show first: the startup loading screen (held for at least 3 seconds),
+ * the setup wizard on a fresh install, the sign-in screen when nobody is signed in,
+ * or the main application when authenticated.
  */
-export function Gate({ children }: { children: ReactNode }) {
+export function Gate({ children, minSplashDurationMs }: GateProps) {
   const qc = useQueryClient();
+  const defaultDuration = import.meta.env.MODE === "test" ? 0 : 3000;
+  const splashDuration = minSplashDurationMs ?? defaultDuration;
+  const [splashFinished, setSplashFinished] = useState(splashDuration <= 0);
+
+  useEffect(() => {
+    if (splashDuration <= 0) {
+      setSplashFinished(true);
+      return;
+    }
+    const timer = setTimeout(() => {
+      setSplashFinished(true);
+    }, splashDuration);
+    return () => clearTimeout(timer);
+  }, [splashDuration]);
+
   // In development, `?preview` runs the same gate against synthetic data (see src/lib/preview.ts).
   const status = useQuery({ queryKey: ["setup-status"], queryFn: authApi.setupStatus, retry: false });
   const configured = status.data?.configured === true;
@@ -37,9 +63,18 @@ export function Gate({ children }: { children: ReactNode }) {
       />
     );
   }
-  if (status.isPending) return <Message title="Opening your library…" text="Just a moment." />;
+
+  // Keep splash screen visible until minimum duration has elapsed AND initial status is resolved
+  if (!splashFinished || status.isPending || (configured && session.isPending)) {
+    return (
+      <StartupSplashScreen
+        durationMs={splashDuration}
+        onComplete={() => setSplashFinished(true)}
+      />
+    );
+  }
+
   if (!configured) return <SetupWizard />;
-  if (session.isPending) return <Message title="Opening your library…" text="Just a moment." />;
   if (!session.data) return <LoginScreen />;
 
   const signOut = async () => {

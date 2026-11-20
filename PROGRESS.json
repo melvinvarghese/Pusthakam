@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "lastUpdated": "2026-11-20T14:26:00Z",
+  "lastUpdated": "2026-11-20T14:45:00Z",
   "currentPhase": "8",
   "currentTask": {
     "taskId": "REL-CI",
@@ -4043,6 +4043,12 @@
       "taskId": "REL-CI",
       "title": "Automated CI release quality pipeline and illustrated operations manual verified",
       "detail": "Verified REL-CI (automated CI quality pipeline with cargo fmt/clippy, 144 Rust unit, 30 IPC, 7 security, and 196 frontend tests) and REL-DOCS (15-section illustrated operations manual with quick-start and workflow diagrams). Release gate delivery passed, raising release readiness to 56%."
+    },
+    {
+      "kind": "completed",
+      "at": "2026-11-20T14:45:00Z",
+      "title": "Startup loading screen (3-second presentation) implemented",
+      "detail": "Implemented StartupSplashScreen with brand mark, tagline, animated progress bar, accessibility live region, and local sovereign badge. Gate enforces a minimum 3000ms display duration before revealing sign-in or setup wizard. 4 new unit tests added, bringing total Vitest suite to 200 passing tests across 37 files."
     }
   ]
 }

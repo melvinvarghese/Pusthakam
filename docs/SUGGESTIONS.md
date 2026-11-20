@@ -73,10 +73,10 @@ _Purpose: Repository of architectural, ergonomic, and operational suggestions to
 
 ## 6. Consolidated Deferred Items
 
-For quick cross-reference, earlier owner-requested changes deferred in `PROGRESS.md`:
-* **Startup Presentation:** 3-second startup loading screen.
+For quick cross-reference, status of owner-requested changes:
+* **Startup Presentation:** 3-second startup loading screen (*Implemented 20 November 2026: `StartupSplashScreen.tsx` & `Gate.tsx`*).
 * **Password Policy:** Minimum 6 characters and no spaces.
-* **Documentation:** Illustrated end-user manual covering setup, workflows, migration, and troubleshooting.
+* **Documentation:** Illustrated end-user manual covering setup, workflows, migration, and troubleshooting (*Implemented 20 November 2026: `docs/USER_MANUAL.md`*).
 * **Staff Profiles:** Optional locally stored profile photos for administrators and library staff.
 * **Recovery Redundancy:** Secondary recovery credentials scoped to a recovery contact for single-library emergency restore.
 

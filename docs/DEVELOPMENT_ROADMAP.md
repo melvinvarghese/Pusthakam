@@ -55,9 +55,9 @@ Libraries must be able to move their existing data into Pusthakam. Plan:
 ## Requirement tracking
 Requirements are tracked in `PROGRESS.md` with IDs (REQ-xxx) mapped to source files, tests and verification results.
 
-## Deferred startup presentation request
+## Startup presentation (implemented 20 November 2026)
 
-Owner request (18 November 2026): when Pusthakam opens, display a startup loading screen for at least three seconds before showing the application. Implementation is deferred until a later agreed milestone; this documentation change adds no implementation credit and does not change phase order.
+Owner request (18 November 2026): when Pusthakam opens, display a startup loading screen for at least three seconds before showing the application. Implemented in `src/features/boot/StartupSplashScreen.tsx` and mounted in `src/features/boot/Gate.tsx`. Enforces a 3,000 ms branded splash presentation (brand mark, typography, progress bar, accessibility live region, and local sovereign badge) before transitioning into sign-in or the setup wizard. Verified with 4 unit tests in `StartupSplashScreen.test.tsx` (total 200 Vitest tests passing).
 
 ## Phase 4 calendar checkpoint
 
