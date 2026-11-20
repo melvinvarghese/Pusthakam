@@ -16,6 +16,12 @@ After every meaningful change, immediately update **PROGRESS.md**, **PROGRESS.js
 
 The current clone is D:\Pusthakam. Other computers can use another path. Temporary verification executables and disposable databases are machine-specific: rebuild from source on another computer. Windows native builds require the documented Rust/MSVC/WebView2 toolchain.
 
+## Deferred owner requirement: GitHub Pages website (20 November 2026)
+
+Owner clarified: add the website to the roadmap/relevant docs now and implement later. Do NOT continue website implementation until requested. Scope: attractive librarian-focused homepage/try path, populated Blog and FAQ tabs, separate static article URLs, sitemap.xml, correctly deployed robots.txt, canonical/social metadata and appropriate structured data. Use relevant installed design/writing/site guidance; available skills are sufficient. No ranking/AI-citation promises. Detailed plan: docs/GITHUB_PAGES_WEBSITE_PLAN.md. This is separate from the OPAC.
+
+No website code, deployment workflow or publication implemented. Initial visual notes were moved into the documentation plan. No desktop completion credit; BAK-RESTORE milestone and planned report presentation work remain unchanged.
+
 ## Planned owner requirement: report presentation (20 November 2026)
 
 Reports must be aesthetically beautiful and professionally composed by default, using relevant installed design/document/PDF/spreadsheet skills during implementation and visual review. Add an unchecked **Use simple report design** checkbox for a conventional minimal library-management report layout. Both modes retain identical data and calculations; apply the choice to preview/PDF/print/styled XLSX, while CSV remains data-only. Scope and acceptance: docs/REPORT_DESIGN_PLAN.md, linked to Phase 5 REQ-RPT/RPT-FORMATS and its pending work in PROGRESS.json. This is documentation only; no renderer or checkbox implementation, no completion credit. Current recovery milestone BAK-RESTORE remains unchanged.
@@ -106,3 +112,7 @@ Source-sample absence blocks real-source verification only. Generic loan/renewal
 Owner requested this batch once: reservation history, assessed-fine history, payments, waivers and a currency-separated reconciliation summary. Implement/test together, then one native build and checklist. Neutral JSON bundle planned for atomic cross-record validation; source-specific mappings remain unverified. Work starting, no completion credit.
 
 Five-feature implementation checkpoint: schema 20 append-only provenance and one strict JSON bundle for reservations, assessed fines, payments and waivers. Expected counts/currency totals gate atomic commit; destination records are reread before finalizing. Admin preview/confirmation UI added. cargo check passed before the post-write reconciliation addition; focused tests next. Explicitly reject unsupported non-loan/multiple/open-loan charges and conflicting queues. No completion credit.
+
+## Public website work — 20 November 2026
+
+Owner requested an attractive GitHub Pages site for librarians, including populated blog/FAQ, distinct article URLs, sitemap/robots and search/AI-discovery fundamentals. Separate static site under development; no deployment performed and no desktop completion credit. Build all reviewable assets before publishing. Restore/recovery milestone remains queued, and report-design plan remains pending.

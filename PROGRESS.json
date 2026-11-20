@@ -1,12 +1,11 @@
 {
   "schemaVersion": 1,
-  "lastUpdated": "2026-11-20T06:04:24.274Z",
+  "lastUpdated": "2026-11-20T06:19:19.012Z",
   "currentPhase": "7b",
   "currentTask": {
-    "taskId": "LAN-OPS",
-    "status": "verified",
-    "title": "LAN controls and operating guidance",
-    "detail": "Completed and verified full LAN Mode: embedded HTTP server, responsive browser staff circulation portal, public anonymous OPAC, concurrent edit conflict safety (409 Conflict), and comprehensive operational runbook in docs/LAN_OPERATION_RUNBOOK.md."
+    "title": "GitHub Pages website requirement documented; implementation deferred",
+    "status": "implemented",
+    "detail": "Documentation only, outside weighted desktop scope. Owner clarified to add the public website to roadmap/relevant docs and build later. Plan covers librarian-focused homepage, populated blog/FAQ, individual static article URLs, sitemap/robots, metadata, structured data and honest search/AI-discovery foundations. No website, deployment workflow or publication implemented. Desktop BAK-RESTORE milestone preserved."
   },
   "nextMilestone": {
     "title": "Restore, pre-upgrade snapshot and recovery verification",
@@ -3041,6 +3040,18 @@
     }
   ],
   "recentActivity": [
+    {
+      "kind": "progress",
+      "at": "2026-11-20T06:19:19.012Z",
+      "title": "Public website deferred at owner request",
+      "detail": "Saved docs/GITHUB_PAGES_WEBSITE_PLAN.md and linked roadmap/specification/handoff. No site implementation or publication; no desktop completion credit. Preliminary design note moved into the documentation plan."
+    },
+    {
+      "kind": "progress",
+      "at": "2026-11-20T06:17:30.832Z",
+      "title": "GitHub Pages website requested",
+      "detail": "Starting separate static marketing site with blog, FAQ, distinct article URLs, sitemap/robots, metadata and structured data. No desktop completion credit or publication."
+    },
     {
       "kind": "progress",
       "at": "2026-11-20T06:04:24.274Z",

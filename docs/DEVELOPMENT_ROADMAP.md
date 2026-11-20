@@ -66,3 +66,7 @@ Holiday dates and recurring weekly closures are implemented in Library Settings.
 ## Planned report presentation enhancement — owner request, 20 November 2026
 
 Phase 5 / REQ-RPT / RPT-FORMATS: reports must be polished and aesthetically beautiful by default, using relevant installed design and document-generation skills during development. Add an unchecked **Use simple report design** checkbox for a conventional library-management layout. Apply the choice to preview/PDF/print/styled XLSX, preserving identical data and totals; CSV remains data-only. See [REPORT_DESIGN_PLAN.md](REPORT_DESIGN_PLAN.md) for scope and visual acceptance. Planned only; no implementation credit. This does not reorder the active recovery milestone.
+
+## Deferred public GitHub Pages website — owner request, 20 November 2026
+
+Build later: attractive librarian-focused homepage with a clear path to trying Pusthakam, populated Blog and FAQ tabs, and a separate static/crawlable URL for every article. Include sitemap.xml, robots.txt (with correct host-root deployment), unique metadata/canonical URLs and appropriate structured data. Aim for useful search/AI-search discovery without guaranteeing rankings or citations. Use relevant installed design/writing/site skills. Authoritative scope: [GITHUB_PAGES_WEBSITE_PLAN.md](GITHUB_PAGES_WEBSITE_PLAN.md). Documentation only; no site or publishing implemented, no desktop weight/credit. This public project website is separate from Phase 7b OPAC and does not reorder the current recovery milestone.
