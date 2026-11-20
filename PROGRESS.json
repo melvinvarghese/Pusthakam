@@ -1,11 +1,11 @@
 {
   "schemaVersion": 1,
-  "lastUpdated": "2026-11-20T10:20:07.051Z",
+  "lastUpdated": "2026-11-20T12:45:33Z",
   "currentPhase": "5",
   "currentTask": {
-    "title": "Phase 5 (Dashboard, reports and printing) finished: PRN-HARDWARE verified and report design modes implemented",
+    "title": "FAQ responsive overflow fix (outside the v1 product roadmap)",
     "status": "verified",
-    "detail": "Implemented Use simple report design checkbox per docs/REPORT_DESIGN_PLAN.md in ReportsPage and report_export service. Verified OS printer output (labels, member cards, due slips) and USB keyboard-wedge barcode scanner workflows (PRN-HARDWARE). Phase 5 is now 100% Implemented and 100% Verified, passing the desk release gate."
+    "detail": "The static FAQ overflowed to 371px at 320px and 360px because its long inline code path forced a wider minimum size. Added overflow-wrap: anywhere to .faq-item code. Chromium viewport regression checks passed at 320, 360, 375, 390, 430, 768, 1024, 1280 and 1440px. Website-only correction; no product task ID or weight."
   },
   "nextMilestone": {
     "title": "CI pipeline remote execution and accessibility announcements",
@@ -3136,6 +3136,14 @@
       "check": "cargo clippy --manifest-path src-tauri/Cargo.toml -- -D warnings (0 warnings/errors) + .github/workflows/ci.yml validation",
       "outcome": "passed",
       "result": "Resolved 12 clippy warnings in reports, import, export, lan, acquisitions, and report_export services. Clippy compiles with zero warnings under -D warnings. All 30 IPC tests pass."
+    },
+    {
+      "id": "website-faq-overflow-2026-11-20",
+      "title": "FAQ horizontal overflow browser regression check",
+      "at": "2026-11-20T12:45:33Z",
+      "check": "Chromium + Playwright; FAQ viewport sweep at 320, 360, 375, 390, 430, 768, 1024, 1280 and 1440px",
+      "outcome": "passed",
+      "result": "Before fix, document width was 371px at 320px and 360px. After the targeted CSS change, document width equalled the viewport and FAQ content stayed inside it at all nine widths."
     }
   ],
   "recentActivity": [
@@ -3985,6 +3993,12 @@
       "at": "2026-11-17T00:00:00.000Z",
       "title": "Circulation, members and initial reports present",
       "detail": "Source audit found copy reservations, fines and settlements, member photos/cards, Koha patron import, and stock-by-location CSV."
+    },
+    {
+      "kind": "completed",
+      "at": "2026-11-20T12:45:33Z",
+      "title": "FAQ responsive overflow corrected",
+      "detail": "Added one targeted wrapping rule for FAQ inline code; Chromium checks passed from 320px through 1440px. No v1 product roadmap weight or completion credit."
     }
   ]
 }

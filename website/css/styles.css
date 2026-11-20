@@ -532,6 +532,10 @@ a {
   line-height: 1.55;
 }
 
+.faq-item code {
+  overflow-wrap: anywhere;
+}
+
 /* Footer */
 .site-footer {
   background: var(--ink);
