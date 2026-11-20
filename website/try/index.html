@@ -30,12 +30,12 @@
       </nav>
 
       <div class="header-actions">
-        <a href="../index.html" class="btn btn-outline" style="border-color: #3A5070; color: #FFFFFF;">← Back to Overview</a>
+        <a href="../index.html" class="btn btn-outline" style="border-color: #3A5070;">← Back to Overview</a>
       </div>
     </div>
   </header>
 
-  <main class="main-content container" style="max-width: 860px; padding-top: 3rem; padding-bottom: 3rem;">
+  <main class="main-content container download-page" style="max-width: 860px; padding-top: 3rem; padding-bottom: 3rem;">
     <div class="section-head" style="margin-bottom: 2rem;">
       <span class="section-tag">Release Distribution</span>
       <h1 class="section-title">Get Pusthakam v0.1.0</h1>
@@ -45,7 +45,7 @@
     </div>
 
     <!-- Windows Release Card -->
-    <div style="background: var(--surface); border: 2px solid var(--accent-science); border-radius: 12px; padding: 2rem; margin-bottom: 2rem; box-shadow: 0 4px 12px rgba(22,32,46,0.06);">
+    <div class="release-card" style="background: var(--surface); border: 2px solid var(--accent-science); border-radius: 12px; padding: 2rem; margin-bottom: 2rem; box-shadow: 0 4px 12px rgba(22,32,46,0.06);">
       <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem; flex-wrap: wrap; gap: 1rem;">
         <div>
           <span style="font-size: 0.75rem; font-family: var(--font-mono); font-weight: 700; color: var(--accent-science); text-transform: uppercase;">Primary Native Release</span>
@@ -59,13 +59,13 @@
       </p>
 
       <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 1rem; margin-bottom: 1.5rem;">
-        <a href="https://github.com/melvinvarghese/Pusthakam/releases" target="_blank" class="btn btn-dark" style="padding: 0.75rem 1.5rem; font-size: 0.95rem;">
+        <a href="https://github.com/melvinvarghese/Pusthakam/releases" target="_blank" class="btn btn-dark release-download-button" style="padding: 0.75rem 1.5rem; font-size: 0.95rem;">
           Download Pusthakam_0.1.0_x64-setup.exe
         </a>
         <span style="font-family: var(--font-mono); font-size: 0.8rem; color: var(--muted);">File size: 4.24 MB</span>
       </div>
 
-      <div style="background: var(--band); border: 1px solid var(--line); border-radius: 6px; padding: 0.85rem; font-size: 0.78rem; font-family: var(--font-mono); color: var(--fg); overflow-x: auto;">
+      <div class="installer-path" style="background: var(--band); border: 1px solid var(--line); border-radius: 6px; padding: 0.85rem; font-size: 0.78rem; font-family: var(--font-mono); color: var(--fg);">
         <code>Installer: src-tauri/target/release/bundle/nsis/Pusthakam_0.1.0_x64-setup.exe<br>
         Install Mode: Current User (No administrator privileges required)<br>
         Target Binary: pusthakam.exe (16.6 MB optimized release)</code>
@@ -73,7 +73,7 @@
     </div>
 
     <!-- macOS & Linux Support Grid -->
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 3rem;">
+    <div class="platform-grid">
       <div style="background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 1.5rem;">
         <h3 style="font-size: 1.1rem; font-weight: 700; color: var(--ink); margin-bottom: 0.5rem;">macOS (Apple Silicon & Intel)</h3>
         <p style="font-size: 0.85rem; color: var(--muted); line-height: 1.5; margin-bottom: 1rem;">
