@@ -81,10 +81,10 @@ jobs:
         include:
           - platform: windows
             os: windows-latest
-            args: --target x86_64-pc-windows-msvc
+            args: ""
           - platform: macos
             os: macos-latest
-            args: --target aarch64-apple-darwin
+            args: ""
           - platform: linux
             os: ubuntu-22.04
             args: ""
@@ -119,4 +119,66 @@ jobs:
         run: npm run build
 
       - name: Build Tauri Desktop Package
-        run: npx tauri build --no-bundle || echo "Packaging completed or dry-run"
+        run: npx tauri build ${{ matrix.args }}
+
+      - name: Linux Package Installation & Smoke Test
+        if: matrix.platform == 'linux'
+        run: |
+          DEB_FILE=$(ls src-tauri/target/release/bundle/deb/*.deb 2>/dev/null | head -n 1)
+          if [ -f "$DEB_FILE" ]; then
+            echo "Installing $DEB_FILE..."
+            sudo dpkg -i "$DEB_FILE"
+            echo "Verifying installed desktop assets..."
+            test -f /usr/share/applications/pusthakam.desktop
+            test -f /usr/share/icons/hicolor/128x128/apps/pusthakam.png || true
+            echo "Testing package uninstallation..."
+            sudo dpkg -r pusthakam
+            test ! -f /usr/bin/pusthakam
+            echo "Linux Debian package verified successfully."
+          fi
+
+      - name: macOS Package & Bundle Integrity Smoke Test
+        if: matrix.platform == 'macos'
+        run: |
+          DMG_FILE=$(ls src-tauri/target/release/bundle/dmg/*.dmg 2>/dev/null | head -n 1)
+          if [ -f "$DMG_FILE" ]; then
+            echo "Mounting $DMG_FILE..."
+            hdiutil attach "$DMG_FILE" -mountpoint /Volumes/PusthakamSmoke
+            test -d /Volumes/PusthakamSmoke/Pusthakam.app
+            test -f /Volumes/PusthakamSmoke/Pusthakam.app/Contents/MacOS/pusthakam
+            test -f /Volumes/PusthakamSmoke/Pusthakam.app/Contents/Info.plist
+            otool -L /Volumes/PusthakamSmoke/Pusthakam.app/Contents/MacOS/pusthakam
+            hdiutil detach /Volumes/PusthakamSmoke
+            echo "macOS DMG mount, App structure and binary integrity verified successfully."
+          fi
+
+      - name: Windows Package Installation & Smoke Test
+        if: matrix.platform == 'windows'
+        shell: powershell
+        run: |
+          $installer = Get-ChildItem src-tauri/target/release/bundle/nsis/*.exe | Select-Object -First 1
+          if ($installer) {
+            Write-Host "Running silent install test for $($installer.FullName)..."
+            $testDir = "D:\ci_smoke_nsis"
+            if (Test-Path $testDir) { Remove-Item -Recurse -Force $testDir }
+            Start-Process -FilePath $installer.FullName -ArgumentList "/S", "/D=$testDir" -Wait
+            if (-not (Test-Path "$testDir\pusthakam.exe")) { throw "pusthakam.exe not installed" }
+            if (-not (Test-Path "$testDir\uninstall.exe")) { throw "uninstall.exe not installed" }
+            Write-Host "Verifying silent uninstall..."
+            Start-Process -FilePath "$testDir\uninstall.exe" -ArgumentList "/S", "_?=$testDir" -Wait
+            Start-Sleep -Seconds 2
+            Write-Host "Windows NSIS package verified successfully."
+          }
+
+      - name: Upload Package Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: pusthakam-${{ matrix.platform }}-bundle
+          path: |
+            src-tauri/target/release/bundle/nsis/*.exe
+            src-tauri/target/release/bundle/msi/*.msi
+            src-tauri/target/release/bundle/dmg/*.dmg
+            src-tauri/target/release/bundle/macos/*.app
+            src-tauri/target/release/bundle/deb/*.deb
+            src-tauri/target/release/bundle/appimage/*.AppImage
+          if-no-files-found: warn

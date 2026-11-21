@@ -77,7 +77,7 @@ Pusthakam is an offline-first desktop library management system engineered for s
   1. Download `Pusthakam_0.1.0_x64-setup.exe` (or MSIX package).
   2. Run the installer. If Windows SmartScreen displays a warning, click **More info** &rarr; **Run anyway**.
   3. The installer creates a desktop shortcut and registers Start Menu entries.
-  4. Application data is stored securely in `%APPDATA%\com.pusthakam.desktop\`.
+  4. Application data is stored securely in `%APPDATA%\app.pusthakam.desktop\`.
 
 ### macOS (Apple Silicon & Intel)
 - **Minimum Requirements:** macOS 12 (Monterey) or later.
@@ -85,7 +85,7 @@ Pusthakam is an offline-first desktop library management system engineered for s
   1. Download `Pusthakam-Universal.dmg`.
   2. Double-click the DMG and drag the Pusthakam icon into your **Applications** folder.
   3. On initial launch, if prompted by Gatekeeper, right-click (or Control-click) Pusthakam in Applications and select **Open**.
-  4. Application data is located in `~/Library/Application Support/com.pusthakam.desktop/`.
+  4. Application data is located in `~/Library/Application Support/app.pusthakam.desktop/`.
 
 ### Linux (Debian / Ubuntu / Fedora)
 - **System Dependencies:** `libwebkit2gtk-4.1`, `libssl`, `libayatana-appindicator3`.
@@ -100,6 +100,7 @@ Pusthakam is an offline-first desktop library management system engineered for s
   chmod +x Pusthakam-x86_64.AppImage
   ./Pusthakam-x86_64.AppImage
   ```
+- Application data is located in `~/.local/share/app.pusthakam.desktop/`.
 
 ---
 
@@ -333,7 +334,7 @@ Located under **Settings** &rarr; **Backup & Restore**:
 +-----------------------------------------------------------------------------+
 ```
 
-- **Automated Backups:** Pusthakam creates scheduled rolling daily snapshots stored in `%APPDATA%\com.pusthakam.desktop\backups\`.
+- **Automated Backups:** Pusthakam creates scheduled rolling daily snapshots stored in `%APPDATA%\app.pusthakam.desktop\backups\` (Windows), `~/Library/Application Support/app.pusthakam.desktop/backups/` (macOS), or `~/.local/share/app.pusthakam.desktop/backups/` (Linux).
 - **Manual Backups:** Click **Create Backup Now** to produce a timestamped SQLite snapshot. Use **Copy to Folder** to save a copy to a USB flash drive or external backup drive.
 - **Exclusive Restore:** Restoring a database requires exclusive access. Pusthakam places an exclusive lock, safely terminates WAL checkpoints, creates an automatic pre-restore safety snapshot of the active database, applies the backup, and reloads state. If an issue occurs, the pre-restore snapshot ensures zero data loss.
 
@@ -405,7 +406,7 @@ To ensure security and eliminate platform warnings:
 Upgrading Pusthakam is seamless and non-destructive:
 1. Run the installer for the new version.
 2. The installer updates application binaries in the installation directory.
-3. The database at `%APPDATA%\com.pusthakam.desktop\pusthakam.sqlite3` is preserved.
+3. The database at `pusthakam.db` in your application data directory is completely preserved.
 4. On the first launch of the updated version, Pusthakam's internal migration engine automatically executes any new SQL schema migrations in a single transaction.
 
 ---

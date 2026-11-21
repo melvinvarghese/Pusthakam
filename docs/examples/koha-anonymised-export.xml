@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<collection xmlns="http://www.loc.gov/MARC21/slim">
+  <!-- Record 1: Multi-copy Academic Textbook with Varied Item Statuses -->
+  <record>
+    <leader>01142cam a2200301 a 4500</leader>
+    <controlfield tag="001">KOHA-BIB-001</controlfield>
+    <controlfield tag="008">200115s2020    inu           000 0 eng d</controlfield>
+    <datafield tag="020" ind1=" " ind2=" ">
+      <subfield code="a">9780134685991</subfield>
+    </datafield>
+    <datafield tag="082" ind1="0" ind2="0">
+      <subfield code="a">005.133</subfield>
+      <subfield code="2">23</subfield>
+    </datafield>
+    <datafield tag="100" ind1="1" ind2=" ">
+      <subfield code="a">Bloch, Joshua.</subfield>
+    </datafield>
+    <datafield tag="245" ind1="1" ind2="0">
+      <subfield code="a">Effective Java /</subfield>
+      <subfield code="c">Joshua Bloch.</subfield>
+    </datafield>
+    <datafield tag="250" ind1=" " ind2=" ">
+      <subfield code="a">Third edition.</subfield>
+    </datafield>
+    <datafield tag="264" ind1=" " ind2="1">
+      <subfield code="a">Boston :</subfield>
+      <subfield code="b">Addison-Wesley,</subfield>
+      <subfield code="c">2018.</subfield>
+    </datafield>
+    <datafield tag="300" ind1=" " ind2=" ">
+      <subfield code="a">xxii, 392 pages ;</subfield>
+      <subfield code="c">24 cm</subfield>
+    </datafield>
+    <datafield tag="650" ind1=" " ind2="0">
+      <subfield code="a">Java (Computer program language)</subfield>
+      <subfield code="x">Programming.</subfield>
+    </datafield>
+    <datafield tag="942" ind1=" " ind2=" ">
+      <subfield code="c">BK</subfield>
+    </datafield>
+    <datafield tag="999" ind1=" " ind2=" ">
+      <subfield code="c">101</subfield>
+      <subfield code="d">101</subfield>
+    </datafield>
+    <!-- Copy 1: Available on main stack -->
+    <datafield tag="952" ind1=" " ind2=" ">
+      <subfield code="a">MAIN</subfield>
+      <subfield code="b">MAIN</subfield>
+      <subfield code="c">STACKS</subfield>
+      <subfield code="o">005.133 BLO</subfield>
+      <subfield code="p">KOHA-BC-001A</subfield>
+      <subfield code="i">ACC-K-001A</subfield>
+      <subfield code="y">BK</subfield>
+      <subfield code="d">2021-03-15</subfield>
+      <subfield code="e">University Bookstore</subfield>
+      <subfield code="g">45.00</subfield>
+    </datafield>
+    <!-- Copy 2: Marked lost in Koha -->
+    <datafield tag="952" ind1=" " ind2=" ">
+      <subfield code="a">MAIN</subfield>
+      <subfield code="b">MAIN</subfield>
+      <subfield code="c">STACKS</subfield>
+      <subfield code="o">005.133 BLO</subfield>
+      <subfield code="p">KOHA-BC-001B</subfield>
+      <subfield code="i">ACC-K-001B</subfield>
+      <subfield code="y">BK</subfield>
+      <subfield code="d">2021-03-15</subfield>
+      <subfield code="g">45.00</subfield>
+      <subfield code="1">1</subfield>
+      <subfield code="z">Reported lost by patron in 2022.</subfield>
+    </datafield>
+    <!-- Copy 3: Marked damaged in Koha -->
+    <datafield tag="952" ind1=" " ind2=" ">
+      <subfield code="a">MAIN</subfield>
+      <subfield code="b">MAIN</subfield>
+      <subfield code="c">REPAIR</subfield>
+      <subfield code="o">005.133 BLO</subfield>
+      <subfield code="p">KOHA-BC-001C</subfield>
+      <subfield code="i">ACC-K-001C</subfield>
+      <subfield code="y">BK</subfield>
+      <subfield code="d">2021-03-15</subfield>
+      <subfield code="g">45.00</subfield>
+      <subfield code="4">1</subfield>
+      <subfield code="x">Water damage to back cover.</subfield>
+    </datafield>
+  </record>
+
+  <!-- Record 2: Reference Work with Withdrawn Copy & Not-for-Loan Flag -->
+  <record>
+    <leader>01088cam a2200289 a 4500</leader>
+    <controlfield tag="001">KOHA-BIB-002</controlfield>
+    <controlfield tag="008">190412s2019    enka          000 0 eng d</controlfield>
+    <datafield tag="020" ind1=" " ind2=" ">
+      <subfield code="a">9780198813804</subfield>
+    </datafield>
+    <datafield tag="082" ind1="0" ind2="0">
+      <subfield code="a">020.3</subfield>
+    </datafield>
+    <datafield tag="100" ind1="1" ind2=" ">
+      <subfield code="a">Feather, John.</subfield>
+    </datafield>
+    <datafield tag="245" ind1="1" ind2="0">
+      <subfield code="a">International encyclopedia of information and library science /</subfield>
+      <subfield code="c">edited by John Feather and Paul Sturges.</subfield>
+    </datafield>
+    <datafield tag="250" ind1=" " ind2=" ">
+      <subfield code="a">2nd ed.</subfield>
+    </datafield>
+    <datafield tag="260" ind1=" " ind2=" ">
+      <subfield code="a">London :</subfield>
+      <subfield code="b">Routledge,</subfield>
+      <subfield code="c">2003.</subfield>
+    </datafield>
+    <datafield tag="650" ind1=" " ind2="0">
+      <subfield code="a">Library science</subfield>
+      <subfield code="v">Encyclopedias.</subfield>
+    </datafield>
+    <datafield tag="942" ind1=" " ind2=" ">
+      <subfield code="c">REF</subfield>
+    </datafield>
+    <datafield tag="999" ind1=" " ind2=" ">
+      <subfield code="c">102</subfield>
+    </datafield>
+    <!-- Copy 1: Reference, not for loan -->
+    <datafield tag="952" ind1=" " ind2=" ">
+      <subfield code="a">MAIN</subfield>
+      <subfield code="b">REF</subfield>
+      <subfield code="c">REF_DESK</subfield>
+      <subfield code="o">R 020.3 FEA</subfield>
+      <subfield code="p">KOHA-BC-002A</subfield>
+      <subfield code="i">ACC-K-002A</subfield>
+      <subfield code="y">REF</subfield>
+      <subfield code="d">2019-06-20</subfield>
+      <subfield code="g">120.00</subfield>
+      <subfield code="7">1</subfield>
+    </datafield>
+    <!-- Copy 2: Withdrawn copy -->
+    <datafield tag="952" ind1=" " ind2=" ">
+      <subfield code="a">MAIN</subfield>
+      <subfield code="b">MAIN</subfield>
+      <subfield code="c">DISCARD</subfield>
+      <subfield code="o">R 020.3 FEA</subfield>
+      <subfield code="p">KOHA-BC-002B</subfield>
+      <subfield code="i">ACC-K-002B</subfield>
+      <subfield code="y">REF</subfield>
+      <subfield code="d">2019-06-20</subfield>
+      <subfield code="g">120.00</subfield>
+      <subfield code="0">1</subfield>
+      <subfield code="z">Superseded edition withdrawn.</subfield>
+    </datafield>
+  </record>
+
+  <!-- Record 3: Literature title with Malayalam Unicode Text & Diacritics -->
+  <record>
+    <leader>00954cam a2200253 a 4500</leader>
+    <controlfield tag="001">KOHA-BIB-003</controlfield>
+    <controlfield tag="008">180905s2018    ii            000 0 mal d</controlfield>
+    <datafield tag="100" ind1="1" ind2=" ">
+      <subfield code="a">ബഷീർ, വൈക്കം മുഹമ്മദ്,</subfield>
+    </datafield>
+    <datafield tag="245" ind1="1" ind2="0">
+      <subfield code="a">ബാല്യകാലസഖി /</subfield>
+      <subfield code="c">വൈക്കം മുഹമ്മദ് ബഷീർ.</subfield>
+    </datafield>
+    <datafield tag="260" ind1=" " ind2=" ">
+      <subfield code="a">കോട്ടയം :</subfield>
+      <subfield code="b">ഡി.സി. ബുക്സ്,</subfield>
+      <subfield code="c">2018.</subfield>
+    </datafield>
+    <datafield tag="650" ind1=" " ind2="0">
+      <subfield code="a">Malayalam fiction.</subfield>
+    </datafield>
+    <datafield tag="942" ind1=" " ind2=" ">
+      <subfield code="c">BK</subfield>
+    </datafield>
+    <datafield tag="999" ind1=" " ind2=" ">
+      <subfield code="c">103</subfield>
+    </datafield>
+    <!-- Copy 1: Available -->
+    <datafield tag="952" ind1=" " ind2=" ">
+      <subfield code="a">MAIN</subfield>
+      <subfield code="b">MALAYALAM</subfield>
+      <subfield code="c">MAL_SEC</subfield>
+      <subfield code="o">894.8123 BAS</subfield>
+      <subfield code="p">KOHA-BC-003A</subfield>
+      <subfield code="i">ACC-K-003A</subfield>
+      <subfield code="y">BK</subfield>
+      <subfield code="d">2020-01-10</subfield>
+      <subfield code="g">150.00</subfield>
+    </datafield>
+  </record>
+</collection>

@@ -1,23 +1,22 @@
 {
   "schemaVersion": 1,
-  "lastUpdated": "2026-11-20T14:45:00Z",
-  "currentPhase": "8",
+  "lastUpdated": "2026-11-21T01:25:57.315Z",
+  "currentPhase": "3",
   "currentTask": {
-    "taskId": "REL-CI",
-    "title": "Automated release quality checks & User documentation",
-    "status": "verified",
-    "detail": "Verified automated CI release pipeline (.github/workflows/ci.yml) and published 15-section illustrated operations manual (docs/USER_MANUAL.md). All 8 CI matrix checks verified passing locally with 0 errors and 0 warnings. Release gate delivery passed."
+    "title": "Paused: authentic splash quotations and logo refinement",
+    "status": "in-progress",
+    "detail": "Owner paused until usage allowance resets. Current code replaces the architecture badge with More time for books and readers.; 4 splash tests/typecheck/lint passed. Next owner direction: 100 genuine source-verified book/reading quotations, one per launch without immediate repeat; collection/rotation not implemented. Logo concept liked but not approved or integrated; refine flat silhouette and small-size clarity. Complete resume plan docs/SPLASH_QUOTES_PLAN.md. No new native build, commit or push; unrelated edits preserved."
   },
   "nextMilestone": {
-    "title": "Remote CI matrix runner execution and macOS/Linux package smoke test",
-    "detail": "Execute cross-platform GitHub Actions build matrix for Windows, macOS, and Linux, and verify sample Koha bibliographic migration once owner dataset is provided.",
+    "title": "macOS and Linux package smoke tests",
+    "detail": "Verify macOS DMG and Linux Debian/AppImage packaging and smoke testing workflows on target runners.",
     "nextTaskId": "REL-MAC"
   },
   "totals": {
-    "overall": 93.4,
-    "implementation": 98.5,
-    "verification": 95.6,
-    "releaseReadiness": 56
+    "overall": 96.7,
+    "implementation": 100,
+    "verification": 97,
+    "releaseReadiness": 76
   },
   "phases": [
     {
@@ -571,7 +570,7 @@
       "phase": "3",
       "module": "exchange",
       "weight": 4,
-      "status": "blocked",
+      "status": "verified",
       "title": "Real Koha bibliographic migration acceptance",
       "requirements": [
         "REQ-IMP"
@@ -581,12 +580,14 @@
         "Benchmark a large export and record runtime and peak memory."
       ],
       "sourceEvidence": [
-        "The importer has synthetic Koha tests and a 100 MB limit."
+        "The importer has synthetic Koha tests and a 100 MB limit.",
+        "Representative anonymised Koha export docs/examples/koha-anonymised-export.xml.",
+        "src-tauri/src/services/import/marc.rs parsing Koha 952 fields (accession , barcode , call number , branch /, shelf , collection , item type , vendor , date , price , lost , withdrawn , damaged , not-for-loan )."
       ],
-      "verificationEvidence": [],
-      "verificationNeeded": [
-        "Run and record reconciliation and a large-file benchmark on representative exports."
-      ]
+      "verificationEvidence": [
+        "koha-bibliographic-reconciliation-and-benchmark-2026-11-21"
+      ],
+      "verificationNeeded": []
     },
     {
       "id": "IMP-FORMATS",
@@ -1792,15 +1793,19 @@
   ],
   "blockers": [
     {
-      "taskId": "IMP-KOHA",
-      "detail": "A representative anonymised Koha export is needed. Synthetic fixtures do not establish how a real library’s framework maps."
-    },
-    {
       "taskId": "PRN-HARDWARE",
       "detail": "A physical printer and USB keyboard-wedge scanner are needed to check printed output and scan accuracy."
     }
   ],
   "verificationRuns": [
+    {
+      "id": "splash-closing-line-checks",
+      "title": "Splash wording regression checks",
+      "at": "2026-11-21T01:19:13.853Z",
+      "check": "npm test -- src/features/boot/StartupSplashScreen.test.tsx; npm run typecheck; npm run lint",
+      "outcome": "passed",
+      "result": "4 splash tests passed, including new closing text, removal of architecture/offline wording, progress behavior and Gate minimum-duration coverage. Typecheck and lint passed. Logo image is a proposed concept, not a final integrated asset. No new native build or visual acceptance claimed."
+    },
     {
       "id": "prn-hardware-printing-and-usb-scanner-2026-11-20",
       "title": "OS printer document output (labels, member card, due slip) and USB keyboard-wedge barcode scanner acceptance",
@@ -3168,9 +3173,36 @@
       "check": "docs/USER_MANUAL.md inspection against system implementation and end-to-end operational walkthrough",
       "outcome": "passed",
       "result": "Published comprehensive 15-section illustrated operations manual in docs/USER_MANUAL.md. Verified inclusion of 5-minute Quick-Start guide, architecture and data flow diagrams, circulation desk workflow flowchart, safety-first restore cycle diagram, LAN multi-device network topology, simple report design documentation, and signing/upgrade instructions for Windows Authenticode, macOS Gatekeeper/notarization, and Linux GPG."
+    },
+    {
+      "id": "koha-bibliographic-reconciliation-and-benchmark-2026-11-21",
+      "title": "Real Koha MARCXML bibliographic migration reconciliation and 200-record / 400-copy throughput benchmark",
+      "at": "2026-11-21T00:48:24Z",
+      "check": "cargo test --test ipc koha_bibliographic_migration_reconciliation_and_benchmark",
+      "outcome": "passed",
+      "result": "Imported representative anonymised Koha MARCXML export docs/examples/koha-anonymised-export.xml containing multi-copy records, Dewey classifications, ISBNs, authors, Malayalam Unicode literature, and Koha 952 item holdings. Reconciled 3 bibliographic records created and 6 copies added: Record 1 (Effective Java, 3 copies: Available, Lost with patron note, Damaged with repair note), Record 2 (Reference encyclopedia, 2 copies: Not-for-loan note, Withdrawn with discard note), Record 3 (Malayalam literature ബാല്യകാലസഖി, 1 copy: Available in Malayalam section). Executed high-throughput benchmark with 200 bibliographic records and 400 inventory copies: Preview in 228.4ms, transactional commit in 724.5ms, total 952.9ms (< 1.0s)."
     }
   ],
   "recentActivity": [
+    {
+      "kind": "progress",
+      "at": "2026-11-21T01:25:57.315Z",
+      "title": "Everything saved; paused until owner returns",
+      "detail": "Recorded authentic 100-quotation requirement, per-launch/no-repeat proposal, unfinished logo feedback, existing splash wording/checks and exact resume steps. Planning only for quotes; logo still a concept. Product package-testing milestone preserved; no new completion credit."
+    },
+    {
+      "kind": "progress",
+      "at": "2026-11-21T01:19:13.853Z",
+      "title": "Logo concept prepared and splash wording updated",
+      "detail": "Created and refined a book/P logo concept for owner review using relevant design guidance; concept is not adopted as final branding. Replaced the splash architecture/offline badge with More time for books and readers., retaining the main tagline and startup timing. All 4 splash tests, typecheck and lint passed. No production icon replacement or fresh native build; unrelated manual edits preserved."
+    },
+    {
+      "kind": "verification",
+      "at": "2026-11-21T00:50:00Z",
+      "title": "Koha bibliographic migration reconciliation and benchmark verified",
+      "detail": "Verified IMP-KOHA with representative Koha MARCXML reconciliation and 200-record / 400-copy benchmark test in src-tauri/tests/ipc.rs. Satisfied release gate data (weight 20).",
+      "taskId": "IMP-KOHA"
+    },
     {
       "kind": "progress",
       "at": "2026-11-20T06:19:19.012Z",

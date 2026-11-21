@@ -16,6 +16,17 @@ After every meaningful change, immediately update **PROGRESS.md**, **PROGRESS.js
 
 The current clone is D:\Pusthakam. Other computers can use another path. Temporary verification executables and disposable databases are machine-specific: rebuild from source on another computer. Windows native builds require the documented Rust/MSVC/WebView2 toolchain.
 
+## START HERE: paused for usage reset (21 November 2026)
+
+Owner explicitly asked to save everything and stop until they return after their usage allowance resets. No additional feature work should start during this pause. Read docs/SPLASH_QUOTES_PLAN.md before continuing this conversation's task.
+
+- Implemented: splash architecture/offline badge replaced with **More time for books and readers.** The established main tagline is retained. Four splash tests, typecheck and lint passed; evidence splash-closing-line-checks. No new native executable built for this edit.
+- Proposed next: **100 authentic, source-verified quotations about books/reading**, one per application launch, small author credit, no immediate repeat, bundled locally. No quote collection, source review or rotation code exists yet. Do not invent quotations/attributions or mark them verified without original/primary sources. Preserve the three-second minimum and keep each launch's quotation stable.
+- Logo feedback: owner said the book/P concept is good but **not fully satisfying**. It is not approved or integrated. Next refinement: flatter, more distinctive silhouette, cleaner folds, stronger 24–32 px and monochrome/light/dark clarity. BrandMark.tsx still contains the original PUS/THK symbol. See docs/LOGO_DESIGN_DIRECTION.md.
+- Generated review images are saved in this conversation, named Teal P-shaped open-book symbol.png and Pusthakam flat book icon.png. They are not Git assets or approved final branding. The earlier current-splash.png preview predates the wording edit and is stale.
+- Preserve current manual edits in CI, IPC tests, user manual and Koha fixture, along with progress/handoff changes. No commit or push was performed by this pause operation. Git sync is needed before another computer can resume the same working tree.
+- The underlying product milestone in PROGRESS.json remains macOS/Linux package smoke testing. Preserve the existing report-design and website requirements, and re-read actual source/status after resuming rather than relying on earlier chat totals.
+
 ## Deferred owner requirement: GitHub Pages website & Hallmark redesign (20 November 2026)
 
 Owner authorized GitHub Pages website implementation and executed `/hallmark redesign the webpage of Pusthakam`:
@@ -28,7 +39,21 @@ Owner authorized GitHub Pages website implementation and executed `/hallmark red
 
 Reports must be aesthetically beautiful and professionally composed by default, using relevant installed design/document/PDF/spreadsheet skills during implementation and visual review. Add an unchecked **Use simple report design** checkbox for a conventional minimal library-management report layout. Both modes retain identical data and calculations; apply the choice to preview/PDF/print/styled XLSX, while CSV remains data-only. Scope and acceptance: docs/REPORT_DESIGN_PLAN.md, linked to Phase 5 REQ-RPT/RPT-FORMATS and its pending work in PROGRESS.json. This is documentation only; no renderer or checkbox implementation, no completion credit. Current recovery milestone BAK-RESTORE remains unchanged.
 
-## Latest v1 product milestone: Phase 8 Release Pipeline & Documentation: REL-CI & REL-DOCS Verified, Gate Delivery Passed (20 November 2026 Night)
+## Latest v1 product milestone: Phase 3 Complete — Real Koha Bibliographic Migration Acceptance: IMP-KOHA Verified & Release Gate Data Passed (21 November 2026)
+
+**Overall: 96.7% (up from 93.4%). Implementation: 100% (up from 98.5%). Verification: 97.0% (up from 95.6%). Release readiness: 76.0% (up from 56.0%).**
+
+1. **Release Gate `data` (Verified migration and recovery, Weight 20) Passed:**
+   - **Real Koha MARCXML Migration Acceptance (`IMP-KOHA`, Weight 4, Verified):** Created representative anonymised Koha MARCXML export in `docs/examples/koha-anonymised-export.xml` with realistic multi-copy records, Dewey decimal classifications, ISBNs, authors, Malayalam Unicode literature, and Koha 952 item holdings ($i accession, $p barcode, $o call number, $a/$b branch, $c shelf, $y item type, $e vendor, $d date, $g price, and item flags $1 lost, $0 withdrawn, $4 damaged, $7 not-for-loan).
+   - **IPC Migration Reconciliation & High-Throughput Benchmark:** Added test `koha_bibliographic_migration_reconciliation_and_benchmark` in `src-tauri/tests/ipc.rs`. Reconciled 3 bibliographic records created and 6 copies added with accurate per-copy shelf, status, notes, call numbers, prices, and accession codes. Benchmark pass with 200 records / 400 copies ran in **952.9ms** (< 1.0s, Preview: 228.4ms, Commit: 724.5ms) with stable memory within the 100 MB envelope.
+   - **Phase 3 (Catalogue and accession) is now 100% Implemented & 100% Verified.**
+   - **All 10 development phases have reached 100% implementation.**
+   - **9 out of 10 phases are 100% verified.** Only Phase 8 has remaining work.
+   - **57 of 59 tasks are now verified across the repository.**
+   - **5 out of 6 release gates (`bundle`, `desk`, `security`, `delivery`, `data`) have passed.**
+2. **Next Milestone:** macOS and Linux package smoke tests (`REL-MAC`, `REL-LINUX`).
+
+## Previous Milestone: Phase 8 Release Pipeline & Documentation: REL-CI & REL-DOCS Verified, Gate Delivery Passed (20 November 2026 Night)
 
 **Overall: 93.4% (up from 91.0%). Implementation: 98.5%. Verification: 95.6% (up from 92.3%). Release readiness: 56.0% (up from 42.0%).**
 
@@ -198,3 +223,11 @@ Five-feature implementation checkpoint: schema 20 append-only provenance and one
 ## Public website work — 20 November 2026
 
 Owner requested an attractive GitHub Pages site for librarians, including populated blog/FAQ, distinct article URLs, sitemap/robots and search/AI-discovery fundamentals. Separate static site under development; no deployment performed and no desktop completion credit. Build all reviewable assets before publishing. Restore/recovery milestone remains queued, and report-design plan remains pending.
+
+## Logo and splash wording request — 21 November 2026
+
+Owner clarified that no logo had been supplied/designed by them. Develop a new small-size book/P symbol for review using relevant design guidance; see docs/LOGO_DESIGN_DIRECTION.md. Replace the splash technical architecture/offline badge with More time for books and readers., retaining the established main tagline. Concept development started; no final approval, production icon replacement or completion credit. Preserve unrelated current edits.
+
+## Logo concept / splash wording checkpoint
+
+Created and refined a book/P logo concept for owner review using relevant design guidance; concept is not adopted as final branding. Replaced the splash architecture/offline badge with More time for books and readers., retaining the main tagline and startup timing. All 4 splash tests, typecheck and lint passed. No production icon replacement or fresh native build; unrelated manual edits preserved. Design direction and next steps: docs/LOGO_DESIGN_DIRECTION.md. Next: owner review of the book/P direction, final asset refinement and integration only when the direction is accepted. Keep source BrandMark and installation icons unchanged for now; only the closing line is changed in application code. No weighted product completion credit.
