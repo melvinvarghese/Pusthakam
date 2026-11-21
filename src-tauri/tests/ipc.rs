@@ -2328,6 +2328,234 @@ fn marcxml_import_previews_commits_and_enforces_permissions() {
 }
 
 #[test]
+fn koha_bibliographic_migration_reconciliation_and_benchmark() {
+    use base64::Engine;
+    use std::time::Instant;
+
+    let h = Harness::new();
+    h.ok("complete_setup", setup_body());
+    let config = h.ok("config_overview", json!({}));
+
+    // 1. Reconciliation Test with representative anonymised Koha export
+    let data = include_str!("../../docs/examples/koha-anonymised-export.xml");
+    let request = |value: &str| {
+        json!({
+            "request": {
+                "fileName": "koha-export.xml",
+                "format": "marcxml",
+                "profile": "koha",
+                "mapping": null,
+                "dataBase64": base64::engine::general_purpose::STANDARD.encode(value)
+            }
+        })
+    };
+
+    let preview = h.ok("import_preview", request(data));
+    assert_eq!(
+        preview["totals"]["records"], 3,
+        "Expected 3 bibliographic records in preview"
+    );
+    assert_eq!(
+        preview["totals"]["copies"], 6,
+        "Expected 6 copies across 3 records in preview"
+    );
+
+    let options = json!({
+        "duplicatePolicy": "skip",
+        "createMissing": true,
+        "defaultItemCategoryId": config["itemCategories"][0]["id"],
+        "barcodeAsAccession": false
+    });
+
+    let report = h.ok(
+        "import_commit",
+        json!({
+            "token": preview["token"],
+            "options": options
+        }),
+    );
+
+    assert_eq!(report["createdRecords"], 3);
+    assert_eq!(report["copiesAdded"], 6);
+    assert_eq!(report["failedRecords"], 0);
+
+    // Reconcile Record 1: Effective Java (Joshua Bloch)
+    let r1_search = h.ok(
+        "catalogue_search",
+        json!({"query": {"text": "Effective Java", "page": 1, "pageSize": 10}}),
+    );
+    assert_eq!(r1_search["total"], 1);
+    let r1 = h.ok(
+        "catalogue_get_record",
+        json!({"id": r1_search["rows"][0]["id"]}),
+    );
+    assert!(r1["title"].as_str().unwrap().contains("Effective Java"));
+    assert_eq!(r1["contributors"][0]["name"], "Bloch, Joshua");
+    assert_eq!(r1["copies"].as_array().unwrap().len(), 3);
+
+    let c1a = r1["copies"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|c| c["barcode"] == "KOHA-BC-001A")
+        .expect("KOHA-BC-001A must exist");
+    assert_eq!(c1a["accessionNo"], "ACC-K-001A");
+    assert_eq!(c1a["status"], "available");
+    assert_eq!(c1a["priceMinor"], 4500);
+    assert_eq!(c1a["callNumber"], "005.133 BLO");
+
+    let c1b = r1["copies"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|c| c["barcode"] == "KOHA-BC-001B")
+        .expect("KOHA-BC-001B must exist");
+    assert_eq!(c1b["accessionNo"], "ACC-K-001B");
+    assert_eq!(c1b["status"], "lost");
+    assert!(c1b["notes"]
+        .as_str()
+        .unwrap()
+        .contains("Reported lost by patron in 2022."));
+
+    let c1c = r1["copies"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|c| c["barcode"] == "KOHA-BC-001C")
+        .expect("KOHA-BC-001C must exist");
+    assert_eq!(c1c["accessionNo"], "ACC-K-001C");
+    assert_eq!(c1c["status"], "damaged");
+    assert!(c1c["notes"]
+        .as_str()
+        .unwrap()
+        .contains("Water damage to back cover."));
+
+    // Reconcile Record 2: International encyclopedia of information and library science
+    let r2_search = h.ok(
+        "catalogue_search",
+        json!({"query": {"text": "encyclopedia", "page": 1, "pageSize": 10}}),
+    );
+    assert_eq!(r2_search["total"], 1);
+    let r2 = h.ok(
+        "catalogue_get_record",
+        json!({"id": r2_search["rows"][0]["id"]}),
+    );
+    assert!(r2["title"]
+        .as_str()
+        .unwrap()
+        .contains("International encyclopedia"));
+    assert_eq!(r2["copies"].as_array().unwrap().len(), 2);
+
+    let c2a = r2["copies"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|c| c["barcode"] == "KOHA-BC-002A")
+        .expect("KOHA-BC-002A must exist");
+    assert_eq!(c2a["accessionNo"], "ACC-K-002A");
+    assert!(c2a["notes"]
+        .as_str()
+        .unwrap()
+        .contains("Marked not for loan in Koha."));
+
+    let c2b = r2["copies"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|c| c["barcode"] == "KOHA-BC-002B")
+        .expect("KOHA-BC-002B must exist");
+    assert_eq!(c2b["accessionNo"], "ACC-K-002B");
+    assert_eq!(c2b["status"], "withdrawn");
+    assert!(c2b["notes"]
+        .as_str()
+        .unwrap()
+        .contains("Superseded edition withdrawn."));
+
+    // Reconcile Record 3: Malayalam literature title
+    let r3_search = h.ok(
+        "catalogue_search",
+        json!({"query": {"text": "ബാല്യകാലസഖി", "page": 1, "pageSize": 10}}),
+    );
+    assert_eq!(r3_search["total"], 1);
+    let r3 = h.ok(
+        "catalogue_get_record",
+        json!({"id": r3_search["rows"][0]["id"]}),
+    );
+    assert!(r3["title"].as_str().unwrap().contains("ബാല്യകാലസഖി"));
+    assert_eq!(r3["copies"].as_array().unwrap().len(), 1);
+    let c3a = &r3["copies"][0];
+    assert_eq!(c3a["barcode"], "KOHA-BC-003A");
+    assert_eq!(c3a["accessionNo"], "ACC-K-003A");
+    assert_eq!(c3a["status"], "available");
+    assert_eq!(c3a["callNumber"], "894.8123 BAS");
+
+    // 2. Large Export Migration Benchmark
+    // Construct a synthetic 200-record / 400-copy Koha MARCXML export in memory
+    let mut large_xml = String::with_capacity(512 * 1024);
+    large_xml.push_str(
+        "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<collection xmlns=\"http://www.loc.gov/MARC21/slim\">\n",
+    );
+    for i in 1..=200 {
+        use std::fmt::Write;
+        write!(
+            large_xml,
+            r#"<record>
+  <leader>01142cam a2200301 a 4500</leader>
+  <controlfield tag="001">BENCH-{i:04}</controlfield>
+  <datafield tag="020" ind1=" " ind2=" "><subfield code="a">97800000{i:05}</subfield></datafield>
+  <datafield tag="082" ind1="0" ind2="0"><subfield code="a">004.{i:03}</subfield></datafield>
+  <datafield tag="100" ind1="1" ind2=" "><subfield code="a">Author, Benchmark {i}</subfield></datafield>
+  <datafield tag="245" ind1="1" ind2="0"><subfield code="a">Benchmark Volume {i}: Systems and Performance /</subfield><subfield code="c">B. Author.</subfield></datafield>
+  <datafield tag="260" ind1=" " ind2=" "><subfield code="a">Trivandrum :</subfield><subfield code="b">Library Press,</subfield><subfield code="c">2026.</subfield></datafield>
+  <datafield tag="942" ind1=" " ind2=" "><subfield code="c">BK</subfield></datafield>
+  <datafield tag="952" ind1=" " ind2=" ">
+    <subfield code="a">MAIN</subfield><subfield code="b">MAIN</subfield><subfield code="c">STACKS</subfield>
+    <subfield code="o">004.{i:03} AUT</subfield><subfield code="p">BENCH-BC-{i:04}A</subfield>
+    <subfield code="i">BENCH-ACC-{i:04}A</subfield><subfield code="y">BK</subfield><subfield code="d">2026-01-15</subfield>
+    <subfield code="g">500.00</subfield>
+  </datafield>
+  <datafield tag="952" ind1=" " ind2=" ">
+    <subfield code="a">MAIN</subfield><subfield code="b">MAIN</subfield><subfield code="c">STACKS</subfield>
+    <subfield code="o">004.{i:03} AUT</subfield><subfield code="p">BENCH-BC-{i:04}B</subfield>
+    <subfield code="i">BENCH-ACC-{i:04}B</subfield><subfield code="y">BK</subfield><subfield code="d">2026-01-15</subfield>
+    <subfield code="g">500.00</subfield>
+  </datafield>
+</record>
+"#
+        )
+        .unwrap();
+    }
+    large_xml.push_str("</collection>\n");
+
+    let t0 = Instant::now();
+    let bench_preview = h.ok("import_preview", request(&large_xml));
+    let preview_duration = t0.elapsed();
+
+    assert_eq!(bench_preview["totals"]["records"], 200);
+    assert_eq!(bench_preview["totals"]["copies"], 400);
+
+    let t1 = Instant::now();
+    let bench_report = h.ok(
+        "import_commit",
+        json!({
+            "token": bench_preview["token"],
+            "options": options
+        }),
+    );
+    let commit_duration = t1.elapsed();
+
+    assert_eq!(bench_report["createdRecords"], 200);
+    assert_eq!(bench_report["copiesAdded"], 400);
+    assert_eq!(bench_report["failedRecords"], 0);
+
+    let total_duration = t0.elapsed();
+    println!(
+        "KOHA_BENCHMARK: 200 records / 400 copies. Preview: {:?}, Commit: {:?}, Total: {:?}",
+        preview_duration, commit_duration, total_duration
+    );
+}
+
+#[test]
 fn xlsx_import_maps_previews_commits_and_rejects_unsafe_workbooks() {
     use base64::Engine;
     let h = Harness::new();

@@ -93,3 +93,7 @@ Polished, aesthetically beautiful reports are the default; do not settle for pla
 ## Deferred owner request: GitHub Pages website
 
 Record now, implement later: an attractive librarian-focused homepage, populated Blog and FAQ tabs, individually addressable/crawlable blog posts, sitemap.xml, robots.txt and metadata/structured data for ordinary and AI-assisted search discovery. Relevant design/writing/site skills are available. No implementation or publication now. See GITHUB_PAGES_WEBSITE_PLAN.md for hosting/root-robots constraints, content and acceptance.
+
+## Paused owner request: real quotations and logo refinement
+
+21 November: replace the current splash closing line with a locally bundled set of about 100 real, source-verified book/reading quotations, one per launch, author credit and no immediate repeat. Not implemented; no quotations have been curated/verified yet. Owner likes the book/P concept but is not fully satisfied; retain draft status and refine its flat silhouette/small-size clarity. Work paused until usage reset; see SPLASH_QUOTES_PLAN.md and the latest SESSION_HANDOFF.md checkpoint.

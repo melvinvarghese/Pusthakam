@@ -56,3 +56,7 @@ REQ-RPT: generated reports should be professionally designed and aesthetically b
 ## Deferred public project website — 20 November 2026
 
 Owner requests a GitHub Pages marketing/information site for librarians, separate from the library OPAC. Required: attractive homepage, populated blog and FAQ, individual static article URLs, clear release/try information, sitemap/robots and search/AI-discovery fundamentals. All public claims must reflect actual release status; no guaranteed indexing/rankings. Implementation and publication are deferred. See GITHUB_PAGES_WEBSITE_PLAN.md; no desktop completion credit.
+
+## Planned splash quotations and logo review — 21 November 2026
+
+Owner proposes about 100 genuine, source-verified quotations about books/reading, showing one per launch with author attribution, avoiding an immediate repeat and requiring no runtime internet. Never invent quotes or attribute paraphrases as originals. Preserve the existing startup minimum. Collection/rotation is not implemented. The book/P logo remains a review concept because the owner is not fully satisfied. See SPLASH_QUOTES_PLAN.md for exact scope and pause/resume instructions.

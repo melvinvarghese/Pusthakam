@@ -93,11 +93,9 @@ export function StartupSplashScreen({ durationMs = 3000, onComplete }: StartupSp
           </div>
         </div>
 
-        {/* Local Sovereign Badge */}
-        <div className="mt-8 flex items-center gap-2 rounded-full border border-rail-line-strong/40 bg-ink-2/60 px-3 py-1 text-[11px] text-rail-mute">
-          <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" aria-hidden="true" />
-          <span>Local Sovereign Architecture · Offline Ready</span>
-        </div>
+        <p className="mt-8 max-w-xs text-sm text-rail-text">
+          More time for books and readers.
+        </p>
       </div>
     </div>
   );

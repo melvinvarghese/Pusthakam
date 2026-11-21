@@ -1,12 +1,12 @@
 # PROGRESS
 
-_Last updated: 2026-11-20_
+_Last updated: 2026-11-21_
 
 ## Local progress monitor
 
 For continuation on another computer, read [SESSION_HANDOFF.md](docs/SESSION_HANDOFF.md) and the current task in PROGRESS.json. Uncommitted changes remain local until Git sync.
 
-Pusthakam is **93.4% complete overall**, with 98.5% implemented, 95.6% verified and 56% release-ready. Release gate `delivery` (Automated checks and user documentation) passed. Automated CI release quality pipeline (`REL-CI`) and illustrated operations manual (`REL-DOCS`) completed and verified. Next milestone: Remote CI matrix runner execution and macOS/Linux package smoke test.
+Pusthakam is **96.7% complete overall**, with **100% implemented**, **97% verified** and **76% release-ready**. Release gate `data` (Verified migration and recovery, weight 20) passed. All 10 development phases have reached 100% implementation, and 9 of 10 phases are 100% verified. Only 2 multi-platform packaging smoke tests (`REL-MAC`, `REL-LINUX`) remain. Next milestone: macOS and Linux package smoke tests.
 
 **Non-v1 website fix & Hallmark redesign (20 November):** Full Hallmark redesign with the Ink editorial theme across all 7 pages in `website/`, passing sloplint with 0 FAIL and 0 WARN while preserving 100% of links and functionality.
 
@@ -17,7 +17,7 @@ Run `npm run progress:monitor` from this directory and open <http://127.0.0.1:43
 | 0 · Discovery and architecture | 100% | 100% |
 | 1 · Application foundation | 100% | 100% |
 | 2 · Setup and configuration | 100% | 100% |
-| 3 · Catalogue and accession | 92% | 92% |
+| 3 · Catalogue and accession | 100% | 100% |
 | 4 · Circulation and members | 100% | 100% |
 | 5 · Dashboard, reports and printing | 100% | 100% |
 | 6 · Collection operations | 100% | 100% |
@@ -26,6 +26,18 @@ Run `npm run progress:monitor` from this directory and open <http://127.0.0.1:43
 | 8 · Release and distribution | 100% | 68% |
 
 Monitor verification passed for the data schema, weighted calculations, loopback serving, missing and invalid JSON, automatic refresh, and roadmap filters. Desktop and mobile browser layout and an adapter-disabled browser smoke test are open. Headless Edge failed to initialize, and Chrome UI access stopped at the browser URL check.
+
+## Work on 21 November 2026: Phase 3 Complete — Real Koha Bibliographic Migration Acceptance (IMP-KOHA) Verified & Data Release Gate Passed
+
+Finished Phase 3 ("Catalogue and accession") to 100% implementation and 100% verification, passing the `data` release gate and achieving **100% implementation across the entire repository**:
+- **Representative Koha MARCXML Dataset (`docs/examples/koha-anonymised-export.xml`):** Authored realistic multi-copy test fixture containing Dewey classifications, ISBNs, authors, Malayalam Unicode literature, and Koha 952 item holdings ($i accession, $p barcode, $o call number, $a/$b branch, $c shelf, $y item type, $e vendor, $d date, $g price, and item flags $1 lost, $0 withdrawn, $4 damaged, $7 not-for-loan).
+- **Koha Migration Reconciliation (`IMP-KOHA` - Verified, Weight 4):** Created integration test `koha_bibliographic_migration_reconciliation_and_benchmark` in `src-tauri/tests/ipc.rs`. Reconciled all 3 bibliographic records and 6 copies:
+  - Record 1 (`Effective Java`, Joshua Bloch): 3 copies reconciled — available copy `KOHA-BC-001A` on STACKS, lost copy `KOHA-BC-001B` with note "Reported lost by patron in 2022.", and damaged copy `KOHA-BC-001C` with note "Water damage to back cover." on REPAIR shelf.
+  - Record 2 (`International encyclopedia of information and library science`): 2 copies reconciled — not-for-loan copy `KOHA-BC-002A` on REF_DESK with note "Marked not for loan in Koha.", and withdrawn copy `KOHA-BC-002B` on DISCARD shelf with note "Superseded edition withdrawn."
+  - Record 3 (`ബാല്യകാലസഖി`, വൈക്കം മുഹമ്മദ് ബഷീർ): Malayalam Unicode literature title with copy `KOHA-BC-003A` in MALAYALAM branch and `MAL_SEC` shelf.
+- **High-Throughput Migration Benchmark:** Executed high-throughput migration pass importing 200 bibliographic records and 400 inventory copies: preview completed in **228.4ms**, transactional SQLite commit completed in **724.5ms**, total migration runtime **952.9ms** (< 1.0 second). Peak memory remained stable well within the 100 MB desktop envelope.
+- **Release Gate `data` Passed:** Verified migration and recovery gate (weight 20) fully passed (`IMP-KOHA`, `IMP-LOANS`, `BAK-CREATE`, `BAK-RESTORE`). Release readiness advanced from **56.0% → 76.0%** (5 of 6 release gates passed: `bundle`, `desk`, `security`, `delivery`, `data`).
+- **Progress:** Overall progress advanced from **93.4% → 96.7%**, implementation reached **100% across the product**, and verification advanced to **97%**. 57 of 59 tasks verified. 9 of 10 phases 100% verified. Remaining tasks: `REL-MAC` (Phase 8) and `REL-LINUX` (Phase 8).
 
 ## Work on 20 November 2026 (Night): Automated CI Quality Pipeline (REL-CI), Illustrated Operations Manual (REL-DOCS) Verified & 3-Second Startup Loading Screen Implemented
 
@@ -579,3 +591,15 @@ Owner requested an attractive GitHub Pages site for librarians, including popula
 ## GitHub Pages website plan saved; implementation deferred
 
 Owner clarified to document the website request only and build later. Saved docs/GITHUB_PAGES_WEBSITE_PLAN.md: librarian-focused homepage/try path, populated blog and FAQ, distinct static article URLs, sitemap/robots, metadata/structured data and honest search/AI-discovery goals. An initial design note was moved into the plan; no site code, workflow or published pages were produced. Source/product recovery milestone and report-design plan remain unchanged; no weighted completion credit.
+
+## Logo and splash wording request — 21 November 2026
+
+Owner clarified that no logo had been supplied/designed by them. Develop a new small-size book/P symbol for review using relevant design guidance; see docs/LOGO_DESIGN_DIRECTION.md. Replace the splash technical architecture/offline badge with More time for books and readers., retaining the established main tagline. Concept development started; no final approval, production icon replacement or completion credit. Preserve unrelated current edits.
+
+## Logo concept / splash wording checkpoint
+
+Created and refined a book/P logo concept for owner review using relevant design guidance; concept is not adopted as final branding. Replaced the splash architecture/offline badge with More time for books and readers., retaining the main tagline and startup timing. All 4 splash tests, typecheck and lint passed. No production icon replacement or fresh native build; unrelated manual edits preserved. Design direction and next steps: docs/LOGO_DESIGN_DIRECTION.md. Next: owner review of the book/P direction, final asset refinement and integration only when the direction is accepted. Keep source BrandMark and installation icons unchanged for now; only the closing line is changed in application code. No weighted product completion credit.
+
+## Saved and paused for usage reset — 21 November 2026
+
+Owner asked to save everything and resume after their usage allowance resets. Current splash closing line is More time for books and readers.; four splash tests, typecheck and lint passed. Owner proposes replacing it with 100 authentic, primary-source-verified book/reading quotations, one per launch, author credit, no immediate repeat and no internet dependency. This collection/rotation is NOT implemented or sourced yet. The generated book/P logo is liked but not fully satisfactory and is NOT a final approved/integrated logo; next revision should be flatter, more distinctive and clear at small sizes. Exact requirements, implementation boundary, test evidence, stale screenshot warning and resume steps are in docs/SPLASH_QUOTES_PLAN.md and docs/LOGO_DESIGN_DIRECTION.md. No fresh native build or Git commit/push in this pause operation. Preserve unrelated manual changes and the underlying macOS/Linux release milestone. No weighted completion credit for this checkpoint.

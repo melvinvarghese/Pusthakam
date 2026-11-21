@@ -35,7 +35,8 @@ describe("StartupSplashScreen & Gate Minimum Duration", () => {
     expect(screen.getByText("A Better Way to Manage Libraries.")).toBeInTheDocument();
     expect(screen.getByRole("progressbar")).toHaveAttribute("aria-valuenow", "0");
     expect(screen.getByRole("status")).toHaveTextContent("Opening local library database…");
-    expect(screen.getByText(/Local Sovereign Architecture/)).toBeInTheDocument();
+    expect(screen.getByText("More time for books and readers.")).toBeInTheDocument();
+    expect(screen.queryByText(/Local Sovereign Architecture|Offline Ready/)).not.toBeInTheDocument();
   });
 
   it("advances progress stages and triggers onComplete when durationMs elapses", () => {
