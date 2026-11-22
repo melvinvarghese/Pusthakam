@@ -1,11 +1,14 @@
 import { useEffect, useState } from "react";
 import { BrandMark } from "@/components/BrandMark";
+import { selectAndRememberSplashQuote, type SplashQuote } from "./splashQuotes";
 
 export interface StartupSplashScreenProps {
   /** Total minimum duration to display the startup splash screen in milliseconds (default: 3000ms) */
   durationMs?: number;
   /** Optional callback fired when the minimum display duration has elapsed */
   onComplete?: () => void;
+  /** A supplied quote is useful for previews and tests; normal startup chooses locally. */
+  quote?: SplashQuote;
 }
 
 const STAGES = [
@@ -20,9 +23,10 @@ const STAGES = [
  * Displays when Pusthakam launches and remains visible for at least 3 seconds
  * (or `durationMs`) before transitioning into the main application or sign-in gate.
  */
-export function StartupSplashScreen({ durationMs = 3000, onComplete }: StartupSplashScreenProps) {
+export function StartupSplashScreen({ durationMs = 3000, onComplete, quote: suppliedQuote }: StartupSplashScreenProps) {
   const [progress, setProgress] = useState(durationMs <= 0 ? 100 : 0);
   const [stageIndex, setStageIndex] = useState(durationMs <= 0 ? STAGES.length - 1 : 0);
+  const [splashQuote] = useState(() => suppliedQuote ?? selectAndRememberSplashQuote());
 
   useEffect(() => {
     if (durationMs <= 0) {
@@ -93,9 +97,10 @@ export function StartupSplashScreen({ durationMs = 3000, onComplete }: StartupSp
           </div>
         </div>
 
-        <p className="mt-8 max-w-xs text-sm text-rail-text">
-          More time for books and readers.
-        </p>
+        <figure className="mt-8 max-w-sm text-center">
+          <blockquote className="text-sm leading-6 text-rail-text">“{splashQuote.text}”</blockquote>
+          <figcaption className="mt-2 text-xs font-medium tracking-wide text-rail-mute">— {splashQuote.author}</figcaption>
+        </figure>
       </div>
     </div>
   );

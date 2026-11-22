@@ -16,12 +16,13 @@ After every meaningful change, immediately update **PROGRESS.md**, **PROGRESS.js
 
 The current clone is D:\Pusthakam. Other computers can use another path. Temporary verification executables and disposable databases are machine-specific: rebuild from source on another computer. Windows native builds require the documented Rust/MSVC/WebView2 toolchain.
 
-## START HERE: paused for usage reset (21 November 2026)
+## START HERE: splash quotation rotation in progress (22 November 2026)
 
-Owner explicitly asked to save everything and stop until they return after their usage allowance resets. No additional feature work should start during this pause. Read docs/SPLASH_QUOTES_PLAN.md before continuing this conversation's task.
+Owner returned and asked to begin. Read docs/SPLASH_QUOTES_PLAN.md and docs/SPLASH_QUOTE_SOURCES.md before continuing this task.
 
 - Implemented: splash architecture/offline badge replaced with **More time for books and readers.** The established main tagline is retained. Four splash tests, typecheck and lint passed; evidence splash-closing-line-checks. No new native executable built for this edit.
-- Proposed next: **100 authentic, source-verified quotations about books/reading**, one per application launch, small author credit, no immediate repeat, bundled locally. No quote collection, source review or rotation code exists yet. Do not invent quotations/attributions or mark them verified without original/primary sources. Preserve the three-second minimum and keep each launch's quotation stable.
+- Implemented: a local 113-entry quote catalogue, stable per-launch selection, no-immediate-repeat storage behavior and author byline in the splash. Focused Vitest invocation, typecheck, lint and production build completed successfully.
+- Current integrity limit: the 113 entries are a curated working set; their per-entry primary-source audit is incomplete. Do not call the collection authentic/source-verified as a whole until `docs/SPLASH_QUOTE_SOURCES.md` contains a source locator and edition/rights review for every entry. Preserve the three-second minimum and stable per-launch display while finishing that audit.
 - Logo feedback: owner said the book/P concept is good but **not fully satisfying**. It is not approved or integrated. Next refinement: flatter, more distinctive silhouette, cleaner folds, stronger 24–32 px and monochrome/light/dark clarity. BrandMark.tsx still contains the original PUS/THK symbol. See docs/LOGO_DESIGN_DIRECTION.md.
 - Generated review images are saved in this conversation, named Teal P-shaped open-book symbol.png and Pusthakam flat book icon.png. They are not Git assets or approved final branding. The earlier current-splash.png preview predates the wording edit and is stale.
 - Preserve current manual edits in CI, IPC tests, user manual and Koha fixture, along with progress/handoff changes. No commit or push was performed by this pause operation. Git sync is needed before another computer can resume the same working tree.
