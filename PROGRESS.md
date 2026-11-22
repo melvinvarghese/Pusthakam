@@ -1,12 +1,20 @@
 # PROGRESS
 
-_Last updated: 2026-11-21_
+_Last updated: 2026-11-22_
 
 ## Local progress monitor
 
 For continuation on another computer, read [SESSION_HANDOFF.md](docs/SESSION_HANDOFF.md) and the current task in PROGRESS.json. Uncommitted changes remain local until Git sync.
 
 Pusthakam is **96.7% complete overall**, with **100% implemented**, **97% verified** and **76% release-ready**. Release gate `data` (Verified migration and recovery, weight 20) passed. All 10 development phases have reached 100% implementation, and 9 of 10 phases are 100% verified. Only 2 multi-platform packaging smoke tests (`REL-MAC`, `REL-LINUX`) remain. Next milestone: macOS and Linux package smoke tests.
+
+## Work on 22 November 2026: splash quotation rotation in progress
+
+- Implemented a fully local 113-entry splash quotation catalogue with unique IDs/text, author/work metadata and a stable storage key in `src/features/boot/splashQuotes.ts`.
+- Implemented one selection per application launch, safe local-storage persistence and immediate-repeat avoidance; storage failures cannot block startup.
+- Replaced the fixed splash closing line with a stable, accessible quotation and author byline. The three-second minimum splash remains unchanged.
+- Added focused catalogue tests and updated splash rendering coverage. Focused Vitest invocation, TypeScript typecheck, ESLint and production build exited successfully after local dependencies were restored.
+- **Important:** the catalogue is a curated working set, not yet a completed primary-source audit. `docs/SPLASH_QUOTE_SOURCES.md` records this honestly; do not mark the quotations source-verified until every entry has a primary locator and rights/edition review.
 
 **Non-v1 website fix & Hallmark redesign (20 November):** Full Hallmark redesign with the Ink editorial theme across all 7 pages in `website/`, passing sloplint with 0 FAIL and 0 WARN while preserving 100% of links and functionality.
 

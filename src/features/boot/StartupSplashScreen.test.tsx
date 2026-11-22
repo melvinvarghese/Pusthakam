@@ -3,6 +3,7 @@ import { act, render, screen } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { StartupSplashScreen } from "./StartupSplashScreen";
 import { Gate } from "./Gate";
+import { SPLASH_QUOTES } from "./splashQuotes";
 
 const mockApi = vi.hoisted(() => ({
   setupStatus: vi.fn(),
@@ -28,14 +29,16 @@ describe("StartupSplashScreen & Gate Minimum Duration", () => {
   });
 
   it("renders branded visual elements, progress bar, and accessibility live region", () => {
-    render(<StartupSplashScreen durationMs={3000} />);
+    const splashQuote = SPLASH_QUOTES[0]!;
+    render(<StartupSplashScreen durationMs={3000} quote={splashQuote} />);
 
     expect(screen.getByTestId("startup-splash-screen")).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Pusthakam" })).toBeInTheDocument();
     expect(screen.getByText("A Better Way to Manage Libraries.")).toBeInTheDocument();
     expect(screen.getByRole("progressbar")).toHaveAttribute("aria-valuenow", "0");
     expect(screen.getByRole("status")).toHaveTextContent("Opening local library database…");
-    expect(screen.getByText("More time for books and readers.")).toBeInTheDocument();
+    expect(screen.getByText(`“${splashQuote.text}”`)).toBeInTheDocument();
+    expect(screen.getByText(`— ${splashQuote.author}`)).toBeInTheDocument();
     expect(screen.queryByText(/Local Sovereign Architecture|Offline Ready/)).not.toBeInTheDocument();
   });
 
