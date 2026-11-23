@@ -34,7 +34,7 @@ export const SPLASH_QUOTES: readonly SplashQuote[] = [
   quote("pliny-no-book-bad", "No book is so bad that some good may not be got out of it.", "Pliny the Elder", "Natural History"),
   quote("seneca-leisure", "Leisure without books is death, and burial of a man alive.", "Seneca", "Moral Epistles"),
   quote("erasmus-when-money", "When I get a little money I buy books; and if any is left I buy food and clothes.", "Erasmus", "Apophthegms"),
-  quote("shakespeare-trees-books", "Books are the best of things, well used; abused, among the worst.", "William Shakespeare", "The Tempest"),
+  quote("shakespeare-trees-books", "Finds tongues in trees, books in the running brooks, sermons in stones, and good in everything.", "William Shakespeare", "As You Like It"),
   quote("milton-good-book", "A good book is the precious lifeblood of a master spirit, embalmed and treasured up on purpose to a life beyond life.", "John Milton", "Areopagitica"),
   quote("milton-kill-book", "He who kills a good book kills reason itself.", "John Milton", "Areopagitica"),
   quote("sydney-speaking-pictures", "Look in thy heart and write.", "Sir Philip Sidney", "Astrophil and Stella"),
