@@ -10,6 +10,8 @@ const types = new Map([
   ["/styles.css", ["styles.css", "text/css; charset=utf-8"]],
   ["/app.js", ["app.js", "text/javascript; charset=utf-8"]],
   ["/hanken-grotesk.woff2", ["hanken-grotesk.woff2", "font/woff2"]],
+  ["/pusthakam-logo.png", ["../../src/assets/pusthakam-logo.png", "image/png"]],
+  ["/favicon.png", ["../../public/favicon.png", "image/png"]],
 ]);
 
 function send(response, status, type, content) {
@@ -17,7 +19,7 @@ function send(response, status, type, content) {
     "Content-Type": type,
     "Cache-Control": "no-store",
     "X-Content-Type-Options": "nosniff",
-    "Content-Security-Policy": "default-src 'none'; script-src 'self'; style-src 'self'; font-src 'self'; connect-src 'self'; base-uri 'none'; frame-ancestors 'none'; form-action 'none'",
+    "Content-Security-Policy": "default-src 'none'; img-src 'self'; script-src 'self'; style-src 'self'; font-src 'self'; connect-src 'self'; base-uri 'none'; frame-ancestors 'none'; form-action 'none'",
   });
   response.end(content);
 }

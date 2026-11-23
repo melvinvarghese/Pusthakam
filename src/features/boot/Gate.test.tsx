@@ -40,7 +40,7 @@ describe("Gate", () => {
   it("shows a loading status while the library configuration is pending", () => {
     api.setupStatus.mockReturnValue(new Promise(() => {}));
     renderGate();
-    expect(screen.getByRole("status")).toHaveTextContent("Opening your library");
+    expect(screen.getByRole("status")).toHaveTextContent("Just a moment");
     expect(screen.queryByRole("heading", { name: "Sign in" })).not.toBeInTheDocument();
   });
 

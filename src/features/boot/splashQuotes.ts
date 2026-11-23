@@ -1,6 +1,6 @@
-/**
- * Locally bundled reading-quotation catalogue. This file deliberately makes no
- * network call. Source verification status is recorded in docs/SPLASH_QUOTE_SOURCES.md.
+/** Only source-reviewed entries belong in this runtime catalogue.
+ * Unchecked candidates are archived in docs/splash-quote-candidates.json.
+ * Source access limitations and edition notes are recorded per entry.
  */
 export interface SplashQuote {
   id: string;
@@ -8,138 +8,261 @@ export interface SplashQuote {
   author: string;
   work: string;
   sourceUrl: string;
+  locator: string;
+  edition: string;
+  reviewNote: string;
+  reviewedAt: string;
+  rightsBasis: string;
+  speaker?: string;
 }
 
 export const SPLASH_QUOTE_STORAGE_KEY = "pusthakam.last-splash-quote-id";
 
-const GUTENBERG_BOOK_LOVER = "https://www.gutenberg.org/ebooks/47013";
-const GUTENBERG_SCHOPENHAUER = "https://www.gutenberg.org/ebooks/11945";
-const GUTENBERG_RYECROFT = "https://www.gutenberg.org/ebooks/1463";
-const GUTENBERG_READING = "https://www.gutenberg.org/ebooks/16579";
-
-const quote = (id: string, text: string, author: string, work: string, sourceUrl = GUTENBERG_BOOK_LOVER): SplashQuote => ({
-  id,
-  text,
-  author,
-  work,
-  sourceUrl,
-});
-
-/** Exactly 113 short quotation candidates suitable for the splash screen. */
 export const SPLASH_QUOTES: readonly SplashQuote[] = [
-  quote("de-bury-lover-of-books", "Whosoever acknowledges himself to be a zealous follower of truth, of happiness, of wisdom, of science, or even of the faith, must of necessity make himself a lover of books.", "Richard de Bury", "Philobiblon"),
-  quote("bacon-tasted-swallowed", "Some books are to be tasted, others to be swallowed, and some few to be chewed and digested.", "Francis Bacon", "Of Studies"),
-  quote("bacon-delight", "Reading maketh a full man; conference a ready man; and writing an exact man.", "Francis Bacon", "Of Studies"),
-  quote("cicero-room-without-books", "A room without books is like a body without a soul.", "Cicero", "Attributed saying"),
-  quote("pliny-no-book-bad", "No book is so bad that some good may not be got out of it.", "Pliny the Elder", "Natural History"),
-  quote("seneca-leisure", "Leisure without books is death, and burial of a man alive.", "Seneca", "Moral Epistles"),
-  quote("erasmus-when-money", "When I get a little money I buy books; and if any is left I buy food and clothes.", "Erasmus", "Apophthegms"),
-  quote("shakespeare-trees-books", "Finds tongues in trees, books in the running brooks, sermons in stones, and good in everything.", "William Shakespeare", "As You Like It"),
-  quote("milton-good-book", "A good book is the precious lifeblood of a master spirit, embalmed and treasured up on purpose to a life beyond life.", "John Milton", "Areopagitica"),
-  quote("milton-kill-book", "He who kills a good book kills reason itself.", "John Milton", "Areopagitica"),
-  quote("sydney-speaking-pictures", "Look in thy heart and write.", "Sir Philip Sidney", "Astrophil and Stella"),
-  quote("burton-library", "The chiefest of all pleasures, and the chiefest of all recreations, are in books.", "Robert Burton", "The Anatomy of Melancholy"),
-  quote("dr-johnson-read", "The greatest part of a writer's time is spent in reading, in order to write; a man will turn over half a library to make one book.", "Samuel Johnson", "The Rambler"),
-  quote("dr-johnson-companions", "A man will turn over half a library to make one book.", "Samuel Johnson", "The Rambler"),
-  quote("swift-book", "When I am reading a book, whether wise or silly, it seems to me to be alive and talking to me.", "Jonathan Swift", "A Tale of a Tub"),
-  quote("pope-learning", "A little learning is a dangerous thing; drink deep, or taste not the Pierian spring.", "Alexander Pope", "An Essay on Criticism"),
-  quote("addison-reading", "Reading is to the mind what exercise is to the body.", "Joseph Addison", "The Tatler"),
-  quote("fielding-knowledge", "A knowledge of the world is only to be acquired in the world, and not in a closet.", "Henry Fielding", "Tom Jones"),
-  quote("goldsmith-writing", "Of all kinds of knowledge, the most useful is that which teaches us how to live well.", "Oliver Goldsmith", "The Bee"),
-  quote("blake-world", "To see a World in a Grain of Sand and a Heaven in a Wild Flower.", "William Blake", "Auguries of Innocence"),
-  quote("wordsworth-books", "Books! 'tis a dull and endless strife: Come, hear the woodland linnet.", "William Wordsworth", "The Tables Turned"),
-  quote("coleridge-read", "Read not to contradict and confute, nor to believe and take for granted, nor to find talk and discourse, but to weigh and consider.", "Samuel Taylor Coleridge", "Aids to Reflection"),
-  quote("lamb-books", "I love to lose myself in other men's minds.", "Charles Lamb", "Detached Thoughts on Books and Reading"),
-  quote("lamb-old-books", "That is a noble library of yours; I have no such thing, but I have books.", "Charles Lamb", "Letters"),
-  quote("hazlitt-reading", "One would think that the whole essence of reading was to be found in the word itself: reading.", "William Hazlitt", "On Reading Old Books"),
-  quote("hazlitt-books", "The things we read become a part of us.", "William Hazlitt", "On Reading Old Books"),
-  quote("carlyle-university", "The true university of these days is a collection of books.", "Thomas Carlyle", "On Heroes, Hero-Worship, and the Heroic in History"),
-  quote("carlyle-book", "All that mankind has done, thought, gained, or been: it is lying as in magic preservation in the pages of books.", "Thomas Carlyle", "On the Choice of Books"),
-  quote("ruskin-books", "All books are divisible into two classes, the books of the hour, and the books of all time.", "John Ruskin", "Sesame and Lilies"),
-  quote("ruskin-author", "You might read all the books in the British Museum, and remain an utterly illiterate, uneducated person.", "John Ruskin", "Sesame and Lilies"),
-  quote("emerson-best-books", "The best books are not read even by those whom they are supposed to inspire.", "Ralph Waldo Emerson", "Books"),
-  quote("emerson-scholar", "Books are the best of things, well used; abused, among the worst.", "Ralph Waldo Emerson", "The American Scholar"),
-  quote("thoreau-books", "How many a man has dated a new era in his life from the reading of a book.", "Henry David Thoreau", "Walden"),
-  quote("thoreau-read", "Read the best books first, or you may not have a chance to read them at all.", "Henry David Thoreau", "A Week on the Concord and Merrimack Rivers"),
-  quote("melville-books", "To produce a mighty book, you must choose a mighty theme.", "Herman Melville", "Moby-Dick"),
-  quote("dickens-books", "There are books of which the backs and covers are by far the best parts.", "Charles Dickens", "Oliver Twist"),
-  quote("eliot-books", "The strongest principle of growth lies in human choice.", "George Eliot", "Daniel Deronda"),
-  quote("bronte-reading", "I am no bird; and no net ensnares me: I am a free human being with an independent will.", "Charlotte Brontë", "Jane Eyre"),
-  quote("austen-reading", "If a book is well written, I always find it too short.", "Jane Austen", "Letters"),
-  quote("alcott-books", "I like good strong words that mean something.", "Louisa May Alcott", "Little Women"),
-  quote("twain-classics", "A classic is something that everybody wants to have read and nobody wants to read.", "Mark Twain", "Following the Equator"),
-  quote("twain-good-friends", "Good friends, good books, and a sleepy conscience: this is the ideal life.", "Mark Twain", "Notebook"),
-  quote("whitman-book", "To have great poets, there must be great audiences.", "Walt Whitman", "Preface to Leaves of Grass"),
-  quote("longfellow-book", "The human voice is the organ of the soul.", "Henry Wadsworth Longfellow", "Table Talk"),
-  quote("stevenson-books", "Books are good enough in their own way, but they are a mighty bloodless substitute for life.", "Robert Louis Stevenson", "An Inland Voyage"),
-  quote("stevenson-reading", "The most beautiful adventures are not those we go to seek.", "Robert Louis Stevenson", "Virginibus Puerisque"),
-  quote("wilde-books", "There is no such thing as a moral or an immoral book. Books are well written, or badly written.", "Oscar Wilde", "The Picture of Dorian Gray"),
-  quote("wilde-reading", "If one cannot enjoy reading a book over and over again, there is no use in reading it at all.", "Oscar Wilde", "The Picture of Dorian Gray"),
-  quote("gissing-reading", "I can sit reading, quietly reading, all day long.", "George Gissing", "The Private Papers of Henry Ryecroft", GUTENBERG_RYECROFT),
-  quote("gissing-catalogues", "It is a joy to go through booksellers' catalogues, ticking here and there a possible purchase.", "George Gissing", "The Private Papers of Henry Ryecroft", GUTENBERG_RYECROFT),
-  quote("gissing-museum", "I settled myself at a desk in the great Reading-Room with books before me which by no possibility could be a source of immediate profit.", "George Gissing", "The Private Papers of Henry Ryecroft", GUTENBERG_RYECROFT),
-  quote("schopenhauer-other-thinks", "When we read, another person thinks for us: we merely repeat his mental process.", "Arthur Schopenhauer", "On Reading and Books", GUTENBERG_SCHOPENHAUER),
-  quote("schopenhauer-twice", "Any kind of important book should immediately be read twice.", "Arthur Schopenhauer", "On Reading and Books", GUTENBERG_SCHOPENHAUER),
-  quote("schopenhauer-works", "Works are the quintessence of a mind.", "Arthur Schopenhauer", "On Reading and Books", GUTENBERG_SCHOPENHAUER),
-  quote("schopenhauer-classics", "There is nothing that so greatly recreates the mind as the works of the old classic writers.", "Arthur Schopenhauer", "On Reading and Books", GUTENBERG_SCHOPENHAUER),
-  quote("quiller-couch-practice", "I propose to talk of the Art and Practice of Reading.", "Arthur Quiller-Couch", "On the Art of Reading", GUTENBERG_READING),
-  quote("quiller-couch-mastering", "Reading is the capacity for silent reading, taking a book apart and mastering it.", "Arthur Quiller-Couch", "On the Art of Reading", GUTENBERG_READING),
-  quote("quiller-couch-literature", "Great literature never condescends.", "Arthur Quiller-Couch", "On the Art of Reading", GUTENBERG_READING),
-  quote("baldwin-choice", "The most important question for you to ask yourself is this: What books shall I read?", "James Baldwin", "The Book-lover", GUTENBERG_BOOK_LOVER),
-  quote("baldwin-reading", "It is not every harmless book, nor indeed every good book, that will make your mind the richer for the reading of it.", "James Baldwin", "The Book-lover", GUTENBERG_BOOK_LOVER),
-  quote("baldwin-treasure", "A pure, fresh book for a little child is a treasure to be sought for and appreciated.", "James Baldwin", "The Book-lover", GUTENBERG_BOOK_LOVER),
-  quote("franklin-reading", "From my infancy, I was passionately fond of reading, and all the money that came into my hands was laid out in purchasing books.", "Benjamin Franklin", "Autobiography"),
-  quote("franklin-reading-advantage", "There was among them Plutarch's Lives, which I read abundantly, and I still think the time spent to great advantage.", "Benjamin Franklin", "Autobiography"),
-  quote("miller-reading", "The art of reading is the art of finding stories in books.", "Hugh Miller", "My Schools and Schoolmasters"),
-  quote("de-quincey-books", "Books are not absolutely dead things, but do preserve as in a vial the purest efficacy and extraction of that living intellect that bred them.", "Thomas De Quincey", "Literary Reminiscences"),
-  quote("newman-reading", "A great memory does not make a philosopher, any more than a dictionary can be called a grammar.", "John Henry Newman", "The Idea of a University"),
-  quote("lowell-books", "Books are the bees which carry the quickening pollen from one to another mind.", "James Russell Lowell", "Among My Books"),
-  quote("lowell-new-books", "Reading new books is like eating new bread.", "James Russell Lowell", "Fables for Critics"),
-  quote("holmes-library", "A man's library is a sort of harem.", "Oliver Wendell Holmes Sr.", "The Professor at the Breakfast-Table"),
-  quote("chesterton-reading", "The way to love anything is to realize that it may be lost.", "G. K. Chesterton", "Tremendous Trifles"),
-  quote("conrad-books", "A work that aspires, however humbly, to the condition of art should carry its justification in every line.", "Joseph Conrad", "Preface to The Nigger of the Narcissus"),
-  quote("yeats-reading", "Education is not the filling of a pail, but the lighting of a fire.", "W. B. Yeats", "Ideas of Good and Evil"),
-  quote("woolf-books", "I can only note that the past is beautiful because one never realises an emotion at the time.", "Virginia Woolf", "The Common Reader"),
-  quote("wells-books", "The path to education lies in a study of the things that interest us.", "H. G. Wells", "The Outline of History"),
-  quote("kipling-books", "If history were taught in the form of stories, it would never be forgotten.", "Rudyard Kipling", "Collected Speeches"),
-  quote("dickinson-books", "To travel far, there is no better ship than a book.", "Emily Dickinson", "There Is No Frigate Like a Book"),
-  quote("dickinson-page", "Nor any coursers like a page of prancing poetry.", "Emily Dickinson", "There Is No Frigate Like a Book"),
-  quote("emily-bronte-books", "No coward soul is mine.", "Emily Brontë", "Last Lines"),
-  quote("mary-wollstonecraft-reading", "I do not wish them to have power over men; but over themselves.", "Mary Wollstonecraft", "A Vindication of the Rights of Woman"),
-  quote("mary-shelley-books", "The beginning is always today.", "Mary Wollstonecraft Shelley", "Letters"),
-  quote("goethe-books", "He who is ignorant of foreign languages knows nothing of his own.", "Johann Wolfgang von Goethe", "Maxims and Reflections"),
-  quote("goethe-reading", "The person who understands nothing but chemistry does not understand that either.", "Johann Wolfgang von Goethe", "Conversations with Eckermann"),
-  quote("cervantes-books", "He who reads much and walks much, sees much and knows much.", "Miguel de Cervantes", "Don Quixote"),
-  quote("calvino-ancestors", "A classic is a book that has never finished saying what it has to say.", "Italo Calvino", "Why Read the Classics?"),
-  quote("tolstoy-books", "All great literature is one of two stories; a man goes on a journey or a stranger comes to town.", "Leo Tolstoy", "Attributed saying"),
-  quote("dostoevsky-reading", "Taking a new step, uttering a new word, is what people fear most.", "Fyodor Dostoevsky", "Crime and Punishment"),
-  quote("pessoa-reading", "Literature is the most agreeable way of ignoring life.", "Fernando Pessoa", "The Book of Disquiet"),
-  quote("pessoa-books", "To read is to dream, guided by another's hand.", "Fernando Pessoa", "The Book of Disquiet"),
-  quote("tagore-books", "The butterfly counts not months but moments, and has time enough.", "Rabindranath Tagore", "Stray Birds"),
-  quote("tagore-reading", "The highest education is that which does not merely give us information but makes our life in harmony with all existence.", "Rabindranath Tagore", "Sadhana"),
-  quote("gandhi-books", "Live as if you were to die tomorrow. Learn as if you were to live forever.", "Mahatma Gandhi", "Attributed saying"),
-  quote("tolkien-books", "Not all those who wander are lost.", "J. R. R. Tolkien", "The Fellowship of the Ring"),
-  quote("joyce-read", "Think you're escaping and run into yourself. Longest way round is the shortest way home.", "James Joyce", "Ulysses"),
-  quote("rainer-reading", "The only journey is the one within.", "Rainer Maria Rilke", "Letters to a Young Poet"),
-  quote("anatole-books", "Never lend books, for no one ever returns them; the only books I have in my library are those which other people have lent me.", "Anatole France", "The Crime of Sylvestre Bonnard"),
-  quote("mauriac-reading", "Tell me what you read and I will tell you who you are.", "François Mauriac", "Mémoires intérieurs"),
-  quote("cather-books", "Only the stupid and the phlegmatic should teach.", "Willa Cather", "The Professor's House"),
-  quote("montaigne-books", "I have always considered that the principal use of books was to afford me pleasure.", "Michel de Montaigne", "Essays"),
-  quote("montaigne-library", "I have three kinds of commerce: with my friends, with the fair ones, and with books.", "Michel de Montaigne", "Essays"),
-  quote("pascal-reading", "The last thing we find in making a book is to know what we must put first.", "Blaise Pascal", "Pensées"),
-  quote("voltaire-books", "Let us read, and let us dance; these two amusements will never do any harm to the world.", "Voltaire", "Candide"),
-  quote("diderot-books", "Only passions, great passions, can elevate the soul to great things.", "Denis Diderot", "Pensées philosophiques"),
-  quote("locke-reading", "Reading furnishes the mind only with materials of knowledge; it is thinking that makes what we read ours.", "John Locke", "Of the Conduct of the Understanding"),
-  quote("hume-books", "Be a philosopher; but, amidst all your philosophy, be still a man.", "David Hume", "An Enquiry Concerning Human Understanding"),
-  quote("kant-reading", "Science is organized knowledge. Wisdom is organized life.", "Immanuel Kant", "Lectures on Pedagogy"),
-  quote("aristotle-books", "The energy of the mind is the essence of life.", "Aristotle", "Nicomachean Ethics"),
-  quote("plato-books", "Books give a soul to the universe, wings to the mind, flight to the imagination, and life to everything.", "Plato", "Attributed saying"),
-  quote("confucius-reading", "No matter how busy you may think you are, you must find time for reading, or surrender yourself to self-chosen ignorance.", "Confucius", "Attributed saying"),
-  quote("ranganathan-library", "Books are for use.", "S. R. Ranganathan", "The Five Laws of Library Science"),
-  quote("ranganathan-reader", "Every reader his or her book.", "S. R. Ranganathan", "The Five Laws of Library Science"),
-  quote("ranganathan-book", "Every book its reader.", "S. R. Ranganathan", "The Five Laws of Library Science"),
-  quote("ranganathan-time", "Save the time of the reader.", "S. R. Ranganathan", "The Five Laws of Library Science"),
-  quote("ranganathan-growing", "The library is a growing organism.", "S. R. Ranganathan", "The Five Laws of Library Science"),
+  {
+    "id": "bacon-delight",
+    "text": "Reading maketh a full man; conference a ready man; and writing an exact man.",
+    "author": "Francis Bacon",
+    "work": "Of Studies",
+    "sourceUrl": "https://en.wikisource.org/wiki/The_Essays_of_Francis_Bacon/L_Of_Studies",
+    "locator": "Essay L: Of Studies",
+    "edition": "Original English essay, 1625; Gutenberg transcription.",
+    "reviewNote": "Opened complete essay and checked sentence in context.",
+    "reviewedAt": "2026-11-23",
+    "rightsBasis": "Original English work published before 1900; no modern translation or editorial commentary reproduced. Historical wording only; final edition review remains part of catalogue signoff."
+  },
+  {
+    "id": "emerson-scholar",
+    "text": "Books are the best of things, well used; abused, among the worst.",
+    "author": "Ralph Waldo Emerson",
+    "work": "The American Scholar",
+    "sourceUrl": "https://www.gutenberg.org/files/16643/16643-h/16643-h.htm",
+    "locator": "The American Scholar, paragraph beginning Books are the best",
+    "edition": "Original English address, 1837; Essays, Gutenberg 16643.",
+    "reviewNote": "Indexed primary-text excerpt checked; full-page request returned HTTP 503.",
+    "reviewedAt": "2026-11-23",
+    "rightsBasis": "Original English work published before 1900; no modern translation or editorial commentary reproduced. Historical wording only; final edition review remains part of catalogue signoff."
+  },
+  {
+    "id": "lamb-books",
+    "text": "I love to lose myself in other men’s minds.",
+    "author": "Charles Lamb",
+    "work": "Detached Thoughts on Books and Reading",
+    "sourceUrl": "https://www.gutenberg.org/cache/epub/10343/pg10343-images.html",
+    "locator": "Detached Thoughts on Books and Reading, opening paragraph",
+    "edition": "Original English essay, 1822; Works volume 2, edited by E. V. Lucas (1903).",
+    "reviewNote": "Indexed primary-text excerpt checked; full-page request returned HTTP 503. Typographic apostrophe normalized.",
+    "reviewedAt": "2026-11-23",
+    "rightsBasis": "Original English work published before 1900; no modern translation or editorial commentary reproduced. Historical wording only; final edition review remains part of catalogue signoff."
+  },
+  {
+    "id": "dickinson-books",
+    "text": "There is no frigate like a book To take us lands away,",
+    "author": "Emily Dickinson",
+    "work": "A Book",
+    "sourceUrl": "https://www.gutenberg.org/cache/epub/12241/pg12241.html",
+    "locator": "Third Series, XVI: A Book, opening two lines",
+    "edition": "Poems, Third Series (1896), edited by Mabel Loomis Todd; early edited text, not a modern manuscript edition.",
+    "reviewNote": "Indexed primary-text excerpt checked; full-page request returned HTTP 503. Line break replaced by a space; punctuation and casing retained.",
+    "reviewedAt": "2026-11-23",
+    "rightsBasis": "Original English work published before 1900; no modern translation or editorial commentary reproduced. Historical wording only; final edition review remains part of catalogue signoff."
+  },
+  {
+    "id": "thoreau-treasured",
+    "text": "Books are the treasured wealth of the world and the fit inheritance of generations and nations.",
+    "author": "Henry David Thoreau",
+    "work": "Walden",
+    "sourceUrl": "https://en.wikisource.org/wiki/Page:Walden,_or,_Life_in_the_Woods.djvu/116",
+    "locator": "Reading, printed page 112",
+    "edition": "Original English, 1854; scan-backed transcription.",
+    "reviewNote": "Opened validated scan transcription and checked sentence in context.",
+    "reviewedAt": "2026-11-23",
+    "rightsBasis": "Original English work published before 1900; no modern translation or editorial commentary reproduced. Historical wording only; final edition review remains part of catalogue signoff."
+  },
+  {
+    "id": "shakespeare-library",
+    "text": "Me, poor man, my library Was dukedom large enough.",
+    "author": "William Shakespeare",
+    "work": "The Tempest",
+    "sourceUrl": "https://www.gutenberg.org/files/23042/23042-h/23042-h.htm",
+    "locator": "Act I, scene ii, lines 109–110; Prospero",
+    "edition": "Cambridge edition, 1863; Gutenberg 23042.",
+    "reviewNote": "Indexed Cambridge primary-text excerpt checked; corroborated in opened Folger text, FTLN 0201–0202. Prospero speaks to Miranda; line break replaced by a space.",
+    "reviewedAt": "2026-11-23",
+    "rightsBasis": "Original English work published before 1900; no modern translation or editorial commentary reproduced. Historical wording only; final edition review remains part of catalogue signoff.",
+    "speaker": "Prospero"
+  },
+  {
+    "id": "keller-utopia",
+    "text": "In a word, literature is my Utopia.",
+    "author": "Helen Keller",
+    "work": "The Story of My Life",
+    "sourceUrl": "https://en.wikisource.org/wiki/Page:Helen_Keller_-_The_Story_of_My_Life.pdf/155",
+    "locator": "Chapter XXI, paragraph beginning In a word",
+    "edition": "Original English, 1903; scan-backed transcription",
+    "reviewNote": "Opened validated transcription; checked sentence in context.",
+    "reviewedAt": "2026-11-23",
+    "rightsBasis": "Historical original English text; no modern translation, editorial notes or website branding reproduced. Edition and review limits recorded above."
+  },
+  {
+    "id": "locke-reading",
+    "text": "Reading furnishes the mind only with materials of knowledge; it is thinking makes what we read ours.",
+    "author": "John Locke",
+    "work": "Of the Conduct of the Understanding",
+    "sourceUrl": "https://en.wikisource.org/wiki/An_Essay_Concerning_Human_Understanding_(Troutman_&_Hayes_1853)/Of_the_Conduct_of_the_Understanding",
+    "locator": "Section 20: Reading",
+    "edition": "Original English, 1706; Troutman & Hayes edition, 1853",
+    "reviewNote": "Opened complete section; retains edition wording without adding that.",
+    "reviewedAt": "2026-11-23",
+    "rightsBasis": "Historical original English text; no modern translation, editorial notes or website branding reproduced. Edition and review limits recorded above."
+  },
+  {
+    "id": "jefferson-books",
+    "text": "I cannot live without books",
+    "author": "Thomas Jefferson",
+    "work": "Letter to John Adams, 10 June 1815",
+    "sourceUrl": "https://www.loc.gov/exhibits/jefferson/217.html",
+    "locator": "Second sentence of displayed letter extract",
+    "edition": "Original English letter, 1815; Library of Congress transcription",
+    "reviewNote": "Opened archival transcription; exact opening clause ending before comma, without invented full stop.",
+    "reviewedAt": "2026-11-23",
+    "rightsBasis": "Historical original English text; no modern translation, editorial notes or website branding reproduced. Edition and review limits recorded above."
+  },
+  {
+    "id": "carlyle-university",
+    "text": "The true University of these days is a Collection of Books.",
+    "author": "Thomas Carlyle",
+    "work": "On Heroes, Hero-Worship, and the Heroic in History",
+    "sourceUrl": "https://www.gutenberg.org/files/1091/1091-h/1091-h.htm",
+    "locator": "Lecture V, The Hero as Man of Letters; paragraph beginning It is clear",
+    "edition": "Original English lectures 1840, published 1841; Gutenberg 1091",
+    "reviewNote": "Indexed primary-text paragraph checked; full Gutenberg fetches unavailable (HTTP 503).",
+    "reviewedAt": "2026-11-23",
+    "rightsBasis": "Historical original English text; no modern translation, editorial notes or website branding reproduced. Edition and review limits recorded above."
+  },
+  {
+    "id": "milton-living-books",
+    "text": "books are not absolutely dead things, but do contain a potency of life in them",
+    "author": "John Milton",
+    "work": "Areopagitica",
+    "sourceUrl": "https://dev.oll.libertyfund.org/titles/jebb-areopagitica-1644-jebb-ed/read",
+    "locator": "Opening argument, paragraph beginning I deny not",
+    "edition": "Original English, 1644; Jebb edition, Cambridge University Press, 1918",
+    "reviewNote": "Opened primary text; exact contiguous clause after for and before to be; original lowercase and lack of closing punctuation retained.",
+    "reviewedAt": "2026-11-23",
+    "rightsBasis": "Historical original English text; no modern translation, editorial notes or website branding reproduced. Edition and review limits recorded above."
+  },
+  {
+    "id": "franklin-child-reading",
+    "text": "From a Child I was fond of Reading, and all the little Money that came into my Hands was ever laid out in Books.",
+    "author": "Benjamin Franklin",
+    "work": "The Autobiography of Benjamin Franklin",
+    "sourceUrl": "https://en.wikisource.org/wiki/The_Autobiography_of_Benjamin_Franklin/Section_Seven",
+    "locator": "Section Seven, first sentence",
+    "edition": "Original English, written from 1771; cited transcription retains manuscript-style capitalization",
+    "reviewNote": "Opened primary-text transcription; capitalization retained. No modern editorial notes reproduced.",
+    "reviewedAt": "2026-11-23",
+    "rightsBasis": "Historical original English text; no modern translation, editorial notes or website branding reproduced. Edition and review limits recorded above."
+  },
+  {
+    "id": "wilde-books",
+    "text": "There is no such thing as a moral or an immoral book. Books are well written, or badly written.",
+    "author": "Oscar Wilde",
+    "work": "The Picture of Dorian Gray",
+    "sourceUrl": "https://www.gutenberg.org/cache/epub/174/pg174-images.html",
+    "locator": "The Preface, paragraph beginning There is no such thing",
+    "edition": "Original English novel, 1891 edition; Gutenberg 174",
+    "reviewNote": "Indexed primary excerpt checked; full fetch returned HTTP 503. Two complete sentences from authorial preface, not dialogue.",
+    "reviewedAt": "2026-11-23",
+    "rightsBasis": "Historical original English text; no modern translation, editorial notes or website branding reproduced. Edition and review limits recorded above."
+  },
+  {
+    "id": "austen-novel",
+    "text": "The person, be it gentleman or lady, who has not pleasure in a good novel, must be intolerably stupid.",
+    "author": "Jane Austen",
+    "work": "Northanger Abbey",
+    "sourceUrl": "https://en.wikisource.org/wiki/Northanger_Abbey/Chapter_14",
+    "locator": "Chapter XIV, Henry replies to Catherine on reading novels",
+    "edition": "Original English novel, published 1817 with 1818 title page; primary transcription",
+    "reviewNote": "Opened chapter and checked dialogue; Henry speaks, not a personal declaration by Austen.",
+    "reviewedAt": "2026-11-23",
+    "rightsBasis": "Historical original English text; no modern translation, editorial notes or website branding reproduced. Edition and review limits recorded above.",
+    "speaker": "Henry Tilney"
+  },
+  {
+    "id": "stevenson-books",
+    "text": "Books are good enough in their own way, but they are a mighty bloodless substitute for life.",
+    "author": "Robert Louis Stevenson",
+    "work": "An Apology for Idlers",
+    "sourceUrl": "https://en.wikisource.org/wiki/Virginibus_Puerisque_and_Other_Papers/An_Apology_for_Idlers",
+    "locator": "Paragraph after anecdote about Johnson at Oxford",
+    "edition": "Original English essay, 1877; Virginibus Puerisque and Other Papers, 1881",
+    "reviewNote": "Opened essay; complete sentence. Values lived experience as well as reading, not unqualified praise of books.",
+    "reviewedAt": "2026-11-23",
+    "rightsBasis": "Historical original English text; no modern translation, editorial notes or website branding reproduced. Edition and review limits recorded above."
+  },
+  {
+    "id": "ruskin-books",
+    "text": "For all books are divisible into two classes, the books of the hour, and the books of all time.",
+    "author": "John Ruskin",
+    "work": "Sesame and Lilies",
+    "sourceUrl": "https://en.wikisource.org/wiki/Sesame_and_Lilies/Lecture_I",
+    "locator": "Lecture I, Of Kings' Treasuries, section 8",
+    "edition": "Original English lecture, 1864; published 1865; primary transcription",
+    "reviewNote": "Opened lecture; complete sentence including initial For.",
+    "reviewedAt": "2026-11-23",
+    "rightsBasis": "Historical original English text; no modern translation, editorial notes or website branding reproduced. Edition and review limits recorded above."
+  },
+  {
+    "id": "montagu-reading",
+    "text": "No entertainment is so cheap as reading, nor any pleasure so lasting.",
+    "author": "Lady Mary Wortley Montagu",
+    "work": "Letter to the Countess of Bute",
+    "sourceUrl": "https://upload.wikimedia.org/wikipedia/commons/2/23/Selected_English_letters_%28xv-xix_centuries%29_%28IA_selectedenglishl00duckiala%29.pdf",
+    "locator": "Montagu letter on educating her granddaughter; sentence beginning No entertainment",
+    "edition": "Original English letter; Selected English Letters (XV-XIX Centuries), Duckitt and Wragg, 1913",
+    "reviewNote": "Indexed primary-letter scan excerpt checked; full scan context and letter date require follow-up before final catalogue signoff.",
+    "reviewedAt": "2026-11-23",
+    "rightsBasis": "Historical original English text; no modern translation, editorial notes or website branding reproduced. Edition and review limits recorded above."
+  },
+  {
+    "id": "melville-books",
+    "text": "To produce a mighty book, you must choose a mighty theme.",
+    "author": "Herman Melville",
+    "work": "Moby-Dick",
+    "sourceUrl": "https://en.wikisource.org/wiki/Moby-Dick_(1851)_US_edition/Chapter_104",
+    "locator": "Chapter CIV: The Fossil Whale, paragraph beginning Such, and so magnifying",
+    "edition": "Original English, US edition, 1851; primary transcription",
+    "reviewNote": "Opened chapter; exact sentence from fictional narrator Ishmael.",
+    "reviewedAt": "2026-11-23",
+    "rightsBasis": "Historical original English text; no modern translation, editorial notes or website branding reproduced. Edition and review limits recorded above.",
+    "speaker": "Ishmael"
+  },
+  {
+    "id": "dickens-books",
+    "text": "there are books of which the backs and covers are by far the best parts.",
+    "author": "Charles Dickens",
+    "work": "Oliver Twist",
+    "sourceUrl": "https://www.gutenberg.org/cache/epub/730/pg730-images.html",
+    "locator": "Chapter XIV, Brownlow shows Oliver his study",
+    "edition": "Original English novel, 1837-1839; Gutenberg 730",
+    "reviewNote": "Indexed primary passage checked; full fetch returned HTTP 503. Exact clause following because, with original lowercase. Mr Brownlow speaks.",
+    "reviewedAt": "2026-11-23",
+    "rightsBasis": "Historical original English text; no modern translation, editorial notes or website branding reproduced. Edition and review limits recorded above.",
+    "speaker": "Mr Brownlow"
+  },
+  {
+    "id": "bacon-studies",
+    "text": "Studies serve for delight, for ornament, and for ability.",
+    "author": "Francis Bacon",
+    "work": "Of Studies",
+    "sourceUrl": "https://en.wikisource.org/wiki/The_Essays_of_Francis_Bacon/L_Of_Studies",
+    "locator": "Essay L: Of Studies, first sentence",
+    "edition": "Original English essay, final version 1625; primary transcription",
+    "reviewNote": "Opened complete essay and checked first sentence.",
+    "reviewedAt": "2026-11-23",
+    "rightsBasis": "Historical original English text; no modern translation, editorial notes or website branding reproduced. Edition and review limits recorded above."
+  }
 ];
 
 /** Picks one quote while excluding a valid immediately previous id. */
@@ -174,4 +297,12 @@ export function selectAndRememberSplashQuote(random: () => number = Math.random)
     // The quote is still displayed even if it cannot be remembered.
   }
   return selected;
+}
+
+let launchQuote: SplashQuote | undefined;
+
+/** A webview reload starts a new launch; React checks/remounts reuse its selection. */
+export function getLaunchSplashQuote(): SplashQuote {
+  launchQuote ??= selectAndRememberSplashQuote();
+  return launchQuote;
 }

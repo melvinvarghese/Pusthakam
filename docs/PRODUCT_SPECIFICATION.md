@@ -59,4 +59,8 @@ Owner requests a GitHub Pages marketing/information site for librarians, separat
 
 ## Planned splash quotations and logo review — 21 November 2026
 
-Owner proposes about 100 genuine, source-verified quotations about books/reading, showing one per launch with author attribution, avoiding an immediate repeat and requiring no runtime internet. Never invent quotes or attribute paraphrases as originals. Preserve the existing startup minimum. Collection/rotation is not implemented. The book/P logo remains a review concept because the owner is not fully satisfied. See SPLASH_QUOTES_PLAN.md for exact scope and pause/resume instructions.
+Owner requests about 100 genuine, source-verified quotations about books/reading, one per launch with author attribution, no immediate repeat and no runtime internet. Rotation is implemented with 20 primary-text reviewed entries; source-access/edition follow-ups are recorded in SPLASH_QUOTE_SOURCES.md, so the full collection remains incomplete. Preserve the existing startup minimum. On 23 November 2026 the owner approved the latest teal book/P logo for use throughout. The exact master is branding/pusthakam-logo.png; shared app, native assets, website, progress monitor and LAN pages now use it. See branding/README.md, SPLASH_QUOTES_PLAN.md and the latest handoff for evidence and delivery status.
+
+## Startup presentation polish - 23 November 2026
+
+The splash uses the approved large book/P mark, a stronger title and larger balanced quotation with author/speaker credit. Plain loading text and a quiet progress line replace technical stage messages. A gentle entrance and sign-in/setup reveal respect reduced motion and add no startup hold. Existing 3000 ms minimum, pending-query hold and error handling remain authoritative. Verification and current native build are recorded in the latest handoff.

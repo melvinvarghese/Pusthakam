@@ -99,6 +99,14 @@ test("serves local assets and recovers from bad or missing progress without rest
     assert.ok((await response.arrayBuffer()).byteLength > 0);
   }
   assert.equal((await fetch(base + "/package.json")).status, 404);
+  for (const path of ["/pusthakam-logo.png", "/favicon.png"]) {
+    const response = await fetch(base + path);
+    assert.equal(response.status, 200);
+    assert.equal(response.headers.get("content-type"), "image/png");
+    assert.match(response.headers.get("content-security-policy"), /img-src 'self'/);
+    const bytes = new Uint8Array(await response.arrayBuffer());
+    assert.deepEqual([...bytes.slice(0, 8)], [137, 80, 78, 71, 13, 10, 26, 10]);
+  }
   const invalidHost = request(base, { headers: { host: "outside.invalid" } });
   const responseEvent = once(invalidHost, "response");
   invalidHost.end();

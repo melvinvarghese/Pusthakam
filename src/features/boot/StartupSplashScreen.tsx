@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useEffectEvent, useState } from "react";
 import { BrandMark } from "@/components/BrandMark";
-import { selectAndRememberSplashQuote, type SplashQuote } from "./splashQuotes";
+import { getLaunchSplashQuote, type SplashQuote } from "./splashQuotes";
 
 export interface StartupSplashScreenProps {
   /** Total minimum duration to display the startup splash screen in milliseconds (default: 3000ms) */
@@ -11,12 +11,6 @@ export interface StartupSplashScreenProps {
   quote?: SplashQuote;
 }
 
-const STAGES = [
-  { at: 0, text: "Opening local library database…" },
-  { at: 0.25, text: "Verifying local schema integrity…" },
-  { at: 0.55, text: "Loading circulation rules and calendar…" },
-  { at: 0.8, text: "Opening your library…" },
-];
 
 /**
  * Branded startup loading screen.
@@ -25,13 +19,14 @@ const STAGES = [
  */
 export function StartupSplashScreen({ durationMs = 3000, onComplete, quote: suppliedQuote }: StartupSplashScreenProps) {
   const [progress, setProgress] = useState(durationMs <= 0 ? 100 : 0);
-  const [stageIndex, setStageIndex] = useState(durationMs <= 0 ? STAGES.length - 1 : 0);
-  const [splashQuote] = useState(() => suppliedQuote ?? selectAndRememberSplashQuote());
+  const [splashQuote] = useState(() => suppliedQuote ?? getLaunchSplashQuote());
+
+  const complete = useEffectEvent(() => onComplete?.());
 
   useEffect(() => {
     if (durationMs <= 0) {
       setProgress(100);
-      onComplete?.();
+      complete();
       return;
     }
 
@@ -42,65 +37,50 @@ export function StartupSplashScreen({ durationMs = 3000, onComplete, quote: supp
       const fraction = Math.min(elapsed / durationMs, 1);
       setProgress(Math.round(fraction * 100));
 
-      const newIndex = STAGES.reduce((acc, stage, idx) => {
-        return fraction >= stage.at ? idx : acc;
-      }, 0);
-      setStageIndex(newIndex);
-
       if (fraction >= 1) {
         clearInterval(interval);
-        onComplete?.();
+        complete();
       }
     }, tickMs);
 
     return () => clearInterval(interval);
-  }, [durationMs, onComplete]);
+  }, [durationMs]);
 
-  const currentStageText = STAGES[stageIndex]?.text ?? "Opening your library…";
+  const statusText = progress >= 100 ? "Just a moment…" : "Opening your library…";
 
   return (
-    <div
-      data-testid="startup-splash-screen"
-      className="flex min-h-screen w-full flex-col items-center justify-center bg-ink p-6 select-none"
-    >
-      <div className="flex flex-col items-center gap-6 text-center">
+    <div data-testid="startup-splash-screen" className="startup-splash">
+      <div className="startup-presentation">
         {/* Brand Header */}
-        <div className="flex items-center gap-3.5">
-          <BrandMark />
-          <div className="text-left">
-            <h1 className="text-2xl font-bold tracking-tight text-white leading-tight">Pusthakam</h1>
-            <p className="text-xs font-medium text-rail-mute tracking-wide">A Better Way to Manage Libraries.</p>
-          </div>
-        </div>
+        <header className="startup-brand">
+          <BrandMark size="splash" />
+          <h1>Pusthakam</h1>
+          <p>A Better Way to Manage Libraries.</p>
+        </header>
+
+        <figure className="startup-quote">
+          <blockquote>“{splashQuote.text}”</blockquote>
+          <figcaption>
+            {splashQuote.author}
+            {splashQuote.speaker && <span>{splashQuote.speaker}, {splashQuote.work}</span>}
+          </figcaption>
+        </figure>
 
         {/* Progress Container */}
-        <div className="mt-4 flex flex-col items-center gap-3">
+        <div className="startup-loading">
           <div
-            className="h-1.5 w-64 overflow-hidden rounded-full bg-ink-3"
+            className="startup-progress"
             role="progressbar"
             aria-valuenow={progress}
             aria-valuemin={0}
             aria-valuemax={100}
             aria-label="Application startup progress"
           >
-            <div
-              className="h-full rounded-full bg-[var(--cls-6)] transition-all duration-150 ease-out"
-              style={{ width: `${progress}%` }}
-            />
+            <div className="startup-progress-fill" style={{ width: `${progress}%` }} />
           </div>
-
           {/* Accessible Live Region & Status Text */}
-          <div role="status" aria-live="polite" className="flex flex-col items-center gap-1">
-            <span className="text-xs text-rail-text font-mono animate-pulse">{currentStageText}</span>
-            {/* Screen reader guidance */}
-            <span className="sr-only">Opening your library… Just a moment.</span>
-          </div>
+          <p role="status" aria-live="polite">{statusText}</p>
         </div>
-
-        <figure className="mt-8 max-w-sm text-center">
-          <blockquote className="text-sm leading-6 text-rail-text">“{splashQuote.text}”</blockquote>
-          <figcaption className="mt-2 text-xs font-medium tracking-wide text-rail-mute">— {splashQuote.author}</figcaption>
-        </figure>
       </div>
     </div>
   );

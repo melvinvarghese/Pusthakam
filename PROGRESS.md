@@ -1,12 +1,38 @@
 # PROGRESS
 
-_Last updated: 2026-11-22_
+_Last updated: 2026-11-23_
 
 ## Local progress monitor
 
 For continuation on another computer, read [SESSION_HANDOFF.md](docs/SESSION_HANDOFF.md) and the current task in PROGRESS.json. Uncommitted changes remain local until Git sync.
 
 Pusthakam is **96.7% complete overall**, with **100% implemented**, **97% verified** and **76% release-ready**. Release gate `data` (Verified migration and recovery, weight 20) passed. All 10 development phases have reached 100% implementation, and 9 of 10 phases are 100% verified. Only 2 multi-platform packaging smoke tests (`REL-MAC`, `REL-LINUX`) remain. Next milestone: macOS and Linux package smoke tests.
+
+## Latest: splash presentation polish (23 November 2026)
+
+Owner authorized larger approved logo, stronger title, cleaner spacing, readable quotes, gentle motion and plain loading text. Implemented a splash-only 144/160 px mark, 40-48 px title, balanced 18-22 px quotation, author/speaker credit and quiet 2 px progress line, using existing shelf-ink/teal tokens and bundled fonts. Entrance is 420 ms; sign-in/setup reveal is 180 ms and adds no startup hold. Reduced-motion overrides disable both animations and the progress transition.
+
+The original three-second minimum, pending-query hold and immediate error behavior remain. Effect-event callback handling prevents parent rerenders restarting the progress deadline. Added deadline/pending-query regressions. First focused run was 25/26 and first full run was 212/213 because two assertions expected old loading wording; corrected exact wording without removing gating assertions. Final full suite: **213 tests passed across 38 files**. Lint, TypeScript, production and offline native Windows builds passed. Evidence: `splash-polish-final-checks-2026-11-23`.
+
+Actual browser review passed at 1280x800 and 400x720: quotes fit, no horizontal overflow; reduced motion computed animation none and transition 0s. Default preview port 1420 hit EACCES; temporary 5187 worked without configuration changes. An initial narrow CLI capture was clipped by viewport setup and rejected; explicit device-metric captures replaced it. Vite emitted EBUSY target-file watcher notices during concurrent Rust compilation, but final visual checks passed. Temporary preview files removed and own browser/server closed.
+
+Current build: `D:\Pusthakam\src-tauri\target\debug\pusthakam.exe`; normal app-data behavior, not interactively launched. No installer package, commit/push or publication. Quote count remains 20; next work is source/edition follow-ups and expansion toward about 100. Approved logo and underlying release milestone/weighted totals unchanged.
+
+## Previous: approved logo integration (23 November 2026)
+
+Owner explicitly approved the latest teal book/P logo for use throughout Pusthakam. The exact artwork is saved as `branding/pusthakam-logo.png`, with digest and reproduction instructions in `branding/README.md`. The shared app BrandMark and all seven website header/favicon references are updated. Desktop/app/web icon generation passed. Local progress monitor uses the same logo/favicon through explicit PNG routes and self-only image CSP; serving checks expanded. 24 focused app tests, 4 monitor checks, lint, TypeScript and production build passed. All 7 website logo/favicon routes, PNG dimensions/transparency, shared logo bytes and ICO/ICNS headers checked. Fresh actual splash screenshot reviewed on dark background with light sample; logo legible at intended size. Temporary preview files removed and Vite stopped. Final frontend and first native Windows executable builds passed. Separate LAN staff/OPAC HTML now embeds the same logo/favicon as local PNG data URIs, including disabled-access page; existing HTTP response test expanded to verify branding. Final Rust rerun passed all 7 LAN tests; cargo fmt check and final offline native Windows build passed. Earlier truncated-response test failure is retained as resolved evidence (no assertions removed). Current executable: `D:\Pusthakam\src-tauri\target\debug\pusthakam.exe` (normal app-data behavior, not a disposable-data verification build); not interactively launched. No installer package, commit/push or website publication. Evidence: approved-logo-integration-2026-11-23 and approved-logo-native-lan-2026-11-23. Next: complete quotation source/edition follow-ups and expand 20 toward about 100; keep the approved logo. Product release milestone and weighted totals unchanged.
+
+## Previous batch: 20 splash quotations and logo revision (23 November 2026)
+
+Expanded the enabled collection from 6 to 20 short primary-text reviewed entries. Exact source/edition/context notes and fictional speakers retained per entry. Indexed-source limitations and Montagu scan/date follow-up remain explicit. Approximately 100 remains the target; no completion claim. Original 113 candidates remain archived outside runtime. Flat book/P revision generated and simplified in a second pass; shown for owner review, not integrated or approved. Details and visual limitations in LOGO_DESIGN_DIRECTION.md. Fixed a React StrictMode/remount bug by caching the selected quote once per webview launch; regression coverage added. After cache fix: 15 focused tests and lint passed. Default build failed with Windows EPERM replacing dist/assets; TypeScript and production build passed using %TEMP%/pusthakam-splash-build-20261123. Non-fatal 545 kB chunk and existing npm http-proxy warnings. Unrestricted full-suite attempts are recorded as incomplete; the bounded retry passed all 211 tests across 38 files (112.30s), with jsdom canvas getContext notices. Evidence: splash-20-full-suite-2026-11-23. Final default npm run build retry passed after suite completion, restoring the normal dist output; the earlier transient EPERM remains recorded as failed evidence. Progress validation and diff whitespace checks passed. Next: complete Montagu scan/date and edition checks, expand reviewed entries toward 100, and obtain owner feedback on the latest logo draft before production asset preparation. No native executable, commit or push; product milestone and weighted totals unchanged.
+
+## Work on 23 November 2026: quotation source audit and runtime correction
+
+- The previous 113-entry working set included inaccurate attributions, paraphrases and unrelated lines. Archived it in `docs/splash-quote-candidates.json`; these entries are no longer imported into the application.
+- Runtime now displays six short quotations checked against primary-text excerpts, with per-entry source locator, edition, review notes, review date and reuse basis. A fictional speaker is identified in the splash byline. Full Gutenberg fetches returned HTTP 503; source notes distinguish indexed excerpt review from opened full text.
+- The requested approximately 100 authentic quotations remain unfinished. Never restore unchecked candidates merely to reach the count. Add reviewed entries incrementally and record source access limitations.
+- Regression checks cover persistent selection, unavailable/full storage, removed previous IDs, stable rendering and fictional-speaker context. Passed 14 focused tests, typecheck, lint, production build and progress validation. Build has a non-fatal 535 kB chunk warning; npm reports an existing http-proxy configuration warning. Evidence: `splash-reviewed-catalogue-2026-11-23`. No native executable or screenshot verification.
+- No logo replacement, native executable, commit or push in this change. Existing release milestone and weighted totals remain unchanged.
 
 ## Work on 22 November 2026: splash quotation rotation in progress
 
