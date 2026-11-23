@@ -74,8 +74,8 @@ export function Gate({ children, minSplashDurationMs }: GateProps) {
     );
   }
 
-  if (!configured) return <SetupWizard />;
-  if (!session.data) return <LoginScreen />;
+  if (!configured) return <div className="startup-reveal"><SetupWizard /></div>;
+  if (!session.data) return <div className="startup-reveal"><LoginScreen /></div>;
 
   const signOut = async () => {
     await authApi.logout();

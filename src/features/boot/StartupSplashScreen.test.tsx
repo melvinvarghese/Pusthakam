@@ -36,10 +36,25 @@ describe("StartupSplashScreen & Gate Minimum Duration", () => {
     expect(screen.getByRole("heading", { name: "Pusthakam" })).toBeInTheDocument();
     expect(screen.getByText("A Better Way to Manage Libraries.")).toBeInTheDocument();
     expect(screen.getByRole("progressbar")).toHaveAttribute("aria-valuenow", "0");
-    expect(screen.getByRole("status")).toHaveTextContent("Opening local library database…");
+    expect(screen.getByRole("status")).toHaveTextContent("Opening your library…");
     expect(screen.getByText(`“${splashQuote.text}”`)).toBeInTheDocument();
-    expect(screen.getByText(`— ${splashQuote.author}`)).toBeInTheDocument();
+    expect(screen.getByText(splashQuote.author)).toBeInTheDocument();
     expect(screen.queryByText(/Local Sovereign Architecture|Offline Ready/)).not.toBeInTheDocument();
+  });
+
+  it("keeps its quotation through progress updates and parent rerenders", () => {
+    const { rerender } = render(<StartupSplashScreen durationMs={3000} />);
+    const original = screen.getByRole("blockquote").textContent;
+    act(() => { vi.advanceTimersByTime(1500); });
+    rerender(<StartupSplashScreen durationMs={3000} />);
+    expect(screen.getByRole("blockquote")).toHaveTextContent(original!);
+  });
+
+  it("identifies a fictional speaker alongside the author", () => {
+    const quote = SPLASH_QUOTES.find((entry) => entry.speaker)!;
+    render(<StartupSplashScreen quote={quote} />);
+    expect(screen.getByText(`${quote.speaker}, ${quote.work}`)).toBeInTheDocument();
+    expect(screen.getByText(quote.author)).toBeInTheDocument();
   });
 
   it("advances progress stages and triggers onComplete when durationMs elapses", () => {
@@ -69,11 +84,33 @@ describe("StartupSplashScreen & Gate Minimum Duration", () => {
     expect(onComplete).toHaveBeenCalledTimes(1);
   });
 
+  it("keeps the startup deadline when the completion callback changes", () => {
+    const original = vi.fn();
+    const latest = vi.fn();
+    const { rerender } = render(<StartupSplashScreen durationMs={3000} onComplete={original} />);
+    act(() => { vi.advanceTimersByTime(1500); });
+    rerender(<StartupSplashScreen durationMs={3000} onComplete={latest} />);
+    act(() => { vi.advanceTimersByTime(1500); });
+    expect(original).not.toHaveBeenCalled();
+    expect(latest).toHaveBeenCalledTimes(1);
+    expect(screen.getByRole("status")).toHaveTextContent("Just a moment…");
+  });
+
   it("immediately finishes if durationMs is 0 or negative", () => {
     const onComplete = vi.fn();
     render(<StartupSplashScreen durationMs={0} onComplete={onComplete} />);
     expect(onComplete).toHaveBeenCalledTimes(1);
     expect(screen.getByRole("progressbar")).toHaveAttribute("aria-valuenow", "100");
+  });
+
+  it("keeps the splash visible after three seconds while startup queries are pending", () => {
+    mockApi.setupStatus.mockReturnValue(new Promise(() => {}));
+    const qc = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    render(<QueryClientProvider client={qc}><Gate minSplashDurationMs={3000}><div>Inside App</div></Gate></QueryClientProvider>);
+    act(() => { vi.advanceTimersByTime(4000); });
+    expect(screen.getByTestId("startup-splash-screen")).toBeInTheDocument();
+    expect(screen.getByRole("status")).toHaveTextContent("Just a moment…");
+    expect(screen.queryByRole("heading", { name: "Sign in" })).not.toBeInTheDocument();
   });
 
   it("enforces 3-second minimum splash screen in Gate before revealing sign-in screen", async () => {

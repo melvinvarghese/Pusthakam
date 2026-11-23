@@ -1,11 +1,11 @@
 {
   "schemaVersion": 1,
-  "lastUpdated": "2026-11-22T20:15:00.000Z",
+  "lastUpdated": "2026-11-23T13:11:29Z",
   "currentPhase": "3",
   "currentTask": {
-    "title": "Source-audit splash quotation rotation",
-    "status": "in-progress",
-    "detail": "Implemented a local 113-entry quote catalogue, per-launch stable selection, safe no-immediate-repeat storage and author byline in the splash. Focused Vitest invocation, typecheck, lint and production build completed successfully. The catalogue is a curated working set, not yet fully source-verified: complete the per-entry primary-source/edition audit in docs/SPLASH_QUOTE_SOURCES.md before claiming authenticity. Logo concept remains unapproved and unintegrated. No commit or push; unrelated edits preserved."
+    "title": "Polished startup splash presentation",
+    "status": "verified",
+    "detail": "Larger approved logo, stronger title, 18-22 px balanced quotes, plain loading words and quiet 2 px progress line. Gentle entrance and sign-in/setup fade, explicitly disabled for reduced motion. Original three-second minimum, pending-query hold and error behavior retained; callback changes no longer restart deadline. All 213 frontend tests, lint, TypeScript, frontend and native Windows builds passed; desktop/narrow/reduced-motion browser review passed. Source/docs and latest native executable saved locally; no commit/push/publication. Next: resume quotation source/edition checks and expand 20 toward about 100; product release milestone unchanged."
   },
   "nextMilestone": {
     "title": "macOS and Linux package smoke tests",
@@ -1799,6 +1799,110 @@
   ],
   "verificationRuns": [
     {
+      "id": "splash-polish-final-checks-2026-11-23",
+      "title": "Polished splash timing, accessibility, visual and build checks",
+      "at": "2026-11-23T13:11:29Z",
+      "check": "npm test -- --maxWorkers=2; npm run lint; npm run build; cargo build --offline --manifest-path src-tauri/Cargo.toml --features tauri/custom-protocol; Chrome explicit-viewport/reduced-motion inspection; npm run progress:validate -- --write; npm run progress:validate; git diff --check",
+      "outcome": "passed",
+      "result": "All 213 frontend tests passed across 38 files with maxWorkers=2 (102.52s), including minimum-duration, pending-query, callback-deadline, setup/login/auth and quote stability coverage. ESLint, TypeScript and production build passed. Offline native Windows build passed (48.42s); src-tauri/target/debug/pusthakam.exe is 26575872 bytes, SHA-256 9348c89dba47fd9df62acc4273b18b055ff0cf6af08323e6a512f947e6b467e8; not interactively launched. Actual Chrome viewport review passed at 1280x800 and 400x720, with no horizontal overflow and 22/18 px quote text. Reduced motion reports animation none and progress transition 0s. Temporary preview files removed and own browser/server closed. Earlier status-wording test failures and preview-port failure are recorded separately and resolved. Non-fatal bundle-size/npm config/jsdom canvas notices remain; Vite emitted EBUSY watcher notices during concurrent native compilation, but final screenshots and build checks passed. Quote count stays 20, approved artwork unchanged; no commit/push/publication."
+    },
+    {
+      "id": "splash-polish-full-first-2026-11-23",
+      "title": "Splash polish first full frontend suite",
+      "at": "2026-11-23T13:09:11Z",
+      "check": "npm test -- --maxWorkers=2",
+      "outcome": "failed",
+      "result": "212 of 213 tests passed. Gate loading test still expected Opening your library when test-mode duration is zero; polished splash correctly says Just a moment once minimum presentation time elapses. Updated that exact wording assertion, retaining pending-library/sign-in gating assertions. Full suite retry running."
+    },
+    {
+      "id": "splash-polish-preview-first-2026-11-23",
+      "title": "Default splash preview port check",
+      "at": "2026-11-23T13:05:14Z",
+      "check": "npm run dev -- --host 127.0.0.1",
+      "outcome": "failed",
+      "result": "Preview server failed to bind 127.0.0.1:1420 with EACCES; initial Chrome attempts reached connection-refused pages and are not visual evidence. Retried successfully with temporary port 5187, without changing application configuration. Actual screenshots and reduced-motion review running."
+    },
+    {
+      "id": "splash-polish-first-check-2026-11-23",
+      "title": "Splash polish first focused check",
+      "at": "2026-11-23T13:03:56Z",
+      "check": "npm test -- src/features/boot/StartupSplashScreen.test.tsx src/features/boot/splashQuotes.test.ts src/app/AppShell.test.tsx",
+      "outcome": "failed",
+      "result": "25 of 26 tests passed. One rendering assertion still expected old technical loading wording; updated it to Opening your library. New callback-deadline and pending-query hold tests passed. Focused rerun and visual review pending; lint passed."
+    },
+    {
+      "id": "approved-logo-native-lan-2026-11-23",
+      "title": "Final Windows executable and LAN branding regression checks",
+      "at": "2026-11-23T12:46:00Z",
+      "check": "cargo fmt --manifest-path src-tauri/Cargo.toml --check; cargo test --offline --manifest-path src-tauri/Cargo.toml --features tauri/custom-protocol --lib services::lan::tests; cargo build --offline --manifest-path src-tauri/Cargo.toml --features tauri/custom-protocol",
+      "outcome": "passed",
+      "result": "Final cargo build --offline --manifest-path src-tauri/Cargo.toml --features tauri/custom-protocol passed (53.05s). Executable: src-tauri/target/debug/pusthakam.exe, 26575872 bytes, SHA-256 718d535642f07c01636f80c2a0da0ccb9ba193f8b413980432a9309d77b85991. All 7 Rust LAN tests passed after changing test response readers to read complete branded HTML; original circulation assertions retained. cargo fmt --check passed. Earlier LAN first run (6/7) is retained as failed evidence and is resolved. Earlier app checks: 24 UI tests, 4 monitor tests, lint, TypeScript, final frontend build, website/icon integrity checks and actual splash screenshot review passed. No interactive native launch or installer package, no commit/push or website publication. Master approved; 20-entry quotation collection remains incomplete toward about 100."
+    },
+    {
+      "id": "approved-logo-lan-first-check-2026-11-23",
+      "title": "LAN page branding first regression run",
+      "at": "2026-11-23T12:43:43Z",
+      "check": "cargo test --offline --manifest-path src-tauri/Cargo.toml --features tauri/custom-protocol --lib services::lan::tests",
+      "outcome": "failed",
+      "result": "6 of 7 tests passed. Staff workflow test used one fixed 16 KiB socket read and truncated the expanded embedded-image HTML before the circulation form. Changed test helper to read the complete response and kept all circulation assertions; added staff logo assertions. OPAC branded HTTP check passed. Rerun pending."
+    },
+    {
+      "id": "approved-logo-integration-2026-11-23",
+      "title": "Approved logo across app, native assets, website and progress monitor",
+      "at": "2026-11-23T12:39:12Z",
+      "check": "tools/generate-brand-icons.ps1; npm test -- src/app/AppShell.test.tsx src/features/boot/StartupSplashScreen.test.tsx src/features/boot/splashQuotes.test.ts; node --test tools/progress-monitor/monitor-checks.mjs; npm run lint; npm run build; website/icon integrity inspection; actual browser splash screenshot",
+      "outcome": "passed",
+      "result": "Approved raster master preserved exactly (SHA-256 346294bd76501e598273de1ff60114b43133632eaa5c891befe89d46278e34ba). Tauri generated 17 desktop assets; shared React mark covers splash/auth/navigation. All 7 website header/favicon routes verified, PNG dimensions/alpha and ICO/ICNS headers checked; app and website logo bytes identical. Local monitor uses two explicit PNG routes under self-only image CSP. 24 focused app tests and all 4 monitor checks passed; lint, TypeScript and final production build passed. Fresh browser screenshot of actual splash and light-background sample reviewed. Temporary preview files removed and own Vite server stopped. Non-fatal chunk-size/npm config warnings remain. Native build running; website not published, no commit/push."
+    },
+    {
+      "id": "splash-20-default-build-retry-2026-11-23",
+      "title": "Default dist production build retry",
+      "at": "2026-11-23T12:24:49Z",
+      "check": "npm run build; npm run progress:validate -- --write; npm run progress:validate; git diff --check",
+      "outcome": "passed",
+      "result": "After frontend tests finished, the normal production build succeeded in dist, including TypeScript. Earlier Windows EPERM was transient and is retained as failed evidence. Non-fatal main chunk warning about 545 kB and existing npm http-proxy warning remain. Progress weighted totals unchanged: 96.7% overall, 100% implementation, 97% verification, 76% release readiness."
+    },
+    {
+      "id": "splash-20-full-suite-2026-11-23",
+      "title": "Full frontend regression suite after launch-cache fix",
+      "at": "2026-11-23T12:24:16Z",
+      "check": "npm test -- --maxWorkers=2",
+      "outcome": "passed",
+      "result": "All 211 frontend tests passed across 38 files with --maxWorkers=2 (112.30s). Includes 15 focused splash/storage/launch-cache tests. ESLint and TypeScript passed. Production build passed in %TEMP%/pusthakam-splash-build-20261123 after Windows EPERM replacing default dist/assets. Non-fatal chunk-size warning about 545 kB, existing npm http-proxy warning and jsdom canvas getContext notices. New book/P logo generated in two passes for owner review; not approved, integrated or a production vector. Enabled catalogue has 20 entries; approximately 100 remains incomplete, with indexed-source and Montagu follow-up limits documented. No native executable, commit or push."
+    },
+    {
+      "id": "splash-20-default-build-2026-11-23",
+      "title": "Default production output directory check",
+      "at": "2026-11-23T12:22:26Z",
+      "check": "npm run build (after launch-cache fix)",
+      "outcome": "failed",
+      "result": "TypeScript completed; Vite failed with Windows EPERM replacing D:/Pusthakam/dist/assets. Build retried successfully with a separate temporary output directory; no source workaround or permission escalation."
+    },
+    {
+      "id": "splash-20-unbounded-suite-2026-11-23",
+      "title": "Unrestricted frontend suite attempt",
+      "at": "2026-11-23T12:22:26Z",
+      "check": "npm test",
+      "outcome": "incomplete",
+      "result": "Initial attempt did not yield a final retrievable summary. A fresh unrestricted run was stopped before completion; do not claim a full-suite pass from either attempt. Retrying with --maxWorkers=2."
+    },
+    {
+      "id": "splash-20-focused-build-2026-11-23",
+      "title": "20-entry splash catalogue and launch-cache regression checks",
+      "at": "2026-11-23T12:22:26Z",
+      "check": "npm test -- src/features/boot/splashQuotes.test.ts src/features/boot/StartupSplashScreen.test.tsx; npm run lint; npm run build -- --outDir %TEMP%/pusthakam-splash-build-20261123",
+      "outcome": "passed",
+      "result": "All 15 focused tests passed, including once-per-webview selection across repeated initializers/remounts. ESLint passed. TypeScript and production build passed in fresh temporary output directory. Non-fatal main chunk size warning about 545 kB; npm existing http-proxy config warning. No native executable or visual app screenshot verification."
+    },
+    {
+      "id": "splash-reviewed-catalogue-2026-11-23",
+      "title": "Reviewed-only splash collection and storage regression checks",
+      "at": "2026-11-23T11:38:59Z",
+      "check": "npm test -- src/features/boot/splashQuotes.test.ts src/features/boot/StartupSplashScreen.test.tsx; npm run typecheck; npm run lint; npm run build; npm run progress:validate -- --write; npm run progress:validate",
+      "outcome": "passed",
+      "result": "Passed 14 focused Vitest tests in two files; TypeScript typecheck, ESLint, production build and progress validation passed. Build reported a non-fatal chunk-size warning (main chunk about 535 kB); npm reported existing http-proxy configuration warning. Six enabled primary-text excerpt-reviewed entries; 113 unchecked candidates archived outside runtime. Full Gutenberg page retrieval returned HTTP 503, recorded in source notes. No native executable or visual screenshot verification, commit or push."
+    },
+    {
       "id": "splash-closing-line-checks",
       "title": "Splash wording regression checks",
       "at": "2026-11-21T01:19:13.853Z",
@@ -3184,6 +3288,36 @@
     }
   ],
   "recentActivity": [
+    {
+      "kind": "completed",
+      "at": "2026-11-23T13:11:29Z",
+      "title": "Polished splash verified with rebuilt Windows app",
+      "detail": "All 213 frontend tests passed across 38 files with maxWorkers=2 (102.52s), including minimum-duration, pending-query, callback-deadline, setup/login/auth and quote stability coverage. ESLint, TypeScript and production build passed. Offline native Windows build passed (48.42s); src-tauri/target/debug/pusthakam.exe is 26575872 bytes, SHA-256 9348c89dba47fd9df62acc4273b18b055ff0cf6af08323e6a512f947e6b467e8; not interactively launched. Actual Chrome viewport review passed at 1280x800 and 400x720, with no horizontal overflow and 22/18 px quote text. Reduced motion reports animation none and progress transition 0s. Temporary preview files removed and own browser/server closed. Earlier status-wording test failures and preview-port failure are recorded separately and resolved. Non-fatal bundle-size/npm config/jsdom canvas notices remain; Vite emitted EBUSY watcher notices during concurrent native compilation, but final screenshots and build checks passed. Quote count stays 20, approved artwork unchanged; no commit/push/publication."
+    },
+    {
+      "kind": "completed",
+      "at": "2026-11-23T12:46:00Z",
+      "title": "Approved logo integrated and Windows build verified",
+      "detail": "Final cargo build --offline --manifest-path src-tauri/Cargo.toml --features tauri/custom-protocol passed (53.05s). Executable: src-tauri/target/debug/pusthakam.exe, 26575872 bytes, SHA-256 718d535642f07c01636f80c2a0da0ccb9ba193f8b413980432a9309d77b85991. All 7 Rust LAN tests passed after changing test response readers to read complete branded HTML; original circulation assertions retained. cargo fmt --check passed. Earlier LAN first run (6/7) is retained as failed evidence and is resolved. Earlier app checks: 24 UI tests, 4 monitor tests, lint, TypeScript, final frontend build, website/icon integrity checks and actual splash screenshot review passed. No interactive native launch or installer package, no commit/push or website publication. Master approved; 20-entry quotation collection remains incomplete toward about 100."
+    },
+    {
+      "kind": "completed",
+      "at": "2026-11-23T12:39:12Z",
+      "title": "Approved teal logo integrated throughout source",
+      "detail": "Approved raster master preserved exactly (SHA-256 346294bd76501e598273de1ff60114b43133632eaa5c891befe89d46278e34ba). Tauri generated 17 desktop assets; shared React mark covers splash/auth/navigation. All 7 website header/favicon routes verified, PNG dimensions/alpha and ICO/ICNS headers checked; app and website logo bytes identical. Local monitor uses two explicit PNG routes under self-only image CSP. 24 focused app tests and all 4 monitor checks passed; lint, TypeScript and final production build passed. Fresh browser screenshot of actual splash and light-background sample reviewed. Temporary preview files removed and own Vite server stopped. Non-fatal chunk-size/npm config warnings remain. Native build running; website not published, no commit/push."
+    },
+    {
+      "kind": "completed",
+      "at": "2026-11-23T12:24:16Z",
+      "title": "Expand splash collection to 20 and generate refined logo draft",
+      "detail": "All 211 frontend tests passed across 38 files with --maxWorkers=2 (112.30s). Includes 15 focused splash/storage/launch-cache tests. ESLint and TypeScript passed. Production build passed in %TEMP%/pusthakam-splash-build-20261123 after Windows EPERM replacing default dist/assets. Non-fatal chunk-size warning about 545 kB, existing npm http-proxy warning and jsdom canvas getContext notices. New book/P logo generated in two passes for owner review; not approved, integrated or a production vector. Enabled catalogue has 20 entries; approximately 100 remains incomplete, with indexed-source and Montagu follow-up limits documented. No native executable, commit or push. Final default npm run build retry also passed after suite completion."
+    },
+    {
+      "kind": "completed",
+      "at": "2026-11-23T11:38:59Z",
+      "title": "Exclude unchecked splash candidates from runtime",
+      "detail": "Passed 14 focused Vitest tests in two files; TypeScript typecheck, ESLint, production build and progress validation passed. Build reported a non-fatal chunk-size warning (main chunk about 535 kB); npm reported existing http-proxy configuration warning. Six enabled primary-text excerpt-reviewed entries; 113 unchecked candidates archived outside runtime. Full Gutenberg page retrieval returned HTTP 503, recorded in source notes. No native executable or visual screenshot verification, commit or push. Full target of about 100 authentic quotes and logo refinement remain in progress."
+    },
     {
       "kind": "progress",
       "at": "2026-11-21T01:25:57.315Z",

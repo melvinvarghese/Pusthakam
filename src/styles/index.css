@@ -215,6 +215,54 @@ input, textarea { caret-color: var(--ring); }
 }
 .palette-in { animation: palette-in 140ms cubic-bezier(0.16, 1, 0.3, 1); }
 
+/* Startup: the approved mark and one reading quotation carry the presentation. */
+.startup-splash {
+  min-height: 100svh;
+  display: grid;
+  place-items: center;
+  padding: clamp(24px, 5vh, 64px) 24px;
+  background: var(--ink);
+  color: var(--rail-text);
+}
+.startup-presentation {
+  width: min(100%, 38rem);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  animation: startup-enter 420ms ease-out both;
+}
+.startup-brand { display: flex; flex-direction: column; align-items: center; }
+.startup-brand h1 {
+  margin-top: 4px;
+  color: var(--rail-text);
+  font-size: clamp(2.5rem, 5vw, 3rem);
+  line-height: 1.1;
+  font-weight: 700;
+  letter-spacing: -0.045em;
+}
+.startup-brand p { margin-top: 12px; color: var(--rail-mute); font-size: 14px; line-height: 1.6; }
+.startup-quote { width: 100%; margin: clamp(32px, 6vh, 56px) 0 0; }
+.startup-quote blockquote {
+  margin: 0 auto;
+  max-width: 35ch;
+  font-size: clamp(1.125rem, 2.2vw, 1.375rem);
+  line-height: 1.65;
+  text-wrap: balance;
+  overflow-wrap: anywhere;
+}
+.startup-quote figcaption { margin-top: 16px; font-size: 13px; line-height: 1.6; color: var(--rail-mute); }
+.startup-quote figcaption span { display: block; margin-top: 4px; font-size: 12px; }
+.startup-loading { width: min(100%, 15rem); margin-top: 40px; }
+.startup-progress { height: 2px; overflow: hidden; border-radius: 2px; background: var(--ink-3); }
+.startup-progress-fill { height: 100%; background: var(--cls-6); transition: width 120ms linear; }
+.startup-loading p { margin-top: 14px; font-size: 12px; line-height: 1.6; color: var(--rail-mute); }
+.startup-reveal { animation: startup-reveal 180ms ease-out both; }
+@keyframes startup-enter { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+@keyframes startup-reveal { from { opacity: 0; } to { opacity: 1; } }
+
 @media (prefers-reduced-motion: reduce) {
+  .startup-presentation, .startup-reveal { animation: none !important; }
+  .startup-progress-fill { transition: none !important; }
   *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
 }

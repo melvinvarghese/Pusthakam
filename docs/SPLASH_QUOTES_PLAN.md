@@ -1,5 +1,7 @@
 # Splash quotations and logo: resume plan
 
+Current checkpoint, 23 November: owner resumed. Runtime rotation exists, with 20 primary-text reviewed entries enabled; source access/context limitations are explicit. The previous 113 unchecked candidates are archived outside runtime. See SPLASH_QUOTE_SOURCES.md and the newest handoff; historical pause/implementation statements below describe 21 November only. Target of approximately 100 authentic entries and logo refinement remain open.
+
 Checkpoint: 21 November 2026. Owner paused work until their usage allowance resets. Save the plan now; do not start further implementation while paused.
 
 ## What the owner requested
@@ -46,3 +48,13 @@ Two generated concept images are saved in the conversation's images: Teal P-shap
 5. Keep macOS/Linux package verification as the underlying product release milestone. Preserve the report-design and website work already recorded; do not use this branding task to overwrite newer manual work.
 
 All changes are saved locally. No Git commit or push has been performed by this pause/checkpoint operation. Commit/push, then pull on the other computer, to carry source and developer documentation between machines; never commit library databases, credentials or real patron data.
+
+## Logo decision - 23 November 2026
+
+Owner approved the latest teal book/P for use throughout. Approval supersedes the historical unapproved-concept notes above. Exact master is branding/pusthakam-logo.png; integration/check status is in the latest handoff. Quote target and source-review work remain separate.
+
+## Splash presentation - 23 November 2026
+
+Owner authorized presentation polish: larger approved mark, stronger title, larger balanced quotation, simple loading words, gentle entrance and sign-in/setup reveal, with reduced motion respected. No longer startup hold. Existing 3000 ms minimum and query/error gating remain authoritative. Exact current checks and build status are in the latest handoff. Catalogue count stays 20; source review and expansion remain open.
+
+Presentation verification: all 213 frontend tests, lint, TypeScript, frontend/native Windows builds and actual desktop/narrow/reduced-motion visual checks passed. Evidence: splash-polish-final-checks-2026-11-23. First wording assertions/preview-port issues are retained in progress evidence as resolved. No extra startup hold; quotation count remains 20.

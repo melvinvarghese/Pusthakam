@@ -2,6 +2,7 @@
 
 use crate::error::{AppError, AppResult};
 use crate::services::auth::{self, Session};
+use base64::Engine;
 use rand_core::RngCore;
 use rusqlite::{params, Connection};
 use serde::{Deserialize, Serialize};
@@ -808,6 +809,21 @@ pub fn start_lan_listener(
     })
 }
 
+fn brand_browser_page(html: String) -> String {
+    let logo = base64::engine::general_purpose::STANDARD
+        .encode(include_bytes!("../../../src/assets/pusthakam-logo.png"));
+    let favicon = base64::engine::general_purpose::STANDARD
+        .encode(include_bytes!("../../../public/favicon.png"));
+    let icon_link = format!(
+        "<link rel=\"icon\" type=\"image/png\" href=\"data:image/png;base64,{favicon}\"></head>"
+    );
+    let mark = format!(
+        "<body><img src=\"data:image/png;base64,{logo}\" width=\"40\" height=\"40\" alt=\"Pusthakam\" style=\"display:block;object-fit:contain;margin:0 auto 16px\">"
+    );
+    html.replacen("</head>", &icon_link, 1)
+        .replacen("<body>", &mark, 1)
+}
+
 fn handle_http_connection(mut stream: TcpStream, db_path: &PathBuf) -> std::io::Result<()> {
     let _ = stream.set_read_timeout(Some(Duration::from_secs(5)));
     let _ = stream.set_write_timeout(Some(Duration::from_secs(5)));
@@ -1429,6 +1445,7 @@ init();
 </html>"#
             )
         };
+        let html = brand_browser_page(html);
         let resp = format!(
             "HTTP/1.1 200 OK\r\nContent-Type: text/html; charset=utf-8\r\nContent-Length: {}\r\n\r\n{}",
             html.len(),
@@ -1517,6 +1534,7 @@ searchBooks();
 </body>
 </html>"#
         );
+        let html = brand_browser_page(html);
         let resp = format!(
             "HTTP/1.1 200 OK\r\nContent-Type: text/html; charset=utf-8\r\nContent-Length: {}\r\n\r\n{}",
             html.len(),
@@ -1942,12 +1960,14 @@ mod tests {
         client_html
             .write_all(b"GET /opac HTTP/1.1\r\nHost: localhost\r\n\r\n")
             .unwrap();
-        let mut html_buf = [0u8; 2048];
-        let n_html = client_html.read(&mut html_buf).unwrap();
-        let html_resp = String::from_utf8_lossy(&html_buf[..n_html]);
+        let mut html_buf = Vec::new();
+        client_html.read_to_end(&mut html_buf).unwrap();
+        let html_resp = String::from_utf8_lossy(&html_buf);
         assert!(html_resp.starts_with("HTTP/1.1 200 OK"));
         assert!(html_resp.contains("<!DOCTYPE html>"));
         assert!(html_resp.contains("Test HTTP Server"));
+        assert!(html_resp.contains("data:image/png;base64,"));
+        assert!(html_resp.contains("alt=\"Pusthakam\""));
 
         // Clean shutdown
         handle.stop();
@@ -2010,9 +2030,9 @@ mod tests {
             let _ = stream.set_read_timeout(Some(Duration::from_secs(5)));
             let _ = stream.set_write_timeout(Some(Duration::from_secs(5)));
             stream.write_all(req.as_bytes()).unwrap();
-            let mut resp_buf = [0u8; 16384];
-            let n = stream.read(&mut resp_buf).unwrap_or(0);
-            String::from_utf8_lossy(&resp_buf[..n]).to_string()
+            let mut resp_buf = Vec::new();
+            stream.read_to_end(&mut resp_buf).unwrap();
+            String::from_utf8_lossy(&resp_buf).to_string()
         };
 
         // 1. Pair client over HTTP POST /api/lan/pair
@@ -2110,6 +2130,8 @@ mod tests {
         assert!(staff_html_resp.starts_with("HTTP/1.1 200 OK"));
         assert!(staff_html_resp.contains("Circulation Server — Staff Circulation"));
         assert!(staff_html_resp.contains("Issue Item to Member"));
+        assert!(staff_html_resp.contains("data:image/png;base64,"));
+        assert!(staff_html_resp.contains("alt=\"Pusthakam\""));
 
         // Clean shutdown
         handle.stop();

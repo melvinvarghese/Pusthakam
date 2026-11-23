@@ -1,21 +1,30 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   SPLASH_QUOTES,
   SPLASH_QUOTE_STORAGE_KEY,
   selectSplashQuote,
+  selectAndRememberSplashQuote,
 } from "./splashQuotes";
 
 describe("splash quote catalogue", () => {
-  it("contains exactly 113 distinct, attributed quotations", () => {
-    expect(SPLASH_QUOTES).toHaveLength(113);
-    expect(new Set(SPLASH_QUOTES.map((quote) => quote.id)).size).toBe(113);
-    expect(new Set(SPLASH_QUOTES.map((quote) => quote.text)).size).toBe(113);
+  afterEach(() => { vi.restoreAllMocks(); localStorage.clear(); });
+
+  it("only ships reviewed entries with distinct text and auditable sources", () => {
+    expect(SPLASH_QUOTES.length).toBeGreaterThan(1);
+    expect(new Set(SPLASH_QUOTES.map((quote) => quote.id)).size).toBe(SPLASH_QUOTES.length);
+    expect(new Set(SPLASH_QUOTES.map((quote) => quote.text)).size).toBe(SPLASH_QUOTES.length);
 
     for (const quote of SPLASH_QUOTES) {
       expect(quote.text.length).toBeGreaterThan(10);
       expect(quote.author).not.toEqual("");
       expect(quote.work).not.toEqual("");
       expect(quote.sourceUrl).toMatch(/^https:\/\//);
+      expect(quote.locator).not.toEqual("");
+      expect(quote.edition).not.toEqual("");
+      expect(quote.reviewNote).not.toEqual("");
+      expect(quote.rightsBasis).not.toEqual("");
+      expect(quote.reviewedAt).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+      expect(quote.text.split(/\s+/).length).toBeLessThanOrEqual(25);
     }
   });
 
@@ -28,7 +37,42 @@ describe("splash quote catalogue", () => {
   });
 
   it("uses the deterministic selection index after excluding the previous quote", () => {
-    expect(selectSplashQuote(() => 0.5).id).toBe(SPLASH_QUOTES[56]!.id);
+    expect(selectSplashQuote(() => 0.5).id).toBe(SPLASH_QUOTES[Math.floor(SPLASH_QUOTES.length / 2)]!.id);
+  });
+
+  it("remembers the selected id and excludes it on the next launch", () => {
+    const first = selectAndRememberSplashQuote(() => 0);
+    expect(localStorage.getItem(SPLASH_QUOTE_STORAGE_KEY)).toBe(first.id);
+    expect(selectAndRememberSplashQuote(() => 0).id).not.toBe(first.id);
+  });
+
+  it("ignores an unknown previously stored id", () => {
+    localStorage.setItem(SPLASH_QUOTE_STORAGE_KEY, "removed-candidate");
+    expect(selectAndRememberSplashQuote(() => 0)).toEqual(SPLASH_QUOTES[0]);
+  });
+
+  it("survives blocked storage reads and writes", () => {
+    vi.spyOn(Storage.prototype, "getItem").mockImplementation(() => { throw new Error("blocked"); });
+    vi.spyOn(Storage.prototype, "setItem").mockImplementation(() => { throw new Error("full"); });
+    expect(selectAndRememberSplashQuote(() => 0)).toEqual(SPLASH_QUOTES[0]);
+  });
+
+  it("survives an unavailable storage property", () => {
+    vi.spyOn(window, "localStorage", "get").mockImplementation(() => { throw new Error("unavailable"); });
+    expect(selectAndRememberSplashQuote(() => 0)).toEqual(SPLASH_QUOTES[0]);
+  });
+
+  it("reuses one remembered selection across StrictMode initializers and remounts", async () => {
+    vi.resetModules();
+    const { getLaunchSplashQuote } = await import("./splashQuotes");
+    const random = vi.spyOn(Math, "random").mockReturnValue(0);
+    const write = vi.spyOn(Storage.prototype, "setItem");
+    const first = getLaunchSplashQuote();
+    expect(getLaunchSplashQuote()).toBe(first);
+    expect(getLaunchSplashQuote()).toBe(first);
+    expect(random).toHaveBeenCalledTimes(1);
+    expect(write).toHaveBeenCalledTimes(1);
+    expect(localStorage.getItem(SPLASH_QUOTE_STORAGE_KEY)).toBe(first.id);
   });
 
   it("exports a stable local storage key", () => {
