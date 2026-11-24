@@ -7,8 +7,8 @@
     "sourceUrl": "https://en.wikisource.org/wiki/The_Essays_of_Francis_Bacon/L_Of_Studies",
     "locator": "Essay L: Of Studies",
     "edition": "Original English essay, 1625; Gutenberg transcription.",
-    "reviewNote": "Opened complete essay and checked sentence in context.",
-    "reviewedAt": "2026-11-23",
+    "reviewNote": "Opened complete essay and checked sentence in context. Recheck 24 November 2026: wording located in the reopened source passage; original-page image inspection is not implied.",
+    "reviewedAt": "2026-11-24",
     "rightsBasis": "Original English work published before 1900; no modern translation or editorial commentary reproduced. Historical wording only; final edition review remains part of catalogue signoff."
   },
   {
@@ -16,11 +16,11 @@
     "text": "Books are the best of things, well used; abused, among the worst.",
     "author": "Ralph Waldo Emerson",
     "work": "The American Scholar",
-    "sourceUrl": "https://www.gutenberg.org/files/16643/16643-h/16643-h.htm",
-    "locator": "The American Scholar, paragraph beginning Books are the best",
-    "edition": "Original English address, 1837; Essays, Gutenberg 16643.",
-    "reviewNote": "Indexed primary-text excerpt checked; full-page request returned HTTP 503.",
-    "reviewedAt": "2026-11-23",
+    "sourceUrl": "https://en.wikisource.org/wiki/The_American_Scholar",
+    "locator": "Section II, paragraph beginning This is bad; this is worse than it seems",
+    "edition": "Second edition, Boston: James Munroe and Company, 1838; original English address delivered 31 August 1837.",
+    "reviewNote": "Opened the scan-backed 1838 transcription and located the complete sentence in its discussion of inspiration rather than book worship. Replaces the inaccessible Gutenberg link; scan image itself not inspected.",
+    "reviewedAt": "2026-11-24",
     "rightsBasis": "Original English work published before 1900; no modern translation or editorial commentary reproduced. Historical wording only; final edition review remains part of catalogue signoff."
   },
   {
@@ -40,11 +40,11 @@
     "text": "There is no frigate like a book To take us lands away,",
     "author": "Emily Dickinson",
     "work": "A Book",
-    "sourceUrl": "https://www.gutenberg.org/cache/epub/12241/pg12241.html",
-    "locator": "Third Series, XVI: A Book, opening two lines",
+    "sourceUrl": "https://en.wikisource.org/wiki/Poems:_Third_Series/A_Book",
+    "locator": "Poems: Third Series (1896), Life, XVI, A Book, lines 1-2",
     "edition": "Poems, Third Series (1896), edited by Mabel Loomis Todd; early edited text, not a modern manuscript edition.",
-    "reviewNote": "Indexed primary-text excerpt checked; full-page request returned HTTP 503. Line break replaced by a space; punctuation and casing retained.",
-    "reviewedAt": "2026-11-23",
+    "reviewNote": "Opened the identified 1896 edited text and checked both verse lines. Drop-cap display splits the initial T typographically; ordinary text restores There. Early edited wording retained rather than mixing it with a manuscript version.",
+    "reviewedAt": "2026-11-24",
     "rightsBasis": "Original English work published before 1900; no modern translation or editorial commentary reproduced. Historical wording only; final edition review remains part of catalogue signoff."
   },
   {
@@ -55,8 +55,8 @@
     "sourceUrl": "https://en.wikisource.org/wiki/Page:Walden,_or,_Life_in_the_Woods.djvu/116",
     "locator": "Reading, printed page 112",
     "edition": "Original English, 1854; scan-backed transcription.",
-    "reviewNote": "Opened validated scan transcription and checked sentence in context.",
-    "reviewedAt": "2026-11-23",
+    "reviewNote": "Opened validated scan transcription and checked sentence in context. Recheck 24 November 2026: wording located in the reopened source passage; original-page image inspection is not implied.",
+    "reviewedAt": "2026-11-24",
     "rightsBasis": "Original English work published before 1900; no modern translation or editorial commentary reproduced. Historical wording only; final edition review remains part of catalogue signoff."
   },
   {
@@ -80,8 +80,8 @@
     "sourceUrl": "https://en.wikisource.org/wiki/Page:Helen_Keller_-_The_Story_of_My_Life.pdf/155",
     "locator": "Chapter XXI, paragraph beginning In a word",
     "edition": "Original English, 1903; scan-backed transcription",
-    "reviewNote": "Opened validated transcription; checked sentence in context.",
-    "reviewedAt": "2026-11-23",
+    "reviewNote": "Opened validated transcription; checked sentence in context. Recheck 24 November 2026: wording located in the reopened source passage; original-page image inspection is not implied.",
+    "reviewedAt": "2026-11-24",
     "rightsBasis": "Historical original English text; no modern translation, editorial notes or website branding reproduced. Edition and review limits recorded above."
   },
   {
@@ -92,8 +92,8 @@
     "sourceUrl": "https://en.wikisource.org/wiki/An_Essay_Concerning_Human_Understanding_(Troutman_&_Hayes_1853)/Of_the_Conduct_of_the_Understanding",
     "locator": "Section 20: Reading",
     "edition": "Original English, 1706; Troutman & Hayes edition, 1853",
-    "reviewNote": "Opened complete section; retains edition wording without adding that.",
-    "reviewedAt": "2026-11-23",
+    "reviewNote": "Opened complete section; retains edition wording without adding that. Recheck 24 November 2026: wording located in the reopened source passage; original-page image inspection is not implied.",
+    "reviewedAt": "2026-11-24",
     "rightsBasis": "Historical original English text; no modern translation, editorial notes or website branding reproduced. Edition and review limits recorded above."
   },
   {
@@ -104,8 +104,8 @@
     "sourceUrl": "https://www.loc.gov/exhibits/jefferson/217.html",
     "locator": "Second sentence of displayed letter extract",
     "edition": "Original English letter, 1815; Library of Congress transcription",
-    "reviewNote": "Opened archival transcription; exact opening clause ending before comma, without invented full stop.",
-    "reviewedAt": "2026-11-23",
+    "reviewNote": "Opened archival transcription; exact opening clause ending before comma, without invented full stop. Recheck 24 November 2026: wording located in the reopened source passage; original-page image inspection is not implied.",
+    "reviewedAt": "2026-11-24",
     "rightsBasis": "Historical original English text; no modern translation, editorial notes or website branding reproduced. Edition and review limits recorded above."
   },
   {
@@ -128,8 +128,8 @@
     "sourceUrl": "https://dev.oll.libertyfund.org/titles/jebb-areopagitica-1644-jebb-ed/read",
     "locator": "Opening argument, paragraph beginning I deny not",
     "edition": "Original English, 1644; Jebb edition, Cambridge University Press, 1918",
-    "reviewNote": "Opened primary text; exact contiguous clause after for and before to be; original lowercase and lack of closing punctuation retained.",
-    "reviewedAt": "2026-11-23",
+    "reviewNote": "Opened primary text; exact contiguous clause after for and before to be; original lowercase and lack of closing punctuation retained. Recheck 24 November 2026: wording located in the reopened source passage; original-page image inspection is not implied.",
+    "reviewedAt": "2026-11-24",
     "rightsBasis": "Historical original English text; no modern translation, editorial notes or website branding reproduced. Edition and review limits recorded above."
   },
   {
@@ -140,8 +140,8 @@
     "sourceUrl": "https://en.wikisource.org/wiki/The_Autobiography_of_Benjamin_Franklin/Section_Seven",
     "locator": "Section Seven, first sentence",
     "edition": "Original English, written from 1771; cited transcription retains manuscript-style capitalization",
-    "reviewNote": "Opened primary-text transcription; capitalization retained. No modern editorial notes reproduced.",
-    "reviewedAt": "2026-11-23",
+    "reviewNote": "Opened primary-text transcription; capitalization retained. No modern editorial notes reproduced. Recheck 24 November 2026: wording located in the reopened source passage; original-page image inspection is not implied.",
+    "reviewedAt": "2026-11-24",
     "rightsBasis": "Historical original English text; no modern translation, editorial notes or website branding reproduced. Edition and review limits recorded above."
   },
   {
@@ -149,11 +149,11 @@
     "text": "There is no such thing as a moral or an immoral book. Books are well written, or badly written.",
     "author": "Oscar Wilde",
     "work": "The Picture of Dorian Gray",
-    "sourceUrl": "https://www.gutenberg.org/cache/epub/174/pg174-images.html",
-    "locator": "The Preface, paragraph beginning There is no such thing",
-    "edition": "Original English novel, 1891 edition; Gutenberg 174",
-    "reviewNote": "Indexed primary excerpt checked; full fetch returned HTTP 503. Two complete sentences from authorial preface, not dialogue.",
-    "reviewedAt": "2026-11-23",
+    "sourceUrl": "https://en.wikisource.org/wiki/The_Picture_of_Dorian_Gray_(1891)",
+    "locator": "The preface, paragraph beginning There is no such thing",
+    "edition": "Original English, 1891 revised book edition; authorial preface.",
+    "reviewNote": "Opened the 1891 edition transcription and checked the two complete sentences in the preface, followed in the source by That is all. Authorial commentary, not fictional dialogue.",
+    "reviewedAt": "2026-11-24",
     "rightsBasis": "Historical original English text; no modern translation, editorial notes or website branding reproduced. Edition and review limits recorded above."
   },
   {
@@ -164,8 +164,8 @@
     "sourceUrl": "https://en.wikisource.org/wiki/Northanger_Abbey/Chapter_14",
     "locator": "Chapter XIV, Henry replies to Catherine on reading novels",
     "edition": "Original English novel, published 1817 with 1818 title page; primary transcription",
-    "reviewNote": "Opened chapter and checked dialogue; Henry speaks, not a personal declaration by Austen.",
-    "reviewedAt": "2026-11-23",
+    "reviewNote": "Opened chapter and checked dialogue; Henry speaks, not a personal declaration by Austen. Recheck 24 November 2026: wording located in the reopened source passage; original-page image inspection is not implied.",
+    "reviewedAt": "2026-11-24",
     "rightsBasis": "Historical original English text; no modern translation, editorial notes or website branding reproduced. Edition and review limits recorded above.",
     "speaker": "Henry Tilney"
   },
@@ -177,8 +177,8 @@
     "sourceUrl": "https://en.wikisource.org/wiki/Virginibus_Puerisque_and_Other_Papers/An_Apology_for_Idlers",
     "locator": "Paragraph after anecdote about Johnson at Oxford",
     "edition": "Original English essay, 1877; Virginibus Puerisque and Other Papers, 1881",
-    "reviewNote": "Opened essay; complete sentence. Values lived experience as well as reading, not unqualified praise of books.",
-    "reviewedAt": "2026-11-23",
+    "reviewNote": "Opened essay; complete sentence. Values lived experience as well as reading, not unqualified praise of books. Recheck 24 November 2026: wording located in the reopened source passage; original-page image inspection is not implied.",
+    "reviewedAt": "2026-11-24",
     "rightsBasis": "Historical original English text; no modern translation, editorial notes or website branding reproduced. Edition and review limits recorded above."
   },
   {
@@ -189,8 +189,8 @@
     "sourceUrl": "https://en.wikisource.org/wiki/Sesame_and_Lilies/Lecture_I",
     "locator": "Lecture I, Of Kings' Treasuries, section 8",
     "edition": "Original English lecture, 1864; published 1865; primary transcription",
-    "reviewNote": "Opened lecture; complete sentence including initial For.",
-    "reviewedAt": "2026-11-23",
+    "reviewNote": "Opened lecture; complete sentence including initial For. Recheck 24 November 2026: wording located in the reopened source passage; original-page image inspection is not implied.",
+    "reviewedAt": "2026-11-24",
     "rightsBasis": "Historical original English text; no modern translation, editorial notes or website branding reproduced. Edition and review limits recorded above."
   },
   {
@@ -213,8 +213,8 @@
     "sourceUrl": "https://en.wikisource.org/wiki/Moby-Dick_(1851)_US_edition/Chapter_104",
     "locator": "Chapter CIV: The Fossil Whale, paragraph beginning Such, and so magnifying",
     "edition": "Original English, US edition, 1851; primary transcription",
-    "reviewNote": "Opened chapter; exact sentence from fictional narrator Ishmael.",
-    "reviewedAt": "2026-11-23",
+    "reviewNote": "Opened chapter; exact sentence from fictional narrator Ishmael. Recheck 24 November 2026: wording located in the reopened source passage; original-page image inspection is not implied.",
+    "reviewedAt": "2026-11-24",
     "rightsBasis": "Historical original English text; no modern translation, editorial notes or website branding reproduced. Edition and review limits recorded above.",
     "speaker": "Ishmael"
   },
@@ -239,8 +239,8 @@
     "sourceUrl": "https://en.wikisource.org/wiki/The_Essays_of_Francis_Bacon/L_Of_Studies",
     "locator": "Essay L: Of Studies, first sentence",
     "edition": "Original English essay, final version 1625; primary transcription",
-    "reviewNote": "Opened complete essay and checked first sentence.",
-    "reviewedAt": "2026-11-23",
+    "reviewNote": "Opened complete essay and checked first sentence. Recheck 24 November 2026: wording located in the reopened source passage; original-page image inspection is not implied.",
+    "reviewedAt": "2026-11-24",
     "rightsBasis": "Historical original English text; no modern translation, editorial notes or website branding reproduced. Edition and review limits recorded above."
   },
   {
@@ -248,10 +248,10 @@
     "text": "A book is a friend whose face is constantly changing.",
     "author": "Andrew Lang",
     "work": "The Library",
-    "sourceUrl": "https://www.gutenberg.org/cache/epub/2018/pg2018.html.utf8",
-    "locator": "Chapter II, paragraph beginning Selling books",
+    "sourceUrl": "https://en.wikisource.org/wiki/The_Library_(Lang)/Chapter_1",
+    "locator": "Chapter I, paragraph beginning Selling books",
     "edition": "1892 second edition, Macmillan; original English.",
-    "reviewNote": "Indexed primary-text paragraph checked; title/edition corroborated in opened Wikisource title page.",
+    "reviewNote": "Opened chapter transcription and checked the sentence. Corrected previous Chapter II locator to Chapter I in the linked edition; no scan-image inspection claimed.",
     "reviewedAt": "2026-11-24",
     "rightsBasis": "Brief attributed excerpt; historical text or identified edition. No modern translation silently substituted; no claim of worldwide legal clearance."
   },
@@ -260,10 +260,10 @@
     "text": "The vanished past returns when we look at the pages.",
     "author": "Andrew Lang",
     "work": "The Library",
-    "sourceUrl": "https://www.gutenberg.org/cache/epub/2018/pg2018.html.utf8",
-    "locator": "Chapter II, same paragraph, later sentence",
+    "sourceUrl": "https://en.wikisource.org/wiki/The_Library_(Lang)/Chapter_1",
+    "locator": "Chapter I, paragraph beginning He hardly knows, following Selling books",
     "edition": "1892 second edition, Macmillan; original English.",
-    "reviewNote": "Indexed primary-text paragraph checked; title/edition corroborated in opened Wikisource title page.",
+    "reviewNote": "Opened chapter transcription and checked the sentence. Corrected previous Chapter II locator to Chapter I in the linked edition; no scan-image inspection claimed.",
     "reviewedAt": "2026-11-24",
     "rightsBasis": "Brief attributed excerpt; historical text or identified edition. No modern translation silently substituted; no claim of worldwide legal clearance."
   },
@@ -371,7 +371,7 @@
     "sourceUrl": "https://books.google.com/books?id=8JpDAAAAIAAJ",
     "locator": "Intellectual culture, passage on intercourse with superior minds",
     "edition": "Dutton and Wentworth, Boston, 1838; original English address.",
-    "reviewNote": "Primary Google Books edition and quoted wording checked; no recent translation.",
+    "reviewNote": "Primary Google Books edition and quoted wording checked; no recent translation. Recheck 24 November 2026: wording located in the reopened source passage; original-page image inspection is not implied.",
     "reviewedAt": "2026-11-24",
     "rightsBasis": "Brief attributed excerpt; historical text or identified edition. No modern translation silently substituted; no claim of worldwide legal clearance."
   },
@@ -383,7 +383,7 @@
     "sourceUrl": "https://books.google.com/books?id=8JpDAAAAIAAJ",
     "locator": "Same passage, after the voices of the distant and dead",
     "edition": "Dutton and Wentworth, Boston, 1838; original English address.",
-    "reviewNote": "Primary Google Books edition and quoted wording checked; no recent translation.",
+    "reviewNote": "Primary Google Books edition and quoted wording checked; no recent translation. Recheck 24 November 2026: wording located in the reopened source passage; original-page image inspection is not implied.",
     "reviewedAt": "2026-11-24",
     "rightsBasis": "Brief attributed excerpt; historical text or identified edition. No modern translation silently substituted; no claim of worldwide legal clearance."
   },
@@ -443,7 +443,7 @@
     "sourceUrl": "https://malala.org/news-and-voices/malala-un-speech",
     "locator": "Closing paragraph, before Education first",
     "edition": "Original English speech; author organisation’s transcript, 2013.",
-    "reviewNote": "Opened full author-organisation transcript and checked closing paragraphs.",
+    "reviewNote": "Opened full author-organisation transcript and checked closing paragraphs. Recheck 24 November 2026: wording located in the reopened source passage; original-page image inspection is not implied.",
     "reviewedAt": "2026-11-24",
     "rightsBasis": "Brief attributed excerpt from original English public speech; not asserted to be public domain."
   },
@@ -455,7 +455,7 @@
     "sourceUrl": "https://malala.org/news-and-voices/malala-un-speech",
     "locator": "Closing appeal, exact clause after and",
     "edition": "Original English speech; author organisation’s transcript, 2013.",
-    "reviewNote": "Opened full author-organisation transcript and checked closing paragraphs. Exact contiguous clause with original lowercase; excerpt boundary noted.",
+    "reviewNote": "Opened full author-organisation transcript and checked closing paragraphs. Exact contiguous clause with original lowercase; excerpt boundary noted. Recheck 24 November 2026: wording located in the reopened source passage; original-page image inspection is not implied.",
     "reviewedAt": "2026-11-24",
     "rightsBasis": "Brief attributed excerpt from original English public speech; not asserted to be public domain."
   },
@@ -467,7 +467,7 @@
     "sourceUrl": "https://www.ursulakleguin.com/nbf-medal",
     "locator": "Paragraph beginning Books aren’t",
     "edition": "Original English speech, 19 November 2014; author website transcript.",
-    "reviewNote": "Opened full primary transcript. Source explicitly permits quotation; Copyright 2014 Ursula K. Le Guin.",
+    "reviewNote": "Opened full primary transcript. Source explicitly permits quotation; Copyright 2014 Ursula K. Le Guin. Recheck 24 November 2026: wording located in the reopened source passage; original-page image inspection is not implied.",
     "reviewedAt": "2026-11-24",
     "rightsBasis": "Author website explicitly permits quotation. Copyright 2014 Ursula K. Le Guin."
   },
@@ -491,7 +491,7 @@
     "sourceUrl": "https://en.wikisource.org/wiki/Page:Helen_Keller_-_The_Story_of_My_Life.pdf/155",
     "locator": "Chapter XXI, printed page 117, paragraph beginning In a word",
     "edition": "Original English, 1903; scan-backed transcription, printed page 117.",
-    "reviewNote": "Opened validated transcription and read paragraph in context.",
+    "reviewNote": "Opened validated transcription and read paragraph in context. Recheck 24 November 2026: wording located in the reopened source passage; original-page image inspection is not implied.",
     "reviewedAt": "2026-11-24",
     "rightsBasis": "Brief attributed excerpt; historical text or identified edition. No modern translation silently substituted; no claim of worldwide legal clearance."
   },
@@ -512,10 +512,10 @@
     "text": "Books are for the scholar's idle times.",
     "author": "Ralph Waldo Emerson",
     "work": "The American Scholar",
-    "sourceUrl": "https://www.gutenberg.org/cache/epub/16643/pg16643-images.html",
-    "locator": "The American Scholar, paragraph beginning Books are for",
-    "edition": "Original English address, 1837; Gutenberg 16643.",
-    "reviewNote": "Indexed primary-text sentence checked in the discussion of active thought and reading.",
+    "sourceUrl": "https://en.wikisource.org/wiki/The_American_Scholar",
+    "locator": "Section II, paragraph beginning Undoubtedly there is a right way of reading",
+    "edition": "Second edition, Boston: James Munroe and Company, 1838; original English address delivered 31 August 1837.",
+    "reviewNote": "Opened the 1838 primary-text transcription and checked the sentence in context. Emerson is subordinating reading to independent thought and experience; not a dismissal of scholarship.",
     "reviewedAt": "2026-11-24",
     "rightsBasis": "Brief attributed excerpt; historical text or identified edition. No modern translation silently substituted; no claim of worldwide legal clearance."
   },
@@ -527,7 +527,7 @@
     "sourceUrl": "https://books.google.com/books/about/An_Experiment_in_Criticism.html?id=wTffAAAAQBAJ",
     "locator": "Epilogue; exact clause quoted in publisher description",
     "edition": "Original English, 1961; HarperCollins 2013 edition, publisher description.",
-    "reviewNote": "Publisher description explicitly quotes the original work; corroborated by National Library of Israel publisher-description record. Exact contiguous clause with original lowercase; excerpt boundary noted.",
+    "reviewNote": "Publisher description explicitly quotes the original work; corroborated by National Library of Israel publisher-description record. Exact contiguous clause with original lowercase; excerpt boundary noted. Recheck 24 November 2026: wording located in the reopened source passage; original-page image inspection is not implied.",
     "reviewedAt": "2026-11-24",
     "rightsBasis": "Brief attributed excerpt expressly quoted in publisher description; not asserted to be public domain."
   },
@@ -536,10 +536,10 @@
     "text": "I sit with Shakespeare and he winces not.",
     "author": "W. E. B. Du Bois",
     "work": "The Souls of Black Folk",
-    "sourceUrl": "https://www.gutenberg.org/files/408/408-h/408-h.htm",
-    "locator": "Chapter VI, Of the Training of Black Men, closing paragraph",
-    "edition": "Original English, 1903; Gutenberg 408.",
-    "reviewNote": "Indexed primary-text passage checked. Full-page access is intermittent; no claim of a completed full-source audit.",
+    "sourceUrl": "https://en.wikisource.org/wiki/The_Souls_of_Black_Folk_(2nd_ed)/Chapter_6",
+    "locator": "Second edition (1903), VI: Of the Training of Black Men, closing paragraph",
+    "edition": "Original English, second edition, 1903.",
+    "reviewNote": "Opened chapter transcription and checked the exact sentence in the closing argument for cultural and educational equality across the color line.",
     "reviewedAt": "2026-11-24",
     "rightsBasis": "Brief attributed excerpt from the identified text or reproduction; no modern translation or website commentary copied. No claim of worldwide legal clearance."
   },
@@ -563,7 +563,7 @@
     "sourceUrl": "https://en.wikisource.org/wiki/Literary_Taste:_How_to_Form_It/Chapter_XIV",
     "locator": "Chapter XIV, paragraph beginning Literature exists",
     "edition": "Original English, 1909; Wikisource transcription.",
-    "reviewNote": "Opened chapter and checked complete sentence in context; afterwards retained.",
+    "reviewNote": "Opened chapter and checked complete sentence in context; afterwards retained. Recheck 24 November 2026: wording located in the reopened source passage; original-page image inspection is not implied.",
     "reviewedAt": "2026-11-24",
     "rightsBasis": "Brief attributed excerpt from the identified text or reproduction; no modern translation or website commentary copied. No claim of worldwide legal clearance."
   },
@@ -611,7 +611,7 @@
     "sourceUrl": "https://en.wikisource.org/wiki/Poems_(Wordsworth,_1815)/Volume_2/I_am_not_one_of_those,_%26c",
     "locator": "Volume 2, XX, third sonnet, line 5",
     "edition": "Original English; Poems, 1815, volume 2.",
-    "reviewNote": "Opened poem and checked exact clause before semicolon. Later title Personal Talk identified; no invented full stop.",
+    "reviewNote": "Opened poem and checked exact clause before semicolon. Later title Personal Talk identified; no invented full stop. Recheck 24 November 2026: wording located in the reopened source passage; original-page image inspection is not implied.",
     "reviewedAt": "2026-11-24",
     "rightsBasis": "Brief attributed excerpt from the identified text or reproduction; no modern translation or website commentary copied. No claim of worldwide legal clearance."
   },
@@ -623,7 +623,7 @@
     "sourceUrl": "https://www.folger.edu/explore/shakespeares-works/the-taming-of-the-shrew/read/1/1/",
     "locator": "Act I, scene i, FTLN 0330–0331",
     "edition": "Original English; Folger edited text.",
-    "reviewNote": "Opened scene and checked Tranio advising Lucentio. Verse line break replaced with a space.",
+    "reviewNote": "Opened scene and checked Tranio advising Lucentio. Verse line break replaced with a space. Recheck 24 November 2026: wording located in the reopened source passage; original-page image inspection is not implied.",
     "reviewedAt": "2026-11-24",
     "rightsBasis": "Brief attributed excerpt from the identified text or reproduction; no modern translation or website commentary copied. No claim of worldwide legal clearance.",
     "speaker": "Tranio"
@@ -636,7 +636,7 @@
     "sourceUrl": "https://www.folger.edu/explore/shakespeares-works/loves-labors-lost/read/",
     "locator": "Act I, scene i, FTLN 0096",
     "edition": "Original English; Folger edited text.",
-    "reviewNote": "Indexed primary-text passage checked. Full-page access is intermittent; no claim of a completed full-source audit. King responds ironically to Berowne; not a personal statement by Shakespeare.",
+    "reviewNote": "Indexed primary-text passage checked. Full-page access is intermittent; no claim of a completed full-source audit. King responds ironically to Berowne; not a personal statement by Shakespeare. Recheck 24 November 2026: wording located in the reopened source passage; original-page image inspection is not implied.",
     "reviewedAt": "2026-11-24",
     "rightsBasis": "Brief attributed excerpt from the identified text or reproduction; no modern translation or website commentary copied. No claim of worldwide legal clearance.",
     "speaker": "King Ferdinand"
@@ -649,7 +649,7 @@
     "sourceUrl": "https://www.folger.edu/explore/shakespeares-works/titus-andronicus/read/",
     "locator": "Act IV, scene i, FTLN 1468",
     "edition": "Original English; Folger edited text.",
-    "reviewNote": "Indexed primary-text passage checked. Full-page access is intermittent; no claim of a completed full-source audit. Titus offers books to Lavinia after violence against her; exact verse line before comma.",
+    "reviewNote": "Indexed primary-text passage checked. Full-page access is intermittent; no claim of a completed full-source audit. Titus offers books to Lavinia after violence against her; exact verse line before comma. Recheck 24 November 2026: wording located in the reopened source passage; original-page image inspection is not implied.",
     "reviewedAt": "2026-11-24",
     "rightsBasis": "Brief attributed excerpt from the identified text or reproduction; no modern translation or website commentary copied. No claim of worldwide legal clearance.",
     "speaker": "Titus Andronicus"
@@ -686,7 +686,7 @@
     "sourceUrl": "https://www.isibang.ac.in/~library/portal/Pages/SRRBIO.pdf",
     "locator": "Law 1; institutional biography PDF page 5, Activities at Madras",
     "edition": "Laws first published 1931; reproduced in Indian Statistical Institute hosted biography.",
-    "reviewNote": "Opened institutional reproduction and checked the five-law list. Terminal punctuation normalized from running list; original 1931 scan not inspected. Historical gendered wording retained, not silently modernized.",
+    "reviewNote": "Opened institutional reproduction and checked the five-law list. Terminal punctuation normalized from running list; original 1931 scan not inspected. Historical gendered wording retained, not silently modernized. Recheck 24 November 2026: wording located in the reopened source passage; original-page image inspection is not implied.",
     "reviewedAt": "2026-11-24",
     "rightsBasis": "Brief attributed excerpt from the identified text or reproduction; no modern translation or website commentary copied. No claim of worldwide legal clearance."
   },
@@ -698,7 +698,7 @@
     "sourceUrl": "https://www.isibang.ac.in/~library/portal/Pages/SRRBIO.pdf",
     "locator": "Law 2; institutional biography PDF page 5, Activities at Madras",
     "edition": "Laws first published 1931; reproduced in Indian Statistical Institute hosted biography.",
-    "reviewNote": "Opened institutional reproduction and checked the five-law list. Terminal punctuation normalized from running list; original 1931 scan not inspected. Historical gendered wording retained, not silently modernized.",
+    "reviewNote": "Opened institutional reproduction and checked the five-law list. Terminal punctuation normalized from running list; original 1931 scan not inspected. Historical gendered wording retained, not silently modernized. Recheck 24 November 2026: wording located in the reopened source passage; original-page image inspection is not implied.",
     "reviewedAt": "2026-11-24",
     "rightsBasis": "Brief attributed excerpt from the identified text or reproduction; no modern translation or website commentary copied. No claim of worldwide legal clearance."
   },
@@ -710,7 +710,7 @@
     "sourceUrl": "https://www.isibang.ac.in/~library/portal/Pages/SRRBIO.pdf",
     "locator": "Law 3; institutional biography PDF page 5, Activities at Madras",
     "edition": "Laws first published 1931; reproduced in Indian Statistical Institute hosted biography.",
-    "reviewNote": "Opened institutional reproduction and checked the five-law list. Terminal punctuation normalized from running list; original 1931 scan not inspected. Historical gendered wording retained, not silently modernized.",
+    "reviewNote": "Opened institutional reproduction and checked the five-law list. Terminal punctuation normalized from running list; original 1931 scan not inspected. Historical gendered wording retained, not silently modernized. Recheck 24 November 2026: wording located in the reopened source passage; original-page image inspection is not implied.",
     "reviewedAt": "2026-11-24",
     "rightsBasis": "Brief attributed excerpt from the identified text or reproduction; no modern translation or website commentary copied. No claim of worldwide legal clearance."
   },
@@ -722,7 +722,7 @@
     "sourceUrl": "https://www.isibang.ac.in/~library/portal/Pages/SRRBIO.pdf",
     "locator": "Law 4; institutional biography PDF page 5, Activities at Madras",
     "edition": "Laws first published 1931; reproduced in Indian Statistical Institute hosted biography.",
-    "reviewNote": "Opened institutional reproduction and checked the five-law list. Terminal punctuation normalized from running list; original 1931 scan not inspected. Historical gendered wording retained, not silently modernized.",
+    "reviewNote": "Opened institutional reproduction and checked the five-law list. Terminal punctuation normalized from running list; original 1931 scan not inspected. Historical gendered wording retained, not silently modernized. Recheck 24 November 2026: wording located in the reopened source passage; original-page image inspection is not implied.",
     "reviewedAt": "2026-11-24",
     "rightsBasis": "Brief attributed excerpt from the identified text or reproduction; no modern translation or website commentary copied. No claim of worldwide legal clearance."
   },
@@ -734,7 +734,7 @@
     "sourceUrl": "https://www.isibang.ac.in/~library/portal/Pages/SRRBIO.pdf",
     "locator": "Law 5; institutional biography PDF page 5, Activities at Madras",
     "edition": "Laws first published 1931; reproduced in Indian Statistical Institute hosted biography.",
-    "reviewNote": "Opened institutional reproduction and checked the five-law list. Terminal punctuation normalized from running list; original 1931 scan not inspected. Historical gendered wording retained, not silently modernized.",
+    "reviewNote": "Opened institutional reproduction and checked the five-law list. Terminal punctuation normalized from running list; original 1931 scan not inspected. Historical gendered wording retained, not silently modernized. Recheck 24 November 2026: wording located in the reopened source passage; original-page image inspection is not implied.",
     "reviewedAt": "2026-11-24",
     "rightsBasis": "Brief attributed excerpt from the identified text or reproduction; no modern translation or website commentary copied. No claim of worldwide legal clearance."
   },
@@ -756,10 +756,10 @@
     "text": "The love of learning, the sequestered nooks, And all the sweet serenity of books",
     "author": "Henry Wadsworth Longfellow",
     "work": "Morituri Salutamus",
-    "sourceUrl": "https://www.nps.gov/long/learn/bookstore.htm",
-    "locator": "Quoted opening to Longfellow House Park Store page; Morituri Salutamus, 1875",
-    "edition": "Original English, 1875; institutional reproduction by Longfellow House National Historic Site.",
-    "reviewNote": "Opened/indexed institutional quotation checked against identified poem and collected-works catalogue. Two verse lines; trailing editorial ellipsis omitted at excerpt boundary.",
+    "sourceUrl": "https://rpo.library.utoronto.ca/content/morituri-salutamus-poem-fiftieth-anniversary-class-1825-bowdoin-college",
+    "locator": "Morituri Salutamus, lines 232-233; poem's allegorical discussion of the scholar and worldly gain",
+    "edition": "Riverside edition, The Poetical Works of Henry Wadsworth Longfellow (1890), volume III, pages 187-196; original poem 1875.",
+    "reviewNote": "Opened University of Toronto's complete primary-poem transcription and edition statement. Two verse lines joined with a space; excerpt ends before the source semicolon. Replaces NPS page, which no longer exposes the quotation in retrieved text.",
     "reviewedAt": "2026-11-24",
     "rightsBasis": "Brief attributed excerpt from the identified text or reproduction; no modern translation or website commentary copied. No claim of worldwide legal clearance."
   },
@@ -795,7 +795,7 @@
     "sourceUrl": "https://en.wikisource.org/wiki/Little_Women/Part_1/Chapter_4",
     "locator": "Part I, chapter IV, Burdens; Jo responds to Meg",
     "edition": "Original English, Part I, 1868; scan-backed Wikisource transcription.",
-    "reviewNote": "Opened chapter and checked dialogue. Edition commas retained; quotation ends before narrative attribution, without invented full stop.",
+    "reviewNote": "Opened chapter and checked dialogue. Edition commas retained; quotation ends before narrative attribution, without invented full stop. Recheck 24 November 2026: wording located in the reopened source passage; original-page image inspection is not implied.",
     "reviewedAt": "2026-11-24",
     "rightsBasis": "Brief attributed excerpt from the identified text or reproduction; no modern translation or website commentary copied. No claim of worldwide legal clearance.",
     "speaker": "Jo March"
@@ -808,7 +808,7 @@
     "sourceUrl": "https://en.wikisource.org/wiki/Alice%27s_Adventures_in_Wonderland_(1866)/Chapter_1",
     "locator": "Chapter I, Down the rabbit-hole, first paragraph",
     "edition": "Original English, 1866 edition; scan-backed transcription.",
-    "reviewNote": "Opened chapter. Explicit editorial ellipsis replaces the intervening narrative attribution thought Alice; lowercase and plural conversations retained.",
+    "reviewNote": "Reopened 1866 chapter transcription and checked both quoted fragments in the opening paragraph. The explicit editorial ellipsis omits thought Alice; it is not a contiguous sentence. Lowercase and plural conversations retained. No scan-image inspection claimed.",
     "reviewedAt": "2026-11-24",
     "rightsBasis": "Brief attributed excerpt from the identified text or reproduction; no modern translation or website commentary copied. No claim of worldwide legal clearance.",
     "speaker": "Alice"
@@ -821,7 +821,7 @@
     "sourceUrl": "https://ndla.no/en/r/engelsk-2/how-should-one-read-a-book-by-virginia-woolf/2448574de5",
     "locator": "Essay paragraph beginning Yet few people ask from books",
     "edition": "Original English essay; collected in The Common Reader, Second Series, 1932; NDLA educational reproduction.",
-    "reviewNote": "Opened reproduced essay and checked complete sentence in context. Reader independence and imaginative engagement, not submission to an authority.",
+    "reviewNote": "Opened reproduced essay and checked complete sentence in context. Reader independence and imaginative engagement, not submission to an authority. Recheck 24 November 2026: wording located in the reopened source passage; original-page image inspection is not implied.",
     "reviewedAt": "2026-11-24",
     "rightsBasis": "Brief attributed excerpt from the identified text or reproduction; no modern translation or website commentary copied. No claim of worldwide legal clearance."
   },
@@ -845,7 +845,7 @@
     "sourceUrl": "https://www.theguardian.com/books/2013/oct/15/neil-gaiman-future-libraries-reading-daydreaming",
     "locator": "Fiction passage",
     "edition": "Original English; edited transcript, 2013.",
-    "reviewNote": "Opened published transcript and checked wording. Only two brief sentences are bundled; full article is not reproduced.",
+    "reviewNote": "Opened published transcript and checked wording. Only two brief sentences are bundled; full article is not reproduced. Recheck 24 November 2026: wording located in the reopened source passage; original-page image inspection is not implied.",
     "reviewedAt": "2026-11-24",
     "rightsBasis": "Brief attributed excerpt from the identified text or reproduction. Modern translations and recent speeches are not asserted to be public domain; no website commentary or illustrations reproduced."
   },
@@ -857,7 +857,7 @@
     "sourceUrl": "https://www.theguardian.com/books/2013/oct/15/neil-gaiman-future-libraries-reading-daydreaming",
     "locator": "Library passage",
     "edition": "Original English; edited transcript, 2013.",
-    "reviewNote": "Opened published transcript and checked wording. Only two brief sentences are bundled; full article is not reproduced.",
+    "reviewNote": "Opened published transcript and checked wording. Only two brief sentences are bundled; full article is not reproduced. Recheck 24 November 2026: wording located in the reopened source passage; original-page image inspection is not implied.",
     "reviewedAt": "2026-11-24",
     "rightsBasis": "Brief attributed excerpt from the identified text or reproduction. Modern translations and recent speeches are not asserted to be public domain; no website commentary or illustrations reproduced."
   },
@@ -869,7 +869,7 @@
     "sourceUrl": "https://www.penguin.co.uk/discover/articles/best-quotes-about-books-reading",
     "locator": "Publisher quotation; Nagasawa discusses book choices with Watanabe",
     "edition": "Original Japanese, 1987; Jay Rubin English translation, 2000, identified by publisher catalogue.",
-    "reviewNote": "Opened publisher quotation and translator record. Dialogue context corroborated by reproduced Rubin-edition extract; original page verification remains open. This is a fictional character’s elitist view, not an unqualified personal assertion by Murakami.",
+    "reviewNote": "Opened publisher quotation and translator record. Dialogue context corroborated by reproduced Rubin-edition extract; original page verification remains open. This is a fictional character’s elitist view, not an unqualified personal assertion by Murakami. Recheck 24 November 2026: wording located in the reopened source passage; original-page image inspection is not implied.",
     "reviewedAt": "2026-11-24",
     "rightsBasis": "Brief attributed excerpt from the identified text or reproduction. Modern translations and recent speeches are not asserted to be public domain; no website commentary or illustrations reproduced.",
     "speaker": "Nagasawa"
@@ -882,7 +882,7 @@
     "sourceUrl": "https://publiclibrariesonline.org/2013/05/i-graduated-from-the-library-an-interview-with-ray-bradbury/",
     "locator": "Answer to formative experiences with libraries",
     "edition": "Brendan Dowling interview, May 2002; Public Libraries, November/December 2002; republished 20 May 2013.",
-    "reviewNote": "Opened interview and checked complete sentence in Bradbury’s answer. Recent original English interview, not asserted public domain.",
+    "reviewNote": "Opened interview and checked complete sentence in Bradbury’s answer. Recent original English interview, not asserted public domain. Recheck 24 November 2026: wording located in the reopened source passage; original-page image inspection is not implied.",
     "reviewedAt": "2026-11-24",
     "rightsBasis": "Brief attributed excerpt from the identified text or reproduction. Modern translations and recent speeches are not asserted to be public domain; no website commentary or illustrations reproduced."
   },
@@ -963,10 +963,10 @@
     "text": "He ate and drank the precious words, His spirit grew robust",
     "author": "Emily Dickinson",
     "work": "A Book (He ate and drank the precious words)",
-    "sourceUrl": "https://www.gutenberg.org/files/12242/12242-h/12242-h.htm",
-    "locator": "First Series, Life, XXI, first two lines",
+    "sourceUrl": "https://en.wikisource.org/wiki/Poems_(Dickinson)/A_Book",
+    "locator": "Poems (1890), Life, XXI, A Book, first two lines",
     "edition": "Original English; early Todd/Higginson edited text, 1890; Gutenberg collected three series.",
-    "reviewNote": "Indexed primary-text passage checked; full original-page access remains a follow-up. Early edited wording, not a manuscript transcription. Line break replaced by a space; quotation stops before semicolon.",
+    "reviewNote": "Opened the 1890 edited primary-poem transcription and checked both lines. Drop-cap display splits the initial H; ordinary text restores He. Line break replaced by space; excerpt stops before the semicolon.",
     "reviewedAt": "2026-11-24",
     "rightsBasis": "Brief attributed excerpt from the identified text or reproduction. Modern translations and recent speeches are not asserted to be public domain; no website commentary or illustrations reproduced."
   },
@@ -978,7 +978,7 @@
     "sourceUrl": "https://en.wikisource.org/wiki/Page:Emily_Dickinson_Poems_(1890).djvu/30",
     "locator": "Poems, 1890, Life, X; printed page 22, opening two lines",
     "edition": "Original English; Todd/Higginson edited edition, 1890.",
-    "reviewNote": "Scan-backed transcription checked. Early edited wording retained, including split contraction; line break replaced by space, boundary before comma.",
+    "reviewNote": "Scan-backed transcription checked. Early edited wording retained, including split contraction; line break replaced by space, boundary before comma. Recheck 24 November 2026: wording located in the reopened source passage; original-page image inspection is not implied.",
     "reviewedAt": "2026-11-24",
     "rightsBasis": "Brief attributed excerpt from the identified text or reproduction. Modern translations and recent speeches are not asserted to be public domain; no website commentary or illustrations reproduced."
   },
@@ -990,7 +990,7 @@
     "sourceUrl": "https://en.wikisource.org/wiki/Moral_letters_to_Lucilius/Letter_2",
     "locator": "Letter II, On Discursiveness in Reading, section 2",
     "edition": "Richard Mott Gummere English translation, volume I, 1917; original Latin first century.",
-    "reviewNote": "Opened complete letter and checked clause in context. Quote ends before conditional clause without invented terminal punctuation; identified historical translation.",
+    "reviewNote": "Opened complete letter and checked clause in context. Quote ends before conditional clause without invented terminal punctuation; identified historical translation. Recheck 24 November 2026: wording located in the reopened source passage; original-page image inspection is not implied.",
     "reviewedAt": "2026-11-24",
     "rightsBasis": "Brief attributed excerpt from the identified text or reproduction. Modern translations and recent speeches are not asserted to be public domain; no website commentary or illustrations reproduced."
   },
@@ -1002,7 +1002,7 @@
     "sourceUrl": "https://upload.wikimedia.org/wikipedia/commons/b/b6/Leipsic_edition_of_the_Life_and_letters_of_Lord_Macaulay_%28IA_cu31924087992669%29.pdf",
     "locator": "Letter to Baba (Margaret), 15 September 1842",
     "edition": "Original English letter reproduced in G. O. Trevelyan’s Life and Letters of Lord Macaulay, Leipsic edition.",
-    "reviewNote": "Indexed primary-text passage checked; full original-page access remains a follow-up. Indexed original letter passage includes date and salutation. Exact clause ends before printed dash; no invented period.",
+    "reviewNote": "Indexed primary-text passage checked; full original-page access remains a follow-up. Indexed original letter passage includes date and salutation. Exact clause ends before printed dash; no invented period. Recheck 24 November 2026: wording located in the reopened source passage; original-page image inspection is not implied.",
     "reviewedAt": "2026-11-24",
     "rightsBasis": "Brief attributed excerpt from the identified text or reproduction. Modern translations and recent speeches are not asserted to be public domain; no website commentary or illustrations reproduced."
   },
@@ -1011,10 +1011,10 @@
     "text": "With Bewick on my knee, I was then happy: happy at least in my way.",
     "author": "Charlotte Brontë",
     "work": "Jane Eyre",
-    "sourceUrl": "https://dev.gutenberg.org/cache/epub/1260/pg1260-images.html",
-    "locator": "Chapter I, reading Bewick’s History of British Birds in the window-seat",
-    "edition": "Original English, 1847; Gutenberg 1260.",
-    "reviewNote": "Indexed primary-text passage checked; full original-page access remains a follow-up. Fictional narrator describes comfort in an illustrated book.",
+    "sourceUrl": "https://en.wikisource.org/wiki/Jane_Eyre_(c._1900_W._Nicholson_%26_Sons_edition)/Chapter_I",
+    "locator": "Chapter I, Jane reading Bewick in the window-seat; paragraph beginning With Bewick",
+    "edition": "Original English novel, 1847; c. 1900 W. Nicholson & Sons edition reproducing the second edition.",
+    "reviewNote": "Opened the identified edition's chapter transcription and checked the complete sentence and following interruption. Jane is the fictional narrator. Scan image not independently inspected.",
     "reviewedAt": "2026-11-24",
     "rightsBasis": "Brief attributed excerpt from the identified text or reproduction. Modern translations and recent speeches are not asserted to be public domain; no website commentary or illustrations reproduced.",
     "speaker": "Jane Eyre"
@@ -1027,7 +1027,7 @@
     "sourceUrl": "https://oll-resources.s3.us-east-2.amazonaws.com/oll3/store/titles/1747/Montaigne_0963-06_EBk_v6.0.pdf",
     "locator": "Book II, Of Giving the Lie; PDF page 45",
     "edition": "Charles Cotton translation, revised by William Carew Hazlitt; Edwin C. Hill edition, 1910, volume 6.",
-    "reviewNote": "Opened full PDF, checked edition and passage. Exact clause ends before colon; no invented full stop. Not a modern translation.",
+    "reviewNote": "Opened full PDF, checked edition and passage. Exact clause ends before colon; no invented full stop. Not a modern translation. Recheck 24 November 2026: wording located in the reopened source passage; original-page image inspection is not implied.",
     "reviewedAt": "2026-11-24",
     "rightsBasis": "Brief attributed excerpt from the identified text or reproduction. Modern translations and recent speeches are not asserted to be public domain; no website commentary or illustrations reproduced."
   },
@@ -1039,7 +1039,7 @@
     "sourceUrl": "https://poets.org/poem/so-long/print",
     "locator": "Stanza beginning Camerado, this is no book, first two lines",
     "edition": "Original English; Leaves of Grass, late text displayed by Academy of American Poets, dated 1891.",
-    "reviewNote": "Indexed primary-text passage checked; full original-page access remains a follow-up. Two lines with line break replaced by space; excerpt ends before comma. Earlier 1860 edition has different punctuation.",
+    "reviewNote": "Indexed primary-text passage checked; full original-page access remains a follow-up. Two lines with line break replaced by space; excerpt ends before comma. Earlier 1860 edition has different punctuation. Recheck 24 November 2026: wording located in the reopened source passage; original-page image inspection is not implied.",
     "reviewedAt": "2026-11-24",
     "rightsBasis": "Brief attributed excerpt from the identified text or reproduction. Modern translations and recent speeches are not asserted to be public domain; no website commentary or illustrations reproduced."
   },
@@ -1051,7 +1051,7 @@
     "sourceUrl": "https://upload.wikimedia.org/wikipedia/commons/6/6f/Selections_from_the_prose_and_poetry_of_Walt_Whitman_%28IA_cu31924022321453%29.pdf",
     "locator": "Closing paragraph, Ventures, on an Old Theme",
     "edition": "Original English; historical Selections from the Prose and Poetry of Walt Whitman.",
-    "reviewNote": "Indexed primary scan quotation checked; essay title corroborated by Complete Prose Works contents and reproduced complete essay. Not attributed to the 1855 Leaves of Grass preface.",
+    "reviewNote": "Indexed primary scan quotation checked; essay title corroborated by Complete Prose Works contents and reproduced complete essay. Not attributed to the 1855 Leaves of Grass preface. Recheck 24 November 2026: wording located in the reopened source passage; original-page image inspection is not implied.",
     "reviewedAt": "2026-11-24",
     "rightsBasis": "Brief attributed excerpt from the identified text or reproduction. Modern translations and recent speeches are not asserted to be public domain; no website commentary or illustrations reproduced."
   },
@@ -1063,7 +1063,7 @@
     "sourceUrl": "https://www.simonandschuster.com/p/stephen-king-books",
     "locator": "Publisher’s Stephen King author hub, displayed quotation",
     "edition": "Original English, 2000; quotation displayed by Simon & Schuster.",
-    "reviewNote": "Publisher quotation checked. Source supplies exact sentence; original book page/section is a follow-up, not invented here.",
+    "reviewNote": "Publisher quotation checked. Source supplies exact sentence; original book page/section is a follow-up, not invented here. Recheck 24 November 2026: wording located in the reopened source passage; original-page image inspection is not implied.",
     "reviewedAt": "2026-11-24",
     "rightsBasis": "Brief attributed excerpt from the identified text or reproduction. Modern translations and recent speeches are not asserted to be public domain; no website commentary or illustrations reproduced."
   },
@@ -1075,7 +1075,7 @@
     "sourceUrl": "https://www.penguinrandomhouse.com/books/43068/i-can-read-with-my-eyes-shut-by-dr-seuss/",
     "locator": "Publisher Book Description, four quoted verse lines",
     "edition": "Original English; Random House Books for Young Readers, 12 October 1978.",
-    "reviewNote": "Official publisher excerpt and catalogue checked. Verse lines joined with spaces; original punctuation retained. Recent children’s text, not asserted public domain.",
+    "reviewNote": "Official publisher excerpt and catalogue checked. Verse lines joined with spaces; original punctuation retained. Recent children’s text, not asserted public domain. Recheck 24 November 2026: wording located in the reopened source passage; original-page image inspection is not implied.",
     "reviewedAt": "2026-11-24",
     "rightsBasis": "Brief attributed excerpt from the identified text or reproduction. Modern translations and recent speeches are not asserted to be public domain; no website commentary or illustrations reproduced.",
     "speaker": "The Cat in the Hat"
@@ -1088,7 +1088,7 @@
     "sourceUrl": "https://georgerrmartin.com/notablog/2018/04/22/time-to-read/",
     "locator": "Author blog post, 22 April 2018, last sentence after And remember",
     "edition": "Original English; author’s own 2018 blog wording.",
-    "reviewNote": "Opened author post and checked exact sentence. Uses The reader and comma as written in this post, not silently combining it with the different novel dialogue.",
+    "reviewNote": "Opened author post and checked exact sentence. Uses The reader and comma as written in this post, not silently combining it with the different novel dialogue. Recheck 24 November 2026: wording located in the reopened source passage; original-page image inspection is not implied.",
     "reviewedAt": "2026-11-24",
     "rightsBasis": "Brief attributed excerpt from the identified text or reproduction. Modern translations and recent speeches are not asserted to be public domain; no website commentary or illustrations reproduced."
   },
@@ -1100,7 +1100,7 @@
     "sourceUrl": "https://search.worldcat.org/title/1002149830",
     "locator": "Opening sentence, quoted in catalogue publisher description",
     "edition": "Güneli Gün English translation; Faber, London, 1998 catalogue edition.",
-    "reviewNote": "Library catalogue’s quoted opening and translator record checked. Original novel page remains a follow-up. Fictional narrator identified in the same record.",
+    "reviewNote": "Library catalogue’s quoted opening and translator record checked. Original novel page remains a follow-up. Fictional narrator identified in the same record. Recheck 24 November 2026: wording located in the reopened source passage; original-page image inspection is not implied.",
     "reviewedAt": "2026-11-24",
     "rightsBasis": "Brief attributed excerpt from the identified text or reproduction. Modern translations and recent speeches are not asserted to be public domain; no website commentary or illustrations reproduced.",
     "speaker": "Osman"
@@ -1119,13 +1119,13 @@
   },
   {
     "id": "morley-world",
-    "text": "there’s all heaven and earth in a book, a real book I mean.",
+    "text": "there’s all heaven and earth in a book, a real book I mean",
     "author": "Christopher Morley",
     "work": "Parnassus on Wheels",
     "sourceUrl": "https://upload.wikimedia.org/wikipedia/commons/f/f5/Parnassus_on_wheels_%28IA_cu31924021800200%29.pdf",
-    "locator": "Printed page 39, Roger Mifflin’s speech about selling books",
+    "locator": "Printed page 39; PDF page 51 (zero-based index 50), Roger Mifflin on selling books",
     "edition": "Original English, 1917; historical book scan.",
-    "reviewNote": "Indexed primary-text passage checked; full original-page access remains a follow-up. Exact concluding clause of a longer sentence, lowercase retained. Excludes unreliable three-ounce/twelve-ounce paraphrases.",
+    "reviewNote": "Opened historical scan OCR passage on printed page 39. Corrected added terminal full stop: this is an excerpt ending before the source comma and Jiminy!, not a complete concluding sentence. Lowercase and typographic apostrophe retained. Scan image retrieval/signoff remains pending.",
     "reviewedAt": "2026-11-24",
     "rightsBasis": "Brief attributed excerpt from the identified text or reproduction. Modern translations and recent speeches are not asserted to be public domain; no website commentary or illustrations reproduced.",
     "speaker": "Roger Mifflin"
@@ -1138,7 +1138,7 @@
     "sourceUrl": "https://gutenberg.net.au/ebooks/z00001.html",
     "locator": "Agnes and Mr Weston discuss companionship, paragraph beginning Reading is my favourite",
     "edition": "Original English, 1847; Gutenberg Australia transcription.",
-    "reviewNote": "Opened novel transcription and checked dialogue with surrounding exchanges. Specific chapter number is not guessed.",
+    "reviewNote": "Opened novel transcription and checked dialogue with surrounding exchanges. Specific chapter number is not guessed. Recheck 24 November 2026: wording located in the reopened source passage; original-page image inspection is not implied.",
     "reviewedAt": "2026-11-24",
     "rightsBasis": "Brief attributed excerpt from the identified text or reproduction. Modern translations and recent speeches are not asserted to be public domain; no website commentary or illustrations reproduced.",
     "speaker": "Agnes Grey"
@@ -1148,10 +1148,10 @@
     "text": "I cannot comprehend the neglect of a family library in such days as these.",
     "author": "Jane Austen",
     "work": "Pride and Prejudice",
-    "sourceUrl": "https://www.gutenberg.org/cache/epub/1342/pg1342-images.html",
-    "locator": "Chapter VIII, Darcy and Caroline Bingley discuss Pemberley’s library",
-    "edition": "Original English, 1813; Gutenberg 1342.",
-    "reviewNote": "Indexed primary-text passage checked; full original-page access remains a follow-up. Darcy speaks; speaker corroborated by University of Nebraska Austen character-text record. This is not Caroline’s ironic declaration of reading enjoyment.",
+    "sourceUrl": "https://en.wikisource.org/wiki/Pride_and_Prejudice_(1817)/Chapter_8",
+    "locator": "1817 edition, Chapter VIII, Darcy and Caroline Bingley's discussion of Pemberley's library",
+    "edition": "Original English; third edition, 1817, chapter VIII.",
+    "reviewNote": "Opened the 1817 chapter transcription, located the complete sentence and checked surrounding dialogue identifying Darcy as speaker. Replaces inaccessible Gutenberg URL; not Caroline Bingley's ironic remark.",
     "reviewedAt": "2026-11-24",
     "rightsBasis": "Brief attributed excerpt from the identified text or reproduction. Modern translations and recent speeches are not asserted to be public domain; no website commentary or illustrations reproduced.",
     "speaker": "Fitzwilliam Darcy"
@@ -1164,7 +1164,7 @@
     "sourceUrl": "https://www.booksforwallsproject.org/2011/05/",
     "locator": "Letter reproduction, paragraph describing reference books and stories",
     "edition": "Original English letter, 1971; Books for Walls archive reproduction credits Troy Public Library.",
-    "reviewNote": "Opened reproduced letter text; exact complete sentence checked. Original library scan/date signoff remains a follow-up; no date beyond year claimed.",
+    "reviewNote": "Opened reproduced letter text; exact complete sentence checked. Original library scan/date signoff remains a follow-up; no date beyond year claimed. Recheck 24 November 2026: wording located in the reopened source passage; original-page image inspection is not implied.",
     "reviewedAt": "2026-11-24",
     "rightsBasis": "Brief attributed excerpt from the identified text or reproduction. Modern translations and recent speeches are not asserted to be public domain; no website commentary or illustrations reproduced."
   },
@@ -1173,10 +1173,10 @@
     "text": "the perusal of all excellent books is, as it were, to interview with the noblest men of past ages",
     "author": "René Descartes",
     "work": "Discourse on the Method",
-    "sourceUrl": "https://www.gutenberg.org/files/59/59-h/59-h.htm",
-    "locator": "Part I, paragraph beginning I still continued",
+    "sourceUrl": "https://en.wikisource.org/wiki/Discourse_on_the_Method/Part_1",
+    "locator": "Part I, paragraph beginning I was aware that the Languages taught in them",
     "edition": "John Veitch historical English translation; original French, 1637; Gutenberg 59.",
-    "reviewNote": "Indexed primary-text passage checked; full original-page access remains a follow-up. Translator confirmed in source catalogue. Exact clause with historical wording and lowercase retained, ending before comma; no silent modernization.",
+    "reviewNote": "Opened identified historical translated primary-text transcription and located the contiguous clause; excerpt ends before the comma and following comparison with a conversation. Translator and original edition metadata retained.",
     "reviewedAt": "2026-11-24",
     "rightsBasis": "Brief attributed excerpt from the identified text or reproduction. Modern translations and recent speeches are not asserted to be public domain; no website commentary or illustrations reproduced."
   },
@@ -1188,7 +1188,7 @@
     "sourceUrl": "https://en.wikisource.org/wiki/The_Love_of_Books:_the_Philobiblon_of_Richard_de_Bury/Chapter_1",
     "locator": "Chapter 1, paragraph containing the quoted clause",
     "edition": "Ernest Chester Thomas English translation, 1888; original Latin, 1345.",
-    "reviewNote": "Opened chapter and checked exact contiguous clause; ends before original semicolon/comma without an invented full stop. Translator corroborated by Gutenberg catalogue.",
+    "reviewNote": "Opened chapter and checked exact contiguous clause; ends before original semicolon/comma without an invented full stop. Translator corroborated by Gutenberg catalogue. Recheck 24 November 2026: wording located in the reopened source passage; original-page image inspection is not implied.",
     "reviewedAt": "2026-11-24",
     "rightsBasis": "Brief attributed excerpt from the identified text or reproduction. Modern translations and recent speeches are not asserted to be public domain; no website commentary or illustrations reproduced."
   },
@@ -1200,7 +1200,7 @@
     "sourceUrl": "https://en.wikisource.org/wiki/The_Love_of_Books:_the_Philobiblon_of_Richard_de_Bury/Chapter_2",
     "locator": "Chapter 2, paragraph containing the quoted clause",
     "edition": "Ernest Chester Thomas English translation, 1888; original Latin, 1345.",
-    "reviewNote": "Opened chapter and checked exact contiguous clause; ends before original semicolon/comma without an invented full stop. Translator corroborated by Gutenberg catalogue.",
+    "reviewNote": "Opened chapter and checked exact contiguous clause; ends before original semicolon/comma without an invented full stop. Translator corroborated by Gutenberg catalogue. Recheck 24 November 2026: wording located in the reopened source passage; original-page image inspection is not implied.",
     "reviewedAt": "2026-11-24",
     "rightsBasis": "Brief attributed excerpt from the identified text or reproduction. Modern translations and recent speeches are not asserted to be public domain; no website commentary or illustrations reproduced."
   },

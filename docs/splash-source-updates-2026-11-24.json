@@ -1,0 +1,93 @@
+[
+  {
+    "id": "emerson-scholar",
+    "url": "https://en.wikisource.org/wiki/The_American_Scholar",
+    "ref": "turn979851330view3",
+    "locator": "Section II, paragraph beginning This is bad; this is worse than it seems",
+    "edition": "Second edition, Boston: James Munroe and Company, 1838; original English address delivered 31 August 1837.",
+    "note": "Opened the scan-backed 1838 transcription and located the complete sentence in its discussion of inspiration rather than book worship. Replaces the inaccessible Gutenberg link; scan image itself not inspected."
+  },
+  {
+    "id": "emerson-idle",
+    "url": "https://en.wikisource.org/wiki/The_American_Scholar",
+    "ref": "turn538520452view1",
+    "locator": "Section II, paragraph beginning Undoubtedly there is a right way of reading",
+    "edition": "Second edition, Boston: James Munroe and Company, 1838; original English address delivered 31 August 1837.",
+    "note": "Opened the 1838 primary-text transcription and checked the sentence in context. Emerson is subordinating reading to independent thought and experience; not a dismissal of scholarship."
+  },
+  {
+    "id": "lang-changing-face",
+    "url": "https://en.wikisource.org/wiki/The_Library_(Lang)/Chapter_1",
+    "ref": "turn538520452view2",
+    "locator": "Chapter I, paragraph beginning Selling books",
+    "note": "Opened chapter transcription and checked the sentence. Corrected previous Chapter II locator to Chapter I in the linked edition; no scan-image inspection claimed."
+  },
+  {
+    "id": "lang-vanished-past",
+    "url": "https://en.wikisource.org/wiki/The_Library_(Lang)/Chapter_1",
+    "ref": "turn538520452view3",
+    "locator": "Chapter I, paragraph beginning He hardly knows, following Selling books",
+    "note": "Opened chapter transcription and checked the sentence. Corrected previous Chapter II locator to Chapter I in the linked edition; no scan-image inspection claimed."
+  },
+  {
+    "id": "longfellow-serenity",
+    "url": "https://rpo.library.utoronto.ca/content/morituri-salutamus-poem-fiftieth-anniversary-class-1825-bowdoin-college",
+    "ref": "turn489077303view1",
+    "locator": "Morituri Salutamus, lines 232-233; poem's allegorical discussion of the scholar and worldly gain",
+    "edition": "Riverside edition, The Poetical Works of Henry Wadsworth Longfellow (1890), volume III, pages 187-196; original poem 1875.",
+    "note": "Opened University of Toronto's complete primary-poem transcription and edition statement. Two verse lines joined with a space; excerpt ends before the source semicolon. Replaces NPS page, which no longer exposes the quotation in retrieved text."
+  },
+  {
+    "id": "dickinson-books",
+    "url": "https://en.wikisource.org/wiki/Poems:_Third_Series/A_Book",
+    "ref": "turn489444252view4",
+    "locator": "Poems: Third Series (1896), Life, XVI, A Book, lines 1-2",
+    "note": "Opened the identified 1896 edited text and checked both verse lines. Drop-cap display splits the initial T typographically; ordinary text restores There. Early edited wording retained rather than mixing it with a manuscript version."
+  },
+  {
+    "id": "dickinson-spirit",
+    "url": "https://en.wikisource.org/wiki/Poems_(Dickinson)/A_Book",
+    "ref": "turn490456679view4",
+    "locator": "Poems (1890), Life, XXI, A Book, first two lines",
+    "note": "Opened the 1890 edited primary-poem transcription and checked both lines. Drop-cap display splits the initial H; ordinary text restores He. Line break replaced by space; excerpt stops before the semicolon."
+  },
+  {
+    "id": "wilde-books",
+    "url": "https://en.wikisource.org/wiki/The_Picture_of_Dorian_Gray_(1891)",
+    "ref": "turn662423848view2",
+    "locator": "The preface, paragraph beginning There is no such thing",
+    "edition": "Original English, 1891 revised book edition; authorial preface.",
+    "note": "Opened the 1891 edition transcription and checked the two complete sentences in the preface, followed in the source by That is all. Authorial commentary, not fictional dialogue."
+  },
+  {
+    "id": "austen-library",
+    "url": "https://en.wikisource.org/wiki/Pride_and_Prejudice_(1817)/Chapter_8",
+    "ref": "turn490456679view1",
+    "locator": "1817 edition, Chapter VIII, Darcy and Caroline Bingley's discussion of Pemberley's library",
+    "edition": "Original English; third edition, 1817, chapter VIII.",
+    "note": "Opened the 1817 chapter transcription, located the complete sentence and checked surrounding dialogue identifying Darcy as speaker. Replaces inaccessible Gutenberg URL; not Caroline Bingley's ironic remark."
+  },
+  {
+    "id": "dubois-shakespeare",
+    "url": "https://en.wikisource.org/wiki/The_Souls_of_Black_Folk_(2nd_ed)/Chapter_6",
+    "ref": "turn662423848view1",
+    "locator": "Second edition (1903), VI: Of the Training of Black Men, closing paragraph",
+    "edition": "Original English, second edition, 1903.",
+    "note": "Opened chapter transcription and checked the exact sentence in the closing argument for cultural and educational equality across the color line."
+  },
+  {
+    "id": "bronte-bewick",
+    "url": "https://en.wikisource.org/wiki/Jane_Eyre_(c._1900_W._Nicholson_%26_Sons_edition)/Chapter_I",
+    "ref": "turn266774301view1",
+    "locator": "Chapter I, Jane reading Bewick in the window-seat; paragraph beginning With Bewick",
+    "edition": "Original English novel, 1847; c. 1900 W. Nicholson & Sons edition reproducing the second edition.",
+    "note": "Opened the identified edition's chapter transcription and checked the complete sentence and following interruption. Jane is the fictional narrator. Scan image not independently inspected."
+  },
+  {
+    "id": "descartes-books",
+    "url": "https://en.wikisource.org/wiki/Discourse_on_the_Method/Part_1",
+    "ref": "turn672469964view3",
+    "locator": "Part I, paragraph beginning I was aware that the Languages taught in them",
+    "note": "Opened identified historical translated primary-text transcription and located the contiguous clause; excerpt ends before the comma and following comparison with a conversation. Translator and original edition metadata retained."
+  }
+]

@@ -8,11 +8,11 @@ export default tseslint.config(
   js.configs.recommended,
   ...tseslint.configs.recommended,
   {
-    files: ["tools/progress-monitor/app.js"],
+    files: ["tools/progress-monitor/app.js", "design/opac/prototype.js"],
     languageOptions: { globals: globals.browser },
   },
   {
-    files: ["tools/progress-monitor/*.mjs"],
+    files: ["tools/progress-monitor/*.mjs", "design/opac/*.mjs"],
     languageOptions: { globals: globals.node },
   },
   {

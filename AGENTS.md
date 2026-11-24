@@ -14,3 +14,7 @@ For work continued on another computer, also read `docs/SESSION_HANDOFF.md`. Aft
 6. Recalculate totals with `npm run progress:validate -- --write`, then run `npm run progress:validate`. Update the weighted percentages and status summary in `PROGRESS.md` in the same change as `PROGRESS.json`.
 
 The v1 score combines weighted implementation (60%), verification (30%), and release gates (10%). Release gates pass when all their linked tasks are verified. A score of 100% requires the full v1 definition of done in `docs/PRODUCT_SPECIFICATION.md`. Change the task scope or weights only when the agreed product scope changes, or to correct and document an inaccurate baseline.
+
+## Skill use and pauses
+
+Proactively identify, read and apply relevant available skills before applicable work; the owner should not need to invoke them repeatedly. Report actual skill use accurately. An explicit owner pause stops implementation and design work until explicit resume. Immediately record pauses and owner decisions in PROGRESS.md, PROGRESS.json and docs/SESSION_HANDOFF.md without requiring a reminder. A request to update these records does not resume development.

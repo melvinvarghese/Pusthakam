@@ -2,11 +2,31 @@
 
 _Last updated: 2026-11-24_
 
+## Current: development paused by owner
+
+Updated 2026-11-24T14:12:02.123Z.
+
+Owner paused Pusthakam development after expressing concern that supplied skills were not being used. All implementation and design work remains paused until the owner explicitly resumes. This documentation update is authorized; it does not resume development. Before future work, proactively identify, read and apply relevant available skills without requiring repeated owner prompts, and report actual use accurately. Progress and handoff updates are required immediately after meaningful changes, including pauses, without reminders. Next exact step: wait for explicit resume, then read contributor instructions and current progress/handoff, inspect the working tree and select applicable skills before continuing. Existing OPAC prototypes remain pending owner selection; remote-device LAN and release checks remain unresolved. No new product credit, build, commit or push.
+
+Documentation-only verification (2026-11-24T14:12:19.976Z): npm.cmd run progress:validate -- --write and npm.cmd run progress:validate passed (59 tasks, 10 phases); git diff --check passed with line-ending notices only. Read-back confirmed the pause records agree. No application tests or builds run. Initial rg lookup unavailable; PowerShell Select-String used instead. Product totals remain 96.7% overall, 100% implementation, 97% verification and 76% release readiness. Earlier Active sections are historical and do not authorize resuming work.
+
 ## Local progress monitor
 
 For continuation on another computer, read [SESSION_HANDOFF.md](docs/SESSION_HANDOFF.md) and the current task in PROGRESS.json. Uncommitted changes remain local until Git sync.
 
 Pusthakam is **96.7% complete overall**, with **100% implemented**, **97% verified** and **76% release-ready**. Release gate `data` (Verified migration and recovery, weight 20) passed. All 10 development phases have reached 100% implementation, and 9 of 10 phases are 100% verified. Only 2 multi-platform packaging smoke tests (`REL-MAC`, `REL-LINUX`) remain. Next milestone: macOS and Linux package smoke tests.
+
+## Active: coded OPAC alternatives (24 November 2026)
+
+Three standalone coded OPAC prototypes are ready for owner selection: 1 The Shelf (cover grid), 2 The Index (compact holdings list), 3 Reading Table (text-led browsing). Source and six actual Chrome screenshots are in design/opac/. Browser review passed 12 responsive layouts (1366, 768, 390 and 320px) and 24 interaction checks; zero page exceptions or external page HTTP requests. Desktop screenshots and Index mobile visually inspected. Demonstration holdings only; approved logo retained. Production OPAC and remote-device LAN issue unchanged. Run node design/opac/server.mjs and open http://127.0.0.1:5193/design/opac/. Await owner choice before production changes. Earlier inspection telemetry review was avoided with isolated Chrome and a restricted loopback server. Initial harness/lint issues were corrected before final review.
+
+## Superseded: generated OPAC concepts (24 November 2026)
+
+Three OPAC concept images generated and shown to owner: 1 Open Shelves (bright search and cover grid), 2 Reading Room (deep-teal literary discovery), 3 Catalogue Desk (compact search results and holdings). Each includes coordinated desktop/mobile views and approved logo reference. Await owner selection before implementing any OPAC UI. These are illustrative mockups, not live catalogue data; generated covers/classifications/counts are not cataloguing guidance. Potential cover/filter/curated-browse controls need implementation review after selection. Existing OPAC and LAN behavior unchanged. Generation initially rejected Windows local reference paths; retried successfully using the already displayed logo image reference. Design brief recorded in docs/OPAC_DESIGN_CONCEPTS.md; previews are attached in this conversation. No new product weights, commit, push, deployment or native build.
+
+## Active: splash quotation source audit (24 November 2026)
+
+Source audit recorded for all 100 enabled splash quotations and all 81 original stored URLs. 46 URLs opened and 35 were blocked/oversize/timed out. Wording located for 63 entries after alternate primary-edition research; 37 need new passage retrieval. Replaced 12 canonical links, corrected Lang Chapter I and Morley excerpt punctuation, retained speaker/translator and image-signoff limitations. All 34 focused startup/splash/shell tests passed; final catalogue-only rerun 10/10 passed after metadata updates. ESLint, TypeScript/Vite production build, both progress validation modes and whitespace checks passed. Collection stays at 100. Original-page image/edition signoff remains partial; tests do not prove literary authenticity. No native executable/installer rebuild, commit or push. Local Windows files are visible to GitHub Desktop. Earlier Linux tooling remains preserved; remote LAN and native platform acceptance unchanged.
 
 ## Active: local synchronization of Linux release tooling (24 November 2026)
 
