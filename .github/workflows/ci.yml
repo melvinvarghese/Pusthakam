@@ -107,7 +107,9 @@ jobs:
             echo "Installing $DEB_FILE..."
             sudo dpkg -i "$DEB_FILE"
             echo "Verifying installed desktop assets..."
-            DESKTOP_FILE=$(dpkg -L pusthakam | grep -E '^/usr/share/applications/[^/]+\.desktop
+            DESKTOP_FILE=$(dpkg -L pusthakam | grep 'applications/' | grep '.desktop' | head -n 1)
+            test -n "$DESKTOP_FILE"
+            test -f "$DESKTOP_FILE"
             test -f /usr/share/icons/hicolor/128x128/apps/pusthakam.png || true
             echo "Testing package uninstallation..."
             sudo dpkg -r pusthakam
