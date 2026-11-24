@@ -36,6 +36,11 @@ jobs:
       - name: Progress monitor data validation
         run: node tools/progress-monitor/validate.mjs
 
+      - name: Release smoke runner regression checks
+        run: |
+          python3 -m unittest discover -s tools/release -p 'test_*.py' -v
+          bash -n tools/release/linux-package-smoke.sh
+
       - name: Production bundle build
         run: npm run build
 
@@ -102,7 +107,7 @@ jobs:
         if: matrix.platform == 'linux'
         run: |
           sudo apt-get update
-          sudo apt-get install -y libwebkit2gtk-4.1-dev build-essential curl wget file libssl-dev libayatana-appindicator3-dev librsvg2-dev
+          sudo apt-get install -y libwebkit2gtk-4.1-dev build-essential curl wget file libssl-dev libayatana-appindicator3-dev librsvg2-dev xvfb python3
 
       - name: Setup Rust toolchain
         uses: dtolnay/rust-toolchain@stable
@@ -123,19 +128,7 @@ jobs:
 
       - name: Linux Package Installation & Smoke Test
         if: matrix.platform == 'linux'
-        run: |
-          DEB_FILE=$(ls src-tauri/target/release/bundle/deb/*.deb 2>/dev/null | head -n 1)
-          if [ -f "$DEB_FILE" ]; then
-            echo "Installing $DEB_FILE..."
-            sudo dpkg -i "$DEB_FILE"
-            echo "Verifying installed desktop assets..."
-            test -f /usr/share/applications/pusthakam.desktop
-            test -f /usr/share/icons/hicolor/128x128/apps/pusthakam.png || true
-            echo "Testing package uninstallation..."
-            sudo dpkg -r pusthakam
-            test ! -f /usr/bin/pusthakam
-            echo "Linux Debian package verified successfully."
-          fi
+        run: bash tools/release/linux-package-smoke.sh
 
       - name: macOS Package & Bundle Integrity Smoke Test
         if: matrix.platform == 'macos'
