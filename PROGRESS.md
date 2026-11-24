@@ -1,6 +1,6 @@
 # PROGRESS
 
-_Last updated: 2026-11-23_
+_Last updated: 2026-11-24_
 
 ## Local progress monitor
 
@@ -8,7 +8,37 @@ For continuation on another computer, read [SESSION_HANDOFF.md](docs/SESSION_HAN
 
 Pusthakam is **96.7% complete overall**, with **100% implemented**, **97% verified** and **76% release-ready**. Release gate `data` (Verified migration and recovery, weight 20) passed. All 10 development phases have reached 100% implementation, and 9 of 10 phases are 100% verified. Only 2 multi-platform packaging smoke tests (`REL-MAC`, `REL-LINUX`) remain. Next milestone: macOS and Linux package smoke tests.
 
-## Latest: splash presentation polish (23 November 2026)
+## Queued: investigate LAN access failure (24 November 2026)
+
+Owner reports LAN mode is not working. Screenshot shows LAN enabled and server status Active on port 4318, with LAN and loopback OPAC addresses; that status does not establish successful browser/client access. Exact failing workflow, browser error and client device are not yet known. Queue investigation in the combined batch: reproduce host-local OPAC and staff access first, then another device on the same network; check listening/bind address, advertised network adapter/address, firewall reachability, pairing and staff authentication separately. Preserve permissions and local-network scope; do not assume a firewall or pairing fault from the screenshot alone. No diagnosis/fix or LAN verification credit yet. Do not copy temporary pairing codes, fingerprints or private network addresses into committed documentation. Track as KI-024. Implementation remains paused until the owner starts the batch.
+
+## Queued: finish Barcode & Printing (24 November 2026)
+
+Owner requests completing Barcode & Printing: screenshot shows its sidebar destination displaying a not-available-yet placeholder despite the phase 5 plan. Add this to the pending combined change batch; implementation remains paused while the owner lists changes. Before implementation, audit existing barcode labels, spine labels, member cards and receipt/due-slip functionality; reuse working screens and identify genuine gaps. Replace the placeholder with a functional, permission-aware printing entry point and verify the resulting workflows. Do not assume these underlying features are all absent or mark the page complete from existing product totals. Track as KI-023; no new code or verification credit in this documentation change.
+
+## Paused: collect changes for one implementation batch (24 November 2026)
+
+Owner explicitly asked to wait while they provide more changes, then implement them together. Do not begin this batch until the owner says to proceed. Pending: KI-021 setup sidebar full height; KI-022 PDF report native Save As; KI-023 finish the Barcode & Printing page; KI-024 investigate LAN access failure; and book-name lookup in Circulation > Issue, like member-name lookup, with live title/copy suggestions, copy identifiers/status and the existing loan review/confirmation. Preserve direct barcode/accession entry and catalogue permissions. Initial code inspection only; no new book-search application code changed and no feature tests/build run. No product weight change. Quotation source follow-ups and macOS/Linux release smoke tests remain open.
+
+## Deferred PDF report save-location chooser (24 November 2026)
+
+Owner reports that Export PDF report saves directly to Downloads. Deferred request: open the native Windows Save As dialog so the user can choose the folder and filename before saving. Later acceptance: suggest a meaningful .pdf filename, respect cancellation without creating a file, confirm overwrites, and show the actual saved path after success. Apply to PDF report export; preserve report content and the planned beautiful/simple design choices. Documentation only; behavior not changed or verified. Track as KI-022. Product weights and release milestone unchanged.
+
+## Deferred setup sidebar fix (24 November 2026)
+
+Owner screenshot shows the first-launch setup sidebar ending above the bottom of a maximized Windows window, leaving a white area below the dark blue rail. Deferred at the owner’s explicit request; documentation only, no UI fix applied. Later acceptance: extend the sidebar background to the full available app-content height on all three setup steps, including resize/maximize, while keeping shorter-window form scrolling and navigation reachable. Track as KI-021; do not treat as implemented or verified.
+
+Owner also supplied a successful Windows release build log: `npm.cmd run tauri build -- --bundles nsis` produced `src-tauri/target/release/bundle/nsis/Pusthakam_0.1.0_x64-setup.exe` (4.30 MiB). This is owner-reported build evidence; installation smoke tests and GitHub publication are not confirmed. In PowerShell, use `npm.cmd` if execution policy blocks `npm.ps1`. Product completion weights and release milestone are unchanged.
+
+## Latest: quotation expansion continued (24 November 2026)
+
+Reached 100 enabled, attributed quotations, adding 56 to the prior 44-entry collection. Source, edition, speaker and excerpt-boundary notes are recorded per entry. Institutional/publisher reproductions and indexed official transcripts remain explicitly distinguished from opened original text. Count goal reached; final original-source/edition signoff remains partial where access failed or a reproduction was reviewed. All 33 focused tests, ESLint, TypeScript and frontend production build passed. Exact-count regression now requires 100 entries. Montagu’s letter reproduction gives 28 Jan. N.S. [1753]; full scan image inspection remains open. Final metadata-correction frontend rebuild passed. Actual Chrome checks rendered all 100 entries at both 1280x800 and 400x720: 200 layout checks passed without clipping/overflow; reduced motion disabled animations/transitions. Longest-text screenshots reviewed, preview files removed and own browser/server stopped. Offline native Windows build passed (44.65s); current executable `D:\Pusthakam\src-tauri\target\debug\pusthakam.exe`, not interactively launched. Progress recalculation passed with totals unchanged. No installer package, commit, push or publication. Next: complete documented original-source/edition image checks, then resume macOS/Linux release smoke tests. Existing npm configuration and 606 kB bundle warnings are non-fatal. Evidence: `splash-100-checks-2026-11-24`.
+
+## Earlier: 44-quotation checkpoint (24 November 2026)
+
+Expanded the enabled collection from 20 to 44 reviewed quotations. Moved the auditable records into `src/features/boot/splashQuoteCatalogue.json`, imported locally by the existing picker. Each addition records its source, edition, context, review method and access limitations; indexed excerpts and publisher quotations are distinguished from opened full text. About 100 remains the target, with original-source follow-ups still open. All 33 focused tests, ESLint, TypeScript and production build passed. Offline native Windows build passed (45.33s); progress recalculation passed with totals unchanged. Current executable: `D:\Pusthakam\src-tauri\target\debug\pusthakam.exe`; not interactively launched. No installer, commit or push. Next: add 56 further reviewed entries and finish original-source/edition follow-ups, including Montagu letter context/date. Existing npm configuration and 560 kB bundle warnings are non-fatal. Evidence: `splash-44-checks-2026-11-24`. Preserve the approved logo and existing splash timing, query/error behavior and per-launch selection. Product milestone remains macOS/Linux package smoke tests; weighted totals unchanged.
+
+## Previous: splash presentation polish (23 November 2026)
 
 Owner authorized larger approved logo, stronger title, cleaner spacing, readable quotes, gentle motion and plain loading text. Implemented a splash-only 144/160 px mark, 40-48 px title, balanced 18-22 px quotation, author/speaker credit and quiet 2 px progress line, using existing shelf-ink/teal tokens and bundled fonts. Entrance is 420 ms; sign-in/setup reveal is 180 ms and adds no startup hold. Reduced-motion overrides disable both animations and the progress transition.
 

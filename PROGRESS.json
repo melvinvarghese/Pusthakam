@@ -1,11 +1,11 @@
 {
   "schemaVersion": 1,
-  "lastUpdated": "2026-11-23T13:11:29Z",
-  "currentPhase": "3",
+  "lastUpdated": "2026-11-24T04:25:09Z",
+  "currentPhase": "4",
   "currentTask": {
-    "title": "Polished startup splash presentation",
-    "status": "verified",
-    "detail": "Larger approved logo, stronger title, 18-22 px balanced quotes, plain loading words and quiet 2 px progress line. Gentle entrance and sign-in/setup fade, explicitly disabled for reduced motion. Original three-second minimum, pending-query hold and error behavior retained; callback changes no longer restart deadline. All 213 frontend tests, lint, TypeScript, frontend and native Windows builds passed; desktop/narrow/reduced-motion browser review passed. Source/docs and latest native executable saved locally; no commit/push/publication. Next: resume quotation source/edition checks and expand 20 toward about 100; product release milestone unchanged."
+    "title": "Collect owner changes before implementing the batch",
+    "status": "in-progress",
+    "detail": "Owner explicitly paused implementation to provide more changes and requested doing them together. Record pending requests only until the owner starts the batch: KI-021 setup sidebar full height; KI-022 PDF report native Save As; Circulation > Issue Find book by name with live title/copy suggestions, copy identifiers/status and normal loan review/confirmation. Initial code inspection only; no book-search UI or business logic changed. Preserve direct barcode/accession entry and catalogue permissions. Quotation source follow-ups and macOS/Linux release smoke tests remain open; no new product weight. Fourth pending change (KI-023): finish the Barcode & Printing page, currently a placeholder; audit/reuse existing print tools and fill gaps when the owner starts the batch. Fifth pending change (KI-024): investigate owner-reported LAN failure despite Active server status; distinguish local OPAC/staff access, remote connectivity, pairing and authentication. Exact browser error not yet supplied; no fix or verification claimed."
   },
   "nextMilestone": {
     "title": "macOS and Linux package smoke tests",
@@ -1799,6 +1799,22 @@
   ],
   "verificationRuns": [
     {
+      "id": "splash-100-checks-2026-11-24",
+      "title": "100-quotation catalogue, startup regressions and all-entry visual checks",
+      "at": "2026-11-24T03:33:00Z",
+      "check": "npm test -- src/features/boot/StartupSplashScreen.test.tsx src/features/boot/splashQuotes.test.ts src/features/boot/Gate.test.tsx src/app/AppShell.test.tsx --maxWorkers=2; npm run lint; npm run build; Chrome CDP: 100 entries at 1280x800 and 400x720; UTF-8/ID/text/word-count audit; cargo build --offline --manifest-path src-tauri/Cargo.toml --features tauri/custom-protocol; npm run progress:validate -- --write",
+      "outcome": "passed",
+      "result": "100 distinct quotation IDs and texts; complete metadata and <=25 words per entry. All 33 focused tests across four files passed (30.07s), including exact-count assertion, stable per-launch selection/storage and startup query/timing/error behavior. ESLint, TypeScript and production build passed, including final metadata-correction rebuild. Actual Chrome inspection rendered every entry at 1280x800 and 400x720: 200 layout checks, no clipping/overflow; reduced motion animation none and progress transition 0s. Desktop/narrow longest-text screenshots visually reviewed. Own preview files removed and browser/server closed. Existing npm http-proxy and 606 kB bundle warnings are non-fatal. Offline native Windows build passed (44.65s); executable: src-tauri/target/debug/pusthakam.exe, 26588672 bytes, SHA-256 e7f21b888a48e222c0f3c2a7c44f5aaec9377861d0958f5533c9b21901fd9ed3. Not interactively launched. Progress recalculation passed: 96.7% overall, 100% implementation, 97% verification and 76% release readiness. Count target reached; original-source image/edition follow-ups remain documented. No installer, commit, push or publication."
+    },
+    {
+      "id": "splash-44-checks-2026-11-24",
+      "title": "Expanded quotation catalogue and startup regression checks",
+      "at": "2026-11-24T03:16:51Z",
+      "check": "npm test -- src/features/boot/StartupSplashScreen.test.tsx src/features/boot/splashQuotes.test.ts src/features/boot/Gate.test.tsx src/app/AppShell.test.tsx --maxWorkers=2; npm run lint; npm run build; cargo build --offline --manifest-path src-tauri/Cargo.toml --features tauri/custom-protocol; catalogue word-count/encoding audit; npm run progress:validate -- --write",
+      "outcome": "passed",
+      "result": "All 33 focused tests across four files passed (catalogue integrity, selection/storage, splash timing/query/error behavior and app shell). ESLint, TypeScript and production build passed. Offline native Windows build passed in 45.33s; executable src-tauri/target/debug/pusthakam.exe, 26578944 bytes, SHA-256 1292569a1d894e78fb597ea5fad286bdb0f1eba4655b46cc4491a26fd8b7227b. Not interactively launched. Non-fatal existing npm http-proxy and 560 kB main-chunk warnings. Catalogue audit: 44 distinct entries; no replacement characters; no work exceeds 25 quoted words in this batch. Progress recalculation passed: 96.7% overall, 100% implementation, 97% verification, 76% release readiness. This remains a 44-entry checkpoint toward approximately 100; original-source/edition follow-ups remain open. No installer package, commit, push or publication."
+    },
+    {
       "id": "splash-polish-final-checks-2026-11-23",
       "title": "Polished splash timing, accessibility, visual and build checks",
       "at": "2026-11-23T13:11:29Z",
@@ -3288,6 +3304,48 @@
     }
   ],
   "recentActivity": [
+    {
+      "kind": "completed",
+      "at": "2026-11-24T04:25:09Z",
+      "title": "Recorded LAN failure for the combined batch (KI-024)",
+      "detail": "Owner reports LAN mode is not working. Screenshot shows LAN enabled and server status Active on port 4318, with LAN and loopback OPAC addresses; that status does not establish successful browser/client access. Exact failing workflow, browser error and client device are not yet known. Queue investigation in the combined batch: reproduce host-local OPAC and staff access first, then another device on the same network; check listening/bind address, advertised network adapter/address, firewall reachability, pairing and staff authentication separately. Preserve permissions and local-network scope; do not assume a firewall or pairing fault from the screenshot alone. No diagnosis/fix or LAN verification credit yet. Do not copy temporary pairing codes, fingerprints or private network addresses into committed documentation. Track as KI-024. Implementation remains paused until the owner starts the batch."
+    },
+    {
+      "kind": "completed",
+      "at": "2026-11-24T04:20:43Z",
+      "title": "Queued Barcode & Printing completion (KI-023)",
+      "detail": "Owner requests completing Barcode & Printing: screenshot shows its sidebar destination displaying a not-available-yet placeholder despite the phase 5 plan. Add this to the pending combined change batch; implementation remains paused while the owner lists changes. Before implementation, audit existing barcode labels, spine labels, member cards and receipt/due-slip functionality; reuse working screens and identify genuine gaps. Replace the placeholder with a functional, permission-aware printing entry point and verify the resulting workflows. Do not assume these underlying features are all absent or mark the page complete from existing product totals. Track as KI-023; no new code or verification credit in this documentation change."
+    },
+    {
+      "kind": "completed",
+      "at": "2026-11-24T04:19:46Z",
+      "title": "Recorded book-name lookup and paused for combined change batch",
+      "detail": "Owner asked to wait for more changes and implement them together. Book-name lookup request saved alongside KI-021/KI-022. Initial code inspection only; no new application code changed, no tests or build run for this request."
+    },
+    {
+      "kind": "completed",
+      "at": "2026-11-24T04:14:27Z",
+      "title": "Recorded deferred PDF report Save As request (KI-022)",
+      "detail": "Owner reports that Export PDF report saves directly to Downloads. Deferred request: open the native Windows Save As dialog so the user can choose the folder and filename before saving. Later acceptance: suggest a meaningful .pdf filename, respect cancellation without creating a file, confirm overwrites, and show the actual saved path after success. Apply to PDF report export; preserve report content and the planned beautiful/simple design choices. Documentation only; behavior not changed or verified. Track as KI-022."
+    },
+    {
+      "kind": "completed",
+      "at": "2026-11-24T04:05:20Z",
+      "title": "Recorded deferred setup-sidebar height fix (KI-021)",
+      "detail": "Owner screenshot shows the first-launch setup sidebar ending above the bottom of a maximized Windows window, leaving a white area below the dark blue rail. Deferred at the owner’s explicit request; documentation only, no UI fix applied. Later acceptance: extend the sidebar background to the full available app-content height on all three setup steps, including resize/maximize, while keeping shorter-window form scrolling and navigation reachable. Track as KI-021; do not treat as implemented or verified."
+    },
+    {
+      "kind": "completed",
+      "at": "2026-11-24T03:33:00Z",
+      "title": "100 splash quotations pass catalogue and browser checks",
+      "detail": "100 distinct quotation IDs and texts; complete metadata and <=25 words per entry. All 33 focused tests across four files passed (30.07s), including exact-count assertion, stable per-launch selection/storage and startup query/timing/error behavior. ESLint, TypeScript and production build passed, including final metadata-correction rebuild. Actual Chrome inspection rendered every entry at 1280x800 and 400x720: 200 layout checks, no clipping/overflow; reduced motion animation none and progress transition 0s. Desktop/narrow longest-text screenshots visually reviewed. Own preview files removed and browser/server closed. Existing npm http-proxy and 606 kB bundle warnings are non-fatal. Offline native Windows build passed (44.65s); executable: src-tauri/target/debug/pusthakam.exe, 26588672 bytes, SHA-256 e7f21b888a48e222c0f3c2a7c44f5aaec9377861d0958f5533c9b21901fd9ed3. Not interactively launched. Progress recalculation passed: 96.7% overall, 100% implementation, 97% verification and 76% release readiness. Count target reached; original-source image/edition follow-ups remain documented. No installer, commit, push or publication."
+    },
+    {
+      "kind": "completed",
+      "at": "2026-11-24T03:16:51Z",
+      "title": "Expanded reviewed splash quotation collection to 44",
+      "detail": "All 33 focused tests across four files passed (catalogue integrity, selection/storage, splash timing/query/error behavior and app shell). ESLint, TypeScript and production build passed. Offline native Windows build passed in 45.33s; executable src-tauri/target/debug/pusthakam.exe, 26578944 bytes, SHA-256 1292569a1d894e78fb597ea5fad286bdb0f1eba4655b46cc4491a26fd8b7227b. Not interactively launched. Non-fatal existing npm http-proxy and 560 kB main-chunk warnings. Catalogue audit: 44 distinct entries; no replacement characters; no work exceeds 25 quoted words in this batch. Progress recalculation passed: 96.7% overall, 100% implementation, 97% verification, 76% release readiness. This remains a 44-entry checkpoint toward approximately 100; original-source/edition follow-ups remain open. No installer package, commit, push or publication."
+    },
     {
       "kind": "completed",
       "at": "2026-11-23T13:11:29Z",
