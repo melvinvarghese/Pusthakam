@@ -434,3 +434,17 @@ Upgrading Pusthakam is seamless and non-destructive:
 
 ---
 _Pusthakam — A better way to manage libraries._
+
+
+## November 2026 workflow updates
+
+- **Circulation > Issue:** enter the member number or use Find member by name. Scan the copy barcode/accession number or choose **Find book by name**, type a title, choose the matching author/edition, then choose the physical copy. Copies on loan or otherwise unavailable cannot be selected. A reserved copy still requires the borrower to satisfy reservation rules. **Review loan** and **Issue copy** remain required; selecting a book does not issue it.
+- **Reports:** PDF and XLSX exports open Windows **Save As**. Choose a folder and filename, confirm an overwrite if applicable, or cancel without saving. The report page displays the saved path. Other platforms retain their browser download fallback. Report design and the simple-design checkbox are unchanged.
+- **Barcode & Printing:** Book labels supports searching/selecting copies and previewing a label sheet. Choose **Barcode and call number** or **Spine label** in the preview. Use **Member cards** to find and preview a member card. Use **Loan due slips** to enter a copy barcode/accession number and reprint the current due slip for its open loan. Slip preview does not return or renew the book. Each tool requires its corresponding catalogue, member or circulation permission. Physical printer alignment must still be checked on the actual label stock.
+- **LAN access:** enable hosting in Library Settings. The status reflects listener startup rather than only the saved setting; an occupied port or invalid binding is shown as an error. Copy the **/staff** address for staff access or **/opac** for public catalogue search. On another device, use the host’s network address, not 127.0.0.1, and connect to the same network. If the host can open its address but another device cannot, check Windows firewall access and Wi-Fi client isolation. Recheck with the updated installer; cross-device access is not established merely by an Active status.
+
+### Circulation selection shortcuts
+
+In **Reservations**, choose **Find book by name**, search a title and select the physical copy. Copies currently on loan can be selected for reservations; member and copy eligibility are checked when **Place reservation** is clicked.
+
+**Renew** and **Return** show **Currently issued books**, including overdue loans, ordered by due date. Search by title, member name/number, barcode or accession, and use Previous/Next for all pages. Select **Review renewal** or **Review return** beside a copy, then confirm in the existing dialog. Selecting a loan alone does not change it. Barcode/scanner entry remains available. The list refreshes after successful issue, renewal or return and periodically while open.

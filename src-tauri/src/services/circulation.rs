@@ -59,6 +59,55 @@ pub struct OverduePage {
     total: i64,
 }
 
+#[derive(Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct OpenLoan {
+    loan_id: i64,
+    title: String,
+    barcode: String,
+    accession_no: String,
+    member_name: String,
+    member_number: String,
+    due_on: String,
+}
+#[derive(Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct OpenLoanPage {
+    rows: Vec<OpenLoan>,
+    page: i64,
+    page_size: i64,
+    total: i64,
+}
+pub fn list_open_loans(conn: &Connection, search: &str, page: i64) -> AppResult<OpenLoanPage> {
+    let search = search.trim();
+    if search.len() > 300 {
+        return Err(AppError::Validation("Loan search is too long.".into()));
+    }
+    const FROM: &str = "FROM loans l JOIN members m ON m.id=l.member_id JOIN physical_items i ON i.id=l.item_id JOIN bibliographic_records r ON r.id=i.record_id WHERE l.returned_at IS NULL AND (?1='' OR instr(lower(r.title),lower(?1))>0 OR instr(lower(m.name),lower(?1))>0 OR instr(lower(m.member_number),lower(?1))>0 OR instr(lower(i.barcode),lower(?1))>0 OR instr(lower(i.accession_no),lower(?1))>0)";
+    let total: i64 = conn.query_row(&format!("SELECT count(*) {FROM}"), [search], |r| r.get(0))?;
+    let page = page.clamp(1, ((total + 24) / 25).max(1));
+    let mut stmt = conn.prepare(&format!("SELECT l.id,r.title,i.barcode,i.accession_no,m.name,m.member_number,l.due_on {FROM} ORDER BY l.due_on,l.id LIMIT 25 OFFSET ?2"))?;
+    let rows = stmt
+        .query_map(params![search, (page - 1) * 25], |r| {
+            Ok(OpenLoan {
+                loan_id: r.get(0)?,
+                title: r.get(1)?,
+                barcode: r.get(2)?,
+                accession_no: r.get(3)?,
+                member_name: r.get(4)?,
+                member_number: r.get(5)?,
+                due_on: r.get(6)?,
+            })
+        })?
+        .collect::<Result<Vec<_>, _>>()?;
+    Ok(OpenLoanPage {
+        rows,
+        page,
+        page_size: 25,
+        total,
+    })
+}
+
 pub fn list_overdue(conn: &Connection, page: i64) -> AppResult<OverduePage> {
     const PAGE_SIZE: i64 = 25;
     let today: String = conn.query_row("SELECT date('now','localtime')", [], |r| r.get(0))?;

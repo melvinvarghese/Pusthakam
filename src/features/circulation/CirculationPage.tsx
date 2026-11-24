@@ -10,8 +10,10 @@ import type { IssuePreview, RenewalPreview, ReturnCondition, ReturnPreview } fro
 import { formatMinor } from "@/lib/money";
 import { announce } from "@/lib/announcer";
 import { can, useSession } from "@/lib/session";
+import { OpenLoans } from "./OpenLoans";
 import { OverdueLoans } from "./OverdueLoans";
 import { DueSlip } from "./DueSlip";
+import { FindBook } from "./FindBook";
 import { FindMember } from "./FindMember";
 
 const Reservations = lazy(() => import("./Reservations"));
@@ -43,6 +45,7 @@ export function CirculationPage() {
   const [message, setMessage] = useState("");
   const [completedLoan, setCompletedLoan] = useState<Extract<Review, { mode: "issue" | "renew" }> | null>(null);
   const [slipOpen, setSlipOpen] = useState(false);
+  const [findingBook, setFindingBook] = useState(false);
   const [findingMember, setFindingMember] = useState(false);
   const [importOpen, setImportOpen] = useState(false);
   const [renewalImportOpen, setRenewalImportOpen] = useState(false);
@@ -68,6 +71,7 @@ export function CirculationPage() {
     onSuccess: (fine, value) => {
       void client.invalidateQueries({ queryKey: ["catalogue"] });
       void client.invalidateQueries({ queryKey: ["circulation", "overdue"] });
+      void client.invalidateQueries({ queryKey: ["circulation", "open-loans"] });
       void client.invalidateQueries({ queryKey: ["circulation", "reservations"] });
       if (fine) {
         void client.invalidateQueries({ queryKey: ["circulation", "fines"] });
@@ -104,6 +108,7 @@ export function CirculationPage() {
     complete.reset();
     setMessage("");
     setCompletedLoan(null);
+    setFindingBook(false);
     setMode(value);
   }
 
@@ -168,6 +173,7 @@ export function CirculationPage() {
               <Button type="button" size="sm" onClick={() => setFindingMember(true)}>Find member by name</Button>
             )}
             <TextField label="Book barcode or accession number" name="barcode" required maxLength={40} autoComplete="off" />
+            {mode === "issue" && can(session, "catalogue.read") && <Button type="button" size="sm" onClick={() => setFindingBook(true)}>Find book by name</Button>}
           </fieldset>
           <Button type="submit" variant="primary" disabled={prepare.isPending}>
             {prepare.isPending ? "Looking up…" : ACTIONS[mode].review}
@@ -175,6 +181,16 @@ export function CirculationPage() {
         </form>
         {!review && error && <p role="alert" className="mt-3 text-danger">{toApiError(error).message}</p>}
       </Panel>}
+      {(mode === "return" || mode === "renew") && <OpenLoans key={mode} action={mode} busy={prepare.isPending || complete.isPending} onSelect={(barcode) => {
+        setMessage(""); setCompletedLoan(null); complete.reset();
+        prepare.mutate({ mode, memberNumber: "", barcode });
+      }} />}
+      {mode === "issue" && findingBook && <FindBook onClose={() => setFindingBook(false)} onSelect={(barcode) => {
+        const input = formRef.current?.querySelector<HTMLInputElement>('input[name="barcode"]');
+        if (input) input.value = barcode;
+        setFindingBook(false);
+        requestAnimationFrame(() => formRef.current?.querySelector<HTMLButtonElement>('button[type="submit"]')?.focus());
+      }} />}
       {mode === "issue" && findingMember && <FindMember onClose={() => setFindingMember(false)}
         onSelect={(number) => {
           const input = formRef.current?.querySelector<HTMLInputElement>('input[name="memberNumber"]');

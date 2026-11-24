@@ -33,6 +33,31 @@ pub fn prepare(file_name: &str, encoded: &str) -> AppResult<Payload> {
             ))
         }
     };
+    prepare_payload(file_name, extension, encoded)
+}
+
+pub fn prepare_report(file_name: &str, encoded: &str) -> AppResult<Payload> {
+    if file_name.len() > 180
+        || file_name.starts_with('.')
+        || !file_name
+            .chars()
+            .all(|c| c.is_ascii_alphanumeric() || "-_.".contains(c))
+    {
+        return Err(AppError::Validation(
+            "Choose a valid report filename.".into(),
+        ));
+    }
+    let extension = if file_name.ends_with(".pdf") {
+        "pdf"
+    } else if file_name.ends_with(".xlsx") {
+        "xlsx"
+    } else {
+        return Err(AppError::Validation("Choose a PDF or XLSX report.".into()));
+    };
+    prepare_payload(file_name, extension, encoded)
+}
+
+fn prepare_payload(file_name: &str, extension: &str, encoded: &str) -> AppResult<Payload> {
     if encoded.len() > MAX_BYTES.div_ceil(3) * 4 {
         return Err(AppError::Validation("Export is too large to save.".into()));
     }
@@ -100,7 +125,11 @@ pub fn choose(payload: &Payload, owner: usize) -> AppResult<Option<PathBuf>> {
     buffer[..initial.len()].copy_from_slice(&initial);
     let filter = wide(&format!("Export file (*.{0})\0*.{0}\0", payload.extension));
     let extension = wide(&payload.extension);
-    let title = wide("Save catalogue export as");
+    let title = wide(if payload.file_name.starts_with("pusthakam-catalogue.") {
+        "Save catalogue export as"
+    } else {
+        "Save report as"
+    });
     let mut dialog = OPENFILENAMEW {
         lStructSize: std::mem::size_of::<OPENFILENAMEW>() as u32,
         hwndOwner: owner as _,
@@ -174,5 +203,75 @@ mod tests {
         .is_err());
         assert!(prepare("../library.db", "W10=").is_err());
         assert!(prepare("pusthakam-catalogue.json", "invalid").is_err());
+    }
+}
+
+/// Shows the owned save dialog and rechecks permission before publishing bytes.
+pub async fn save<R: tauri::Runtime>(
+    window: tauri::WebviewWindow<R>,
+    state: tauri::State<'_, crate::state::AppState>,
+    payload: Payload,
+    permission: &str,
+) -> AppResult<SaveResult> {
+    use crate::services::export_save;
+    #[cfg(windows)]
+    {
+        let owner = window
+            .hwnd()
+            .map_err(|_| {
+                crate::error::AppError::Validation(
+                    "Could not open the save dialog for this window.".into(),
+                )
+            })?
+            .0 as usize;
+        let (path, payload) = tauri::async_runtime::spawn_blocking(move || {
+            export_save::choose(&payload, owner).map(|path| (path, payload))
+        })
+        .await
+        .map_err(|_| crate::error::AppError::Internal("Save dialog task failed.".into()))??;
+        state.require(permission)?;
+        let private = state.paths.data_dir.clone();
+        let path = tauri::async_runtime::spawn_blocking(move || {
+            export_save::write_chosen(path, &payload, &private)
+        })
+        .await
+        .map_err(|_| crate::error::AppError::Internal("Save file task failed.".into()))??;
+        Ok(export_save::SaveResult { native: true, path })
+    }
+    #[cfg(not(windows))]
+    {
+        let _ = (window, payload, state, permission);
+        Ok(export_save::SaveResult {
+            native: false,
+            path: None,
+        })
+    }
+}
+
+#[cfg(test)]
+mod report_tests {
+    use super::*;
+    #[test]
+    fn reports_use_pdf_or_xlsx_and_keep_destination_safety() {
+        let root = tempfile::tempdir().unwrap();
+        let private = root.path().join("private");
+        std::fs::create_dir(&private).unwrap();
+        let pdf = prepare_report("circulation-2026-11-24.pdf", "JVBERi0xLjQK").unwrap();
+        assert_eq!(pdf.extension, "pdf");
+        assert_eq!(write_chosen(None, &pdf, &private).unwrap(), None);
+        let path = root.path().join("report.pdf");
+        write_chosen(Some(path.clone()), &pdf, &private).unwrap();
+        assert_eq!(std::fs::read(path).unwrap(), b"%PDF-1.4\n");
+        assert!(write_chosen(Some(private.join("report.pdf")), &pdf, &private).is_err());
+        for name in [
+            "../report.pdf",
+            "C:\\report.pdf",
+            ".pdf",
+            "report.exe",
+            "report.csv",
+        ] {
+            assert!(prepare_report(name, "JVBERi0xLjQK").is_err());
+        }
+        assert!(prepare_report("report.xlsx", "UEsD").is_ok());
     }
 }

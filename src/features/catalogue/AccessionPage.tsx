@@ -43,7 +43,7 @@ function InventorySheet({ rows, page, library, onClose }: { rows: CopyRow[]; pag
 }
 
 /** Every physical copy in the library, searchable by accession number, barcode, title or call number. */
-export function AccessionPage() {
+export function AccessionPage({ printing = false }: { printing?: boolean }) {
   const config = useConfig();
   const [text, setText] = useState("");
   const debounced = useDebounced(text, 250);
@@ -78,8 +78,8 @@ export function AccessionPage() {
   }
 
   return (
-    <div className="mx-auto max-w-[1100px] space-y-5 p-6">
-      <PageHeader title="Accession Register" description="Every copy in the library, in accession order."
+    <div className={printing ? "space-y-5" : "mx-auto max-w-[1100px] space-y-5 p-6"}>
+      <PageHeader title={printing ? "Select copies for labels" : "Accession Register"} description="Every copy in the library, in accession order."
         actions={<>
           {selected.size > 0 && <Button onClick={() => setSelected(new Map())}>Clear selection</Button>}
           <Button disabled={selected.size === 0} onClick={() => setPreviewOpen(true)}>

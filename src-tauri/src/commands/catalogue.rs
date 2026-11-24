@@ -181,36 +181,5 @@ pub async fn catalogue_save_export<R: tauri::Runtime>(
     use crate::services::export_save;
     state.require("catalogue.read")?;
     let payload = export_save::prepare(&file_name, &data_base64)?;
-    #[cfg(windows)]
-    {
-        let owner = window
-            .hwnd()
-            .map_err(|_| {
-                crate::error::AppError::Validation(
-                    "Could not open the save dialog for this window.".into(),
-                )
-            })?
-            .0 as usize;
-        let (path, payload) = tauri::async_runtime::spawn_blocking(move || {
-            export_save::choose(&payload, owner).map(|path| (path, payload))
-        })
-        .await
-        .map_err(|_| crate::error::AppError::Internal("Save dialog task failed.".into()))??;
-        state.require("catalogue.read")?;
-        let private = state.paths.data_dir.clone();
-        let path = tauri::async_runtime::spawn_blocking(move || {
-            export_save::write_chosen(path, &payload, &private)
-        })
-        .await
-        .map_err(|_| crate::error::AppError::Internal("Save file task failed.".into()))??;
-        Ok(export_save::SaveResult { native: true, path })
-    }
-    #[cfg(not(windows))]
-    {
-        let _ = (window, payload);
-        Ok(export_save::SaveResult {
-            native: false,
-            path: None,
-        })
-    }
+    export_save::save(window, state, payload, "catalogue.read").await
 }

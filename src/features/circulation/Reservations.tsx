@@ -7,6 +7,7 @@ import { Modal } from "@/components/ui/Modal";
 import { Panel } from "@/components/ui/Panel";
 import { circulationApi, toApiError } from "@/lib/api";
 import { can, useSession } from "@/lib/session";
+import { FindBook } from "./FindBook";
 import { FindMember } from "./FindMember";
 import type { Reservation } from "@/lib/api/types";
 
@@ -14,6 +15,7 @@ export default function Reservations() {
   const client = useQueryClient();
   const { session } = useSession();
   const form = useRef<HTMLFormElement>(null);
+  const [findingBook, setFindingBook] = useState(false);
   const [findingMember, setFindingMember] = useState(false);
   const [page, setPage] = useState(1);
   const [barcode, setBarcode] = useState("");
@@ -72,10 +74,15 @@ export default function Reservations() {
               value={barcode} onChange={(event) => setBarcode(event.target.value)} />
           </fieldset>
           {can(session, "members.read") && <Button type="button" size="sm" disabled={place.isPending} onClick={() => setFindingMember(true)}>Find member by name</Button>}
+          {can(session, "catalogue.read") && <Button type="button" size="sm" disabled={place.isPending} onClick={() => setFindingBook(true)}>Find book by name</Button>}
           <Button type="submit" variant="primary" disabled={place.isPending}>Place reservation</Button>
         </form>
         {place.error && <p role="alert" className="mt-3 text-danger">{toApiError(place.error).message}</p>}
       </Panel>
+      {findingBook && <FindBook purpose="reservation" onClose={() => setFindingBook(false)} onSelect={(value) => {
+        setBarcode(value); setFindingBook(false);
+        requestAnimationFrame(() => form.current?.querySelector<HTMLButtonElement>('button[type="submit"]')?.focus());
+      }} />}
       {findingMember && <FindMember onClose={() => setFindingMember(false)} onSelect={(number) => {
         const input = form.current?.querySelector<HTMLInputElement>('input[name="memberNumber"]');
         if (input) input.value = number;

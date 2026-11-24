@@ -19,6 +19,7 @@ import { SettingsPage } from "@/features/settings/SettingsPage";
 import { ThemeProvider } from "@/lib/theme";
 
 const queryClient = new QueryClient();
+const PrintingPage = lazy(() => import("@/features/printing/PrintingPage"));
 const ReportsPage = lazy(() => import("@/features/reports/ReportsPage"));
 const AcquisitionsPage = lazy(() => import("@/features/acquisitions/AcquisitionsPage"));
 const PeriodicalsPage = lazy(() => import("@/features/serials/PeriodicalsPage"));
@@ -44,6 +45,7 @@ export function AppRoutes() {
         <Route path="/inventory" element={<InventoryPage />} />
         <Route path="/members" element={<MembersPage />} />
         <Route path="/circulation" element={<CirculationPage />} />
+        <Route path="/printing" element={<Suspense fallback={<p role="status" className="p-6">Loading print tools.</p>}><PrintingPage /></Suspense>} />
         <Route path="/reports" element={<Suspense fallback={<p role="status" className="p-6">Loading reports.</p>}><ReportsPage /></Suspense>} />
         <Route path="/acquisitions" element={<Suspense fallback={<p role="status" className="p-6">Loading acquisitions.</p>}><AcquisitionsPage /></Suspense>} />
         <Route path="/periodicals" element={<Suspense fallback={<p role="status" className="p-6">Loading periodicals.</p>}><PeriodicalsPage /></Suspense>} />

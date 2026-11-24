@@ -1,11 +1,11 @@
 {
   "schemaVersion": 1,
-  "lastUpdated": "2026-11-24T04:25:09Z",
+  "lastUpdated": "2026-11-24T05:31:37.413Z",
   "currentPhase": "4",
   "currentTask": {
-    "title": "Collect owner changes before implementing the batch",
-    "status": "in-progress",
-    "detail": "Owner explicitly paused implementation to provide more changes and requested doing them together. Record pending requests only until the owner starts the batch: KI-021 setup sidebar full height; KI-022 PDF report native Save As; Circulation > Issue Find book by name with live title/copy suggestions, copy identifiers/status and normal loan review/confirmation. Initial code inspection only; no book-search UI or business logic changed. Preserve direct barcode/accession entry and catalogue permissions. Quotation source follow-ups and macOS/Linux release smoke tests remain open; no new product weight. Fourth pending change (KI-023): finish the Barcode & Printing page, currently a placeholder; audit/reuse existing print tools and fill gaps when the owner starts the batch. Fifth pending change (KI-024): investigate owner-reported LAN failure despite Active server status; distinguish local OPAC/staff access, remote connectivity, pairing and authentication. Exact browser error not yet supplied; no fix or verification claimed."
+    "title": "Circulation items 1-3 built; owner walkthrough pending",
+    "status": "implemented",
+    "detail": "Circulation items 1-3 complete in code: Reservations book-name/copy lookup (including on-loan copies); searchable paginated current-loan lists in Renew and Return, with explicit existing review/confirmation and refresh after success. All 228 frontend tests across 41 files passed (247.05s); all 35 real Rust IPC tests passed (15.45s). Corrected test-selector TypeScript check passed, as did ESLint, production TypeScript/Vite build, Rust formatting, whitespace checks and progress validation. Updated Windows installer built successfully with all three circulation changes: src-tauri/target/release/bundle/nsis/Pusthakam_0.1.0_x64-setup.exe; 4551915 bytes; SHA-256 f93e3484221ca3bec6aa3f93b2a588ffbc09edf9a347243df2521151f1c03559. Native release compilation 4m39s. Not installed or interactively launched; owner walkthrough pending. No commit, push or publication. Owner walkthrough pending. LAN remains unresolved across devices; OPAC redesign explicitly deferred. No new weights, commit or push."
   },
   "nextMilestone": {
     "title": "macOS and Linux package smoke tests",
@@ -1799,6 +1799,86 @@
   ],
   "verificationRuns": [
     {
+      "id": "circulation-three-installer-2026-11-24",
+      "title": "Circulation batch Windows installer",
+      "at": "2026-11-24T05:31:37.413Z",
+      "check": "npm.cmd run tauri build -- --bundles nsis; installer size/SHA-256",
+      "outcome": "passed",
+      "result": "Updated Windows installer built successfully with all three circulation changes: src-tauri/target/release/bundle/nsis/Pusthakam_0.1.0_x64-setup.exe; 4551915 bytes; SHA-256 f93e3484221ca3bec6aa3f93b2a588ffbc09edf9a347243df2521151f1c03559. Native release compilation 4m39s. Not installed or interactively launched; owner walkthrough pending. No commit, push or publication."
+    },
+    {
+      "id": "circulation-three-final-checks-2026-11-24",
+      "title": "Final circulation frontend and static checks",
+      "at": "2026-11-24T05:27:39.356Z",
+      "check": "npm.cmd test -- --maxWorkers=2; npm.cmd run lint; npm.cmd run typecheck; production build; cargo fmt --check; progress:validate",
+      "outcome": "passed",
+      "result": "Circulation items 1-3 complete in code: Reservations book-name/copy lookup (including on-loan copies); searchable paginated current-loan lists in Renew and Return, with explicit existing review/confirmation and refresh after success. All 228 frontend tests across 41 files passed (247.05s); all 35 real Rust IPC tests passed (15.45s). Corrected test-selector TypeScript check passed, as did ESLint, production TypeScript/Vite build, Rust formatting, whitespace checks and progress validation. Windows installer compilation/packaging still running. Owner walkthrough pending. LAN remains unresolved across devices; OPAC redesign explicitly deferred. No new weights, commit or push."
+    },
+    {
+      "id": "circulation-three-ipc-2026-11-24",
+      "title": "Circulation directory command integration",
+      "at": "2026-11-24T05:26:03.904Z",
+      "check": "cargo test --offline --manifest-path src-tauri/Cargo.toml --test ipc",
+      "outcome": "passed",
+      "result": "All 35 IPC tests passed in 15.45s, plus focused directory 2/2. Disposable databases only; includes existing issue/renew/return and reservation rules."
+    },
+    {
+      "id": "circulation-three-test-types-2026-11-24",
+      "title": "New test-selector TypeScript correction",
+      "at": "2026-11-24T05:26:03.904Z",
+      "check": "npm.cmd run typecheck",
+      "outcome": "failed",
+      "result": "Unsupported exact:true option in three new getByRole selectors. Removed options; selectors already match string names exactly. Corrected typecheck and production build pending. ESLint completed without errors before the typecheck failure."
+    },
+    {
+      "id": "circulation-three-initial-2026-11-24",
+      "title": "Initial circulation regressions",
+      "at": "2026-11-24T05:24:29.458Z",
+      "check": "Focused Vitest: CirculationPage, FindBook, OpenLoans; TypeScript",
+      "outcome": "passed",
+      "result": "22 tests passed across 3 files in 16.64s; TypeScript passed. Broader checks and added Reservations integration test pending. Test-edit script encoding failure corrected with explicit UTF-8."
+    },
+    {
+      "id": "five-change-windows-installer-2026-11-24",
+      "title": "Updated Windows release installer",
+      "at": "2026-11-24T04:59:04.269Z",
+      "check": "npm.cmd run tauri build -- --bundles nsis; installer size and SHA-256",
+      "outcome": "passed",
+      "result": "Windows NSIS installer built successfully: src-tauri/target/release/bundle/nsis/Pusthakam_0.1.0_x64-setup.exe (4552465 bytes; SHA-256 4faf7014749fc76c0965a14087ac6a83d9ed393712a5af96b5f63b27e54f819d). Not installed, published or interactively launched. Next: install/update and test all five changes, especially other-device LAN, native Save As and physical printing. No commit or push. Production frontend and optimized Rust release compilation passed; Rust compile 5m07s. Progress totals remain 96.7/100/97/76; macOS/Linux smoke tests remain open."
+    },
+    {
+      "id": "five-change-final-suite-2026-11-24",
+      "title": "Final full frontend and static checks",
+      "at": "2026-11-24T04:58:38.753Z",
+      "check": "npm.cmd test -- --maxWorkers=2; npm.cmd run lint; cargo fmt --manifest-path src-tauri/Cargo.toml -- --check; production build; cargo LAN tests",
+      "outcome": "passed",
+      "result": "223/223 tests passed in 40 files, 356.76s. ESLint, Rust format check, TypeScript/Vite production build and final 8 Rust LAN tests passed. Corrected navigation expected-list regression. Non-fatal existing npm http-proxy, jsdom canvas and >500kB chunk warnings. Remote-device, native save-dialog and physical printer acceptance remain pending."
+    },
+    {
+      "id": "five-change-focused-visual-2026-11-24",
+      "title": "Batch regressions and actual browser layout",
+      "at": "2026-11-24T04:56:17.363Z",
+      "check": "Focused Vitest rerun; cargo LAN/export-save/IPC/security checks; real Chrome CDP setup and printing review",
+      "outcome": "passed",
+      "result": "All five changes implemented: full-height setup sidebar; native PDF/XLSX report Save As; Issue title/copy search; functional labels/spine labels/member cards/current-loan slips; LAN listener lifecycle and truthful status. First 50 focused frontend tests, corrected 20-test regression run, 8 LAN Rust tests, 3 export-save unit tests, report-save permission IPC, actual LAN HTTP startup/shutdown IPC and all 7 security tests passed. Real Chrome verified all three setup steps at 1366x705 and 1024x480 plus the printing route without horizontal overflow. Initial full frontend suite: 222/223; navigation expected list corrected. Final full rerun and Windows installer build running. Second-device LAN, native Save As and physical printer checks remain manual. No new product weights. Browser helper initially had a malformed selector; corrected harness and reran all visual checks successfully. Earlier final-suite terminal output was lost; rerun logs are retained in machine temp."
+    },
+    {
+      "id": "five-change-progress-format-2026-11-24",
+      "title": "Progress timestamp format correction",
+      "at": "2026-11-24T04:56:17.363Z",
+      "check": "npm.cmd run progress:validate -- --write; npm.cmd run progress:validate",
+      "outcome": "failed",
+      "result": "Validator initially rejected six fractional timestamp digits in lastUpdated. Corrected to canonical UTC milliseconds; both --write and read-only validation passed: 59 tasks, 10 phases, 96.7/100/97/76 totals."
+    },
+    {
+      "id": "five-change-initial-suite-2026-11-24",
+      "title": "Initial full frontend batch checks",
+      "at": "2026-11-24T04:46:45Z",
+      "check": "npm.cmd test -- --maxWorkers=2",
+      "outcome": "failed",
+      "result": "222/223 tests passed across 40 files. Only nav.test.ts failed because its exact available-module list still omitted the now-implemented Barcode & Printing route. Updated expected list while retaining exact equality and the real printing route test. Focused rerun pending. Earlier 50 targeted frontend tests, 8 Rust LAN tests, report-save IPC auth/validation check, LAN command-to-real-HTTP startup/shutdown check and 3 export-save unit tests passed. Physical hardware and second-device retest remain pending."
+    },
+    {
       "id": "splash-100-checks-2026-11-24",
       "title": "100-quotation catalogue, startup regressions and all-entry visual checks",
       "at": "2026-11-24T03:33:00Z",
@@ -3304,6 +3384,36 @@
     }
   ],
   "recentActivity": [
+    {
+      "kind": "completed",
+      "at": "2026-11-24T05:31:37.413Z",
+      "title": "Implemented and built circulation items 1-3",
+      "detail": "Reservations title lookup; Renew/Return current-loan lists. 228 frontend and 35 IPC tests passed. Updated Windows installer built successfully with all three circulation changes: src-tauri/target/release/bundle/nsis/Pusthakam_0.1.0_x64-setup.exe; 4551915 bytes; SHA-256 f93e3484221ca3bec6aa3f93b2a588ffbc09edf9a347243df2521151f1c03559. Native release compilation 4m39s. Not installed or interactively launched; owner walkthrough pending. No commit, push or publication."
+    },
+    {
+      "kind": "completed",
+      "at": "2026-11-24T05:16:55.315Z",
+      "title": "Recorded host OPAC success and remote connection refusal; redesign deferred",
+      "detail": "LAN acceptance update: owner can open OPAC on the computer with Pusthakam installed, but another computer on the same network reports ERR_CONNECTION_REFUSED. Remote tab shows an OPAC title; this alone does not prove a current successful connection (could reflect earlier/cached navigation). Cross-device access remains unresolved. Next diagnostic batch: verify the exact remote URL uses the host network address and configured port rather than loopback, compare host loopback versus network-address access, inspect active bind/listener and advertised adapter/address, then test remote TCP reachability and Windows firewall/network isolation. Do not assume firewall is the cause or change firewall rules automatically. Confirm which installer/build is running before drawing conclusions. OPAC redesign is explicitly deferred until the owner says to redesign; preserve current OPAC UI in this batch. Documentation only; continue collecting requests."
+    },
+    {
+      "kind": "completed",
+      "at": "2026-11-24T05:12:15.880Z",
+      "title": "Queued current-loan list in Return",
+      "detail": "Return tab: show all currently issued/open loans, including overdue loans, so staff can select a loan without typing its barcode. Display book title, copy barcode/accession, member and due date, with search and pagination. Keep direct barcode/scanner entry, existing return review/confirmation, fine assessment and Rust permissions; selecting a row must not record a return. Collect with Reservations book-name search and Renew current-loan list in the next batch; documentation only, implementation awaits the owner finishing their requests."
+    },
+    {
+      "kind": "completed",
+      "at": "2026-11-24T05:11:25.925Z",
+      "title": "Queued current-loan list in Renew",
+      "detail": "Renew tab: show all currently issued/open loans, including overdue loans, so staff can select a loan for renewal without typing/scanning its barcode. Display book title, copy barcode/accession, member and due date; support search and pagination so all open loans remain accessible. Keep direct barcode entry and the existing renewal review/confirmation, eligibility rules and Rust permission checks. Selecting a row must not automatically renew. Queued for the next combined batch while the owner proposes further changes; documentation only."
+    },
+    {
+      "kind": "completed",
+      "at": "2026-11-24T05:10:45.695Z",
+      "title": "Queued Reservations book-name lookup; collecting more changes",
+      "detail": "Owner requests Find book by name in Circulation > Reservations, alongside existing member-name lookup. Collect further proposed changes before implementing this next batch. Preserve barcode/accession entry, catalogue permissions and reservation eligibility checks; title search must support reservable copies including copies currently on loan, rather than blindly reusing Issue-only copy filters. Documentation only; no code change or new verification credit. Previous five-change installer and outstanding owner acceptance checks remain as recorded below."
+    },
     {
       "kind": "completed",
       "at": "2026-11-24T04:25:09Z",

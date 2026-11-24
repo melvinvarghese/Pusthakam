@@ -237,3 +237,16 @@ describe("Hardware printing and USB scanner acceptance (PRN-HARDWARE)", () => {
     expect(field).toHaveFocus();
   });
 });
+
+it("prints spine labels with call numbers and no barcode graphics",async()=>{
+ vi.stubGlobal("__TAURI_INTERNALS__",{});vi.mocked(invoke).mockResolvedValue(null);
+ const print=vi.spyOn(window,"print").mockImplementation(()=>{
+  const sheet=document.querySelector("body > .label-sheet-print");
+  expect(sheet).toHaveTextContent("823 TOL");expect(sheet?.querySelector("svg")).toBeNull();
+  window.dispatchEvent(new Event("afterprint"));
+ });
+ const copy={id:1,recordId:1,title:"Book",accessionNo:"A1",barcode:"B1",callNumber:"823 TOL",status:"available",collection:null,location:null,shelf:null,acquisitionDate:null,priceMinor:null} as CopyRow;
+ render(<QueryClientProvider client={new QueryClient()}><LabelSheetDialog copies={[copy]} onClose={vi.fn()} /></QueryClientProvider>);
+ const user=userEvent.setup();await user.selectOptions(screen.getByRole("combobox",{name:"Label style"}),"spine");
+ await user.click(screen.getByRole("button",{name:"Print labels"}));expect(print).toHaveBeenCalledOnce();
+});

@@ -20,6 +20,8 @@ vi.mock("@/lib/api", () => ({
 describe("LanSettingsPanel", () => {
   const mockConfig: LanConfig = {
     enabled: true,
+    listenerRunning: true,
+    listenerError: null,
     bindAddress: "0.0.0.0",
     port: 4318,
     serverName: "Central Library Server",
@@ -146,4 +148,14 @@ describe("LanSettingsPanel", () => {
       })
     );
   });
+});
+
+it("does not claim active hosting when the saved setting has no running listener", async () => {
+ vi.mocked(lanApi.getConfig).mockResolvedValue({enabled:true,listenerRunning:false,listenerError:"Port already in use",bindAddress:"0.0.0.0",port:4318,serverName:"Library",serverFingerprint:"test",opacEnabled:true,browserStaffEnabled:true,activeInterfaces:["192.0.2.1"]});
+ vi.mocked(lanApi.listPairedClients).mockResolvedValue([]);
+ render(<LanSettingsPanel />);
+ expect(await screen.findByText("Listener unavailable")).toBeInTheDocument();
+ expect(screen.getByRole("alert")).toHaveTextContent("Port already in use");
+ expect(screen.queryByText(/Active on port/)).not.toBeInTheDocument();
+ expect(screen.queryByText("http://192.0.2.1:4318/opac")).not.toBeInTheDocument();
 });

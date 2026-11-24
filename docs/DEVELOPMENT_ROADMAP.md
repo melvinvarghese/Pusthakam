@@ -74,3 +74,27 @@ Build later: attractive librarian-focused homepage with a clear path to trying P
 ## Splash quotations and logo refinement — owner request, 21 November 2026
 
 The minimum-three-second splash and local quotation rotation are implemented. Twenty primary-text reviewed short entries are enabled, with remaining source/edition checks explicit in SPLASH_QUOTE_SOURCES.md; the target of approximately 100 authentic quotations remains incomplete. Owner approved the latest teal book/P on 23 November 2026 for use throughout. Exact master and reproducible icon tooling are in branding/; app, native icon family, all seven website pages, progress monitor and LAN views now use it. See SPLASH_QUOTES_PLAN.md, LOGO_DESIGN_DIRECTION.md and the latest handoff. No new roadmap weight/credit or change to the product release milestone.
+
+## Owner-approved usability batch - 24 November 2026
+
+Implemented setup full-height sidebar, native Windows PDF/XLSX report Save As, title and physical-copy selection in Circulation Issue, and the functional Barcode & Printing entry point (barcode/spine labels, member cards, current-loan slips). Fixed Phase 7b LAN listener ownership at desktop startup and settings changes; runtime status now reflects actual binding. Automated and browser evidence is in PROGRESS.json. Remote-device LAN access, native save-dialog walkthrough and physical printing remain owner acceptance checks. These fixes add no task weights and do not close macOS/Linux packaging smoke tests. Historical queued/paused notes are superseded by the current task and handoff.
+
+## Next usability batch - collecting requests, 24 November 2026
+
+Owner requests Find book by name in Circulation > Reservations, alongside existing member-name lookup. Collect further proposed changes before implementing this next batch. Preserve barcode/accession entry, catalogue permissions and reservation eligibility checks; title search must support reservable copies including copies currently on loan, rather than blindly reusing Issue-only copy filters. Documentation only; no code change or new verification credit. Previous five-change installer and outstanding owner acceptance checks remain as recorded below.
+
+### Renew: select from current loans
+
+Renew tab: show all currently issued/open loans, including overdue loans, so staff can select a loan for renewal without typing/scanning its barcode. Display book title, copy barcode/accession, member and due date; support search and pagination so all open loans remain accessible. Keep direct barcode entry and the existing renewal review/confirmation, eligibility rules and Rust permission checks. Selecting a row must not automatically renew. Queued for the next combined batch while the owner proposes further changes; documentation only.
+
+### Return: select from current loans
+
+Return tab: show all currently issued/open loans, including overdue loans, so staff can select a loan without typing its barcode. Display book title, copy barcode/accession, member and due date, with search and pagination. Keep direct barcode/scanner entry, existing return review/confirmation, fine assessment and Rust permissions; selecting a row must not record a return. Collect with Reservations book-name search and Renew current-loan list in the next batch; documentation only, implementation awaits the owner finishing their requests.
+
+### LAN acceptance and deferred OPAC redesign - 24 November 2026
+
+LAN acceptance update: owner can open OPAC on the computer with Pusthakam installed, but another computer on the same network reports ERR_CONNECTION_REFUSED. Remote tab shows an OPAC title; this alone does not prove a current successful connection (could reflect earlier/cached navigation). Cross-device access remains unresolved. Next diagnostic batch: verify the exact remote URL uses the host network address and configured port rather than loopback, compare host loopback versus network-address access, inspect active bind/listener and advertised adapter/address, then test remote TCP reachability and Windows firewall/network isolation. Do not assume firewall is the cause or change firewall rules automatically. Confirm which installer/build is running before drawing conclusions. OPAC redesign is explicitly deferred until the owner says to redesign; preserve current OPAC UI in this batch. Documentation only; continue collecting requests.
+
+### Circulation items 1-3 authorized - 24 November 2026
+
+Reservations title/copy search and searchable paginated Renew/Return open-loan lists are implemented and built: 228 frontend tests and 35 real IPC tests passed; owner walkthrough remains pending. This supersedes their earlier collecting/queued status. LAN diagnosis and OPAC redesign were not authorized in this batch. Product weights and platform release gates unchanged.

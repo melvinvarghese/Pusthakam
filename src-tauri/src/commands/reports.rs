@@ -142,3 +142,15 @@ pub fn reports_export_file(
         )),
     }
 }
+
+#[tauri::command]
+pub async fn reports_save_export<R: tauri::Runtime>(
+    window: tauri::WebviewWindow<R>,
+    state: State<'_, AppState>,
+    file_name: String,
+    data_base64: String,
+) -> AppResult<crate::services::export_save::SaveResult> {
+    state.require("reports.read")?;
+    let payload = crate::services::export_save::prepare_report(&file_name, &data_base64)?;
+    crate::services::export_save::save(window, state, payload, "reports.read").await
+}

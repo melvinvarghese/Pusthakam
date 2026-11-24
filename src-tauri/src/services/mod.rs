@@ -31,6 +31,7 @@ pub mod calendar;
 pub mod classification;
 pub mod history_import;
 pub mod lan;
+pub mod lan_runtime;
 pub mod loan_import;
 pub mod renewal_import;
 pub mod report_export;

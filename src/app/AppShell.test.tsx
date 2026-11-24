@@ -48,10 +48,12 @@ describe("AppShell", () => {
     expect(within(screen.getByRole("navigation", { name: "Primary" })).getByRole("link", { name: "Circulation" })).toBeInTheDocument();
   });
 
-  it("shows an honest not-available page for unbuilt modules", async () => {
+  it("opens the completed printing tools from navigation", async () => {
     renderApp();
     await userEvent.click(within(screen.getByRole("navigation", { name: "Primary" })).getByRole("link", { name: "Barcode & Printing" }));
-    expect(screen.getByRole("heading", { name: /Barcode & Printing is not available yet/ })).toBeInTheDocument();
+    expect(await screen.findByRole("heading", { name: "Barcode & Printing" })).toBeInTheDocument();
+    expect(screen.getByRole("group", { name: "Print tools" })).toBeInTheDocument();
+    expect(screen.queryByText(/not available yet/)).not.toBeInTheDocument();
   });
 
   it("shows who is signed in and lets them sign out", () => {

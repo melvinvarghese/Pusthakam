@@ -1172,6 +1172,8 @@ export interface RenewalImportPreview {
 // ============================================================================
 
 export interface LanConfig {
+  listenerRunning?: boolean;
+  listenerError?: string | null;
   enabled: boolean;
   bindAddress: string;
   port: number;
@@ -1260,3 +1262,9 @@ export interface PublicOpacSearchResult {
   pageSize: number;
 }
 
+
+export interface OpenLoan {
+  loanId: number; title: string; barcode: string; accessionNo: string;
+  memberName: string; memberNumber: string; dueOn: string;
+}
+export interface OpenLoanPage { rows: OpenLoan[]; page: number; pageSize: number; total: number }

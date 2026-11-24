@@ -2,23 +2,26 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { invoke } from "@tauri-apps/api/core";
-import { afterEach, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { SessionContext } from "@/lib/session";
+import { circulationApi } from "@/lib/api";
 import { CirculationPage } from "./CirculationPage";
 
 vi.mock("@tauri-apps/api/core", () => ({ invoke: vi.fn() }));
+beforeEach(() => { vi.spyOn(circulationApi, "listOpenLoans").mockResolvedValue({rows:[],page:1,pageSize:25,total:0}); });
+
 afterEach(() => {
   vi.unstubAllGlobals();
   vi.restoreAllMocks();
   vi.mocked(invoke).mockReset();
 });
 
-function renderCirculation(admin = false) {
+function renderCirculation(admin = false, catalogue = false) {
   vi.stubGlobal("__TAURI_INTERNALS__", {});
   render(
     <QueryClientProvider client={new QueryClient()}>
       <SessionContext.Provider value={{
-        session: { userId: 1, username: "clerk", displayName: "Clerk", role: "circulation", permissions: ["circulation.issue", "members.read", ...(admin ? ["admin.settings"] : [])] },
+        session: { userId: 1, username: "clerk", displayName: "Clerk", role: "circulation", permissions: ["circulation.issue", "members.read", ...(catalogue ? ["catalogue.read"] : []), ...(admin ? ["admin.settings"] : [])] },
         signOut: async () => {},
       }}>
         <CirculationPage />
@@ -225,4 +228,52 @@ it("opens the five-part migration dialog for an administrator",async()=>{
   vi.mocked(invoke).mockResolvedValueOnce([]);
   renderCirculation(true);await userEvent.setup().click(screen.getByRole("button",{name:"Import reservations and fines"}));
   expect(await screen.findByRole("dialog",{name:"Import reservations and financial history"})).toBeInTheDocument();
+});
+
+it("fills a selected book barcode and requires the normal review step", async () => {
+ vi.mocked(invoke).mockImplementation(async (command) => {
+  if(command === "catalogue_search") return {rows:[{id:9,title:"Book",authors:"Author",availableCopies:1}],total:1,page:1,pageSize:25};
+  if(command === "catalogue_get_record") return {archived:false,copies:[{id:10,accessionNo:"ACC-10",barcode:"BC-10",status:"available"}]};
+  if(command === "circulation_prepare_issue") return {memberName:"Reader",title:"Book",dueOn:"2026-12-01",memberId:1,itemId:10};
+ });
+ renderCirculation(false,true); const user=userEvent.setup();
+ await user.type(screen.getByRole("textbox",{name:"Member number"}),"M1");
+ await user.click(screen.getByRole("button",{name:"Find book by name"}));
+ await user.type(screen.getByRole("combobox",{name:"Book title"}),"Book");
+ await user.click(await screen.findByRole("option"));
+ await user.click(await screen.findByRole("button",{name:/ACC-10/}));
+ expect(screen.getByRole("textbox",{name:"Book barcode or accession number"})).toHaveValue("BC-10");
+ expect(invoke).not.toHaveBeenCalledWith("circulation_issue",expect.anything());
+ await user.click(screen.getByRole("button",{name:"Review loan"}));
+ await screen.findByRole("dialog",{name:"Confirm issue"});
+ expect(invoke).toHaveBeenCalledWith("circulation_prepare_issue",{memberNumber:"M1",barcode:"BC-10"});
+});
+
+it.each(["Return", "Renew"] as const)("selects a current loan in %s and still requires confirmation", async (tab) => {
+ const loan={loanId:9,title:"Current book",barcode:"COPY-9",accessionNo:"A9",memberName:"Reader",memberNumber:"M9",dueOn:"2026-12-10"};
+ vi.mocked(circulationApi.listOpenLoans).mockResolvedValue({rows:[loan],page:1,pageSize:25,total:1});
+ vi.mocked(invoke).mockResolvedValue({...loan, previousDueOn:"2026-12-01",estimatedFine:null});
+ renderCirculation(); const user=userEvent.setup(); await user.click(screen.getByRole("button",{name:tab}));
+ await user.click(await screen.findByRole("button",{name:`Review ${tab.toLowerCase()} for copy COPY-9`}));
+ const dialog=within(await screen.findByRole("dialog",{name:`Confirm ${tab.toLowerCase() === "renew" ? "renewal" : "return"}`}));
+ expect(dialog.getByText("Current book")).toBeInTheDocument();
+ expect(invoke).toHaveBeenCalledExactlyOnceWith(tab === "Renew" ? "circulation_prepare_renewal" : "circulation_prepare_return",{barcode:"COPY-9"});
+ await user.click(dialog.getByRole("button",{name:"Cancel"}));
+ expect(invoke).toHaveBeenCalledTimes(1);
+});
+
+it("chooses an on-loan copy by title in Reservations without placing it automatically", async () => {
+ vi.mocked(invoke).mockImplementation(async (command) => {
+  if(command === "circulation_list_reservations") return {rows:[],page:1,pageSize:25,total:0};
+  if(command === "catalogue_search") return {rows:[{id:1,title:"Reserved book",authors:"Writer",availableCopies:0}],page:1,pageSize:25,total:1};
+  if(command === "catalogue_get_record") return {archived:false,copies:[{id:1,accessionNo:"A9",barcode:"B9",status:"on_loan"}]};
+ });
+ renderCirculation(false,true); const user=userEvent.setup(); await user.click(screen.getByRole("button",{name:"Reservations"}));
+ await user.click(await screen.findByRole("button",{name:"Find book by name"}));
+ await user.type(screen.getByRole("combobox",{name:"Book title"}),"Reserved"); await user.click(await screen.findByRole("option"));
+ await user.click(await screen.findByRole("button",{name:/A9.*B9/}));
+ expect(screen.getByRole("textbox",{name:"Book barcode or accession number"})).toHaveValue("B9");
+ expect(vi.mocked(invoke).mock.calls.some(([command])=>command==="circulation_place_reservation")).toBe(false);
+ await user.type(screen.getByRole("textbox",{name:"Member number"}),"M9"); await user.click(screen.getByRole("button",{name:"Place reservation"}));
+ expect(invoke).toHaveBeenCalledWith("circulation_place_reservation",{memberNumber:"M9",barcode:"B9"});
 });
