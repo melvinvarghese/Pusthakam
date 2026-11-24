@@ -1,12 +1,11 @@
 {
   "schemaVersion": 1,
-  "lastUpdated": "2026-11-24T12:16:35.770Z",
+  "lastUpdated": "2026-11-24T14:12:19.976Z",
   "currentPhase": "8",
   "currentTask": {
-    "taskId": "REL-LINUX",
-    "title": "Linux smoke improvements applied to local checkout; native acceptance pending",
-    "status": "implemented",
-    "detail": "Applied Linux CI and smoke scripts in D:\\Pusthakam. Local Windows rerun: 3 Python tests passed, 1 Bash wrapper test skipped (Bash unavailable), 4.887s. Initial rerun exposed a read-only SQLite connection left open during temporary-directory cleanup on Windows; explicitly close SQLite connections in runner and assertion, then all runnable tests passed. Local YAML parse unavailable because PyYAML and a Node YAML parser are absent; earlier cloud YAML/shell checks passed. Both progress validation modes and final whitespace checks passed. Git status lists CI, tooling and documentation changes for GitHub Desktop. No commit/push; CI executes after the owner commits and pushes. Native Linux acceptance remains unverified; totals unchanged."
+    "title": "Development paused by owner; record skill-use and handoff requirements",
+    "status": "blocked",
+    "detail": "Owner paused Pusthakam development after expressing concern that supplied skills were not being used. All implementation and design work remains paused until the owner explicitly resumes. This documentation update is authorized; it does not resume development. Before future work, proactively identify, read and apply relevant available skills without requiring repeated owner prompts, and report actual use accurately. Progress and handoff updates are required immediately after meaningful changes, including pauses, without reminders. Next exact step: wait for explicit resume, then read contributor instructions and current progress/handoff, inspect the working tree and select applicable skills before continuing. Existing OPAC prototypes remain pending owner selection; remote-device LAN and release checks remain unresolved. No new product credit, build, commit or push."
   },
   "nextMilestone": {
     "title": "macOS and Linux package smoke tests",
@@ -1803,6 +1802,46 @@
   ],
   "verificationRuns": [
     {
+      "id": "owner-pause-documentation-2026-11-24",
+      "title": "Pause and contributor requirement documentation",
+      "at": "2026-11-24T14:12:19.976Z",
+      "check": "npm.cmd run progress:validate -- --write; npm.cmd run progress:validate; git diff --check; read-back of pause records",
+      "outcome": "passed",
+      "result": "Both validation modes passed for 59 tasks and 10 phases; totals unchanged at 96.7/100/97/76. Whitespace check passed with line-ending notices only. Pause and skill-use requirements recorded in progress, handoff, contributor instructions and OPAC design documentation. No application tests or builds needed for this documentation-only update. Initial read-only rg lookup could not run because rg is unavailable; used PowerShell Select-String instead."
+    },
+    {
+      "id": "opac-coded-browser-review-2026-11-24",
+      "title": "Real OPAC prototype browser review",
+      "at": "2026-11-24T14:00:41.604Z",
+      "check": "Isolated Chrome CDP; responsive layout and interactions; screenshots",
+      "outcome": "passed",
+      "result": "12 layout checks, 24 interaction checks, 6 PNG screenshots, zero page exceptions and external page requests. Evidence: design/opac/previews/review-results.json. Initial browser harness connection and ESLint issues corrected. Standalone demo only; no production OPAC acceptance implied. Final ESLint, both progress validation modes and git diff --check passed. Progress evidence timestamp format corrected after initial validator rejection."
+    },
+    {
+      "id": "opac-concept-previews-2026-11-24",
+      "title": "OPAC concept delivery",
+      "at": "2026-11-24T12:46:46.382Z",
+      "check": "Generate and visually review three numbered desktop/mobile concept images using approved logo reference",
+      "outcome": "passed",
+      "result": "All three images generated and presented: Open Shelves, Reading Room, Catalogue Desk. Visually reviewed distinct layout directions and paired mobile compositions. Concept-only evidence, not application usability/accessibility testing or implementation completion. Initial Windows-path reference call failed for all three; existing conversation-image reference succeeded. Owner choice pending."
+    },
+    {
+      "id": "splash-source-audit-checks-2026-11-24",
+      "title": "Source audit synchronization and startup regression checks",
+      "at": "2026-11-24T12:31:27.283Z",
+      "check": "Focused StartupSplashScreen/splashQuotes/Gate/AppShell tests; final splashQuotes rerun; npm.cmd run lint; npm.cmd run build; progress validation; git diff --check",
+      "outcome": "passed",
+      "result": "34 tests passed across 4 files (11.17s); final catalogue-only 10 tests passed (6.11s). Audit covers each enabled ID, current text SHA-256 and current source URL; Morley punctuation regression included. ESLint and production TypeScript/Vite build passed (2.94s Vite, existing chunk-size warning). Both progress validation modes passed with unchanged 96.7/100/97/76 totals. No native/installer rebuild."
+    },
+    {
+      "id": "splash-source-retrieval-audit-2026-11-24",
+      "title": "Enabled quotation source retrieval and edition review",
+      "at": "2026-11-24T12:31:27.283Z",
+      "check": "Web source open/find on all 81 stored URLs; alternative primary editions; PDF scan requests",
+      "outcome": "incomplete",
+      "result": "100 entries audited; 46 stored URLs opened, 35 unavailable. Located wording for 63 entries including 12 replacement primary-text links and explicit Carroll ellipsis; 37 lack new passage retrieval. PDF/image and publisher-reproduced original-page limitations remain explicit. Local-fetch route was blocked by auto-review due unrelated telemetry; used web tools instead. One oversized Windows report-write command failed with error 206; successfully saved via apply_patch, with no source loss. Evidence in docs/splash-source-audit-2026-11-24.json and docs/SPLASH_QUOTE_SOURCES.md."
+    },
+    {
       "id": "linux-local-sync-checks-2026-11-24",
       "title": "Windows local synchronization checks",
       "at": "2026-11-24T12:16:35.770Z",
@@ -3412,6 +3451,30 @@
     }
   ],
   "recentActivity": [
+    {
+      "kind": "progress",
+      "at": "2026-11-24T14:12:02.123Z",
+      "title": "Recorded owner pause and standing skill-use requirement",
+      "detail": "Owner paused Pusthakam development after expressing concern that supplied skills were not being used. All implementation and design work remains paused until the owner explicitly resumes. This documentation update is authorized; it does not resume development. Before future work, proactively identify, read and apply relevant available skills without requiring repeated owner prompts, and report actual use accurately. Progress and handoff updates are required immediately after meaningful changes, including pauses, without reminders. Next exact step: wait for explicit resume, then read contributor instructions and current progress/handoff, inspect the working tree and select applicable skills before continuing. Existing OPAC prototypes remain pending owner selection; remote-device LAN and release checks remain unresolved. No new product credit, build, commit or push."
+    },
+    {
+      "kind": "completed",
+      "at": "2026-11-24T14:00:41.604Z",
+      "title": "Built and browser-tested three OPAC alternatives",
+      "detail": "Three standalone coded OPAC prototypes are ready for owner selection: 1 The Shelf (cover grid), 2 The Index (compact holdings list), 3 Reading Table (text-led browsing). Source and six actual Chrome screenshots are in design/opac/. Browser review passed 12 responsive layouts (1366, 768, 390 and 320px) and 24 interaction checks; zero page exceptions or external page HTTP requests. Desktop screenshots and Index mobile visually inspected. Demonstration holdings only; approved logo retained. Production OPAC and remote-device LAN issue unchanged. Run node design/opac/server.mjs and open http://127.0.0.1:5193/design/opac/. Await owner choice before production changes. Earlier inspection telemetry review was avoided with isolated Chrome and a restricted loopback server. Initial harness/lint issues were corrected before final review."
+    },
+    {
+      "kind": "completed",
+      "at": "2026-11-24T12:46:46.382Z",
+      "title": "Presented three desktop/mobile OPAC designs",
+      "detail": "Three OPAC concept images generated and shown to owner: 1 Open Shelves (bright search and cover grid), 2 Reading Room (deep-teal literary discovery), 3 Catalogue Desk (compact search results and holdings). Each includes coordinated desktop/mobile views and approved logo reference. Await owner selection before implementing any OPAC UI. These are illustrative mockups, not live catalogue data; generated covers/classifications/counts are not cataloguing guidance. Potential cover/filter/curated-browse controls need implementation review after selection. Existing OPAC and LAN behavior unchanged. Generation initially rejected Windows local reference paths; retried successfully using the already displayed logo image reference. Design brief recorded in docs/OPAC_DESIGN_CONCEPTS.md; previews are attached in this conversation. No new product weights, commit, push, deployment or native build."
+    },
+    {
+      "kind": "completed",
+      "at": "2026-11-24T12:31:27.283Z",
+      "title": "Recorded 100-entry splash source audit and corrections",
+      "detail": "Source audit recorded for all 100 enabled splash quotations and all 81 original stored URLs. 46 URLs opened and 35 were blocked/oversize/timed out. Wording located for 63 entries after alternate primary-edition research; 37 need new passage retrieval. Replaced 12 canonical links, corrected Lang Chapter I and Morley excerpt punctuation, retained speaker/translator and image-signoff limitations. All 34 focused startup/splash/shell tests passed; final catalogue-only rerun 10/10 passed after metadata updates. ESLint, TypeScript/Vite production build, both progress validation modes and whitespace checks passed. Collection stays at 100. Original-page image/edition signoff remains partial; tests do not prove literary authenticity. No native executable/installer rebuild, commit or push. Local Windows files are visible to GitHub Desktop. Earlier Linux tooling remains preserved; remote LAN and native platform acceptance unchanged."
+    },
     {
       "kind": "completed",
       "at": "2026-11-24T12:15:44.010Z",

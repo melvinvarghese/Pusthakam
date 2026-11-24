@@ -1,0 +1,117 @@
+{
+  "results": [
+    {
+      "view": "shelf",
+      "width": 1366,
+      "height": 1000,
+      "horizontalOverflow": false
+    },
+    {
+      "view": "shelf",
+      "width": 768,
+      "height": 1024,
+      "horizontalOverflow": false
+    },
+    {
+      "view": "shelf",
+      "width": 390,
+      "height": 960,
+      "horizontalOverflow": false
+    },
+    {
+      "view": "shelf",
+      "width": 320,
+      "height": 800,
+      "horizontalOverflow": false
+    },
+    {
+      "view": "shelf",
+      "interactions": [
+        "author search",
+        "availability",
+        "subject",
+        "sorting",
+        "details",
+        "Escape",
+        "empty state",
+        "reset"
+      ]
+    },
+    {
+      "view": "index",
+      "width": 1366,
+      "height": 1000,
+      "horizontalOverflow": false
+    },
+    {
+      "view": "index",
+      "width": 768,
+      "height": 1024,
+      "horizontalOverflow": false
+    },
+    {
+      "view": "index",
+      "width": 390,
+      "height": 960,
+      "horizontalOverflow": false
+    },
+    {
+      "view": "index",
+      "width": 320,
+      "height": 800,
+      "horizontalOverflow": false
+    },
+    {
+      "view": "index",
+      "interactions": [
+        "author search",
+        "availability",
+        "subject",
+        "sorting",
+        "details",
+        "Escape",
+        "empty state",
+        "reset"
+      ]
+    },
+    {
+      "view": "table",
+      "width": 1366,
+      "height": 1000,
+      "horizontalOverflow": false
+    },
+    {
+      "view": "table",
+      "width": 768,
+      "height": 1024,
+      "horizontalOverflow": false
+    },
+    {
+      "view": "table",
+      "width": 390,
+      "height": 960,
+      "horizontalOverflow": false
+    },
+    {
+      "view": "table",
+      "width": 320,
+      "height": 800,
+      "horizontalOverflow": false
+    },
+    {
+      "view": "table",
+      "interactions": [
+        "author search",
+        "availability",
+        "subject",
+        "sorting",
+        "details",
+        "Escape",
+        "empty state",
+        "reset"
+      ]
+    }
+  ],
+  "pageExceptions": [],
+  "externalPageRequests": []
+}

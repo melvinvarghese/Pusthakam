@@ -21,6 +21,7 @@
 - "Online Tools" menu (DDC Number List, Library Toolkit) opening approved links in the system browser.
 - Roadmap: MARC21/Koha migration moved up to Phase 3.
 ### Changed
+- Audited splash quotation sources; corrected Morley excerpt punctuation and Lang chapter references, replaced 12 blocked links with primary-text editions, and recorded per-entry retrieval/signoff limits.
 - Linux package CI now requires a Debian package and verifies installed assets, isolated process startup/restart and database integrity before uninstalling. Native interactive acceptance remains open.
 - Setup sidebar fills the available window height. LAN hosting now owns a real listener across startup/settings changes and reports binding failures instead of deriving Active status from a saved flag.
 - Removed the permanent "Offline" message from the UI at the owner's request.

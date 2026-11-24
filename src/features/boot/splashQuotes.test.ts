@@ -1,3 +1,5 @@
+import { createHash } from "node:crypto";
+import sourceAudit from "../../../docs/splash-source-audit-2026-11-24.json";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   SPLASH_QUOTES,
@@ -26,6 +28,18 @@ describe("splash quote catalogue", () => {
       expect(quote.reviewedAt).toMatch(/^\d{4}-\d{2}-\d{2}$/);
       expect(quote.text.split(/\s+/).length).toBeLessThanOrEqual(25);
     }
+  });
+
+  it("keeps the source audit synchronized without treating matches as image signoff", () => {
+    expect(sourceAudit.entries).toHaveLength(SPLASH_QUOTES.length);
+    expect(new Set(sourceAudit.entries.map(entry => entry.id)).size).toBe(SPLASH_QUOTES.length);
+    for (const quote of SPLASH_QUOTES) {
+      const audit = sourceAudit.entries.find(entry => entry.id === quote.id);
+      expect(audit).toBeDefined();
+      expect(audit?.textSha256).toBe(createHash("sha256").update(quote.text).digest("hex"));
+      expect(audit && ("reviewedSourceUrl" in audit ? audit.reviewedSourceUrl : audit.sourceUrl)).toBe(quote.sourceUrl);
+    }
+    expect(SPLASH_QUOTES.find(quote => quote.id === "morley-world")?.text).toBe("there\u2019s all heaven and earth in a book, a real book I mean");
   });
 
   it("does not select the immediately previous quote when an alternative exists", () => {
