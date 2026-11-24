@@ -14,28 +14,21 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22.22.2
           cache: 'npm'
-
       - name: Install npm dependencies
         run: npm ci
-
       - name: TypeScript typecheck
         run: npm run typecheck
-
       - name: ESLint check
         run: npm run lint
-
       - name: Vitest test suite
         run: npm test
-
       - name: Progress monitor data validation
         run: node tools/progress-monitor/validate.mjs
-
       - name: Production bundle build
         run: npm run build
 
@@ -45,29 +38,22 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
       - name: Setup Rust toolchain
         uses: dtolnay/rust-toolchain@stable
         with:
           components: clippy, rustfmt
-
       - name: Rust Cache
         uses: swatinem/rust-cache@v2
         with:
           workspaces: src-tauri
-
       - name: Rust Formatting (cargo fmt --check)
         run: cargo fmt --manifest-path src-tauri/Cargo.toml -- --check
-
       - name: Cargo Clippy (-D warnings)
         run: cargo clippy --manifest-path src-tauri/Cargo.toml -- -D warnings
-
       - name: Rust Unit Tests
         run: cargo test --lib --manifest-path src-tauri/Cargo.toml
-
       - name: Tauri IPC Integration Tests
         run: cargo test --test ipc --manifest-path src-tauri/Cargo.toml
-
       - name: Security & Permission Matrix Tests
         run: cargo test --test security --manifest-path src-tauri/Cargo.toml
 
@@ -91,36 +77,28 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22.22.2
           cache: 'npm'
-
       - name: Install Linux system dependencies
         if: matrix.platform == 'linux'
         run: |
           sudo apt-get update
           sudo apt-get install -y libwebkit2gtk-4.1-dev build-essential curl wget file libssl-dev libayatana-appindicator3-dev librsvg2-dev
-
       - name: Setup Rust toolchain
         uses: dtolnay/rust-toolchain@stable
-
       - name: Rust Cache
         uses: swatinem/rust-cache@v2
         with:
           workspaces: src-tauri
-
       - name: Install npm dependencies
         run: npm ci
-
       - name: Build frontend
         run: npm run build
-
       - name: Build Tauri Desktop Package
         run: npx tauri build ${{ matrix.args }}
-
       - name: Linux Package Installation & Smoke Test
         if: matrix.platform == 'linux'
         run: |
@@ -136,7 +114,6 @@ jobs:
             test ! -f /usr/bin/pusthakam
             echo "Linux Debian package verified successfully."
           fi
-
       - name: macOS Package & Bundle Integrity Smoke Test
         if: matrix.platform == 'macos'
         run: |
@@ -151,7 +128,6 @@ jobs:
             hdiutil detach /Volumes/PusthakamSmoke
             echo "macOS DMG mount, App structure and binary integrity verified successfully."
           fi
-
       - name: Windows Package Installation & Smoke Test
         if: matrix.platform == 'windows'
         shell: powershell
@@ -169,7 +145,6 @@ jobs:
             Start-Sleep -Seconds 2
             Write-Host "Windows NSIS package verified successfully."
           }
-
       - name: Upload Package Artifacts
         uses: actions/upload-artifact@v4
         with:
