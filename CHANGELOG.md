@@ -2,6 +2,7 @@
 
 ## [Unreleased]
 ### Added
+- 100 bundled splash quotations with author/character credits and per-entry source, edition and review notes; stable per-launch selection avoids an immediate repeat. Remaining original-source image checks are recorded in `docs/SPLASH_QUOTE_SOURCES.md`.
 - Read-only member fine accounts with currency-separated balances, assessed fine history and permission-scoped payment/waiver history for active and archived members.
 - Live member-name suggestions in Circulation and Reservations, maximized startup, and close-to-tray with explicit Open/Quit actions.
 - Library calendar settings for audited holiday dates and recurring closed weekdays, shared by issue and renewal due-date calculation.

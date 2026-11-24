@@ -10,7 +10,7 @@ describe("splash quote catalogue", () => {
   afterEach(() => { vi.restoreAllMocks(); localStorage.clear(); });
 
   it("only ships reviewed entries with distinct text and auditable sources", () => {
-    expect(SPLASH_QUOTES.length).toBeGreaterThan(1);
+    expect(SPLASH_QUOTES).toHaveLength(100);
     expect(new Set(SPLASH_QUOTES.map((quote) => quote.id)).size).toBe(SPLASH_QUOTES.length);
     expect(new Set(SPLASH_QUOTES.map((quote) => quote.text)).size).toBe(SPLASH_QUOTES.length);
 

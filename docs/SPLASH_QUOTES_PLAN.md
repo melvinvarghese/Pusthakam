@@ -1,6 +1,6 @@
 # Splash quotations and logo: resume plan
 
-Current checkpoint, 23 November: owner resumed. Runtime rotation exists, with 20 primary-text reviewed entries enabled; source access/context limitations are explicit. The previous 113 unchecked candidates are archived outside runtime. See SPLASH_QUOTE_SOURCES.md and the newest handoff; historical pause/implementation statements below describe 21 November only. Target of approximately 100 authentic entries and logo refinement remain open.
+Current checkpoint, 24 November: 100 attributed entries are enabled in `src/features/boot/splashQuoteCatalogue.json`. The requested count is reached. Source review notes distinguish opened original text, indexed passages and publisher/institutional reproductions; final original-page/edition signoff remains partial. The original 113 unchecked candidates stay archived outside runtime. 33 focused tests, lint, TypeScript, final frontend build and all-entry desktop/narrow/reduced-motion browser checks passed. Offline Windows native rebuild and progress recalculation passed. The current executable includes all 100 entries; no interactive native launch or installer package. Approved teal logo and polished splash remain integrated; see source notes and handoff for evidence.
 
 Checkpoint: 21 November 2026. Owner paused work until their usage allowance resets. Save the plan now; do not start further implementation while paused.
 
