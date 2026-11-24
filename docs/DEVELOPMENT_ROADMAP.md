@@ -98,3 +98,7 @@ LAN acceptance update: owner can open OPAC on the computer with Pusthakam instal
 ### Circulation items 1-3 authorized - 24 November 2026
 
 Reservations title/copy search and searchable paginated Renew/Return open-loan lists are implemented and built: 228 frontend tests and 35 real IPC tests passed; owner walkthrough remains pending. This supersedes their earlier collecting/queued status. LAN diagnosis and OPAC redesign were not authorized in this batch. Product weights and platform release gates unchanged.
+
+## Linux release tooling synchronized locally - 24 November 2026
+
+Strict Debian package/asset/startup/restart/uninstall checks and regression tests are now in D:\Pusthakam, replacing the earlier cloud-only checkpoint. REL-LINUX remains implemented but unverified until target Ubuntu packaging and interactive setup/sign-in/restart acceptance pass. macOS, physical printing and cross-device Windows LAN checks remain separate. OPAC redesign remains deferred.

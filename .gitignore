@@ -18,3 +18,5 @@ test-results/
 !.vscode/extensions.json
 .claude/settings.local.json
 /.superpowers/
+
+/tools/release/__pycache__/
