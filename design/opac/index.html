@@ -3,16 +3,40 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Pusthakam · OPAC design study</title>
+  <title>Pusthakam · OPAC Design Study</title>
   <link rel="icon" href="../../branding/pusthakam-logo.png">
   <link rel="stylesheet" href="styles.css">
   <script defer src="prototype.js"></script>
 </head>
 <body>
-  <a class="skip" href="#search">Skip to search</a>
-  <div class="study-bar"><span>OPAC design study <span class="demo">Demonstration data</span></span><nav aria-label="Choose a design"><a href="?view=shelf">1. The Shelf</a><a href="?view=index">2. The Index</a><a href="?view=table">3. Reading Table</a></nav></div>
+  <a class="skip" href="#search-input">Skip to search</a>
+  <header class="study-bar">
+    <div class="study-title-group">
+      <strong>Pusthakam OPAC Design Study</strong>
+      <span class="study-badge">Offline Prototype</span>
+    </div>
+    <nav class="study-switcher" aria-label="Select an OPAC Design Direction">
+      <a href="?view=reading-room" data-view="reading-room">1. The Reading Room</a>
+      <a href="?view=swiss-stacks" data-view="swiss-stacks">2. The Swiss Stacks</a>
+      <a href="?view=sovereign-folio" data-view="sovereign-folio">3. The Sovereign Folio</a>
+    </nav>
+  </header>
   <div id="app"></div>
-  <dialog id="details"><button class="close" aria-label="Close book details">×</button><div id="detail-content"></div></dialog>
-  <dialog id="about"><button class="close" aria-label="Close library information">×</button><h2>About this preview</h2><p>This is a working design prototype for Town Library’s public catalogue. All holdings, locations and classifications here are demonstration data.</p><p>Search, subject filters, availability, sorting and book details work locally. No library database is connected. Typographic jackets indicate missing covers; they are not publisher cover art.</p></dialog>
+  <dialog id="details-dialog">
+    <div class="modal-header-bar">
+      <button class="modal-close-btn" aria-label="Close book details">&times;</button>
+    </div>
+    <div id="details-dialog-content"></div>
+  </dialog>
+  <dialog id="about-dialog">
+    <div class="modal-header-bar">
+      <button class="modal-close-btn" aria-label="Close dialog">&times;</button>
+    </div>
+    <div style="padding: 0 32px 32px 32px;">
+      <h2 style="font-size: 20px; font-weight: 700; margin-bottom: 12px; color: #0F172A;">About this OPAC study</h2>
+      <p style="margin-bottom: 12px; color: #475569; font-size: 14px; line-height: 1.6;">This prototype demonstrates three distinct architectural and visual directions for Pusthakam's Public Catalogue (OPAC). All bibliographic records, Malayalam script entries, call numbers, and shelf tier coordinates are curated demonstration holdings.</p>
+      <p style="color: #475569; font-size: 14px; line-height: 1.6;">Search querying, category filtering, real-time availability toggles, sorting, and book specimen drawers operate 100% locally and offline without external network dependencies.</p>
+    </div>
+  </dialog>
 </body>
 </html>

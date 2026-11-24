@@ -2,13 +2,13 @@
 
 _Last updated: 2026-11-24_
 
-## Current: development paused by owner
+## Current: OPAC redesign study — Swiss Stacks refined & paused for owner review (24 November 2026)
 
-Updated 2026-11-24T14:12:02.123Z.
+Updated 2026-11-24T15:16:56.026Z.
 
-Owner paused Pusthakam development after expressing concern that supplied skills were not being used. All implementation and design work remains paused until the owner explicitly resumes. This documentation update is authorized; it does not resume development. Before future work, proactively identify, read and apply relevant available skills without requiring repeated owner prompts, and report actual use accurately. Progress and handoff updates are required immediately after meaningful changes, including pauses, without reminders. Next exact step: wait for explicit resume, then read contributor instructions and current progress/handoff, inspect the working tree and select applicable skills before continuing. Existing OPAC prototypes remain pending owner selection; remote-device LAN and release checks remain unresolved. No new product credit, build, commit or push.
+Owner reviewed the three OPAC design directions and directed: "fix swiss stack because it looks similar to the app. we have opmise it for moile too. now make this changes in the relevant documents. we can continue work later". Addressed in design/opac/prototype.js and design/opac/styles.css: replaced the dark terminal header and vertical admin rail with a public typographic masthead, a horizontal Dewey Decimal classification spectrum ribbon, and dedicated mobile optimization (horizontally swipeable category chips, full-width touch targets, and compact bibliographic cards). Re-captured desktop (1366x950) and mobile (390x844) Chrome screenshots in design/opac/previews/ and the artifact directory. TypeScript typecheck and ESLint passed with 0 errors. Development paused per owner direction ("we can continue work later"); ready for owner selection among the finalized 3 directions before any production LAN/OPAC code edits.
 
-Documentation-only verification (2026-11-24T14:12:19.976Z): npm.cmd run progress:validate -- --write and npm.cmd run progress:validate passed (59 tasks, 10 phases); git diff --check passed with line-ending notices only. Read-back confirmed the pause records agree. No application tests or builds run. Initial rg lookup unavailable; PowerShell Select-String used instead. Product totals remain 96.7% overall, 100% implementation, 97% verification and 76% release readiness. Earlier Active sections are historical and do not authorize resuming work.
+Verification (2026-11-24T15:16:56.026Z): npm.cmd run typecheck passed (tsc --noEmit); npm.cmd run lint passed with 0 errors and 0 warnings; headless Chrome desktop and mobile screenshots verified; npm.cmd run progress:validate -- --write and npm.cmd run progress:validate passed (59 tasks, 10 phases). Product totals remain 96.7% overall, 100% implementation, 97% verification and 76% release readiness. Earlier paused/active sections are historical.
 
 ## Local progress monitor
 

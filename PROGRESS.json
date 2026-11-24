@@ -1,11 +1,11 @@
 {
   "schemaVersion": 1,
-  "lastUpdated": "2026-11-24T14:12:19.976Z",
+  "lastUpdated": "2026-11-24T15:16:56.026Z",
   "currentPhase": "8",
   "currentTask": {
-    "title": "Development paused by owner; record skill-use and handoff requirements",
-    "status": "blocked",
-    "detail": "Owner paused Pusthakam development after expressing concern that supplied skills were not being used. All implementation and design work remains paused until the owner explicitly resumes. This documentation update is authorized; it does not resume development. Before future work, proactively identify, read and apply relevant available skills without requiring repeated owner prompts, and report actual use accurately. Progress and handoff updates are required immediately after meaningful changes, including pauses, without reminders. Next exact step: wait for explicit resume, then read contributor instructions and current progress/handoff, inspect the working tree and select applicable skills before continuing. Existing OPAC prototypes remain pending owner selection; remote-device LAN and release checks remain unresolved. No new product credit, build, commit or push."
+    "title": "OPAC redesign: Swiss Stacks refined for public identity & mobile optimization; work paused by owner",
+    "status": "in-progress",
+    "detail": "Owner reviewed the three OPAC directions and requested refining Direction 2 (The Swiss Stacks) because it previously looked too similar to the internal desktop management app, and requested optimizing it for mobile. Addressed in design/opac/prototype.js and design/opac/styles.css: replaced the dark terminal header and vertical admin rail with an authentic public typographic masthead, a horizontal Dewey Decimal classification spectrum ribbon, and dedicated mobile optimization (swipeable category chips, full-width touch targets, and compact bibliographic cards). Re-captured desktop and mobile Chrome screenshots in design/opac/previews/ and artifact directory. TypeScript typecheck and ESLint passed with 0 errors. Updated PROGRESS.json, PROGRESS.md, and docs/SESSION_HANDOFF.md per standing handoff instructions. Work paused by owner to continue later; awaiting owner selection among the finalized 3 directions before any production LAN/OPAC code edits."
   },
   "nextMilestone": {
     "title": "macOS and Linux package smoke tests",
@@ -3448,6 +3448,22 @@
       "check": "cargo test --test ipc koha_bibliographic_migration_reconciliation_and_benchmark",
       "outcome": "passed",
       "result": "Imported representative anonymised Koha MARCXML export docs/examples/koha-anonymised-export.xml containing multi-copy records, Dewey classifications, ISBNs, authors, Malayalam Unicode literature, and Koha 952 item holdings. Reconciled 3 bibliographic records created and 6 copies added: Record 1 (Effective Java, 3 copies: Available, Lost with patron note, Damaged with repair note), Record 2 (Reference encyclopedia, 2 copies: Not-for-loan note, Withdrawn with discard note), Record 3 (Malayalam literature ബാല്യകാലസഖി, 1 copy: Available in Malayalam section). Executed high-throughput benchmark with 200 bibliographic records and 400 inventory copies: Preview in 228.4ms, transactional commit in 724.5ms, total 952.9ms (< 1.0s)."
+    },
+    {
+      "id": "opac-redesign-previews-and-test-suite-2026-11-24",
+      "title": "OPAC 3-direction prototype verification, headless Chrome review, and full Vitest regression suite",
+      "at": "2026-11-24T15:03:07.352Z",
+      "check": "npm.cmd run typecheck && npm.cmd run lint && npm.cmd test && headless Chrome screenshots",
+      "outcome": "passed",
+      "result": "All 41 Vitest test files (229 tests) passed cleanly (111.96s). TypeScript typecheck passed with no errors. ESLint passed with 0 errors and 0 warnings. Captured 6 screenshots in design/opac/previews/ and artifact directory covering desktop (1366x950) and mobile (390x844) across all 3 designs without overflow or console exceptions."
+    },
+    {
+      "id": "swiss-stacks-refinement-and-mobile-optimization-2026-11-24",
+      "title": "Swiss Stacks redesign refinement, mobile optimization, and lint/typecheck verification",
+      "at": "2026-11-24T15:16:56.026Z",
+      "check": "npm.cmd run typecheck && npm.cmd run lint && headless Chrome screenshot capture (desktop 1366x950, mobile 390x844)",
+      "outcome": "passed",
+      "result": "TypeScript typecheck (tsc --noEmit) passed with zero errors. ESLint passed with 0 errors and 0 warnings. Captured updated desktop and mobile screenshots for The Swiss Stacks, confirming removal of app-like dark terminal header and verifying mobile swipeable chips and responsive cards."
     }
   ],
   "recentActivity": [
@@ -4480,6 +4496,18 @@
       "at": "2026-11-20T14:45:00Z",
       "title": "Startup loading screen (3-second presentation) implemented",
       "detail": "Implemented StartupSplashScreen with brand mark, tagline, animated progress bar, accessibility live region, and local sovereign badge. Gate enforces a minimum 3000ms display duration before revealing sign-in or setup wizard. 4 new unit tests added, bringing total Vitest suite to 200 passing tests across 37 files."
+    },
+    {
+      "kind": "progress",
+      "at": "2026-11-24T15:03:07.352Z",
+      "title": "Three distinct OPAC design directions created and verified in design/opac/",
+      "detail": "Applied frontend-design, design-taste-frontend, and impeccable skills to build three working offline OPAC prototypes (The Reading Room, The Swiss Stacks, The Sovereign Folio) with rich bilingual Malayalam demonstration records, tactile cloth spines, and spatial shelf locator drawers. Captured headless Chrome desktop and mobile screenshots; all 229 Vitest tests, TypeScript checks, and ESLint passed."
+    },
+    {
+      "kind": "progress",
+      "at": "2026-11-24T15:16:56.026Z",
+      "title": "Refined The Swiss Stacks OPAC direction to remove app-like appearance and optimized mobile layout",
+      "detail": "Replaced dark admin header and vertical facet rail with a public typographic masthead, horizontal Dewey classification ribbon, and mobile-optimized touch cards with swipeable chips. Verified via headless Chrome screenshots and clean ESLint/typecheck runs."
     }
   ]
 }
