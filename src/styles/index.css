@@ -257,12 +257,12 @@ input, textarea { caret-color: var(--ring); }
 .startup-progress { height: 2px; overflow: hidden; border-radius: 2px; background: var(--ink-3); }
 .startup-progress-fill { height: 100%; background: var(--cls-6); transition: width 120ms linear; }
 .startup-loading p { margin-top: 14px; font-size: 12px; line-height: 1.6; color: var(--rail-mute); }
-.startup-reveal { animation: startup-reveal 180ms ease-out both; }
+.startup-reveal { min-height: 100%; display: grid; animation: startup-reveal 180ms ease-out both; }
 @keyframes startup-enter { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
 @keyframes startup-reveal { from { opacity: 0; } to { opacity: 1; } }
 
 @media (prefers-reduced-motion: reduce) {
-  .startup-presentation, .startup-reveal { animation: none !important; }
+  .startup-presentation, .startup-reveal { min-height: 100%; display: grid; animation: none !important; }
   .startup-progress-fill { transition: none !important; }
   *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
 }

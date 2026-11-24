@@ -316,6 +316,7 @@ export default function ReportsPage() {
   const usesDateRange = kind === "activity" || kind === "popular" || kind === "growth" || kind === "overdues" || kind === "accession" || kind === "expenditure" || kind === "loss";
   const [simpleDesign, setSimpleDesign] = useState(false);
   const [exporting, setExporting] = useState<string | null>(null);
+  const [saveMessage, setSaveMessage] = useState<string | null>(null);
   const [exportError, setExportError] = useState<string | null>(null);
   const reportTables = useRef<HTMLDivElement>(null);
   const printCleanup = useRef<(() => void) | null>(null);
@@ -364,6 +365,7 @@ export default function ReportsPage() {
   async function exportDocument(format: "xlsx" | "pdf") {
     if (!result.data) return;
     setExporting(format);
+    setSaveMessage(null);
     setExportError(null);
     try {
       const data = formatReportData(result.data, range.from, range.to);
@@ -377,7 +379,11 @@ export default function ReportsPage() {
         data.alignments,
         simpleDesign,
       );
-      downloadBase64File(file.dataBase64, file.fileName, file.mimeType);
+      const saved = await reportsApi.saveExport(file.fileName, file.dataBase64);
+      if (!saved.native) {
+        downloadBase64File(file.dataBase64, file.fileName, file.mimeType);
+        setSaveMessage("Report download started.");
+      } else setSaveMessage(saved.path ? `Saved to ${saved.path}` : "Save cancelled.");
     } catch (e) {
       setExportError(toApiError(e).message);
     } finally {
@@ -438,6 +444,7 @@ export default function ReportsPage() {
       </form>
       {result.isPending && <p role="status" className="text-muted">Loading report.</p>}
       {result.isError && <p role="alert" className="text-danger">{toApiError(result.error).message}</p>}
+      {saveMessage && <p role="status">{saveMessage}</p>}
       {exportError && <p role="alert" className="text-danger">{exportError}</p>}
       <div ref={reportTables} className={simpleDesign ? "report-simple space-y-4" : "report-polished space-y-4"}>
       {activity && (

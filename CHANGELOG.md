@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 ### Added
+- Reservations supports book-name and copy selection, including on-loan copies; Renew and Return offer searchable, paginated current-loan lists with existing review/confirmation.
+- Title-and-copy lookup in Circulation Issue, a functional Barcode & Printing page with spine-label style, member cards and current-loan slip reprints, and native Windows Save As for PDF/XLSX reports.
 - 100 bundled splash quotations with author/character credits and per-entry source, edition and review notes; stable per-launch selection avoids an immediate repeat. Remaining original-source image checks are recorded in `docs/SPLASH_QUOTE_SOURCES.md`.
 - Read-only member fine accounts with currency-separated balances, assessed fine history and permission-scoped payment/waiver history for active and archived members.
 - Live member-name suggestions in Circulation and Reservations, maximized startup, and close-to-tray with explicit Open/Quit actions.
@@ -19,6 +21,7 @@
 - "Online Tools" menu (DDC Number List, Library Toolkit) opening approved links in the system browser.
 - Roadmap: MARC21/Koha migration moved up to Phase 3.
 ### Changed
+- Setup sidebar fills the available window height. LAN hosting now owns a real listener across startup/settings changes and reports binding failures instead of deriving Active status from a saved flag.
 - Removed the permanent "Offline" message from the UI at the owner's request.
 - Replaced the original ivory/sage Inter UI (rejected as generic) with Spine Label. Removed the Malayalam word from the UI at the owner's request.
 - Phase 0 documentation: product specification, architecture, database design, roadmap, testing strategy, decisions, known issues.

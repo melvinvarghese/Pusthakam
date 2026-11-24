@@ -266,3 +266,21 @@ it("supports toggling simple report design mode for preview, printing and export
   await userEvent.click(screen.getByRole("button", { name: "Export PDF" }));
   expect(vi.mocked(invoke)).toHaveBeenCalledWith("reports_export_file", expect.objectContaining({ simpleDesign: true }));
 });
+
+it("saves reports through native Save As, including cancellation without a browser download", async () => {
+ const click = vi.spyOn(HTMLAnchorElement.prototype,"click").mockImplementation(()=>{});
+ const save = vi.fn().mockResolvedValueOnce({native:true,path:"C:/Reports/activity.pdf"}).mockResolvedValueOnce({native:true,path:null}).mockRejectedValueOnce(new Error("Cannot save report"));
+ vi.mocked(invoke).mockImplementation(async(command)=>{
+  if(command==="reports_circulation_activity") return [{date:"2026-11-16",issued:1,returned:0,lost:0,renewed:0,reservations:0}];
+  if(command==="reports_export_file") return {fileName:"activity.pdf",mimeType:"application/pdf",dataBase64:"JVBERi0xLjQK"};
+  if(command==="reports_save_export") return save();
+ });
+ renderReports(); const user=userEvent.setup();
+ await screen.findByRole("rowheader",{name:"2026-11-16"});
+ await user.click(screen.getByRole("button",{name:"Export PDF"}));
+ await screen.findByText("Saved to C:/Reports/activity.pdf");
+ expect(invoke).toHaveBeenCalledWith("reports_save_export",{fileName:"activity.pdf",dataBase64:"JVBERi0xLjQK"});
+ await user.click(screen.getByRole("button",{name:"Export PDF"})); await screen.findByText("Save cancelled.");
+ await user.click(screen.getByRole("button",{name:"Export PDF"})); await screen.findByRole("alert");
+ expect(click).not.toHaveBeenCalled();
+});

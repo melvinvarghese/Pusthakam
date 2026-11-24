@@ -38,6 +38,7 @@ impl Harness {
             .manage(AppState {
                 paths,
                 db: Mutex::new(conn),
+                lan: Mutex::new(Default::default()),
                 session: Mutex::new(None),
                 pending_import: Mutex::new(None),
                 _log_guard: guard,

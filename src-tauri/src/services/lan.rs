@@ -26,6 +26,10 @@ pub struct LanConfig {
     pub opac_enabled: bool,
     pub browser_staff_enabled: bool,
     pub active_interfaces: Vec<String>,
+    #[serde(default)]
+    pub listener_running: bool,
+    #[serde(default)]
+    pub listener_error: Option<String>,
 }
 
 #[derive(Debug, Clone, Deserialize)]
@@ -231,6 +235,8 @@ pub fn get_or_init_config(conn: &Connection) -> AppResult<LanConfig> {
         opac_enabled: row.5,
         browser_staff_enabled: row.6,
         active_interfaces: discover_local_ips(),
+        listener_running: false,
+        listener_error: None,
     })
 }
 
@@ -778,6 +784,7 @@ pub fn start_lan_listener(
     let listener = TcpListener::bind(&addr)
         .map_err(|e| AppError::Internal(format!("Failed to bind LAN listener to {addr}: {e}")))?;
 
+    let port = listener.local_addr().map_err(AppError::Io)?.port();
     listener.set_nonblocking(true).map_err(AppError::Io)?;
 
     let shutdown = Arc::new(AtomicBool::new(false));

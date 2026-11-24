@@ -158,6 +158,7 @@ export function LanSettingsPanel() {
         </div>
       )}
 
+      {config?.listenerError && <p role="alert" className="text-danger">{config.listenerError} Check the bind address and whether another application uses this port.</p>}
       {/* 1. Header & Server Status Card */}
       <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg p-6 shadow-sm">
         <div className="flex items-start justify-between">
@@ -194,9 +195,9 @@ export function LanSettingsPanel() {
               Server Status
             </div>
             <div className="flex items-center gap-2">
-              <span className={`h-2.5 w-2.5 rounded-full ${config?.enabled ? "bg-emerald-500 animate-pulse" : "bg-slate-400"}`} />
+              <span className={`h-2.5 w-2.5 rounded-full ${config?.listenerRunning ? "bg-emerald-500 animate-pulse" : "bg-slate-400"}`} />
               <span className="font-semibold text-slate-900 dark:text-slate-100">
-                {config?.enabled ? `Active on port ${config.port}` : "Stopped (Offline)"}
+                {config?.listenerRunning ? `Active on port ${config.port}` : config?.enabled ? "Listener unavailable" : "Stopped"}
               </span>
             </div>
             <div className="mt-2 text-xs font-mono text-slate-500 break-all">
@@ -206,14 +207,14 @@ export function LanSettingsPanel() {
 
           <div className="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-lg border border-slate-200 dark:border-slate-700/60">
             <div className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">
-              Public OPAC Address
+              Browser Addresses
             </div>
-            {config?.enabled && config?.activeInterfaces.length ? (
+            {config?.listenerRunning && config?.activeInterfaces.length ? (
               <div className="space-y-1">
-                {config.activeInterfaces.map((ip) => {
-                  const url = `http://${ip}:${config.port}/opac`;
+                {config.activeInterfaces.flatMap((ip) => ["opac", "staff"].filter((portal) => portal === "opac" ? config.opacEnabled : config.browserStaffEnabled).map((portal) => {
+                  const url = `http://${ip}:${config.port}/${portal}`;
                   return (
-                    <div key={ip} className="flex items-center justify-between font-mono text-xs bg-white dark:bg-slate-900 p-1.5 rounded border border-slate-200 dark:border-slate-700">
+                    <div key={url} className="flex items-center justify-between font-mono text-xs bg-white dark:bg-slate-900 p-1.5 rounded border border-slate-200 dark:border-slate-700">
                       <span className="text-emerald-700 dark:text-emerald-400 select-all">{url}</span>
                       <button
                         type="button"
@@ -225,15 +226,16 @@ export function LanSettingsPanel() {
                       </button>
                     </div>
                   );
-                })}
+                }))}
               </div>
             ) : (
-              <span className="text-xs text-slate-500">Enable LAN mode to generate local addresses.</span>
+              <span className="text-xs text-slate-500">Start the LAN listener to show connection addresses.</span>
             )}
           </div>
         </div>
       </div>
 
+      {config?.listenerRunning && <p className="text-sm text-muted">Open /staff for staff sign-in or /opac for public catalogue search on the addresses above. Use the network address on other devices; 127.0.0.1 works only on this computer. Devices must share the same network. If this computer works but another device cannot connect, check the Windows firewall and network isolation.</p>}
       {/* 2. Device Pairing Section */}
       <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg p-6 shadow-sm">
         <div className="flex items-center justify-between mb-4">

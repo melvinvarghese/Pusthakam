@@ -236,3 +236,13 @@ pub fn circulation_fine_history(
     let actor = state.require("circulation.issue")?;
     state.with_conn(|conn| fines::history(conn, fine_id, page, actor.can("circulation.manage")))
 }
+
+#[tauri::command]
+pub fn circulation_list_open_loans(
+    state: State<'_, AppState>,
+    search: String,
+    page: i64,
+) -> AppResult<circulation::OpenLoanPage> {
+    state.require("circulation.issue")?;
+    state.with_conn(|conn| circulation::list_open_loans(conn, &search, page))
+}

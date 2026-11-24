@@ -11,7 +11,7 @@ use tauri::State;
 #[tauri::command]
 pub fn lan_get_config(state: State<'_, AppState>) -> AppResult<LanConfig> {
     state.require("lan.read")?;
-    state.with_conn(lan::get_or_init_config)
+    crate::services::lan_runtime::config(&state)
 }
 
 #[tauri::command]
@@ -20,7 +20,8 @@ pub fn lan_update_config(
     input: UpdateLanConfigInput,
 ) -> AppResult<LanConfig> {
     let session = state.require("lan.manage")?;
-    state.with_conn(|conn| lan::update_config(conn, &session, &input))
+    state.with_conn(|conn| lan::update_config(conn, &session, &input))?;
+    crate::services::lan_runtime::config(&state)
 }
 
 #[tauri::command]

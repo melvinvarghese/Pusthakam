@@ -9,6 +9,7 @@ use tracing_appender::non_blocking::WorkerGuard;
 pub struct AppState {
     pub paths: AppPaths,
     pub db: Mutex<Connection>,
+    pub lan: Mutex<crate::services::lan_runtime::LanRuntime>,
     /// The signed-in staff member. Held in memory only: closing the app signs everyone out.
     pub session: Mutex<Option<Session>>,
     /// A file that has been previewed and is waiting for the librarian's confirmation.

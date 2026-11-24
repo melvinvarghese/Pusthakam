@@ -96,7 +96,7 @@ export function SetupWizard() {
   const profile = PROFILES.find((p) => p.code === form.profile);
 
   return (
-    <div className="grid min-h-full grid-cols-[280px_minmax(0,1fr)]">
+    <div className="grid min-h-dvh grid-cols-[280px_minmax(0,1fr)]">
       <aside className="flex flex-col gap-8 bg-ink p-6 text-rail-text">
         <div className="flex items-center gap-3 text-white">
           <BrandMark />

@@ -8,7 +8,7 @@ import { previewMode } from "@/lib/preview";
 import type { HistoryBatchSummary, HistorySummary, HistoryPreview, RenewalImportPreview, LoanImportPreview, MemberFineAccount, LibraryCalendar, Holiday,
   CatalogueExportFormat, CatalogueExportFile, AccessionFormat, AppErrorPayload, AppInfo, ArchiveKind, CirculationDay, ConfigOverview, CopyBatchInput, CopyPage, CopyQuery,
   CopyRecord, CopyStatus, CopyUpdateInput, DashboardOverview, DuplicateHit, DuplicateProbe, FineAmount, FineHistoryPage, FinePage, FineSettlement, ImportOptions, ImportPreview,
-  ImportPreviewRequest, ImportReport, IssuePreview, KohaPatronPreview, LibraryInput, MemberCategoryInput, MemberInput, MemberLoanPage, MemberPage, OverduePage, RenewalPreview, ReservationPage, ReturnCondition, ReturnPreview,
+  ImportPreviewRequest, ImportReport, IssuePreview, KohaPatronPreview, LibraryInput, MemberCategoryInput, MemberInput, MemberLoanPage, MemberPage, OpenLoanPage, OverduePage, RenewalPreview, ReservationPage, ReturnCondition, ReturnPreview,
   NamedInput, NamedKind, PolicyInput, PopularTitle, RecordDetail, RecordInput, SearchQuery, SearchResult, Session, SetupInput,
   SetupStatus, ShelfInput, StockRow, FineSummary, CatalogueGrowthDay, MemberSummary, BackupFile, BackupList, AuditPage, AuditQuery,
   OverdueRow, AccessionRow, ExpenditureRow, LossDamageRow, ReportExportFile,
@@ -84,6 +84,7 @@ export const appApi = {
 };
 
 export const reportsApi = {
+  saveExport: (fileName: string, dataBase64: string) => call<{ native: boolean; path: string | null }>("reports_save_export", { fileName, dataBase64 }),
   circulationActivity: (from: string, to: string) => call<CirculationDay[]>("reports_circulation_activity", { from, to }),
   popularTitles: (from: string, to: string) => call<PopularTitle[]>("reports_popular_titles", { from, to }),
   stockByLocation: () => call<StockRow[]>("reports_stock_by_location"),
@@ -200,6 +201,7 @@ export const circulationApi = {
   returnCopy: (loanId: number, condition: ReturnCondition = "available") =>
     call<FineAmount | null>("circulation_return", condition === "available" ? { loanId } : { loanId, condition }),
   prepareRenewal: (barcode: string) => call<RenewalPreview>("circulation_prepare_renewal", { barcode }),
+  listOpenLoans: (search: string, page: number) => call<OpenLoanPage>("circulation_list_open_loans", { search, page }),
   listOverdue: (page: number) => call<OverduePage>("circulation_list_overdue", { page }),
   listReservations: (page: number) => call<ReservationPage>("circulation_list_reservations", { page }),
   placeReservation: (memberNumber: string, barcode: string) =>

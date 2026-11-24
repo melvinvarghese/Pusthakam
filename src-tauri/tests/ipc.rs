@@ -34,6 +34,7 @@ impl Harness {
             .manage(AppState {
                 paths,
                 db: Mutex::new(conn),
+                lan: Mutex::new(Default::default()),
                 session: Mutex::new(None),
                 pending_import: Mutex::new(None),
                 _log_guard: guard,
@@ -1587,6 +1588,25 @@ fn catalogue_commands_accept_the_ui_payloads_and_enforce_permissions() {
     );
     let loan = h.ok("circulation_prepare_return", barcode.clone());
     assert_eq!(loan["dueOn"], renewal["dueOn"]);
+    for search in ["", "balyak", "ASHA", "MEM-101", "LIB-00101"] {
+        let open = h.ok(
+            "circulation_list_open_loans",
+            json!({"search":search,"page":99}),
+        );
+        assert_eq!(open["total"], 1);
+        assert_eq!(open["page"], 1);
+        assert_eq!(open["rows"][0]["loanId"], loan["loanId"]);
+        assert_eq!(open["rows"][0]["barcode"], "LIB-00101");
+        assert!(open["rows"][0]["accessionNo"].is_string());
+    }
+    assert_eq!(
+        h.ok(
+            "circulation_list_open_loans",
+            json!({"search":"no-match","page":1})
+        )["total"],
+        0
+    );
+
     let first_page = json!({ "page": 1 });
     assert_eq!(
         h.ok("circulation_list_overdue", first_page.clone())["total"],
@@ -1655,6 +1675,10 @@ fn catalogue_commands_accept_the_ui_payloads_and_enforce_permissions() {
     );
     let fine = h.ok("circulation_return", json!({ "loanId": loan["loanId"] }));
     assert_eq!(fine, json!({ "amountMinor": 250, "currency": "INR" }));
+    assert_eq!(
+        h.ok("circulation_list_open_loans", json!({"search":"","page":1}))["total"],
+        0
+    );
     assert_eq!(
         h.ok("dashboard_overview", json!({}))["circulation"]["outstandingFines"],
         1
@@ -4887,5 +4911,147 @@ fn lan_full_workflow_via_ipc() {
             })
         ),
         "PERMISSION_DENIED"
+    );
+}
+
+#[test]
+fn reports_save_export_checks_permission_and_payload_before_dialog() {
+    let h = Harness::new();
+    let body = json!({"fileName":"report.pdf","dataBase64":"JVBERi0xLjQK"});
+    assert_eq!(h.code("reports_save_export", body.clone()), "AUTH_FAILED");
+    h.ok("complete_setup", setup_body());
+    assert_eq!(
+        h.code(
+            "reports_save_export",
+            json!({"fileName":"../report.pdf","dataBase64":"JVBERi0xLjQK"})
+        ),
+        "VALIDATION"
+    );
+    assert_eq!(
+        h.code(
+            "reports_save_export",
+            json!({"fileName":"report.pdf","dataBase64":"invalid"})
+        ),
+        "VALIDATION"
+    );
+    {
+        let state = h.webview.state::<AppState>();
+        state.db.lock().unwrap().execute("DELETE FROM role_permissions WHERE role_id=(SELECT role_id FROM staff_users WHERE username='admin') AND permission_id=(SELECT id FROM permissions WHERE code='reports.read')", []).unwrap();
+    }
+    assert_eq!(h.code("reports_save_export", body), "PERMISSION_DENIED");
+}
+
+#[test]
+fn lan_settings_start_and_stop_the_actual_http_listener() {
+    use std::io::{Read, Write};
+    use std::net::{TcpListener, TcpStream};
+    let h = Harness::new();
+    assert_eq!(h.code("lan_get_config", json!({})), "AUTH_FAILED");
+    h.ok("complete_setup", setup_body());
+    let reservation = TcpListener::bind("127.0.0.1:0").unwrap();
+    let port = reservation.local_addr().unwrap().port();
+    drop(reservation);
+    let mut input = json!({"enabled":true,"bindAddress":"127.0.0.1","port":port,"serverName":"Test library","opacEnabled":true,"browserStaffEnabled":true});
+    let running = h.ok("lan_update_config", json!({"input":input.clone()}));
+    assert_eq!(running["listenerRunning"], true);
+    assert!(running["listenerError"].is_null());
+    let mut stream = TcpStream::connect(("127.0.0.1", port)).unwrap();
+    stream
+        .set_read_timeout(Some(std::time::Duration::from_secs(3)))
+        .unwrap();
+    stream
+        .write_all(b"GET /opac HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n")
+        .unwrap();
+    let mut response = String::new();
+    stream.read_to_string(&mut response).unwrap();
+    assert!(response.starts_with("HTTP/1.1 200"));
+    assert!(response.contains("Public Catalogue"));
+    input["enabled"] = json!(false);
+    let stopped = h.ok("lan_update_config", json!({"input":input}));
+    assert_eq!(stopped["listenerRunning"], false);
+    assert!(TcpListener::bind(("127.0.0.1", port)).is_ok());
+}
+
+#[test]
+fn open_loan_directory_enforces_auth_and_permissions() {
+    let h = Harness::new();
+    let body = json!({"search":"","page":1});
+    assert_eq!(
+        h.code("circulation_list_open_loans", body.clone()),
+        "AUTH_FAILED"
+    );
+    h.ok("complete_setup", setup_body());
+    assert_eq!(
+        h.ok("circulation_list_open_loans", body.clone())["total"],
+        0
+    );
+    assert_eq!(
+        h.code(
+            "circulation_list_open_loans",
+            json!({"search":"x".repeat(301),"page":1})
+        ),
+        "VALIDATION"
+    );
+    {
+        let state = h.webview.state::<AppState>();
+        state.db.lock().unwrap().execute("DELETE FROM role_permissions WHERE role_id=(SELECT role_id FROM staff_users WHERE username='admin') AND permission_id=(SELECT id FROM permissions WHERE code='circulation.issue')",[]).unwrap();
+    }
+    assert_eq!(
+        h.code("circulation_list_open_loans", body),
+        "PERMISSION_DENIED"
+    );
+}
+
+#[test]
+fn open_loan_directory_paginates_due_order_and_excludes_closed_loans() {
+    let h = Harness::new();
+    h.ok("complete_setup", setup_body());
+    let cfg = h.ok("config_overview", json!({}));
+    let category = cfg["policies"][0]["itemCategoryId"].as_i64().unwrap();
+    let member=h.ok("members_save",json!({"input":{"name":"Directory reader","memberNumber":"DIR-M","categoryId":cfg["policies"][0]["memberCategoryId"]}})).as_i64().unwrap();
+    {
+        let state = h.webview.state::<AppState>();
+        let conn = state.conn().unwrap();
+        let staff: i64 = conn
+            .query_row(
+                "SELECT id FROM staff_users WHERE username='admin'",
+                [],
+                |r| r.get(0),
+            )
+            .unwrap();
+        conn.execute(
+            "INSERT INTO bibliographic_records(title) VALUES ('Directory title')",
+            [],
+        )
+        .unwrap();
+        let record = conn.last_insert_rowid();
+        for index in 0..28 {
+            conn.execute("INSERT INTO physical_items(record_id,accession_no,barcode,item_category_id,status) VALUES (?1,?2,?3,?4,'on_loan')",rusqlite::params![record,format!("ACC-{index}"),format!("DIR-{index}"),category]).unwrap();
+            let item = conn.last_insert_rowid();
+            conn.execute("INSERT INTO loans(item_id,member_id,item_category_id,issued_by,due_on,returned_at,returned_by) VALUES (?1,?2,?3,?4,?5,?6,?7)",rusqlite::params![item,member,category,staff,if index<10 {"2026-01-01"} else {"2099-12-01"},if index==27 {Some("2026-01-02T00:00:00Z")} else {None},if index==27 {Some(staff)} else {None}]).unwrap();
+        }
+    }
+    let first = h.ok("circulation_list_open_loans", json!({"search":"","page":1}));
+    assert_eq!(first["total"], 27);
+    assert_eq!(first["rows"].as_array().unwrap().len(), 25);
+    assert_eq!(first["rows"][0]["dueOn"], "2026-01-01");
+    let last = h.ok(
+        "circulation_list_open_loans",
+        json!({"search":"","page":99}),
+    );
+    assert_eq!(last["page"], 2);
+    assert_eq!(last["rows"].as_array().unwrap().len(), 2);
+    let accession = h.ok(
+        "circulation_list_open_loans",
+        json!({"search":"ACC-26","page":1}),
+    );
+    assert_eq!(accession["total"], 1);
+    assert_eq!(accession["rows"][0]["barcode"], "DIR-26");
+    assert_eq!(
+        h.ok(
+            "circulation_list_open_loans",
+            json!({"search":"DIR-27","page":1})
+        )["total"],
+        0
     );
 }

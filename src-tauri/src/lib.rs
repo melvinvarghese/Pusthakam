@@ -81,6 +81,7 @@ macro_rules! app_handlers {
             $crate::commands::circulation::circulation_prepare_renewal,
             $crate::commands::circulation::circulation_renew,
             $crate::commands::circulation::circulation_list_overdue,
+            $crate::commands::circulation::circulation_list_open_loans,
             $crate::commands::circulation::circulation_list_reservations,
             $crate::commands::circulation::circulation_place_reservation,
             $crate::commands::circulation::circulation_cancel_reservation,
@@ -98,6 +99,7 @@ macro_rules! app_handlers {
             $crate::commands::reports::reports_expenditure_summary,
             $crate::commands::reports::reports_loss_damage_list,
             $crate::commands::reports::reports_export_file,
+            $crate::commands::reports::reports_save_export,
             $crate::commands::backup::backup_list,
             $crate::commands::backup::backup_create,
             $crate::commands::backup::backup_copy_to_folder,
@@ -206,12 +208,19 @@ pub fn run() {
             app.manage(state::AppState {
                 paths,
                 db: Mutex::new(conn),
+                lan: Mutex::new(Default::default()),
                 session: Mutex::new(None),
                 pending_import: Mutex::new(None),
                 _log_guard: guard,
             });
             if let Err(error) = desktop_tray::install(app.handle()) {
                 tracing::warn!(%error, "System tray unavailable; normal window close remains enabled");
+            }
+            let state = app.state::<state::AppState>();
+            match services::lan_runtime::config(&state) {
+                Ok(config) if config.listener_error.is_some() => tracing::warn!("LAN listener could not start; review LAN settings"),
+                Err(error) => tracing::warn!(%error, "LAN startup configuration unavailable"),
+                _ => {}
             }
             let handle = app.handle().clone();
             if let Err(error) = std::thread::Builder::new().name("database-backup".into()).spawn(move || {
