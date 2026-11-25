@@ -61,6 +61,37 @@ describe("AppShell", () => {
     expect(screen.getByText("Rekha Nair")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Sign out" })).toBeInTheDocument();
   });
+  it("opens phone navigation and closes it after selecting a section", async () => {
+    renderApp();
+    const user = userEvent.setup();
+    const menu = screen.getByRole("button", { name: "Open navigation" });
+    await user.click(menu);
+    const dialog = screen.getByRole("dialog", { name: "Navigation" });
+    expect(menu).toHaveAttribute("aria-expanded", "true");
+    await user.click(within(dialog).getByRole("link", { name: "Members" }));
+    expect(screen.queryByRole("dialog", { name: "Navigation" })).not.toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Members" })).toBeInTheDocument();
+    expect(menu).toHaveFocus();
+  });
+  it("closes phone navigation with Escape and restores menu focus", async () => {
+    renderApp();
+    const user = userEvent.setup();
+    const menu = screen.getByRole("button", { name: "Open navigation" });
+    await user.click(menu);
+    await user.keyboard("{Escape}");
+    expect(screen.queryByRole("dialog", { name: "Navigation" })).not.toBeInTheDocument();
+    expect(menu).toHaveFocus();
+  });
+  it("closes phone navigation through the backdrop without losing restored focus", async () => {
+    renderApp();
+    const user = userEvent.setup();
+    const menu = screen.getByRole("button", { name: "Open navigation" });
+    await user.click(menu);
+    const backdrop = screen.getByRole("dialog", { name: "Navigation" }).parentElement!;
+    await user.click(backdrop);
+    expect(screen.queryByRole("dialog", { name: "Navigation" })).not.toBeInTheDocument();
+    expect(menu).toHaveFocus();
+  });
 
   it("explains outside the desktop app that status needs the desktop app", async () => {
     renderApp();

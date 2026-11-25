@@ -1192,6 +1192,7 @@ export interface UpdateLanConfigInput {
   serverName: string;
   opacEnabled: boolean;
   browserStaffEnabled: boolean;
+  publicBaseUrl?: string | null;
 }
 
 export interface LanPairingCode {

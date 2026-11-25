@@ -1,0 +1,70 @@
+{
+  "at": "2026-11-25T13:57:11.934Z",
+  "source": "Current working tree; not committed, pushed or installed against owner data",
+  "artifacts": [
+    {
+      "path": "src-tauri/target/release/bundle/nsis/Pusthakam_0.1.0_x64-setup.exe",
+      "bytes": 7979713,
+      "sha256": "bcf0d9a0d8910e1e294d88de4f8e27ff6983224f4944acba0f6ccb0d844a3d04"
+    },
+    {
+      "path": "src-tauri/target/release/bundle/server/pusthakam-server.exe",
+      "bytes": 9321984,
+      "sha256": "450b56e89127e98853e5ea399914c6390c8c12452859f2ffbf96544eb44a099e"
+    }
+  ],
+  "deliveryStatus": {
+    "at": "2026-11-25T13:57:11.934Z",
+    "status": "Fresh Windows build with mobile layouts and device-pairing UI removal",
+    "note": "115 touch/browser checks and11 real headless restore/delayed-packet checks passed against the exact bundled server SHA256. Installer built successfully; physical installed-app/phone acceptance remains."
+  },
+  "verification": {
+    "browserChecks": 115,
+    "headlessChecks": 11,
+    "browserReport": "docs/STAFF_BROWSER_REVIEW.json",
+    "headlessReport": "docs/HEADLESS_HOST_REVIEW.json",
+    "frontend": "Full252-test suite passed before backdrop fix. Subsequent253-test full run had42 files pass and2 loading-deadline failures; unchanged focused Dashboard/Settings/AppShell rerun passed27 tests, including both failures and new backdrop regression. Silent full one-worker rerun stopped; no assertions or timeouts weakened.",
+    "typeScriptAndVite": "passed",
+    "eslint": "passed"
+  },
+  "resolvedByReview": [
+    "Phone route-entry autofocus",
+    "Backdrop default mousedown focus loss",
+    "Classification scheme/filter overflow",
+    "Acquisitions tabs and Purchase Orders toolbar overflow",
+    "Periodicals subscription filter overflow",
+    "Inconsistent mobile page padding"
+  ],
+  "pending": [
+    "Physical Android/iPhone, Safari and real soft keyboard/zoom/screen-reader acceptance",
+    "Complete import/upload/circulation and printer/scanner workflows",
+    "Optional public HTTPS deployment and outside-network verification",
+    "macOS/Linux packages"
+  ],
+  "ownerDataUsed": false,
+  "networkOrDnsChanged": false,
+  "ownerConfirmedEarlier": "Both OPAC and staff work on another same-network device",
+  "previousArtifacts": [
+    {
+      "path": "src-tauri/target/release/bundle/nsis/Pusthakam_0.1.0_x64-setup.exe",
+      "bytes": 7981846,
+      "sha256": "a5212834a0ff262d94b986ab59a5ea24340307bc7e5ce4d7e502911b12d0144a"
+    },
+    {
+      "path": "src-tauri/target/release/bundle/server/pusthakam-server.exe",
+      "bytes": 9320960,
+      "sha256": "1837ddd286496ea0f088c1febd3d15815cf8111b617a7233dfcc29c3dfa2b317"
+    }
+  ],
+  "finalRecordChecks": {
+    "at": "2026-11-25T13:58:02.414Z",
+    "result": "Final full-project ESLint, progress write/read validation and git diff --check pass. Exact release browser/headless report hashes match delivered server. Progress/handoff/mobile acceptance agree. V1 scores unchanged."
+  },
+  "latestMobileRepeat": {
+    "at": "2026-11-25T15:34:15.157Z",
+    "checks": 115,
+    "exceptions": 0,
+    "installerHashMatched": true,
+    "report": "docs/STAFF_BROWSER_REVIEW.json"
+  }
+}

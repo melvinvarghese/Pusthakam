@@ -101,8 +101,8 @@ export function CataloguePage() {
                 navigate(`/catalogue/${result.data.rows[0].id}`);
               }
             }}
-            autoFocus
-            className="h-9 min-w-72 flex-1 rounded-md border border-line-strong bg-surface px-3 text-[13px] placeholder:text-muted"
+            autoFocus={typeof window.matchMedia === "function" && window.matchMedia("(min-width: 1024px)").matches}
+            className="h-9 min-w-0 w-full sm:min-w-72 flex-1 rounded-md border border-line-strong bg-surface px-3 text-[13px] placeholder:text-muted"
           />
           <select
             aria-label="Collection"
@@ -169,7 +169,7 @@ export function CataloguePage() {
                 : canWrite ? "The catalogue is empty. Add your first record, or import your existing catalogue." : "The catalogue is empty."}
             </p>
           ) : (
-            <table className="w-full table-fixed border-collapse">
+            <table role="table" className="staff-card-table w-full table-fixed border-collapse">
               <thead>
                 <tr className="h-8 text-left text-[11px] font-semibold uppercase tracking-wide text-muted">
                   {<th scope="col" className="w-12 border-b border-line"><span className="sr-only">Select records</span></th>}
@@ -199,16 +199,16 @@ export function CataloguePage() {
                       </div>
                       </div>
                     </td>
-                    <td className="border-b border-line px-4 py-2.5">
+                    <td data-mobile-label="Publisher" className="border-b border-line px-4 py-2.5">
                       {r.publisher ?? <span className="text-muted">Not set</span>}
                       {r.publicationYear && <span className="block text-xs text-muted">{r.publicationYear}</span>}
                     </td>
-                    <td className="border-b border-line px-4 py-2.5">
+                    <td data-mobile-label="Class" className="border-b border-line px-4 py-2.5">
                       {r.classificationNumber ? <CallNumberLabel callNumber={r.classificationNumber}
                         schemeCode={config.data?.classificationSchemes.find((scheme) => scheme.id === r.classificationSchemeId)?.code} />
                         : <span className="text-muted">None</span>}
                     </td>
-                    <td className="border-b border-line px-4 py-2.5">
+                    <td data-mobile-label="Copies" className="border-b border-line px-4 py-2.5">
                       {r.archived ? <Chip>Archived</Chip> : r.totalCopies === 0 ? <span className="text-muted">No copies</span> : `${r.availableCopies} of ${r.totalCopies} available`}
                     </td>
                   </tr>

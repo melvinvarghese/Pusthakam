@@ -1,0 +1,13 @@
+{
+  "at": "2026-11-25T12:36:00.023Z",
+  "source": "Source AppShell class names and mobile.css; last compiled base CSS; explicit fixture holdings, not a newly built React application",
+  "checks": [
+    "source layout 320x740",
+    "source layout 390x844",
+    "source layout 768x1024",
+    "source layout 1024x768",
+    "source layout 1366x950"
+  ],
+  "exceptions": [],
+  "limits": "Geometry only. React menu/route behavior tests and fresh native/browser bundle verification remain blocked by the recorded build/tool telemetry issue; actual phone and keyboard acceptance pending."
+}

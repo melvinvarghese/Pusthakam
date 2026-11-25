@@ -2,7 +2,7 @@ import type { HTMLAttributes, ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
 export function Panel({ className, ...rest }: HTMLAttributes<HTMLElement>) {
-  return <section className={cn("rounded-lg border border-line bg-surface", className)} {...rest} />;
+  return <section className={cn("staff-panel min-w-0 rounded-lg border border-line bg-surface", className)} {...rest} />;
 }
 
 interface HeaderProps {

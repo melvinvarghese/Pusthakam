@@ -90,16 +90,13 @@ impl StaffWeb {
         }
     }
     pub fn ready(&self) -> bool {
-        self.db
-            .lock()
-            .ok()
-            .and_then(|conn| {
-                super::settings::get(&conn, "web.full_staff_enabled")
-                    .ok()
-                    .flatten()
-            })
-            .as_deref()
-            == Some("true")
+        let Ok(conn) = self.db.lock() else {
+            return false;
+        };
+        // Explicit false is an operator rollback; normal hosting serves the shared app.
+        super::settings::get(&conn, "web.full_staff_enabled")
+            .map(|value| value.as_deref() != Some("false"))
+            .unwrap_or(false)
     }
     pub fn new(state: &AppState) -> Self {
         Self {

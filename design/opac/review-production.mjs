@@ -50,6 +50,12 @@ try {
       await assert('document.documentElement.scrollWidth<=innerWidth',`production overflow at ${width}`);
       await assert('document.querySelector("#q").getBoundingClientRect().width>100',`search at ${width}`);
       checks.push(`layout ${width}`);
+      if(width<=640){
+        await assert('getComputedStyle(document.querySelector("#search-form")).flexDirection==="row"','phone search stays in one row');
+        await assert('Math.abs(document.querySelector(".classification").getBoundingClientRect().top-document.querySelector(".availability").getBoundingClientRect().top)<3','phone call number and availability share a row');
+        await assert('document.querySelector(".bibliography").getBoundingClientRect().width>=innerWidth-64','phone book uses full card width');
+        checks.push(`compact phone holdings ${width}`);
+      }
       if(width===1366||width===390){const shot=await send('Page.captureScreenshot',{format:'png'});await writeFile(new URL(`swiss-production-${width}.png`,output),Buffer.from(shot.data,'base64'));}
     }
     await assert('!window.injected && !Array.from(document.querySelectorAll("#results img")).find(img=>img.getAttribute("src")==="x") && Array.from(document.querySelectorAll(".title-button")).some(b=>b.textContent.includes("<img"))','catalogue markup treated as text');checks.push('HTML injection');
@@ -66,6 +72,8 @@ try {
     await send('Input.dispatchKeyEvent',{type:'keyDown',key:'Enter',code:'Enter',windowsVirtualKeyCode:13,text:'\r',unmodifiedText:'\r'});
     await send('Input.dispatchKeyEvent',{type:'keyUp',key:'Enter',code:'Enter',windowsVirtualKeyCode:13});
     await assert('document.querySelector("#details").open && document.querySelector("#detail-title").textContent==="Balyakalasakhi"','keyboard detail dialog');
+    await assert('document.querySelector("#details").getBoundingClientRect().right<=innerWidth && document.querySelector("#close-details").getBoundingClientRect().height>=44','phone detail bounds and touch close');checks.push('phone detail bounds and close');
+    const detailShot=await send('Page.captureScreenshot',{format:'png'});await writeFile(new URL('swiss-details-320.png',output),Buffer.from(detailShot.data,'base64'));
     await send('Input.dispatchKeyEvent',{type:'keyDown',key:'Escape',code:'Escape',windowsVirtualKeyCode:27});
     await send('Input.dispatchKeyEvent',{type:'keyUp',key:'Escape',code:'Escape',windowsVirtualKeyCode:27});
     await assert('!document.querySelector("#details").open && document.activeElement.className==="title-button"','Escape and focus restoration');checks.push('keyboard dialog and focus');

@@ -1,26 +1,19 @@
 import { useState, useEffect } from "react";
 import { lanApi, toApiError } from "@/lib/api";
-import type { LanConfig, PairedClient, LanPairingCode } from "@/lib/api/types";
+import type { LanConfig } from "@/lib/api/types";
 import { Button } from "@/components/ui/Button";
 import { SelectField, TextField } from "@/components/ui/Field";
 import { BrowserAddresses } from "./BrowserAddresses";
 import {
   Wifi,
-  ShieldCheck,
-  Smartphone,
-  Laptop,
-  Copy,
   RefreshCw,
   Power,
   Globe,
   AlertTriangle,
-  Users,
 } from "lucide-react";
 
 export function LanSettingsPanel() {
   const [config, setConfig] = useState<LanConfig | null>(null);
-  const [clients, setClients] = useState<PairedClient[]>([]);
-  const [pairingCode, setPairingCode] = useState<LanPairingCode | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
@@ -46,8 +39,6 @@ export function LanSettingsPanel() {
       setBrowserStaffEnabled(cfg.browserStaffEnabled);
       setPublicBaseUrl(cfg.publicBaseUrl ?? "");
 
-      const clientList = await lanApi.listPairedClients();
-      setClients(clientList);
       setError(null);
     } catch (e) {
       setError(toApiError(e).message);
@@ -109,33 +100,6 @@ export function LanSettingsPanel() {
     }
   };
 
-  const handleGenerateCode = async () => {
-    setMessage(null);
-    setError(null);
-    try {
-      const code = await lanApi.generatePairingCode();
-      setPairingCode(code);
-      setMessage("New pairing code generated (valid for 15 minutes).");
-    } catch (e) {
-      setError(toApiError(e).message);
-    }
-  };
-
-  const handleRevokeClient = async (clientId: string, clientName: string) => {
-    if (!confirm(`Are you sure you want to revoke access for "${clientName}"? Any active sessions will be terminated immediately.`)) {
-      return;
-    }
-    setMessage(null);
-    setError(null);
-    try {
-      await lanApi.revokeClient(clientId);
-      setMessage(`Revoked access for ${clientName}.`);
-      void loadData();
-    } catch (e) {
-      setError(toApiError(e).message);
-    }
-  };
-
   const copyToClipboard = async (text: string, label: string) => {
     try {
       await navigator.clipboard.writeText(text);
@@ -170,17 +134,17 @@ export function LanSettingsPanel() {
       {config?.listenerError && <p role="alert" className="text-danger">{config.listenerError} Check the bind address and whether another application uses this port.</p>}
       {/* 1. Header & Server Status Card */}
       <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg p-6 shadow-sm">
-        <div className="flex items-start justify-between">
+        <div className="staff-hosting-status flex items-start justify-between">
           <div className="flex items-center gap-3">
             <div className={`p-3 rounded-lg ${config?.enabled ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-400" : "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400"}`}>
               <Wifi className="h-6 w-6" />
             </div>
             <div>
               <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">
-                Wi-Fi / LAN Browser Access
+                Browser access
               </h2>
               <p className="text-sm text-slate-500 dark:text-slate-400">
-                Allow library staff and patrons on the local network (Wi-Fi or Ethernet) to connect without internet.
+                Share OPAC and staff access on the library network, with optional public web hosting.
               </p>
             </div>
           </div>
@@ -209,9 +173,6 @@ export function LanSettingsPanel() {
                 {config?.listenerRunning ? `Active on port ${config.port}` : config?.enabled ? "Listener unavailable" : "Stopped"}
               </span>
             </div>
-            <div className="mt-2 text-xs font-mono text-slate-500 break-all">
-              Fingerprint: {config?.serverFingerprint}
-            </div>
           </div>
 
           <div className="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-lg border border-slate-200 dark:border-slate-700/60">
@@ -224,130 +185,9 @@ export function LanSettingsPanel() {
       </div>
 
       {config?.listenerRunning && <p className="text-sm text-muted">Open /staff for staff sign-in or /opac for public catalogue search on the addresses above. Use the network address on other devices; 127.0.0.1 works only on this computer. Devices must share the same network. If this computer works but another device cannot connect, check the Windows firewall and network isolation.</p>}
-      {/* 2. Device Pairing Section */}
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg p-6 shadow-sm">
-        <div className="flex items-center justify-between mb-4">
-          <div>
-            <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100 flex items-center gap-2">
-              <ShieldCheck className="h-5 w-5 text-sky-600 dark:text-sky-400" />
-              Device Pairing
-            </h3>
-            <p className="text-xs text-slate-500 dark:text-slate-400">
-              Generate a single-use pairing code to authorize new computers or mobile devices.
-            </p>
-          </div>
-          <Button
-            type="button"
-            variant="secondary"
-            onClick={handleGenerateCode}
-            disabled={!config?.enabled}
-          >
-            Generate Pairing Code
-          </Button>
-        </div>
+      <p className="text-sm text-muted">Visitors open the OPAC address without signing in. Staff open the staff address and sign in with their account. Device pairing is not required.</p>
 
-        {pairingCode && (
-          <div className="p-4 bg-sky-50 dark:bg-sky-950/40 border border-sky-200 dark:border-sky-800 rounded-lg mb-6 flex items-center justify-between">
-            <div>
-              <div className="text-xs font-semibold text-sky-700 dark:text-sky-300 uppercase tracking-wider mb-1">
-                Active Pairing Code
-              </div>
-              <div className="text-3xl font-mono font-bold tracking-widest text-sky-900 dark:text-sky-100 select-all">
-                {pairingCode.code}
-              </div>
-              <div className="text-xs text-sky-600 dark:text-sky-400 mt-1">
-                Enter this code on the connecting device within 15 minutes.
-              </div>
-            </div>
-            <Button
-              type="button"
-              variant="secondary"
-              size="sm"
-              onClick={() => copyToClipboard(pairingCode.code, "pairing code")}
-              className="gap-1.5"
-            >
-              <Copy className="h-4 w-4" />
-              Copy Code
-            </Button>
-          </div>
-        )}
-
-        {/* Paired Clients List */}
-        <div>
-          <h4 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-2">
-            <Users className="h-4 w-4" />
-            Connected Devices ({clients.length})
-          </h4>
-          {clients.length === 0 ? (
-            <div className="p-6 text-center text-sm text-slate-500 border border-dashed border-slate-200 dark:border-slate-800 rounded-lg">
-              No devices paired yet. Click "Generate Pairing Code" above to pair a client terminal or tablet.
-            </div>
-          ) : (
-            <div className="border border-slate-200 dark:border-slate-800 rounded-lg overflow-hidden">
-              <table className="w-full text-left text-sm">
-                <thead className="bg-slate-50 dark:bg-slate-800/60 text-xs font-medium text-slate-500 dark:text-slate-400 border-b border-slate-200 dark:border-slate-800">
-                  <tr>
-                    <th className="px-4 py-2.5">Device</th>
-                    <th className="px-4 py-2.5">Type</th>
-                    <th className="px-4 py-2.5">IP Address</th>
-                    <th className="px-4 py-2.5">Paired Date</th>
-                    <th className="px-4 py-2.5">Status</th>
-                    <th className="px-4 py-2.5 text-right">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
-                  {clients.map((c) => {
-                    const isRevoked = Boolean(c.revokedAt);
-                    return (
-                      <tr key={c.clientId} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/30">
-                        <td className="px-4 py-3 font-medium text-slate-900 dark:text-slate-100">
-                          {c.clientName}
-                        </td>
-                        <td className="px-4 py-3 text-slate-600 dark:text-slate-300">
-                          <span className="flex items-center gap-1.5 capitalize text-xs">
-                            {c.deviceKind === "tablet" || c.deviceKind === "phone" ? (
-                              <Smartphone className="h-3.5 w-3.5" />
-                            ) : (
-                              <Laptop className="h-3.5 w-3.5" />
-                            )}
-                            {c.deviceKind}
-                          </span>
-                        </td>
-                        <td className="px-4 py-3 font-mono text-xs text-slate-600 dark:text-slate-400">
-                          {c.ipAddress || "—"}
-                        </td>
-                        <td className="px-4 py-3 text-xs text-slate-500">
-                          {c.pairedAt.slice(0, 10)}
-                        </td>
-                        <td className="px-4 py-3">
-                          <span className={`inline-flex px-2 py-0.5 text-xs font-semibold rounded-full ${isRevoked ? "bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-400" : "bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-400"}`}>
-                            {isRevoked ? "Revoked" : "Authorized"}
-                          </span>
-                        </td>
-                        <td className="px-4 py-3 text-right">
-                          {!isRevoked && (
-                            <Button
-                              type="button"
-                              variant="secondary"
-                              size="sm"
-                              onClick={() => handleRevokeClient(c.clientId, c.clientName)}
-                              className="text-rose-600 dark:text-rose-400 border-rose-300 dark:border-rose-800 hover:bg-rose-50 dark:hover:bg-rose-950"
-                            >
-                              Revoke
-                            </Button>
-                          )}
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* 3. Server Configuration Form */}
+      {/* Server configuration */}
       <form onSubmit={handleSaveConfig} className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg p-6 shadow-sm space-y-4">
         <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100 flex items-center gap-2">
           <Globe className="h-5 w-5 text-sky-600 dark:text-sky-400" />
@@ -370,7 +210,8 @@ export function LanSettingsPanel() {
           />
         </div>
 
-        <TextField label="Public HTTPS address (optional)" type="url" value={publicBaseUrl} onChange={e=>setPublicBaseUrl(e.target.value)} placeholder="https://library.example.org" hint="Set this after HTTPS hosting is configured. Entering an address here does not publish the library by itself." />
+        <TextField label="Public HTTPS address (optional)" type="url" value={publicBaseUrl} onChange={e=>setPublicBaseUrl(e.target.value)} placeholder="https://library.example.org" hint="Each library can use its own website address. Leave this empty for local access. Set it after HTTPS hosting is configured; entering an address alone does not publish the library." />
+        <p className="text-sm text-muted">The library computer is the default host. A library can also use an always-on server for its website. The chosen host must stay running for visitors to connect.</p>
 
         <SelectField label="Network access" value={bindAddress} onChange={e => setBindAddress(e.target.value)} hint="Choose the same Wi-Fi or wired network to let phones and other computers open OPAC.">
           <option value="0.0.0.0">Same Wi-Fi or wired network</option>

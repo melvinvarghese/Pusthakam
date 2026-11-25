@@ -60,14 +60,19 @@ fn embed_staff_assets() {
     let mut entries = Vec::new();
     collect(&dist, &dist, &mut entries);
     entries.sort();
+    let out = std::path::PathBuf::from(std::env::var("OUT_DIR").expect("build output"));
     let mut generated =
         String::from("pub fn asset(path:&str)->Option<(&'static str,&'static [u8])>{match path{\n");
-    for (web, mime, file) in entries {
+    for (index, (web, mime, file)) in entries.into_iter().enumerate() {
+        // Vite replaces hashed dist paths on rebuild. Compile against a build-owned snapshot.
+        let snapshot = out.join(format!("staff-asset-{index}"));
+        fs::copy(&file, &snapshot)
+            .expect("snapshot staff asset; finish frontend build before Rust build");
+        let file = snapshot.to_string_lossy();
         generated.push_str(&format!(
             "{web:?}=>Some(({mime:?},include_bytes!({file:?}))),\n"
         ));
     }
     generated.push_str("_=>None}}\n");
-    let out = std::path::PathBuf::from(std::env::var("OUT_DIR").expect("build output"));
     fs::write(out.join("staff_assets.rs"), generated).expect("write embedded staff assets");
 }

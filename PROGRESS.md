@@ -1,5 +1,197 @@
 # PROGRESS
 
+## PAUSED: owner returning tomorrow
+
+2026-11-25T15:57:48.149Z
+
+PAUSED at owner request on25 November2026; owner plans to return tomorrow. Resume only after explicit owner instruction; do not start a tunnel, install services, change DNS or continue development during pause. Current Windows installer contains mobile layouts and pairing UI removal; exact release mobile/browser115 checks passed and repeated115 passed with zero exceptions; headless restore/delayed-request11 checks passed. Installer: src-tauri/target/release/bundle/nsis/Pusthakam_0.1.0_x64-setup.exe, SHA256 bcf0d9a0d8910e1e294d88de4f8e27ff6983224f4944acba0f6ccb0d844a3d04. Both same-network portals owner-confirmed working. Internet access not yet configured or tested. Owner website melvinvarghese.in is on WordPress.com; DNS Add a record available, no records/nameservers changed. Owner has no Cloudflare account; free temporary Quick Tunnel discussed (no account/domain required), not installed or started. Next after resume: verify updated installed app/current hosting settings; prepare isolated test library and supported HTTPS proxy route/header/upload policy, obtain temporary public URL, configure matching public origin, then owner tests /opac and /staff on mobile data with Wi-Fi off. Do not expose legacy LAN APIs. No purchase or permanent domain/DNS change needed for first test. Library-PC hosting is default and requires PC/app running; optional always-on host keeps one authoritative database online when PC off, requires managed startup/HTTPS/off-server backups and verified migration, no automatic two-database sync. Windows server verified locally; public deployment/Linux hosting/physical phone Safari and real keyboard remain unverified. Source/docs are saved locally but uncommitted/unpushed; no credentials/library DBs committed, no owner DB/network/installed app changes. V1 scores unchanged.
+
+Saved resume checkpoint: docs/INTERNET_ACCESS_CHECKPOINT.md. No automatic continuation scheduled.
+
+## Current: optional domain test, DNS access confirmed
+
+2026-11-25T15:44:25.819Z
+
+Owner wants internet access to OPAC and staff using personal domain as a test. Confirmed website is WordPress.com and its domain DNS page offers Add a record. Local inspection found no cloudflared/ngrok/tailscale command on PATH. No public endpoint, DNS record or tunnel has been created. Need establish HTTPS ingress for library-PC host before providing real DNS destination; private192.168 address cannot be used as internet destination. Cloudflare account/domain setup not established; custom-domain DNS requirements must be reviewed before changing WordPress nameservers. Keep main WordPress site unchanged. Earlier exact-release mobile115 checks remain passed; no app source/data/network changes this step.
+
+## Current: requested mobile verification repeat passed
+
+2026-11-25T15:34:15.157Z
+
+Owner requested another attempt. Repeated node tools/review-staff-web.mjs --mobile against bundled release server: all115 checks passed again, zero exceptions. Installer still exists and SHA256 matches recorded bcf0d9a0d8910e1e294d88de4f8e27ff6983224f4944acba0f6ccb0d844a3d04. No application source, installed app, owner library or network changes. Physical phone/Safari/real soft keyboard acceptance remains pending; automated touch emulation is confirmed.
+
+## Current: mobile Windows build ready and verified
+
+2026-11-25T13:57:11.934Z
+
+Fresh Windows NSIS installer and bundled console server built with mobile OPAC/staff layouts and pairing UI removed. Exact release server PASSED115 Edge touch/browser checks at320/390/768, zero exceptions;14 staff routes/internal tabs, populated records/forms, focus/Escape/backdrop, landscape, sign-in, OPAC search/details/privacy and backup download/verify/restore queue cancellation. Exact release also PASSED11 headless delayed-packet/restore/restart checks. TypeScript/Vite and lint pass; focused27 unchanged component tests resolve2 loading failures from full253-test run (42 files passed); earlier full252 suite passed. Installer SHA256 bcf0d9a0d8910e1e294d88de4f8e27ff6983224f4944acba0f6ccb0d844a3d04. Evidence: WEB_RELEASE_VERIFICATION.json, STAFF_BROWSER_REVIEW.json, HEADLESS_HOST_REVIEW.json, actual screenshots. Build config first failed on unavailable D:/workspace; Windows TEMP retry succeeded. Owner telemetry approval retained. No owner DB, firewall, DNS or installed app changed; no commit/push. Remaining physical phone/Safari/soft-keyboard/public HTTPS and complete workflow/hardware acceptance. V1 totals unchanged.
+
+## Current: fresh Windows installer built; final mobile repeat
+
+2026-11-25T13:56:32.834Z
+
+Fresh Windows NSIS installer successfully built (7.61MiB) after12m31s optimized compilation. Fresh release console server copied to bundle/server; release binary SHA256450b56e89127e98853e5ea399914c6390c8c12452859f2ffbf96544eb44a099e passed all11 real headless delayed-request/body and backup/restore/restart checks. Exact bundled-release115 mobile/browser repeat is running; earlier fresh debug115 passed. Focused27 component regressions and lint pass. Next: confirm release115, record installer/server hashes, validate progress/diff and deliver. No owner data/network/installed-app change; physical phones/Safari/keyboard/public HTTPS remain pending.
+
+## Current: mobile and regression checks pass; release compiling
+
+2026-11-25T13:44:41.514Z
+
+Fresh actual mobile browser115 checks passed, zero exceptions. Focused unchanged Dashboard/Settings/AppShell rerun passed all27 tests (75.12s), resolving both loading-deadline failures and verifying shared Modal/backdrop, Escape/navigation focus and desktop theme/palette regressions; full-project ESLint passes. Prior full253-test run had42 files pass and2 still-loading failures, followed by this passing focused rerun; do not describe it as a single all253-pass run. Earlier252-test full run passed before backdrop change. NSIS release compilation in progress from verified assets; repeat115 checks and11 headless restore/delayed-packet checks on exact release binary, then record hashes/artifact. Physical phone/Safari/soft keyboard and public HTTPS remain pending; no owner data/network changes.
+
+## Current: release compiling; targeted regressions running
+
+2026-11-25T13:43:46.514Z
+
+Actual compiled mobile115 checks passed, zero exceptions; NSIS release compilation now running from verified dist assets. First temporary build-config attempt used unavailable D:/workspace and failed before compilation; corrected to Windows TEMP and retry started. Silent one-worker full suite stopped after prolonged execution/unavailable report destination; focused unchanged Dashboard/Settings/AppShell verbose rerun now running, including backdrop regression. Prior full run42 files passed and2 failed on still-loading queries. No tests weakened. Final release repeat/hashes pending; physical phone/Safari/keyboard separate.
+
+## Current: real mobile115 checks pass; packaging
+
+2026-11-25T13:40:30.738Z
+
+Fresh compiled-app real-server mobile review PASSED115 checks, zero browser exceptions:14 staff routes and internal role=tab views at320/390/768 with touch input, no workspace overflow/API errors, populated book/member views,44px controls,16px fields, bounded book dialogs, Escape/backdrop focus restoration, landscape menu, signout/signin, retained desktop autofocus, embedded OPAC search/results/details/privacy and actual backup download/verify/restore queue cancellation. Actual screenshots visually inspected: catalogue, members, classification and public OPAC. Fixed phone autofocus, backdrop default-focus loss, Classification/Periodicals filters, Acquisitions tabs/Purchase Orders toolbar and page padding. NSIS release packaging started from these already-built verified assets (temporary config disables redundant frontend build only). Full frontend rerun with one worker still pending after251/253 passed under contention. No owner data/network changes; physical phone/Safari/soft-keyboard/public HTTPS remain unverified.
+
+## Current: final mobile filter correction and test rerun
+
+2026-11-25T13:29:52.075Z
+
+Full real mobile route/tab run reached all widths, populated records/dialogs, backdrop/Escape focus, landscape, signout/signin and desktop-autofocus checks; final aggregate reported only Periodicals subscription filter overflow at320/390. Fixed wrapping for Periodicals controls and consistent16px mobile page padding after visual screenshot review. Fresh rebuild/rerun ongoing. Full component rerun253 tests had251 pass,2 fail while Dashboard/custom-field queries were still Loading at testing-library wait deadline during concurrent build; rerunning unchanged full suite with one worker, no assertions/timeouts weakened. Added backdrop regression passed in that run. Release packaging pending.
+
+## Current: touch backdrop focus fixed
+
+2026-11-25T13:21:29.924Z
+
+Actual touch backdrop dismissal exposed browser default mousedown moving focus after menu close. Shared Modal backdrop now prevents that default; child controls retain existing event handling. Added AppShell regression for backdrop dismissal/focus; full frontend suite rerunning because shared Modal changed. Fresh frontend/debug build and all-width/internal-tab touch review rerunning. Prior geometry fixes: desktop-only catalogue/accession autofocus, wrapping Classification controls and staff toolbars, contained horizontal tab strips. No owner DB/network changes; release packaging pending passing actual review.
+
+## Current: Purchase Orders toolbar corrected
+
+2026-11-25T13:17:41.085Z
+
+Expanded actual touch review found Purchase Orders toolbar overflow at320px after the Acquisitions tab-strip fix. Shared staff justify-between control rows now wrap on small screens. Regression harness checks every role=tab internal view at320/390/768 and aggregates layout failures without hiding them; it still fails on any overflow. Rebuilding and rerunning before release packaging. Full252 component tests and focused57 post-autofocus tests passed; lint passed. Physical phone/keyboard/Safari remain separate. No owner data or network changes.
+
+## Current: mobile tabs contained; review expanded
+
+2026-11-25T13:14:51.925Z
+
+Real compiled-app mobile review additionally found Acquisitions tabs overflowing320px. Shared role=tablist controls now scroll within their container with readable single-line touch targets; Classification scheme controls wrap. Review extended to touch each internal tab and assert API success and contained layout at320/390/768. Fresh rebuild/review running. Previous252 component tests and focused57 post-autofocus tests passed; lint passed. Final installer pending actual review. No owner DB/network changes.
+
+## Current: actual mobile defects found and corrected
+
+2026-11-25T13:11:41.547Z
+
+Actual compiled-app touch review caught phone search autofocus opening the keyboard on route entry and Classification scheme controls overflowing at320px. Catalogue/Accession autofocus now applies only at desktop widths; Classification control groups wrap within their container. Review regression checks retain strict focus restoration and no-workspace-overflow assertions with diagnostics. Full252 component tests previously passed; post-autofocus focused57 tests passed. Fresh frontend/debug-server rebuild in progress; rerun all14 routes at320/390/768 before packaging. Owner telemetry approval remains valid. All test data isolated; no owner DB/network changes.
+
+## Current: fresh app builds pass; real mobile browser review
+
+2026-11-25T12:57:36.200Z
+
+Explicit owner telemetry approval allowed fresh checks. Full component suite44 files/252 tests passes, including actual mobile menu navigation/Escape/focus tests. Fresh frontend production build (TypeScript+Vite) and debug console server build pass. Initial build failed because new test used unsupported exact option on getByRole; corrected and rechecked. Initial ESLint caught unnecessary escape in layout harness regex; corrected, lint rerun pending. Actual compiled-app mobile browser review now runs with isolated real database/API, seeded book/member, touch navigation through14 modules at320/390/768, focus/inert/Escape, dialog and landscape checks. No owner DB/profile/firewall/public deployment changes.
+
+## Current: explicit build approval received; fresh mobile verification
+
+2026-11-25T12:51:06.251Z
+
+Owner explicitly selected Allow the connection in build-access approval question: authorizes the previously blocked Visual Studio telemetry connection for the requested rebuild/mobile verification. Do not ask again for this same connection/action. Component tests, fresh frontend build/lint now running with telemetry opt-outs retained where supported. Need test actual freshly built React app and real API at phone/tablet widths, navigation/Escape/focus, populated catalogue/member actions, dialogs and all module routes; then produce and test updated installer/server. Prior fixture/layout-only proof is insufficient. Linux runtime availability check found no usable installed WSL distribution; no installation performed. No owner library or network changes.
+
+## Current: mobile source ready, delivery verification blocked
+
+2026-11-25T12:38:53.075Z
+
+Mobile source work is ready for fresh-bundle verification. Final OPAC production-template review24 checks passed, no page exceptions; optional provider requests blocked. Staff source-layout fixture passes320,390,768,1024,1366px, including full workspace, touch targets, catalogue/member rows, contained report scrolling and bounded single-column forms/dialogs; this is not a compiled React app. Static read-only TSX parse10 files has no syntax errors. Actual new menu/route/Escape/focus unit tests, semantic typecheck and fresh frontend/native/server installer remain pending the existing Visual Studio telemetry auto-review block, which was not retried or bypassed in this mobile task. Existing installer does not contain pairing removal or mobile edits; WEB_RELEASE_VERIFICATION.json now labels it historical. Optional per-library public hosting is documented/configurable independently of any owner test domain; no live public deployment or DNS/firewall/library DB change. Sources/acceptance: MOBILE_BROWSER_ACCEPTANCE.md, PUBLIC_WEB_HOSTING_FEATURE.md, design/mobile/previews/review.json and design/opac/previews/production-review-results.json. Next: obtain explicit telemetry decision or a verified telemetry-free toolchain, run added component suites and fresh real-API mobile tests, build current installer, then actual phone/keyboard/Safari acceptance. Both same-network portals already owner-confirmed; do not repeat firewall repair. V1 totals unchanged.
+
+## Current: mobile source layouts reviewed; fresh delivery blocked
+
+2026-11-25T12:37:25.137Z
+
+Optional web publication clarified as an independent per-library feature; test domain is optional, no personal-domain dependency. Source mobile implementation: staff sidebar collapses below1024px into modal navigation, inert background and explicit focus restoration; full-width workspace;44px controls and16px editable text; catalogue/member tables become labelled touch records; long reports scroll within containers; forms/dialogs stack and fit dynamic viewport; public OPAC has compact cover-led holdings, call-number/availability row, one-row search and compact details. Pairing removal remains included. Evidence so far: OPAC production HTML/CSS/script browser review24 checks passed (API fixtures, provider requests blocked); staff source-class/mobile-CSS geometry review passes320/390/768/1024/1366px with explicit fixture data and last compiled base CSS, not a rebuilt React app; static TSX syntax parsing10 files no errors. Initial screenshot critique found form-root grids missed by selector; corrected and added geometry assertion. React menu/Escape/focus tests added but not run, semantic typecheck/native build/installer remain blocked by recorded Visual Studio telemetry rejection; no approval to bypass. Current installed app remains older. No public deployment, library DB, firewall or DNS changes. Next exact step: resolve approved telemetry-free build path or explicit telemetry approval; run component suites/fresh real-server mobile review, build installer, verify actual phones/keyboards and all modules. V1 scores unchanged.
+
+## Current: mobile OPAC/staff and optional public hosting
+
+2026-11-25T12:21:41.452Z
+
+Owner clarifies domain is only a possible test; internet OPAC/staff publication must be an optional configurable feature for any library, not hardwired to owner domain. Both same-network portals already owner-confirmed. New active work: mobile usability of public OPAC and shared staff application. Audit confirms staff shell permanently allocates232px sidebar with no mobile menu; dense fixed table columns, multi-column forms and small controls persist. OPAC has viewport metadata and basic media query but stacks four holding sections with excessive vertical space; revise phone search/results/details. Preserve selected Swiss Stacks public identity and Spine Label staff tokens (Hanken/Courier, ink16202e, paperffffff, line dfe4ea, muted5b6676, teal1f8f83). Plan: full-width phone workspace with modal navigation, 44px touch targets, readable fields, responsive forms/toolbars and contained table scrolling; compact cover-led OPAC holdings and reachable detail/search controls. Browser review across320/390/768px and desktop; no domain, network, DB or firewall changes. Previous telemetry build rejection remains unresolved and must not be bypassed.
+
+## Current: OPAC and staff confirmed across same-network devices
+
+2026-11-25T12:17:30.108Z
+
+Owner now confirms staff portal also works from another device on the same network, following explicit OPAC second-device confirmation. Both same-network browser routes are owner-confirmed working. Do not repeat earlier Public-profile/firewall repair instructions as if same-network access were still failing. This does not establish exhaustive staff workflow/role acceptance, capacity or access from another network. Remaining work: configure a public HTTPS endpoint for outside-network access once hosting/domain details are available; deliver pairing-free installer after the previously recorded Visual Studio telemetry approval/build blocker is resolved. Device Pairing/fingerprint/list requests are removed in source;13 focused UI tests were observed passing. No new firewall, profile, database, DNS, deployment, commit or push operation in this confirmation turn.
+
+V1 totals unchanged; outside-network HTTPS deployment and pairing-free installer remain pending. Earlier same-network failure notes are historical.
+
+## Current: owner confirms second-device OPAC access
+
+2026-11-25T12:14:58.549Z
+
+Owner corrected the URL and explicitly confirmed http://192.168.4.83:4318/opac opens on an actual second device on the same network. This is owner-observed OPAC cross-device acceptance, superseding prior host-only failure for that route. Do not infer staff portal acceptance, effective Windows profile/category, firewall mutation, unlimited-device capacity or outside-network access from this result. Staff second-device login remains to check. Public address/HTTPS ingress remains unconfigured. Pairing controls removed in source with13 focused UI tests observed passed; pairing-free installer rebuild remains blocked by the previously recorded unnecessary Visual Studio telemetry auto-review rejection, with no approval to bypass it.
+
+V1 totals unchanged; staff and internet access are separate pending checks. Earlier host-only failure notes are historical.
+
+Network follow-up 2026-11-25T12:01:11.865Z: Owner says connection still fails after Windows Settings guidance. Live recheck still reports Public profile; listener remains0.0.0.0:4318 at192.168.4.83. Do not repeat Settings navigation as if the change succeeded. Next: owner runs Set-NetConnectionProfile -InterfaceAlias Wi-Fi -NetworkCategory Private in administrator PowerShell, reports any exact error, and agent verifies effective profile before remote retest. If Private is confirmed and failure persists, collect actual second-device IP/error and examine isolation/firewall scope. No network changes applied by agent.
+
+Network recheck 2026-11-25T11:54:38.966Z: Owner reports both loopback and Wi-Fi OPAC addresses work only on host. Fresh read-only check confirms Wi-Fi remains Public, listener is0.0.0.0:4318, and the active installed executable still has Public TCP Block / Private Allow firewall rules. No network setting has changed; localhost-only behavior is expected for127.0.0.1. The next necessary action remains selecting Private for the trusted connected Wi-Fi in Windows Settings, then testing192.168.4.83 from the other device. No new build or privileged operation attempted in this check.
+
+Final blocked-state checkpoint 2026-11-25T11:36:44.063Z: Trusted Wi-Fi confirmed; Windows administrator launcher failed0xc0000142. Network remains Public and Pusthakam Public TCP Block still applies. User was directed to Windows Wi-Fi properties -> Private network, then remote portal test. Settings UI was opened. Profile-free typecheck with supported telemetry opt-outs also auto-review rejected for unrelated external Visual Studio telemetry; do not bypass/retry. No new installer. Focused UI tests13 passed; progress write/read validation passed. Waiting on Windows profile change, physical remote test and explicit telemetry decision or verified telemetry-free tooling.
+
+## Current: trusted-network repair requires Windows action; pairing source removed
+
+2026-11-25T11:34:31.374Z
+
+Owner clarified Wi-Fi is trusted. Confirmed live listener0.0.0.0:4318 and both /opac,/staff200 on host address192.168.4.83, delayed request200. Public profile has explicit TCP Block for running D:/Pusthakam_temp_nsis_test/pusthakam.exe, matching Allow only Private. Prepared tools/Enable-PusthakamPrivateNetwork.ps1 (PowerShell parser passes); attempted normal Windows UAC launch after trust confirmation, but Start-Process RunAs failed0xc0000142, so no profile/firewall changes applied. Instructed owner to mark connected trusted Wi-Fi Private in Windows Settings and test remote URL. Pairing UI/fingerprint/list requests removed in source; 13 focused tests observed passed. Local typecheck/build checks were interrupted by auto-review rejecting separate unnecessary Visual Studio telemetry even with supported VSCMD_SKIP_SENDTELEMETRY opt-out. Do not bypass this rejection or claim a rebuilt installer; current NSIS remains prior a5212834 artifact. Public URL remains null: different-network access requires real HTTPS ingress; domain/server answer still missing. No user DB edits, firewall disable, block deletion, DNS changes, commit or push. Next: owner Private-profile change and second-device test; resolve telemetry approval/build blocker to deliver pairing-free installer. Totals unchanged.
+
+## Current: pairing removal and live network diagnosis
+
+2026-11-25T11:20:32.239Z
+
+Owner explicitly requests removing Device Pairing and reports both same-network and cross-network failure. Live read-only diagnosis: process PID4800 at D:/Pusthakam_temp_nsis_test/pusthakam.exe listens 0.0.0.0:4318; /opac and /staff return200 via 127.0.0.1 and host Wi-Fi IP192.168.4.83; delayed-header request also200. Current Windows profile Public; an enabled Public TCP Block rule applies to this exact running executable, while its Allow rule applies only to Private. This supplies a concrete local firewall mechanism; physical second-device acceptance still required. Public URL is null and no public ingress deployed, so different-network access has no configured endpoint. Asked whether current Wi-Fi is trusted and whether owner has domain/server, while continuing independent UI removal. Removed pairing card/state/handlers/list requests from settings; adjusting tests and connection guidance. No firewall, network-profile or user DB changes yet. Totals unchanged.
+
+Final records check 2026-11-25T11:00:46.647Z: Final progress validation (write and read-only), full-project ESLint, command inventory check and git diff --check passed. Artifact evidence agrees with the exact server binary tested; v1 scores unchanged.
+
+## Current: full staff browser delivery and both host modes ready for operational checks
+
+2026-11-25T10:59:46.258Z
+
+Shared staff React application is enabled at /staff with independent accounts/sessions and permissions, all 164 command dispatch/adapters, browser exports and authenticated backup downloads. Library PC remains default; optional always-on console host is bundled in the installer and separately available under bundle/server. Configured HTTPS origin/proxy support covers both modes; no public deployment was performed. Windows KI-025 root cause (nonblocking accepted sockets) fixed and reverified: 6 gateway tests, 30 HTTP workflows, 8 LAN services, Clippy and full ESLint pass after fix. Earlier task proof: 250 frontend, 153 Rust library, 35 native IPC, 7 security and CLI validation test passed. Exact release server passes all 18 production Edge checks and three consecutive 11-check split-packet/setup/backup/process-restart/restore runs. Final corrected Tauri NSIS build passed (7m54s compile). Installer 7981846 bytes, SHA256 a5212834a0ff262d94b986ab59a5ea24340307bc7e5ce4d7e502911b12d0144a. Server 9320960 bytes, SHA256 1837ddd286496ea0f088c1febd3d15815cf8111b617a7233dfcc29c3dfa2b317. Earlier pre-fix installer/server hashes are superseded. See WEB_RELEASE_VERIFICATION.json, STAFF_BROWSER_REVIEW.json and HEADLESS_HOST_REVIEW.json. No installation against owner data, firewall/DNS changes, public deploy, commit or push. Next exact step: quit Pusthakam via tray, install updated NSIS, enable Wi-Fi/LAN with same-network binding plus OPAC/staff, copy the displayed URLs to a second device and sign in. Then configure the chosen host/domain HTTPS proxy per WEB_HOSTING.md. Physical printer/scanner, network outages, host migration and macOS/Linux acceptance remain open. Debug desktop binary was not refreshed for this v3 delivery; use the final installer.
+
+V1 totals remain 96.7 overall / 100 implementation / 97 verification / 76 release readiness; they do not score the v3 expansion. Earlier checkpoints below are historical.
+
+## Current: delayed packets and repeated restore checks pass
+
+2026-11-25T10:52:41.703Z
+
+Windows KI-025 fix verified in debug: all 6 actual gateway tests pass, including 100 ms delayed headers/body; three consecutive real headless process runs pass all 11 split-packet/setup/backup/restart/restore checks each. Full-project ESLint now passes against current working tree (earlier separate preview errors no longer present). Corrected release build and post-fix HTTP workflow/browser checks running. Earlier pre-fix release artifacts are superseded; do not deliver until corrected executable retest and new hashes. No user data/infrastructure changes.
+
+## Current: Windows delayed-request transport defect fixed; checking
+
+2026-11-25T10:48:54.526Z
+
+Release retest exposed an intermittent connection reset before setup. Raw TCP reproduction: delay first request bytes by 100 ms -> immediate HTTP 408, proving inherited nonblocking accepted sockets on Windows. Applied explicit set_nonblocking(false) on each request stream, retaining read/write timeouts. Added native regression for delayed headers and body and raw delayed-packet checks in headless harness. Reverification and corrected packaging running; prior installer hash 8AAAEBA23D944EB5501D617738D9E73BDE3C535DD9F601EC4776D0050E8696A0 is superseded and must not be final delivery. Earlier successful workflows remain evidence but do not resolve this new transport defect. Next: six gateway tests, repeated exact server restore/split-packet tests, corrected release installer and hashes.
+
+V1 scores unchanged; do not claim final release transport acceptance yet.
+
+## Current: staff web workflows and headless restore pass; packaging
+
+2026-11-25T10:38:17.920Z
+
+Core staff web implementation now enabled for normal hosting (browserStaffEnabled still controls access; explicit web.full_staff_enabled=false rolls back). Both library-PC default and optional console server are implemented. Evidence: 250 frontend tests, 153 Rust library tests, 35 native IPC, 30 real HTTP workflow replay tests, 7 security tests, 5 real gateway tests, server CLI test, and 18 production Edge checks pass. Headless process restore/restart proof passes 9 checks including restored login, rollback of post-snapshot mutation and retained recovery snapshot. Clippy lib/bins and scoped ESLint pass; full ESLint finds 7 errors in separate owner design/website-preview code, preserved. Initial missing input fields, build scheduling/stale dist race, and harness selector/timeout failures were corrected; embedded files now snapshot into OUT_DIR. Final installer/server release builds running with final browser restore wording. No user library data, firewall, DNS, public deployment, commit or push. Remaining acceptance: other physical device, configured public HTTPS, printer/scanner and host migration/outage checks.
+
+V1 totals unchanged: 96.7/100/97/76. Next exact step: finish final release binaries, record hashes, then real-device and HTTPS operational walkthrough.
+
+## Current: real staff gateway and browser screens verified
+
+2026-11-25T10:23:37.916Z
+
+Gateway real TCP tests 4/4 passed: isolated logins/permissions/logout, CSRF/origin/anonymous denial, configured HTTPS proxy Secure cookie boundary and public legacy API denial, safe admin-only backup downloads. Native IPC 35/35 and security 7/7 passed. Production Edge review passed setup plus all 14 staff module routes and mobile catalogue (16 checks, zero exceptions/API errors). Eight HTTP client tests passed. Bounded parser tests 2/2 and headless CLI options test 1/1 passed. Added always-on console host with persistent data directory, shared migrations/restore/daily backup and graceful request drain; debug build passed. Current work: replay existing workflows over real HTTP; full mode remains explicitly gated until that proof. Initial compile failures (missing public URL input fields), build race after adding shutdown method, and early browser test before server executable existed are corrected; first successful browser result is docs/STAFF_BROWSER_REVIEW.json. Hosting/deployment guide added; actual remote-device/public DNS/HTTPS/printing acceptance remains open.
+
+V1 scores unchanged (96.7/100/97/76); v3 full parity remains in progress.
+
+## Current: staff gateway verification resumed
+
+2026-11-25T10:13:36.187Z
+
+Resumed from owner commit 5bfe46a. Gateway parser, session cookies/CSRF, explicit dispatch, embedded assets, browser backup downloads and public HTTPS configuration are present but gated pending verification. Both hosting modes approved: library PC default and optional always-on host. Initial cargo check and TypeScript check found missing public URL input fields; correcting those before HTTP integration tests. Six browser transport tests passed. No user database or external infrastructure changed. Next: real listener session/security tests, headless hosting and full browser acceptance; v3 remains incomplete.
+
+V1 scores unchanged: 96.7 overall, 100 implementation, 97 verification, 76 release readiness; v3 parity is not included.
+
 _Last updated: 2026-11-25_
 
 ## Current: v3 full staff browser/local-internet access (25 November 2026)

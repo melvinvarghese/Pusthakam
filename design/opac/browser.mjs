@@ -43,8 +43,9 @@ export async function browserReview(run) {
       if (result.exceptionDetails) throw Error(JSON.stringify(result.exceptionDetails));
       return result.result.value;
     };
-    const waitFor = async expression => {
-      for (let attempt = 0; attempt < 100; attempt++) { if (await evaluate(expression)) return; await pause(50); }
+    const waitFor = async (expression, timeoutMs = 5000) => {
+      const deadline = Date.now() + timeoutMs;
+      while (Date.now() < deadline) { if (await evaluate(expression)) return; await pause(50); }
       throw Error(`Browser condition not met: ${expression}`);
     };
     const assert = async (expression, label) => { if (!await evaluate(expression)) throw Error(label); };

@@ -68,3 +68,7 @@ The splash uses the approved large book/P mark, a stronger title and larger bala
 ## V3 scope expansion — local and internet browser access (25 November 2026)
 
 Owner requires OPAC and the full staff application through browser addresses on the local network and over the internet. Library-PC hosting is default; always-on server hosting is also required. Browser staff must have every desktop workflow permitted by their role, including file/print/backup equivalents. Use one authoritative library database per deployment; no automatic two-way database synchronization implied. Scope and acceptance: STAFF_BROWSER_PARITY.md. This is expanded v3 work, not completion of the existing v1 score.
+
+## V3 mobile and optional public hosting clarification - 25 November 2026
+
+Public web publication is an optional feature of each library installation, with its own configurable origin and either library-PC or always-on hosting. An owner test domain is not a product dependency. See PUBLIC_WEB_HOSTING_FEATURE.md. Both portals must provide usable phone/tablet layouts; desktop overflow containment alone is insufficient. Mobile behavior and release criteria are recorded in MOBILE_BROWSER_ACCEPTANCE.md. These v3 additions do not alter the existing v1 progress weights or imply a completed public deployment.

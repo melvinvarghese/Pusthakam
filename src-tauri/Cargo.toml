@@ -5,6 +5,11 @@ description = "Pusthakam - offline library management system"
 edition = "2021"
 rust-version = "1.80"
 publish = false
+default-run = "pusthakam"
+
+[[bin]]
+name = "pusthakam-server"
+path = "src/bin/server.rs"
 
 [lib]
 name = "pusthakam_lib"
