@@ -43,13 +43,13 @@ export function Modal({ title, onClose, children, footer, wide }: Props) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center overflow-auto bg-ink/60 p-6 pt-[10vh]" onMouseDown={onClose}>
+    <div className="staff-modal-backdrop fixed inset-0 z-50 flex items-start justify-center overflow-auto bg-ink/60 p-6 pt-[10vh]" onMouseDown={(e) => { e.preventDefault(); onClose(); }}>
       <div
         ref={box}
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
-        className={`palette-in ${wide ? "w-[min(46rem,100%)]" : "w-[min(30rem,100%)]"} rounded-lg border border-line-strong bg-surface shadow-[0_16px_40px_-8px_rgb(13_20_32/0.45)]`}
+        className={`staff-dialog palette-in ${wide ? "w-[min(46rem,100%)]" : "w-[min(30rem,100%)]"} rounded-lg border border-line-strong bg-surface shadow-[0_16px_40px_-8px_rgb(13_20_32/0.45)]`}
         onMouseDown={(e) => e.stopPropagation()}
         onKeyDown={onKeyDown}
       >

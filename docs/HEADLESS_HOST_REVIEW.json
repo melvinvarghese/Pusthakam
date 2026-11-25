@@ -1,0 +1,20 @@
+{
+  "at": "2026-11-25T13:56:01.977Z",
+  "binary": "src-tauri/target/release/pusthakam-server.exe",
+  "binarySha256": "450b56e89127e98853e5ea399914c6390c8c12452859f2ffbf96544eb44a099e",
+  "source": "real console host with isolated temporary library",
+  "checks": [
+    "delayed initial request headers",
+    "separately arriving request body",
+    "fresh setup through HTTP",
+    "create checked snapshot",
+    "mutate after snapshot",
+    "queue restore",
+    "graceful stop and process restart",
+    "restored staff login",
+    "post-snapshot mutation absent",
+    "pre-restore recovery snapshot retained",
+    "restore request consumed"
+  ],
+  "ownerDataUsed": false
+}

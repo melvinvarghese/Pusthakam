@@ -60,7 +60,7 @@ export function BackupPage() {
           {list.data.pendingRestore && (
             <div className="mb-4 space-y-2 rounded border border-line p-3">
               <p role="status">Restore queued for <span className="font-mono">{list.data.pendingRestore}</span>.</p>
-              <p className="text-sm">Close every copy of Pusthakam, then reopen it to restore. The current database will be backed up first.</p>
+              <p className="text-sm">{browserStaff ? "Ask the host operator to restart Pusthakam to apply the restore. Closing this browser does not restart the host. The current database will be backed up first." : "Close every copy of Pusthakam, then reopen it to restore. The current database will be backed up first."}</p>
               <Button size="sm" disabled={cancelRestore.isPending} onClick={() => cancelRestore.mutate()}>Cancel queued restore</Button>
               {cancelRestore.isError && <p role="alert" className="text-danger">{toApiError(cancelRestore.error).message}</p>}
             </div>

@@ -2,7 +2,11 @@
 
 Owner decision, 25 November 2026: support both same-network and internet addresses for OPAC and staff. The library PC is the default host; an always-on hosted server is also supported by the target architecture. `/staff` must provide every desktop feature available to that user's role. A circulation-only portal is insufficient.
 
-This is an expanded v3 requirement. Existing v1 percentages do not measure completion of this requirement. No internet deployment or full browser parity is currently established.
+This is an expanded v3 requirement. Existing v1 percentages do not measure completion of this requirement. Full browser implementation has automated local evidence; internet deployment and operational acceptance remain pending.
+
+## Latest implementation checkpoint
+
+25 November 2026: shared staff assets, authenticated session/CSRF gateway, bounded HTTP parser, all registered-command dispatch/adapters, public HTTPS origin configuration and the standalone console host are implemented. Normal browser hosting now serves the shared application; web.full_staff_enabled=false is an explicit operator rollback. Real HTTP workflow replay passed 30 existing command-contract tests (5 native-path/default-config cases excluded and tested separately). Six real gateway security/download/delayed-packet tests, 35 desktop IPC and 7 security tests passed. Production Edge smoke review passed setup, all 14 module screens and mobile layout with no page exceptions or API failures. The 18-check browser review includes backup create/download/verify and restore queue/cancel with host-restart instructions. A real console restart/restore passes 11 checks, including delayed packets, repeated three times after fixing Windows inherited nonblocking request sockets (KI-025). Corrected Windows NSIS packaging and exact-release browser/restore checks passed; artifact hashes are in WEB_RELEASE_VERIFICATION.json. See WEB_HOSTING.md for both hosting modes. Actual other-device reachability, configured public HTTPS, hardware printing and operational restore/migration acceptance remain open. Earlier checkpoints below are historical.
 
 ## Hosting modes
 
@@ -13,13 +17,13 @@ This is an expanded v3 requirement. Existing v1 percentages do not measure compl
 
 There is one authoritative database per library. These options do not introduce automatic synchronization between two independent writable databases. Switching host must be an explicit backup/restore migration with a pre-move snapshot, verification and rollback. Never share a live SQLite file over Wi-Fi, SMB or a cloud-synced directory. The local desktop application remains usable without internet in PC-host mode.
 
-An internet address cannot be created from a local IP alone. Domain/HTTPS ingress and host reachability must be configured for the selected deployment. No router forwarding, firewall rule, DNS change or public deployment has been performed. Publicly exposing the current minimal HTTP server is not an implementation of this plan.
+An internet address cannot be created from a local IP alone. Domain/HTTPS ingress and host reachability must be configured for the selected deployment. No router forwarding, firewall rule, DNS change or public deployment has been performed. Direct public exposure of the backend port is unsupported; use the configured local HTTPS proxy boundary.
 
 ## One application contract
 
-The browser should reuse the React staff application and typed API, including theme and keyboard behavior. Desktop continues to use Tauri IPC. Browser mode uses a same-origin authenticated HTTP API with identical argument/result/error shapes. The server advertises browser mode only after the session/API is ready; the current portal does not emit that configuration.
+The browser should reuse the React staff application and typed API, including theme and keyboard behavior. Desktop continues to use Tauri IPC. Browser mode uses a same-origin authenticated HTTP API with identical argument/result/error shapes. The server advertises browser mode only after the session/API is ready; the shared portal emits that configuration after the session gateway is available.
 
-The initial frontend transport foundation is in `src/lib/api/staffHttp.ts`. It is guarded by explicit server metadata on `/staff`, uses same-origin cookies, a CSRF header, no-store requests and normalized errors, and refuses arbitrary endpoints. It is not a working browser backend or an internet-ready feature.
+The shared frontend transport is in `src/lib/api/staffHttp.ts`. It is guarded by explicit server metadata on `/staff`, uses same-origin cookies, a CSRF header, no-store requests and normalized errors, and refuses arbitrary endpoints. The corresponding session/backend gateway now exists; deployment acceptance is separate.
 
 ## Required feature parity
 
@@ -38,15 +42,15 @@ The initial frontend transport foundation is in `src/lib/api/staffHttp.ts`. It i
 | Backups and restore | Authorized host backups/scheduling/verify/restore; browser download/upload equivalents and recoverable restart; protect the only good backup |
 | Network operations | Host addresses, OPAC/staff enablement, device/session management and truthful reachability status |
 
-`STAFF_BROWSER_COMMAND_INVENTORY.json` lists all registered commands. Generate with `node tools/browser-parity.mjs`; verify with `node tools/browser-parity.mjs --check`. The inventory marks unimplemented backend parity explicitly. Command count is not a feature-completion percentage.
+`STAFF_BROWSER_COMMAND_INVENTORY.json` lists all registered commands. Generate with `node tools/browser-parity.mjs`; verify with `node tools/browser-parity.mjs --check`. The inventory checks that every registered command has an explicit HTTP dispatch or browser adapter. Command count is not a feature-completion percentage.
 
 ## Backend isolation before HTTP dispatch
 
-The desktop wrappers still take `State<AppState>`. The implemented ownership layer shares database, listener and logging lifetime through Arc, while independent contexts have separate session and import-preview slots. A browser API must never temporarily swap the desktop session. 162 commands now expose common typed execute/dispatch handlers; desktop wrappers delegate to the same logic. Two native-window save handlers remain browser-adapter work. The HTTP session manager and route dispatcher are not implemented yet.
+The desktop wrappers still take `State<AppState>`. The implemented ownership layer shares database, listener and logging lifetime through Arc, while independent contexts have separate session and import-preview slots. A browser API must never temporarily swap the desktop session. 162 commands now expose common typed execute/dispatch handlers; desktop wrappers delegate to the same logic. Two native-window save handlers use browser download adapters; host-folder backup copying uses authenticated client downloads. The HTTP session manager and route dispatcher now use these isolated contexts.
 
 Use an explicit allowlist mapped to typed argument decoders and service handlers. Never expose generic host filesystem paths or Tauri native window/dialog commands as remote RPC. Native save/export/backup paths need client download/upload adapters. Unauthenticated bootstrap must not reveal database paths or other host internals.
 
-Internet delivery requires HTTPS, secure session handling, origin/CSRF controls, bounded HTTP parsing/uploads, session expiry/revocation and operational backups. The current one-read raw TCP request parser and broad CORS behavior require replacement/hardening before full browser writes or internet exposure. Host and browser restart/reconnect, competing transactions, uploads and role-denied actions must be tested.
+Internet delivery requires HTTPS, secure session handling, origin/CSRF controls, bounded HTTP parsing/uploads, session expiry/revocation and operational backups. The new bounded parser replaces the one-read parser; staff command writes use same-origin checks rather than broad CORS. Host and browser restart/reconnect, competing transactions, uploads and role-denied actions must be tested.
 
 ## Implementation and rollback sequence
 

@@ -29,7 +29,7 @@ export default function PeriodicalsPage() {
   const currency = overview.data?.library?.currency || "INR";
 
   return (
-    <div className="space-y-6">
+    <div className="staff-periodicals space-y-6">
       <PageHeader
         title="Periodicals & Serials"
         description="Journals, magazines and newspapers: subscriptions, automated issue schedules, receiving check-in and claim tracking."

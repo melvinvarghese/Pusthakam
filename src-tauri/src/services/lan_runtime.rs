@@ -11,6 +11,9 @@ pub struct LanRuntime {
     staff: Option<std::sync::Arc<crate::services::staff_web::StaffWeb>>,
 }
 impl LanRuntime {
+    pub fn take_listener(&mut self) -> Option<LanServerHandle> {
+        self.listener.take().map(|(_, _, listener)| listener)
+    }
     pub fn reconcile(&mut self, database: &Path, config: &mut LanConfig) {
         self.reconcile_with_staff(database, config, None);
     }

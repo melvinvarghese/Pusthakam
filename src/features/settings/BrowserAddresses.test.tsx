@@ -56,4 +56,15 @@ describe("BrowserAddresses", () => {
     expect(screen.getByText("http://[2001:db8::10]:4318/opac")).toBeInTheDocument();
     expect(screen.getByText("http://[::1]:4318/opac")).toBeInTheDocument();
   });
+  it("clearly distinguishes local hosting from unconfigured internet access", () => {
+    renderAddresses();
+    expect(screen.getByRole("region", { name: "Internet access" })).toHaveTextContent("Access from other networks: not set up");
+  });
+  it("labels public addresses as configured without claiming connectivity", () => {
+    renderAddresses({ publicBaseUrl: "https://catalogue.example.org" });
+    const internet = screen.getByRole("region", { name: "Configured internet addresses" });
+    expect(within(internet).getByText("https://catalogue.example.org/staff")).toBeInTheDocument();
+    expect(internet).toHaveTextContent("does not confirm internet connectivity");
+    expect(screen.queryByRole("region", { name: "Internet access" })).not.toBeInTheDocument();
+  });
 });

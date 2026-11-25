@@ -45,6 +45,8 @@ pub struct UpdateLanConfigInput {
     pub server_name: String,
     pub opac_enabled: bool,
     pub browser_staff_enabled: bool,
+    #[serde(default)]
+    pub public_base_url: Option<String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -761,11 +763,19 @@ pub fn opac_get_record(conn: &Connection, id: i64) -> AppResult<Option<PublicOpa
 
 pub struct LanServerHandle {
     shutdown: Arc<AtomicBool>,
+    active: Arc<std::sync::atomic::AtomicUsize>,
     thread: Option<thread::JoinHandle<()>>,
     pub port: u16,
 }
 
 impl LanServerHandle {
+    /// Only the host shutdown path waits for workers; never call from a request worker.
+    pub fn drain(&mut self) {
+        self.stop();
+        while self.active.load(Ordering::SeqCst) != 0 {
+            thread::sleep(Duration::from_millis(50));
+        }
+    }
     pub fn stop(&mut self) {
         self.shutdown.store(true, Ordering::SeqCst);
         if let Some(handle) = self.thread.take() {
@@ -804,6 +814,7 @@ pub fn start_lan_listener_with_staff(
     let shutdown = Arc::new(AtomicBool::new(false));
     let shutdown_thread = shutdown.clone();
     let active = Arc::new(std::sync::atomic::AtomicUsize::new(0));
+    let active_handle = Arc::clone(&active);
 
     let thread = thread::spawn(move || {
         while !shutdown_thread.load(Ordering::SeqCst) {
@@ -840,6 +851,7 @@ pub fn start_lan_listener_with_staff(
 
     Ok(LanServerHandle {
         shutdown,
+        active: active_handle,
         thread: Some(thread),
         port,
     })
@@ -866,6 +878,9 @@ fn handle_http_connection(
     staff: Option<Arc<crate::services::staff_web::StaffWeb>>,
 ) -> std::io::Result<()> {
     use crate::services::web_http;
+    // Windows accepted sockets can inherit the nonblocking listener mode. Request reads
+    // must wait for separately arriving headers/body instead of treating WouldBlock as timeout.
+    stream.set_nonblocking(false)?;
     let _ = stream.set_write_timeout(Some(Duration::from_secs(5)));
     let head = match web_http::read_head(&mut stream) {
         Ok(head) => head,

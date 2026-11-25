@@ -25,7 +25,7 @@ export default function ClassificationPage() {
   const writable = can(session, "classification.write") || can(session, "catalogue.write");
 
   return (
-    <div className="space-y-6">
+    <div className="staff-classification space-y-6">
       <PageHeader
         title="Classification & Authorities"
         description="Browse classification schedules (DDC, UDC, LCC, CC), manage controlled author, publisher, and subject authorities, and inspect MARC mappings."

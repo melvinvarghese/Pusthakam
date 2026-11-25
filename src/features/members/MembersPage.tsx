@@ -106,7 +106,7 @@ export function MembersPage() {
   return (
     <div className="mx-auto max-w-[1100px] space-y-4 p-6">
       <PageHeader title="Members" />
-      <div className="flex items-end gap-3">
+      <div className="staff-member-toolbar flex items-end gap-3">
         <TextField label="Search members" type="search" placeholder="Name or member number" value={filter.search}
           onChange={(event) => setFilter({ ...filter, search: event.target.value, page: 1 })} />
         <SelectField label="Status" value={filter.archived ? "archived" : "active"}
@@ -132,7 +132,7 @@ export function MembersPage() {
           {members.data.rows.length === 0 ? (
             <p className="p-6 text-center text-muted">{filter.search ? "No matching members." : filter.archived ? "No archived members." : "No members registered yet."}</p>
           ) : (
-            <table className="w-full border-collapse text-left text-sm">
+            <table role="table" className="staff-card-table staff-member-table w-full border-collapse text-left text-sm">
               <thead className="border-b border-line text-xs text-muted">
                 <tr>{["Member number", "Name", "Category", "Expiry date", "Actions"].map((label) => (
                   <th key={label} scope="col" className="px-4 py-2">{label}</th>
@@ -141,13 +141,13 @@ export function MembersPage() {
               <tbody>
                 {members.data.rows.map((member) => (
                   <tr key={member.id} className="border-b border-line last:border-b-0">
-                    <td className="px-4 py-2 font-mono">{member.memberNumber}</td>
+                    <td data-mobile-label="Member number" className="px-4 py-2 font-mono">{member.memberNumber}</td>
                     <td className="px-4 py-2">
                       <div>{member.name}</div>
                       {(member.email || member.phone) && <div className="text-xs text-muted">{[member.email, member.phone].filter(Boolean).join(" · ")}</div>}
                     </td>
-                    <td className="px-4 py-2">{member.categoryName}</td>
-                    <td className="px-4 py-2">{member.expiresOn}</td>
+                    <td data-mobile-label="Category" className="px-4 py-2">{member.categoryName}</td>
+                    <td data-mobile-label="Expiry date" className="px-4 py-2">{member.expiresOn}</td>
                     <td className="whitespace-nowrap px-4 py-2">
                       <Button size="sm" variant="ghost" aria-label={`Loans for ${member.name} (${member.memberNumber})`}
                         onClick={() => setLoanHistory(member)}>Loans</Button>

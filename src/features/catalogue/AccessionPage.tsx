@@ -95,7 +95,7 @@ export function AccessionPage({ printing = false }: { printing?: boolean }) {
             placeholder="Accession number, barcode, title or call number"
             value={text}
             onChange={(e) => setText(e.target.value)}
-            autoFocus
+            autoFocus={typeof window.matchMedia === "function" && window.matchMedia("(min-width: 1024px)").matches}
             className="h-9 min-w-72 flex-1 rounded-md border border-line-strong bg-surface px-3 text-[13px] placeholder:text-muted"
           />
           <select aria-label="Status" value={status} onChange={(e) => setStatus(e.target.value as CopyStatus | "")} className="h-9 rounded-md border border-line-strong bg-surface px-2 text-[13px]">

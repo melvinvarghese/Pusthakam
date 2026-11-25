@@ -42,6 +42,10 @@ export function BrowserAddresses({ config, onCopy, onRefresh }: Props) {
       })}
       <p className="text-xs text-muted">Use these after your HTTPS host is configured and reachable. This display does not confirm internet connectivity.</p>
     </section>}
+    {!publicOrigin && <section aria-label="Internet access" className="space-y-2">
+      <h4 className="font-semibold">Access from other networks: not set up</h4>
+      <p className="text-sm text-muted">The local IP address works only on the library network. Access from mobile data or another Wi-Fi needs a public HTTPS address connected to this host or an always-on server.</p>
+    </section>}
     <section aria-label="Open on other devices" className="space-y-3">
       <h4 className="font-semibold">Open on other devices on the same Wi-Fi</h4>
       {loopback(bind) ? <p role="alert" className="text-sm text-danger">Hosting is limited to this computer. Select “Same Wi-Fi or wired network” under Network access and save to allow other devices.</p> : addresses.length ? addresses.map(ip =>

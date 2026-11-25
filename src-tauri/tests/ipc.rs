@@ -16,7 +16,11 @@ use tauri::{Manager, WebviewWindow};
 
 type Res = Result<Value, Value>;
 
+#[path = "support/staff_client.rs"]
+mod staff_client;
+
 struct Harness {
+    http: Option<staff_client::StaffClient>,
     webview: WebviewWindow<tauri::test::MockRuntime>,
     // Keeps the temp folder and app alive for the whole test.
     _dir: tempfile::TempDir,
@@ -44,7 +48,10 @@ impl Harness {
         let webview = tauri::WebviewWindowBuilder::new(&app, "main", Default::default())
             .build()
             .unwrap();
+        let http = (std::env::var("PUSTHAKAM_TEST_TRANSPORT").as_deref() == Ok("http"))
+            .then(|| staff_client::StaffClient::start(&app.state::<AppState>()));
         Harness {
+            http,
             webview,
             _dir: dir,
             _app: app,
@@ -52,6 +59,9 @@ impl Harness {
     }
 
     fn call(&self, cmd: &str, body: Value) -> Res {
+        if let Some(http) = &self.http {
+            return http.call(cmd, body);
+        }
         get_ipc_response(
             &self.webview,
             InvokeRequest {

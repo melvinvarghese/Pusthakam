@@ -58,4 +58,25 @@ describe("staff HTTP transport foundation", () => {
     await expect(staffHttpCommand(config, "../private")).rejects.toMatchObject({ code: "WEB_NOT_CONFIGURED" });
     expect(fetch).not.toHaveBeenCalled();
   });
+  it("refreshes the CSRF challenge and notifies the app when a cookie expires", async () => {
+    installWebMarkers();
+    const ended = vi.fn();
+    window.addEventListener("pusthakam-session-ended", ended);
+    try {
+      const token = "a".repeat(64);
+      vi.stubGlobal("fetch", vi.fn().mockResolvedValue(new Response(JSON.stringify({ error: { code: "AUTH_FAILED", message: "Sign in again." } }), { status: 401, headers: { "X-CSRF-Token": token } })));
+      await expect(appApi.info()).rejects.toMatchObject({ code: "AUTH_FAILED" });
+      expect(ended).toHaveBeenCalledOnce();
+      expect(staffHttpConfig()?.csrfToken).toBe(token);
+    } finally { window.removeEventListener("pusthakam-session-ended", ended); }
+  });
+  it("notifies the app when a previously authenticated account has been revoked", async () => {
+    const ended = vi.fn();
+    window.addEventListener("pusthakam-session-ended", ended);
+    try {
+      vi.stubGlobal("fetch", vi.fn().mockResolvedValue(new Response(JSON.stringify({ result: null }))));
+      expect(await staffHttpCommand(config, "current_session")).toBeNull();
+      expect(ended).toHaveBeenCalledOnce();
+    } finally { window.removeEventListener("pusthakam-session-ended", ended); }
+  });
 });

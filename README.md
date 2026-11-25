@@ -97,6 +97,12 @@ Pusthakam is in active development. Catalogue, accession, member, circulation an
 
 There is no stable public release yet. Development setup instructions and required system dependencies are being maintained in [docs/KNOWN_ISSUES.md](docs/KNOWN_ISSUES.md) and [CLAUDE.md](CLAUDE.md). Please do not use an unreleased development build as the sole system of record for a live library.
 
+## Browser access and hosting
+
+The current source serves the public catalogue at `/opac` and the shared staff application at `/staff`. Enable hosting in Settings → Wi-Fi / LAN and share the displayed host address with other devices on the same network. Browser staff accounts use the same roles and permissions as the desktop app.
+
+The library PC is the default host. An optional `pusthakam-server` console executable supports an always-on host with a persistent library directory. Both modes can use a configured HTTPS domain through a local reverse proxy; entering a website address alone does not publish the server. See [hosting instructions](docs/WEB_HOSTING.md) and the [browser acceptance matrix](docs/STAFF_BROWSER_PARITY.md). Public deployment, physical other-device access and hardware checks remain acceptance work.
+
 ## Local progress monitor
 
 Open a terminal in this repository and run `npm run progress:monitor`. Open [the dashboard](http://127.0.0.1:4317/) in your browser. Keep the terminal open while viewing it. Press `Ctrl+C` in the terminal to stop the monitor.
