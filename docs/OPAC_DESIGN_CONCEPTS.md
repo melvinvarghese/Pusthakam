@@ -1,5 +1,16 @@
 # OPAC design concepts
 
+Current cover scope (25 November 2026): owner reiterated automatic ISBN covers for OPAC and desktop. Production now displays saved covers with Open Library ISBN fallback; earlier coverless/no-external-image proposals below are superseded. Search remains usable without internet.
+
+## Current implementation — 25 November 2026
+
+Swiss Stacks is selected and integrated into the native public OPAC route. Production assets live in src-tauri/src/services/opac/ and use only public catalogue fields. The masthead shows the configured library name; classification/available-copy filters run on the server before pagination. Book details open in a keyboard-accessible dialog. There are no demonstration records or fabricated counts/shelf coordinates in production. Fonts and branding are embedded; optional Open Library ISBN covers are the owner-approved external image lookup. Mobile intrinsic-width clipping is fixed. Prototype live-search reset is fixed. Updated browser checks exercise the current three study views and the production assets; see design/opac/README.md and previews/*review-results.json for evidence and fixture limitations. Earlier concept/prototype descriptions below are historical and do not describe current implementation status. The Windows debug executable was rebuilt successfully; the installer was not rebuilt. Cross-device LAN remains unresolved.
+
+
+Owner decision (25 November 2026): **The Swiss Stacks is selected for OPAC.** Earlier awaiting-selection notes are superseded. Mobile clipping and browser checks are complete; production integration is in source. Native/owner acceptance status is recorded in the current progress and handoff.
+
+Latest review (2026-11-25T01:34:20.352Z): current directions are Reading Room (?view=reading-room), Swiss Stacks (?view=swiss-stacks), and Sovereign Folio (?view=sovereign-folio). Older names and URLs below are historical. Production OPAC remains unchanged. Saved Swiss mobile preview shows right-edge clipping; responsive acceptance needs rechecking. review.mjs still targets old views/selectors and must be updated before reuse.
+
 Current status (2026-11-24T14:12:02.123Z): development and design work paused by owner. Existing concepts/prototypes are preserved; await explicit resume and owner selection before further OPAC implementation.
 
 Owner request, 24 November 2026: prepare three visual UI directions and wait for selection before implementation. This authorizes concept exploration; no OPAC application code or LAN/firewall behavior changed. Preserve approved branding/pusthakam-logo.png as the production mark.

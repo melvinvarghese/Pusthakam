@@ -9,7 +9,8 @@ use base64::engine::general_purpose::STANDARD as BASE64;
 use base64::Engine;
 use tauri::State;
 
-#[tauri::command]
+crate::shared_command! {
+
 pub fn reports_circulation_activity(
     state: State<'_, AppState>,
     from: String,
@@ -18,8 +19,10 @@ pub fn reports_circulation_activity(
     state.require("reports.read")?;
     state.with_conn(|conn| reports::circulation_activity(conn, &from, &to))
 }
+}
 
-#[tauri::command]
+crate::shared_command! {
+
 pub fn reports_popular_titles(
     state: State<'_, AppState>,
     from: String,
@@ -28,26 +31,34 @@ pub fn reports_popular_titles(
     state.require("reports.read")?;
     state.with_conn(|conn| reports::popular_titles(conn, &from, &to))
 }
+}
 
-#[tauri::command]
+crate::shared_command! {
+
 pub fn reports_stock_by_location(state: State<'_, AppState>) -> AppResult<Vec<StockRow>> {
     state.require("reports.read")?;
     reports::stock_by_location(&mut *state.conn()?)
 }
+}
 
-#[tauri::command]
+crate::shared_command! {
+
 pub fn reports_fine_summary(state: State<'_, AppState>) -> AppResult<Vec<FineSummary>> {
     state.require("reports.read")?;
     state.with_conn(reports::fine_summary)
 }
+}
 
-#[tauri::command]
+crate::shared_command! {
+
 pub fn reports_member_summary(state: State<'_, AppState>) -> AppResult<Vec<MemberSummary>> {
     state.require("reports.read")?;
     state.with_conn(reports::member_summary)
 }
+}
 
-#[tauri::command]
+crate::shared_command! {
+
 pub fn reports_catalogue_growth(
     state: State<'_, AppState>,
     from: String,
@@ -56,8 +67,10 @@ pub fn reports_catalogue_growth(
     state.require("reports.read")?;
     state.with_conn(|conn| reports::catalogue_growth(conn, &from, &to))
 }
+}
 
-#[tauri::command]
+crate::shared_command! {
+
 pub fn reports_overdues_list(
     state: State<'_, AppState>,
     from: String,
@@ -66,8 +79,10 @@ pub fn reports_overdues_list(
     state.require("reports.read")?;
     state.with_conn(|conn| reports::overdues_list(conn, &from, &to))
 }
+}
 
-#[tauri::command]
+crate::shared_command! {
+
 pub fn reports_accession_list(
     state: State<'_, AppState>,
     from: String,
@@ -76,8 +91,10 @@ pub fn reports_accession_list(
     state.require("reports.read")?;
     state.with_conn(|conn| reports::accession_list(conn, &from, &to))
 }
+}
 
-#[tauri::command]
+crate::shared_command! {
+
 pub fn reports_expenditure_summary(
     state: State<'_, AppState>,
     from: String,
@@ -86,8 +103,10 @@ pub fn reports_expenditure_summary(
     state.require("reports.read")?;
     state.with_conn(|conn| reports::expenditure_summary(conn, &from, &to))
 }
+}
 
-#[tauri::command]
+crate::shared_command! {
+
 pub fn reports_loss_damage_list(
     state: State<'_, AppState>,
     from: String,
@@ -96,8 +115,9 @@ pub fn reports_loss_damage_list(
     state.require("reports.read")?;
     state.with_conn(|conn| reports::loss_damage_list(conn, &from, &to))
 }
+}
 
-#[tauri::command]
+crate::shared_command! {
 #[allow(clippy::too_many_arguments)]
 pub fn reports_export_file(
     state: State<'_, AppState>,
@@ -141,6 +161,8 @@ pub fn reports_export_file(
             "Choose xlsx or pdf.".into(),
         )),
     }
+}
+
 }
 
 #[tauri::command]

@@ -7,7 +7,8 @@ use crate::services::acquisitions::{
 use crate::state::AppState;
 use tauri::State;
 
-#[tauri::command]
+crate::shared_command! {
+
 pub fn acquisitions_list_vendors(
     state: State<'_, AppState>,
     include_archived: bool,
@@ -15,14 +16,18 @@ pub fn acquisitions_list_vendors(
     state.require("acquisitions.read")?;
     state.with_conn(|conn| acquisitions::list_vendors(conn, include_archived))
 }
+}
 
-#[tauri::command]
+crate::shared_command! {
+
 pub fn acquisitions_save_vendor(state: State<'_, AppState>, input: VendorInput) -> AppResult<i64> {
     let session = state.require("acquisitions.write")?;
     acquisitions::save_vendor(&mut *state.conn()?, input, &session)
 }
+}
 
-#[tauri::command]
+crate::shared_command! {
+
 pub fn acquisitions_archive_vendor(
     state: State<'_, AppState>,
     id: i64,
@@ -31,8 +36,10 @@ pub fn acquisitions_archive_vendor(
     let session = state.require("acquisitions.write")?;
     acquisitions::archive_vendor(&mut *state.conn()?, id, archive, &session)
 }
+}
 
-#[tauri::command]
+crate::shared_command! {
+
 pub fn acquisitions_list_budgets(
     state: State<'_, AppState>,
     include_archived: bool,
@@ -40,14 +47,18 @@ pub fn acquisitions_list_budgets(
     state.require("acquisitions.read")?;
     state.with_conn(|conn| acquisitions::list_budgets(conn, include_archived))
 }
+}
 
-#[tauri::command]
+crate::shared_command! {
+
 pub fn acquisitions_save_budget(state: State<'_, AppState>, input: BudgetInput) -> AppResult<i64> {
     let session = state.require("acquisitions.write")?;
     acquisitions::save_budget(&mut *state.conn()?, input, &session)
 }
+}
 
-#[tauri::command]
+crate::shared_command! {
+
 pub fn acquisitions_archive_budget(
     state: State<'_, AppState>,
     id: i64,
@@ -56,8 +67,10 @@ pub fn acquisitions_archive_budget(
     let session = state.require("acquisitions.write")?;
     acquisitions::archive_budget(&mut *state.conn()?, id, archive, &session)
 }
+}
 
-#[tauri::command]
+crate::shared_command! {
+
 pub fn acquisitions_list_requests(
     state: State<'_, AppState>,
     status: Option<String>,
@@ -65,8 +78,10 @@ pub fn acquisitions_list_requests(
     state.require("acquisitions.read")?;
     state.with_conn(|conn| acquisitions::list_requests(conn, status))
 }
+}
 
-#[tauri::command]
+crate::shared_command! {
+
 pub fn acquisitions_create_request(
     state: State<'_, AppState>,
     input: CreateRequestInput,
@@ -74,8 +89,10 @@ pub fn acquisitions_create_request(
     let session = state.require("acquisitions.write")?;
     acquisitions::create_request(&mut *state.conn()?, input, &session)
 }
+}
 
-#[tauri::command]
+crate::shared_command! {
+
 pub fn acquisitions_approve_request(
     state: State<'_, AppState>,
     id: i64,
@@ -84,8 +101,10 @@ pub fn acquisitions_approve_request(
     let session = state.require("acquisitions.write")?;
     acquisitions::approve_request(&mut *state.conn()?, id, budget_id, &session)
 }
+}
 
-#[tauri::command]
+crate::shared_command! {
+
 pub fn acquisitions_reject_request(
     state: State<'_, AppState>,
     id: i64,
@@ -94,8 +113,10 @@ pub fn acquisitions_reject_request(
     let session = state.require("acquisitions.write")?;
     acquisitions::reject_request(&mut *state.conn()?, id, reason, &session)
 }
+}
 
-#[tauri::command]
+crate::shared_command! {
+
 pub fn acquisitions_list_orders(
     state: State<'_, AppState>,
     status: Option<String>,
@@ -103,8 +124,10 @@ pub fn acquisitions_list_orders(
     state.require("acquisitions.read")?;
     state.with_conn(|conn| acquisitions::list_orders(conn, status))
 }
+}
 
-#[tauri::command]
+crate::shared_command! {
+
 pub fn acquisitions_get_order(
     state: State<'_, AppState>,
     id: i64,
@@ -112,8 +135,10 @@ pub fn acquisitions_get_order(
     state.require("acquisitions.read")?;
     state.with_conn(|conn| acquisitions::get_order(conn, id))
 }
+}
 
-#[tauri::command]
+crate::shared_command! {
+
 pub fn acquisitions_create_order(
     state: State<'_, AppState>,
     input: CreateOrderInput,
@@ -121,8 +146,10 @@ pub fn acquisitions_create_order(
     let session = state.require("acquisitions.write")?;
     acquisitions::create_order(&mut *state.conn()?, input, &session)
 }
+}
 
-#[tauri::command]
+crate::shared_command! {
+
 pub fn acquisitions_update_order_status(
     state: State<'_, AppState>,
     id: i64,
@@ -132,12 +159,15 @@ pub fn acquisitions_update_order_status(
     let session = state.require("acquisitions.write")?;
     acquisitions::update_order_status(&mut *state.conn()?, id, status, invoice_ref, &session)
 }
+}
 
-#[tauri::command]
+crate::shared_command! {
+
 pub fn acquisitions_receive_items(
     state: State<'_, AppState>,
     input: ReceiveItemInput,
 ) -> AppResult<ReceiveResult> {
     let session = state.require("acquisitions.write")?;
     acquisitions::receive_order_item(&mut *state.conn()?, input, &session)
+}
 }

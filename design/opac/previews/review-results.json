@@ -1,111 +1,127 @@
 {
+  "at": "2026-11-25T01:55:44.430Z",
   "results": [
     {
-      "view": "shelf",
+      "view": "reading-room",
       "width": 1366,
-      "height": 1000,
+      "height": 950,
       "horizontalOverflow": false
     },
     {
-      "view": "shelf",
+      "view": "reading-room",
+      "width": 1024,
+      "height": 768,
+      "horizontalOverflow": false
+    },
+    {
+      "view": "reading-room",
       "width": 768,
       "height": 1024,
       "horizontalOverflow": false
     },
     {
-      "view": "shelf",
+      "view": "reading-room",
       "width": 390,
-      "height": 960,
+      "height": 844,
       "horizontalOverflow": false
     },
     {
-      "view": "shelf",
+      "view": "reading-room",
       "width": 320,
       "height": 800,
       "horizontalOverflow": false
     },
     {
-      "view": "shelf",
+      "view": "reading-room",
       "interactions": [
         "author search",
         "availability",
         "subject",
-        "sorting",
-        "details",
+        "keyboard details",
         "Escape",
         "empty state",
         "reset"
       ]
     },
     {
-      "view": "index",
+      "view": "swiss-stacks",
       "width": 1366,
-      "height": 1000,
+      "height": 950,
       "horizontalOverflow": false
     },
     {
-      "view": "index",
+      "view": "swiss-stacks",
+      "width": 1024,
+      "height": 768,
+      "horizontalOverflow": false
+    },
+    {
+      "view": "swiss-stacks",
       "width": 768,
       "height": 1024,
       "horizontalOverflow": false
     },
     {
-      "view": "index",
+      "view": "swiss-stacks",
       "width": 390,
-      "height": 960,
+      "height": 844,
       "horizontalOverflow": false
     },
     {
-      "view": "index",
+      "view": "swiss-stacks",
       "width": 320,
       "height": 800,
       "horizontalOverflow": false
     },
     {
-      "view": "index",
+      "view": "swiss-stacks",
       "interactions": [
         "author search",
         "availability",
         "subject",
-        "sorting",
-        "details",
+        "keyboard details",
         "Escape",
         "empty state",
         "reset"
       ]
     },
     {
-      "view": "table",
+      "view": "sovereign-folio",
       "width": 1366,
-      "height": 1000,
+      "height": 950,
       "horizontalOverflow": false
     },
     {
-      "view": "table",
+      "view": "sovereign-folio",
+      "width": 1024,
+      "height": 768,
+      "horizontalOverflow": false
+    },
+    {
+      "view": "sovereign-folio",
       "width": 768,
       "height": 1024,
       "horizontalOverflow": false
     },
     {
-      "view": "table",
+      "view": "sovereign-folio",
       "width": 390,
-      "height": 960,
+      "height": 844,
       "horizontalOverflow": false
     },
     {
-      "view": "table",
+      "view": "sovereign-folio",
       "width": 320,
       "height": 800,
       "horizontalOverflow": false
     },
     {
-      "view": "table",
+      "view": "sovereign-folio",
       "interactions": [
         "author search",
         "availability",
         "subject",
-        "sorting",
-        "details",
+        "keyboard details",
         "Escape",
         "empty state",
         "reset"

@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 ### Added
+- Explicit same-Wi-Fi host IP/OPAC URLs, separate local-only addresses, copy/refresh and network binding controls, with native Windows adapter discovery.
+- Cover thumbnails in the desktop catalogue and public OPAC: saved-image reuse, automatic ISBN fallback, visible missing-cover/retry states and permission-aware public image access.
+- Standalone debug and Windows installer build commands using Tauri frontend embedding.
+- Swiss Stacks public catalogue with responsive holdings, real server pagination, classification/availability filters, keyboard book details and connection retry; embedded fonts/branding, Malayalam-aware search and safe catalogue text rendering.
 - Reservations supports book-name and copy selection, including on-loan copies; Renew and Return offer searchable, paginated current-loan lists with existing review/confirmation.
 - Title-and-copy lookup in Circulation Issue, a functional Barcode & Printing page with spine-label style, member cards and current-loan slip reprints, and native Windows Save As for PDF/XLSX reports.
 - 100 bundled splash quotations with author/character credits and per-entry source, edition and review notes; stable per-launch selection avoids an immediate repeat. Remaining original-source image checks are recorded in `docs/SPLASH_QUOTE_SOURCES.md`.

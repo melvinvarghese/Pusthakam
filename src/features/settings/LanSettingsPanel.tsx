@@ -2,7 +2,8 @@ import { useState, useEffect } from "react";
 import { lanApi, toApiError } from "@/lib/api";
 import type { LanConfig, PairedClient, LanPairingCode } from "@/lib/api/types";
 import { Button } from "@/components/ui/Button";
-import { TextField } from "@/components/ui/Field";
+import { SelectField, TextField } from "@/components/ui/Field";
+import { BrowserAddresses } from "./BrowserAddresses";
 import {
   Wifi,
   ShieldCheck,
@@ -31,6 +32,7 @@ export function LanSettingsPanel() {
   const [bindAddress, setBindAddress] = useState("0.0.0.0");
   const [opacEnabled, setOpacEnabled] = useState(true);
   const [browserStaffEnabled, setBrowserStaffEnabled] = useState(true);
+  const [publicBaseUrl, setPublicBaseUrl] = useState("");
 
   const loadData = async () => {
     setLoading(true);
@@ -42,6 +44,7 @@ export function LanSettingsPanel() {
       setBindAddress(cfg.bindAddress);
       setOpacEnabled(cfg.opacEnabled);
       setBrowserStaffEnabled(cfg.browserStaffEnabled);
+      setPublicBaseUrl(cfg.publicBaseUrl ?? "");
 
       const clientList = await lanApi.listPairedClients();
       setClients(clientList);
@@ -70,6 +73,7 @@ export function LanSettingsPanel() {
         bindAddress,
         opacEnabled,
         browserStaffEnabled,
+        publicBaseUrl,
       });
       setConfig(updated);
       setMessage(enabled ? "LAN hosting enabled." : "LAN hosting disabled.");
@@ -94,6 +98,7 @@ export function LanSettingsPanel() {
         bindAddress,
         opacEnabled,
         browserStaffEnabled,
+        publicBaseUrl,
       });
       setConfig(updated);
       setMessage("LAN configuration saved.");
@@ -131,9 +136,13 @@ export function LanSettingsPanel() {
     }
   };
 
-  const copyToClipboard = (text: string, label: string) => {
-    void navigator.clipboard.writeText(text);
-    setMessage(`Copied ${label} to clipboard.`);
+  const copyToClipboard = async (text: string, label: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setMessage(`Copied ${label} to clipboard.`);
+    } catch {
+      setError("Could not copy the address. Select the displayed text and copy it manually.");
+    }
   };
 
   if (loading && !config) {
@@ -168,7 +177,7 @@ export function LanSettingsPanel() {
             </div>
             <div>
               <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">
-                LAN Multi-Computer & Browser Access
+                Wi-Fi / LAN Browser Access
               </h2>
               <p className="text-sm text-slate-500 dark:text-slate-400">
                 Allow library staff and patrons on the local network (Wi-Fi or Ethernet) to connect without internet.
@@ -183,7 +192,7 @@ export function LanSettingsPanel() {
               className={`gap-2 ${config?.enabled ? "text-rose-600 dark:text-rose-400 border-rose-300 dark:border-rose-800 hover:bg-rose-50 dark:hover:bg-rose-950" : ""}`}
             >
               <Power className="h-4 w-4" />
-              {config?.enabled ? "Disable LAN Mode" : "Enable LAN Mode"}
+              {config?.enabled ? "Disable Wi-Fi / LAN Hosting" : "Enable Wi-Fi / LAN Hosting"}
             </Button>
           </div>
         </div>
@@ -209,28 +218,7 @@ export function LanSettingsPanel() {
             <div className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">
               Browser Addresses
             </div>
-            {config?.listenerRunning && config?.activeInterfaces.length ? (
-              <div className="space-y-1">
-                {config.activeInterfaces.flatMap((ip) => ["opac", "staff"].filter((portal) => portal === "opac" ? config.opacEnabled : config.browserStaffEnabled).map((portal) => {
-                  const url = `http://${ip}:${config.port}/${portal}`;
-                  return (
-                    <div key={url} className="flex items-center justify-between font-mono text-xs bg-white dark:bg-slate-900 p-1.5 rounded border border-slate-200 dark:border-slate-700">
-                      <span className="text-emerald-700 dark:text-emerald-400 select-all">{url}</span>
-                      <button
-                        type="button"
-                        onClick={() => copyToClipboard(url, "OPAC URL")}
-                        className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1"
-                        title="Copy URL"
-                      >
-                        <Copy className="h-3.5 w-3.5" />
-                      </button>
-                    </div>
-                  );
-                }))}
-              </div>
-            ) : (
-              <span className="text-xs text-slate-500">Start the LAN listener to show connection addresses.</span>
-            )}
+            <BrowserAddresses config={config} onCopy={copyToClipboard} onRefresh={() => void loadData()} />
           </div>
         </div>
       </div>
@@ -381,6 +369,14 @@ export function LanSettingsPanel() {
             required
           />
         </div>
+
+        <TextField label="Public HTTPS address (optional)" type="url" value={publicBaseUrl} onChange={e=>setPublicBaseUrl(e.target.value)} placeholder="https://library.example.org" hint="Set this after HTTPS hosting is configured. Entering an address here does not publish the library by itself." />
+
+        <SelectField label="Network access" value={bindAddress} onChange={e => setBindAddress(e.target.value)} hint="Choose the same Wi-Fi or wired network to let phones and other computers open OPAC.">
+          <option value="0.0.0.0">Same Wi-Fi or wired network</option>
+          <option value="127.0.0.1">This computer only</option>
+          {!["0.0.0.0", "127.0.0.1"].includes(bindAddress) && <option value={bindAddress}>Current interface: {bindAddress}</option>}
+        </SelectField>
 
         <div className="space-y-3 pt-2">
           <label className="flex items-center gap-3 cursor-pointer">

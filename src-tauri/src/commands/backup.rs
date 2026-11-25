@@ -3,43 +3,56 @@ use crate::services::backup::{self, BackupFile, BackupList};
 use crate::state::AppState;
 use tauri::State;
 
-#[tauri::command]
+crate::shared_command! {
+
 pub fn backup_list(state: State<'_, AppState>) -> AppResult<BackupList> {
     state.require("admin.backup")?;
     state.with_conn(|conn| backup::list(conn, &state.paths))
 }
+}
 
-#[tauri::command]
+crate::shared_command! {
+
 pub fn backup_set_daily(state: State<'_, AppState>, enabled: bool) -> AppResult<()> {
     state.require("admin.backup")?;
     state.with_conn(|conn| backup::set_daily(conn, enabled))
 }
+}
 
-#[tauri::command]
+crate::shared_command! {
+
 pub async fn backup_verify(state: State<'_, AppState>, name: String) -> AppResult<i64> {
     state.require("admin.backup")?;
     backup::verify_saved(&state.paths.backups, &name)
 }
+}
 
-#[tauri::command]
+crate::shared_command! {
+
 pub async fn backup_request_restore(state: State<'_, AppState>, name: String) -> AppResult<()> {
     state.require("admin.backup")?;
     state.with_conn(|conn| backup::request_restore(conn, &state.paths, &name))
 }
+}
 
-#[tauri::command]
+crate::shared_command! {
+
 pub fn backup_cancel_restore(state: State<'_, AppState>) -> AppResult<()> {
     state.require("admin.backup")?;
     backup::cancel_restore(&state.paths)
 }
+}
 
-#[tauri::command]
+crate::shared_command! {
+
 pub async fn backup_create(state: State<'_, AppState>) -> AppResult<BackupFile> {
     state.require("admin.backup")?;
     state.with_conn(|conn| backup::create(conn, &state.paths.backups))
 }
+}
 
-#[tauri::command]
+crate::shared_command! {
+
 pub async fn backup_copy_to_folder(
     state: State<'_, AppState>,
     name: String,
@@ -47,4 +60,5 @@ pub async fn backup_copy_to_folder(
 ) -> AppResult<BackupFile> {
     state.require("admin.backup")?;
     backup::copy_to_folder(&state.paths, &name, &folder)
+}
 }

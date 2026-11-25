@@ -7,13 +7,16 @@ use crate::services::{
 use crate::state::AppState;
 use tauri::State;
 
-#[tauri::command]
+crate::shared_command! {
+
 pub fn stock_check_list(state: State<'_, AppState>, page: i64) -> AppResult<Page<StockCheck>> {
     state.require("catalogue.read")?;
     state.with_conn(|conn| inventory::list(conn, page))
 }
+}
 
-#[tauri::command]
+crate::shared_command! {
+
 pub fn stock_check_review(
     state: State<'_, AppState>,
     id: i64,
@@ -23,8 +26,10 @@ pub fn stock_check_review(
     state.require("catalogue.read")?;
     state.with_conn(|conn| inventory::review(conn, id, view, page))
 }
+}
 
-#[tauri::command]
+crate::shared_command! {
+
 pub fn stock_check_start(
     state: State<'_, AppState>,
     location_id: i64,
@@ -35,8 +40,10 @@ pub fn stock_check_start(
     reservations::refresh(&mut conn)?;
     inventory::start(&mut conn, &actor, location_id, shelf_id)
 }
+}
 
-#[tauri::command]
+crate::shared_command! {
+
 pub fn stock_check_scan(
     state: State<'_, AppState>,
     id: i64,
@@ -45,20 +52,26 @@ pub fn stock_check_scan(
     let actor = state.require("catalogue.write")?;
     inventory::scan(&mut *state.conn()?, &actor, id, &barcode)
 }
+}
 
-#[tauri::command]
+crate::shared_command! {
+
 pub fn stock_check_close(state: State<'_, AppState>, id: i64) -> AppResult<()> {
     let actor = state.require("catalogue.write")?;
     inventory::close(&mut *state.conn()?, &actor, id)
 }
+}
 
-#[tauri::command]
+crate::shared_command! {
+
 pub fn stock_transfer_list(state: State<'_, AppState>, page: i64) -> AppResult<Page<Transfer>> {
     state.require("catalogue.read")?;
     state.with_conn(|conn| transfers::list(conn, page))
 }
+}
 
-#[tauri::command]
+crate::shared_command! {
+
 pub fn stock_transfer_send(
     state: State<'_, AppState>,
     barcode: String,
@@ -68,9 +81,12 @@ pub fn stock_transfer_send(
     let actor = state.require("catalogue.write")?;
     transfers::send(&mut *state.conn()?, &actor, &barcode, location_id, shelf_id)
 }
+}
 
-#[tauri::command]
+crate::shared_command! {
+
 pub fn stock_transfer_finish(state: State<'_, AppState>, id: i64, receive: bool) -> AppResult<()> {
     let actor = state.require("catalogue.write")?;
     transfers::finish(&mut *state.conn()?, &actor, id, receive)
+}
 }

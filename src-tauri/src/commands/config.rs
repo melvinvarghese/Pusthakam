@@ -8,19 +8,24 @@ use crate::services::config::{
 use crate::state::AppState;
 use tauri::State;
 
-#[tauri::command]
+crate::shared_command! {
+
 pub fn config_overview(state: State<'_, AppState>) -> AppResult<Overview> {
     state.current()?;
     state.with_conn(config::overview)
 }
+}
 
-#[tauri::command]
+crate::shared_command! {
+
 pub fn config_update_library(state: State<'_, AppState>, input: LibraryInput) -> AppResult<()> {
     let who = state.require("admin.settings")?;
     state.with_conn(|c| config::update_library(c, Some(&who), &input))
 }
+}
 
-#[tauri::command]
+crate::shared_command! {
+
 pub fn config_save_named(
     state: State<'_, AppState>,
     kind: NamedKind,
@@ -29,8 +34,10 @@ pub fn config_save_named(
     let who = state.require("admin.settings")?;
     state.with_conn(|c| config::save_named(c, Some(&who), kind, &input))
 }
+}
 
-#[tauri::command]
+crate::shared_command! {
+
 pub fn config_save_member_category(
     state: State<'_, AppState>,
     input: MemberCategoryInput,
@@ -38,26 +45,34 @@ pub fn config_save_member_category(
     let who = state.require("admin.settings")?;
     state.with_conn(|c| config::save_member_category(c, Some(&who), &input))
 }
+}
 
-#[tauri::command]
+crate::shared_command! {
+
 pub fn config_save_shelf(state: State<'_, AppState>, input: ShelfInput) -> AppResult<i64> {
     let who = state.require("admin.settings")?;
     state.with_conn(|c| config::save_shelf(c, Some(&who), &input))
 }
+}
 
-#[tauri::command]
+crate::shared_command! {
+
 pub fn config_save_policy(state: State<'_, AppState>, input: PolicyInput) -> AppResult<i64> {
     let who = state.require("admin.settings")?;
     state.with_conn(|c| config::save_policy(c, Some(&who), &input))
 }
+}
 
-#[tauri::command]
+crate::shared_command! {
+
 pub fn config_delete_policy(state: State<'_, AppState>, id: i64) -> AppResult<()> {
     let who = state.require("admin.settings")?;
     state.with_conn(|c| config::delete_policy(c, Some(&who), id))
 }
+}
 
-#[tauri::command]
+crate::shared_command! {
+
 pub fn config_set_archived(
     state: State<'_, AppState>,
     kind: ArchiveKind,
@@ -67,20 +82,26 @@ pub fn config_set_archived(
     let who = state.require("admin.settings")?;
     state.with_conn(|c| config::set_archived(c, Some(&who), kind, id, archived))
 }
+}
 
-#[tauri::command]
+crate::shared_command! {
+
 pub fn config_calendar(
     state: State<'_, AppState>,
 ) -> AppResult<crate::services::calendar::Calendar> {
     state.current()?;
     state.with_conn(crate::services::calendar::load)
 }
-#[tauri::command]
+}
+crate::shared_command! {
+
 pub fn config_save_closed_weekdays(state: State<'_, AppState>, days: Vec<i64>) -> AppResult<()> {
     let who = state.require("admin.settings")?;
     crate::services::calendar::save_weekdays(&mut *state.conn()?, &who, &days)
 }
-#[tauri::command]
+}
+crate::shared_command! {
+
 pub fn config_save_holiday(
     state: State<'_, AppState>,
     input: crate::services::calendar::HolidayInput,
@@ -88,8 +109,11 @@ pub fn config_save_holiday(
     let who = state.require("admin.settings")?;
     crate::services::calendar::save_holiday(&mut *state.conn()?, &who, &input)
 }
-#[tauri::command]
+}
+crate::shared_command! {
+
 pub fn config_remove_holiday(state: State<'_, AppState>, id: i64) -> AppResult<()> {
     let who = state.require("admin.settings")?;
     crate::services::calendar::remove_holiday(&mut *state.conn()?, &who, id)
+}
 }

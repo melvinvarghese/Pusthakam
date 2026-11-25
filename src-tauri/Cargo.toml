@@ -51,4 +51,4 @@ opt-level = 3
 opt-level = 3
 
 [target.'cfg(windows)'.dependencies]
-windows-sys = { version = "0.61.2", features = ["Win32_UI_Controls_Dialogs"] }
+windows-sys = { version = "0.61.2", features = ["Win32_UI_Controls_Dialogs", "Win32_NetworkManagement_IpHelper", "Win32_NetworkManagement_Ndis", "Win32_Networking_WinSock"] }

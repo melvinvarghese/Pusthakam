@@ -6,6 +6,7 @@ import { LoginScreen } from "@/features/auth/LoginScreen";
 import { AuthLayout } from "@/features/auth/AuthLayout";
 import { SetupWizard } from "@/features/setup/SetupWizard";
 import { StartupSplashScreen } from "@/features/boot/StartupSplashScreen";
+import { staffHttpConfig } from "@/lib/api/staffHttp";
 
 function Message({ title, text }: { title: string; text: string }) {
   return (
@@ -34,6 +35,17 @@ export interface GateProps {
  */
 export function Gate({ children, minSplashDurationMs }: GateProps) {
   const qc = useQueryClient();
+  const browserStaff = staffHttpConfig() !== null;
+  useEffect(() => {
+    if (!browserStaff) return;
+    const ended = () => {
+      qc.setQueryData(["session"], null);
+      qc.removeQueries({ predicate: ({ queryKey }) => queryKey[0] !== "session" && queryKey[0] !== "setup-status" });
+      qc.getMutationCache().clear();
+    };
+    window.addEventListener("pusthakam-session-ended", ended);
+    return () => window.removeEventListener("pusthakam-session-ended", ended);
+  }, [browserStaff, qc]);
   const defaultDuration = import.meta.env.MODE === "test" ? 0 : 3000;
   const splashDuration = minSplashDurationMs ?? defaultDuration;
   const [splashFinished, setSplashFinished] = useState(splashDuration <= 0);
@@ -52,7 +64,7 @@ export function Gate({ children, minSplashDurationMs }: GateProps) {
   // In development, `?preview` runs the same gate against synthetic data (see src/lib/preview.ts).
   const status = useQuery({ queryKey: ["setup-status"], queryFn: authApi.setupStatus, retry: false });
   const configured = status.data?.configured === true;
-  const session = useQuery({ queryKey: ["session"], queryFn: authApi.currentSession, retry: false, enabled: configured });
+  const session = useQuery({ queryKey: ["session"], queryFn: authApi.currentSession, retry: false, enabled: configured, refetchInterval: browserStaff ? 60_000 : false });
 
   if (status.isError) {
     const notDesktop = status.error instanceof ApiError && status.error.code === "NOT_DESKTOP";

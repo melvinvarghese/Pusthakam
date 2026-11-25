@@ -208,6 +208,19 @@ pub fn verify_saved(folder: &Path, name: &str) -> AppResult<i64> {
     check_schema_history(&conn)
 }
 
+/// Open only a listed, regular saved backup for an authorized browser download.
+pub fn download_file(paths: &AppPaths, name: &str) -> AppResult<fs::File> {
+    verify_saved(&paths.backups, name)?;
+    if !is_backup_name(name) {
+        return Err(AppError::Validation("Choose a saved backup.".into()));
+    }
+    let path = paths.backups.join(name);
+    if !fs::symlink_metadata(&path)?.is_file() {
+        return Err(AppError::Validation("Choose a regular backup file.".into()));
+    }
+    Ok(fs::File::open(path)?)
+}
+
 fn open_saved(folder: &Path, name: &str) -> AppResult<Connection> {
     if !is_backup_name(name) {
         return Err(AppError::Validation(

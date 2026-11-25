@@ -77,6 +77,9 @@ pub fn set(conn: &Connection, key: &str, value: &str) -> AppResult<()> {
     if key == CUSTOM_FIELDS_KEY {
         validate_custom_fields(value)?;
     }
+    if key == "web.public_url" {
+        crate::services::staff_web::normalize_public_url(value)?;
+    }
     conn.execute(
         "INSERT INTO application_settings (key, value) VALUES (?1, ?2)
          ON CONFLICT(key) DO UPDATE SET value = excluded.value,

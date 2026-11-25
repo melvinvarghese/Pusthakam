@@ -33,11 +33,11 @@ impl Harness {
             .invoke_handler(pusthakam_lib::app_handlers!())
             .manage(AppState {
                 paths,
-                db: Mutex::new(conn),
-                lan: Mutex::new(Default::default()),
-                session: Mutex::new(None),
-                pending_import: Mutex::new(None),
-                _log_guard: guard,
+                db: std::sync::Arc::new(Mutex::new(conn)),
+                lan: std::sync::Arc::new(Mutex::new(Default::default())),
+                session: std::sync::Arc::new(Mutex::new(None)),
+                pending_import: std::sync::Arc::new(Mutex::new(None)),
+                _log_guard: std::sync::Arc::new(guard),
             })
             .build(mock_context(noop_assets()))
             .unwrap();
@@ -4965,7 +4965,28 @@ fn lan_settings_start_and_stop_the_actual_http_listener() {
     let mut response = String::new();
     stream.read_to_string(&mut response).unwrap();
     assert!(response.starts_with("HTTP/1.1 200"));
-    assert!(response.contains("Public Catalogue"));
+    assert!(response.contains("Public catalogue"));
+    assert!(response.contains("id=\"catalogue-title\""));
+    assert!(response.contains("/api/opac/search?"));
+    assert!(response.contains("data:font/woff2;base64,"));
+    for (path, status) in [
+        ("/api/opac/search?class=8&available=true&page=2", "200"),
+        ("/api/opac/search?class=invalid", "400"),
+    ] {
+        let mut request = TcpStream::connect(("127.0.0.1", port)).unwrap();
+        request
+            .set_read_timeout(Some(std::time::Duration::from_secs(3)))
+            .unwrap();
+        request
+            .write_all(
+                format!("GET {path} HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n")
+                    .as_bytes(),
+            )
+            .unwrap();
+        let mut result = String::new();
+        request.read_to_string(&mut result).unwrap();
+        assert!(result.starts_with(&format!("HTTP/1.1 {status}")));
+    }
     input["enabled"] = json!(false);
     let stopped = h.ok("lan_update_config", json!({"input":input}));
     assert_eq!(stopped["listenerRunning"], false);

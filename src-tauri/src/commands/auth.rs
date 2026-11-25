@@ -6,13 +6,16 @@ use crate::services::setup::{self, SetupInput, SetupStatus};
 use crate::state::AppState;
 use tauri::State;
 
-#[tauri::command]
+crate::shared_command! {
+
 pub fn setup_status(state: State<'_, AppState>) -> AppResult<SetupStatus> {
     state.with_conn(setup::status)
 }
+}
 
+crate::shared_command! {
 /// Creates the library and first administrator (only once), then signs the administrator in.
-#[tauri::command]
+
 pub fn complete_setup(state: State<'_, AppState>, input: SetupInput) -> AppResult<Session> {
     let session = {
         let mut conn = state.conn()?;
@@ -22,20 +25,27 @@ pub fn complete_setup(state: State<'_, AppState>, input: SetupInput) -> AppResul
     state.set_session(Some(session.clone()))?;
     Ok(session)
 }
+}
 
-#[tauri::command]
+crate::shared_command! {
+
 pub fn login(state: State<'_, AppState>, username: String, password: String) -> AppResult<Session> {
     let session = state.with_conn(|c| auth::login(c, &username, &password))?;
     state.set_session(Some(session.clone()))?;
     Ok(session)
 }
+}
 
-#[tauri::command]
+crate::shared_command! {
+
 pub fn logout(state: State<'_, AppState>) -> AppResult<()> {
     state.set_session(None)
 }
+}
 
-#[tauri::command]
+crate::shared_command! {
+
 pub fn current_session(state: State<'_, AppState>) -> AppResult<Option<Session>> {
     Ok(state.current().ok())
+}
 }

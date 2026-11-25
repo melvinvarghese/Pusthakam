@@ -1,0 +1,1158 @@
+{
+  "at": "2026-11-25T05:05:51.912Z",
+  "baseCommit": "d891ea2149d732f913cd25efcc5797d6ba573ff9",
+  "commands": 164,
+  "exactBodies": 162,
+  "referenceAdapters": 2,
+  "comparison": "Exact body text after CRLF normalization; two explicit reference adapters for the new borrowed context",
+  "results": [
+    {
+      "command": "app_info",
+      "source": "src-tauri/src/commands/app.rs",
+      "originalBodySha256": "c0a0952152c84ab9acc1bd5f5d40d7daa933575a50891ff14774f6a65c3457f0",
+      "currentBodySha256": "c0a0952152c84ab9acc1bd5f5d40d7daa933575a50891ff14774f6a65c3457f0",
+      "adaptation": "none"
+    },
+    {
+      "command": "dashboard_overview",
+      "source": "src-tauri/src/commands/app.rs",
+      "originalBodySha256": "95c832d15b649d9a01ec15ce7e59416535248787fae0d55d2ae7b3820d3fe3e3",
+      "currentBodySha256": "95c832d15b649d9a01ec15ce7e59416535248787fae0d55d2ae7b3820d3fe3e3",
+      "adaptation": "none"
+    },
+    {
+      "command": "get_setting",
+      "source": "src-tauri/src/commands/app.rs",
+      "originalBodySha256": "5ab4d9e608650141531bf4a8b6d6d9fd6a8c04282516254d85336fa6d674fcfd",
+      "currentBodySha256": "5ab4d9e608650141531bf4a8b6d6d9fd6a8c04282516254d85336fa6d674fcfd",
+      "adaptation": "none"
+    },
+    {
+      "command": "set_setting",
+      "source": "src-tauri/src/commands/app.rs",
+      "originalBodySha256": "776cb54eb5c86731fefc8bf43c2ac5a2bfac131cff4971a3be64682693a38a36",
+      "currentBodySha256": "776cb54eb5c86731fefc8bf43c2ac5a2bfac131cff4971a3be64682693a38a36",
+      "adaptation": "none"
+    },
+    {
+      "command": "setup_status",
+      "source": "src-tauri/src/commands/auth.rs",
+      "originalBodySha256": "fad0def48ffe4efab4e860544393d9a3c3e4075968310f05d2c814c63fa92433",
+      "currentBodySha256": "fad0def48ffe4efab4e860544393d9a3c3e4075968310f05d2c814c63fa92433",
+      "adaptation": "none"
+    },
+    {
+      "command": "complete_setup",
+      "source": "src-tauri/src/commands/auth.rs",
+      "originalBodySha256": "f9d1dc03d55245e5a2a57b708c13f0dc01f9dabd52cba3241ea98e7166db1d69",
+      "currentBodySha256": "f9d1dc03d55245e5a2a57b708c13f0dc01f9dabd52cba3241ea98e7166db1d69",
+      "adaptation": "none"
+    },
+    {
+      "command": "login",
+      "source": "src-tauri/src/commands/auth.rs",
+      "originalBodySha256": "9bcfd588c8890b622bd1d85e49c378178102f198aac87660db9e5f43baa19488",
+      "currentBodySha256": "9bcfd588c8890b622bd1d85e49c378178102f198aac87660db9e5f43baa19488",
+      "adaptation": "none"
+    },
+    {
+      "command": "logout",
+      "source": "src-tauri/src/commands/auth.rs",
+      "originalBodySha256": "4b339410cb73967ddaa29b2bf398473af7d30d14336ff9ebf7a3178ab92a7f42",
+      "currentBodySha256": "4b339410cb73967ddaa29b2bf398473af7d30d14336ff9ebf7a3178ab92a7f42",
+      "adaptation": "none"
+    },
+    {
+      "command": "current_session",
+      "source": "src-tauri/src/commands/auth.rs",
+      "originalBodySha256": "9abf2ba2b47e52c8d5d69fb4c00a62cdcfeb696eb0f921ef7b8aff2619fc7399",
+      "currentBodySha256": "9abf2ba2b47e52c8d5d69fb4c00a62cdcfeb696eb0f921ef7b8aff2619fc7399",
+      "adaptation": "none"
+    },
+    {
+      "command": "config_overview",
+      "source": "src-tauri/src/commands/config.rs",
+      "originalBodySha256": "b2d8f289b59aa8337283c54fc703ce03b954966580a2e0c165d99993b5c43fef",
+      "currentBodySha256": "b2d8f289b59aa8337283c54fc703ce03b954966580a2e0c165d99993b5c43fef",
+      "adaptation": "none"
+    },
+    {
+      "command": "config_calendar",
+      "source": "src-tauri/src/commands/config.rs",
+      "originalBodySha256": "5a11b5a8a52b7277c7fc12967f6e314f1a347b2bb329dc900f67c3a24934835a",
+      "currentBodySha256": "5a11b5a8a52b7277c7fc12967f6e314f1a347b2bb329dc900f67c3a24934835a",
+      "adaptation": "none"
+    },
+    {
+      "command": "config_save_closed_weekdays",
+      "source": "src-tauri/src/commands/config.rs",
+      "originalBodySha256": "04866f96cb46e4a7ddb7c9796a86f063b46e8b9d4c8465b3e09045399a7e24bf",
+      "currentBodySha256": "04866f96cb46e4a7ddb7c9796a86f063b46e8b9d4c8465b3e09045399a7e24bf",
+      "adaptation": "none"
+    },
+    {
+      "command": "config_save_holiday",
+      "source": "src-tauri/src/commands/config.rs",
+      "originalBodySha256": "bb658050783b4590f82e303233cf8f5c2876110f7c87c82007987bb0ca09ac72",
+      "currentBodySha256": "bb658050783b4590f82e303233cf8f5c2876110f7c87c82007987bb0ca09ac72",
+      "adaptation": "none"
+    },
+    {
+      "command": "config_remove_holiday",
+      "source": "src-tauri/src/commands/config.rs",
+      "originalBodySha256": "8e8943caa9cc83ded2891ccd21c735c4bc7834bebd589e8b60fa7609b27666a1",
+      "currentBodySha256": "8e8943caa9cc83ded2891ccd21c735c4bc7834bebd589e8b60fa7609b27666a1",
+      "adaptation": "none"
+    },
+    {
+      "command": "config_update_library",
+      "source": "src-tauri/src/commands/config.rs",
+      "originalBodySha256": "f77e802cd48b4e9d5ad101f841a5aa9f7f89a10d982edec0ca7ac5b9a574b97e",
+      "currentBodySha256": "f77e802cd48b4e9d5ad101f841a5aa9f7f89a10d982edec0ca7ac5b9a574b97e",
+      "adaptation": "none"
+    },
+    {
+      "command": "config_save_named",
+      "source": "src-tauri/src/commands/config.rs",
+      "originalBodySha256": "b4b2488931fb694988c4d1fa91f27040c168d4afdf349b330bbbb641710a27e6",
+      "currentBodySha256": "b4b2488931fb694988c4d1fa91f27040c168d4afdf349b330bbbb641710a27e6",
+      "adaptation": "none"
+    },
+    {
+      "command": "config_save_member_category",
+      "source": "src-tauri/src/commands/config.rs",
+      "originalBodySha256": "61da6da84e897294270ed01cc7a0932fc39c7f3564f790dde8c10d43189de19e",
+      "currentBodySha256": "61da6da84e897294270ed01cc7a0932fc39c7f3564f790dde8c10d43189de19e",
+      "adaptation": "none"
+    },
+    {
+      "command": "config_save_shelf",
+      "source": "src-tauri/src/commands/config.rs",
+      "originalBodySha256": "fd92a7566b7ff1fe703d3639e4010be06569c6ba5fbc9674e8d0d03293bd58e2",
+      "currentBodySha256": "fd92a7566b7ff1fe703d3639e4010be06569c6ba5fbc9674e8d0d03293bd58e2",
+      "adaptation": "none"
+    },
+    {
+      "command": "config_save_policy",
+      "source": "src-tauri/src/commands/config.rs",
+      "originalBodySha256": "0e9e5f2ee20b0f9c26e7937690008cc78945239bbfcfc5cb748554ddab486be3",
+      "currentBodySha256": "0e9e5f2ee20b0f9c26e7937690008cc78945239bbfcfc5cb748554ddab486be3",
+      "adaptation": "none"
+    },
+    {
+      "command": "config_delete_policy",
+      "source": "src-tauri/src/commands/config.rs",
+      "originalBodySha256": "5d30567c8e2ad4716cf09f725de5aa96664b08f22092e0a065b0c1be3c8891cb",
+      "currentBodySha256": "5d30567c8e2ad4716cf09f725de5aa96664b08f22092e0a065b0c1be3c8891cb",
+      "adaptation": "none"
+    },
+    {
+      "command": "config_set_archived",
+      "source": "src-tauri/src/commands/config.rs",
+      "originalBodySha256": "7388c85927c8cd87b4a32eb5a672128ba2734fc1911c2487c4e0b068492b7009",
+      "currentBodySha256": "7388c85927c8cd87b4a32eb5a672128ba2734fc1911c2487c4e0b068492b7009",
+      "adaptation": "none"
+    },
+    {
+      "command": "catalogue_search",
+      "source": "src-tauri/src/commands/catalogue.rs",
+      "originalBodySha256": "ef89482f47f36b0d56c78d4c3bc277379a25614577b56af9749313de2d9027ac",
+      "currentBodySha256": "ef89482f47f36b0d56c78d4c3bc277379a25614577b56af9749313de2d9027ac",
+      "adaptation": "none"
+    },
+    {
+      "command": "catalogue_get_record",
+      "source": "src-tauri/src/commands/catalogue.rs",
+      "originalBodySha256": "4d31da6d56324fd8bfb687ce130d9e0ea98367ff0e22e4489ca61581bdf7311a",
+      "currentBodySha256": "4d31da6d56324fd8bfb687ce130d9e0ea98367ff0e22e4489ca61581bdf7311a",
+      "adaptation": "none"
+    },
+    {
+      "command": "catalogue_save_record",
+      "source": "src-tauri/src/commands/catalogue.rs",
+      "originalBodySha256": "297ba7b7298f5c4e0bdbed376c4462c831b34d502ea0ee6efaeb1a4c15f70e0a",
+      "currentBodySha256": "297ba7b7298f5c4e0bdbed376c4462c831b34d502ea0ee6efaeb1a4c15f70e0a",
+      "adaptation": "none"
+    },
+    {
+      "command": "catalogue_find_duplicates",
+      "source": "src-tauri/src/commands/catalogue.rs",
+      "originalBodySha256": "4f091fc421241d3d39fd88142f9f4c898848a490834e264b833a5c15955aa724",
+      "currentBodySha256": "4f091fc421241d3d39fd88142f9f4c898848a490834e264b833a5c15955aa724",
+      "adaptation": "none"
+    },
+    {
+      "command": "catalogue_archive_record",
+      "source": "src-tauri/src/commands/catalogue.rs",
+      "originalBodySha256": "30bb02b34fc0c21c663f97068e10b244b8569ea68c1a0cd1cd401bab8f9ecf02",
+      "currentBodySha256": "30bb02b34fc0c21c663f97068e10b244b8569ea68c1a0cd1cd401bab8f9ecf02",
+      "adaptation": "none"
+    },
+    {
+      "command": "catalogue_archive_records",
+      "source": "src-tauri/src/commands/catalogue.rs",
+      "originalBodySha256": "9c24743b2af8024caf36f3607a7c6f94573b8fb6b87ed16934690756ac70ad24",
+      "currentBodySha256": "9c24743b2af8024caf36f3607a7c6f94573b8fb6b87ed16934690756ac70ad24",
+      "adaptation": "none"
+    },
+    {
+      "command": "catalogue_get_cover",
+      "source": "src-tauri/src/commands/catalogue.rs",
+      "originalBodySha256": "d2fcae1e625499fd13297b622e23b7f5dbd001aec0f9439bda0b6ee119e90e70",
+      "currentBodySha256": "d2fcae1e625499fd13297b622e23b7f5dbd001aec0f9439bda0b6ee119e90e70",
+      "adaptation": "none"
+    },
+    {
+      "command": "catalogue_set_cover",
+      "source": "src-tauri/src/commands/catalogue.rs",
+      "originalBodySha256": "0eea0312269ae45434d881938648603aed47ddf77b832e6b2903fec23fdd573e",
+      "currentBodySha256": "0eea0312269ae45434d881938648603aed47ddf77b832e6b2903fec23fdd573e",
+      "adaptation": "none"
+    },
+    {
+      "command": "catalogue_add_copies",
+      "source": "src-tauri/src/commands/catalogue.rs",
+      "originalBodySha256": "6edd3b23ab7e9243c006be8d4ed8153f9839728b5d3728f1ea401043fb3ed80a",
+      "currentBodySha256": "6edd3b23ab7e9243c006be8d4ed8153f9839728b5d3728f1ea401043fb3ed80a",
+      "adaptation": "none"
+    },
+    {
+      "command": "catalogue_update_copy",
+      "source": "src-tauri/src/commands/catalogue.rs",
+      "originalBodySha256": "25c4b85c3ba7db1b944f95383e1f4c16b1516909f060d2804e836258f2694fc4",
+      "currentBodySha256": "25c4b85c3ba7db1b944f95383e1f4c16b1516909f060d2804e836258f2694fc4",
+      "adaptation": "none"
+    },
+    {
+      "command": "catalogue_set_copy_status",
+      "source": "src-tauri/src/commands/catalogue.rs",
+      "originalBodySha256": "366156106741e0252dcbee9edf701e7e712e3c14b780748542ee20bfc94ecc4b",
+      "currentBodySha256": "366156106741e0252dcbee9edf701e7e712e3c14b780748542ee20bfc94ecc4b",
+      "adaptation": "none"
+    },
+    {
+      "command": "catalogue_list_copies",
+      "source": "src-tauri/src/commands/catalogue.rs",
+      "originalBodySha256": "d9ec9430af735234b08dc4c00968d798ade111c90ad7ded3e187690e54978158",
+      "currentBodySha256": "d9ec9430af735234b08dc4c00968d798ade111c90ad7ded3e187690e54978158",
+      "adaptation": "none"
+    },
+    {
+      "command": "catalogue_export_copies",
+      "source": "src-tauri/src/commands/catalogue.rs",
+      "originalBodySha256": "13f630ed56fc8ab1d4329dfac1e5cc35d3340655bd6e2c32532a958f35970fe1",
+      "currentBodySha256": "13f630ed56fc8ab1d4329dfac1e5cc35d3340655bd6e2c32532a958f35970fe1",
+      "adaptation": "none"
+    },
+    {
+      "command": "catalogue_export_records",
+      "source": "src-tauri/src/commands/catalogue.rs",
+      "originalBodySha256": "253bb24fde7634460a6284ebd0ca20b1e570c02d7178bfe2fd1d4a470303c80d",
+      "currentBodySha256": "253bb24fde7634460a6284ebd0ca20b1e570c02d7178bfe2fd1d4a470303c80d",
+      "adaptation": "none"
+    },
+    {
+      "command": "catalogue_save_export",
+      "source": "src-tauri/src/commands/catalogue.rs",
+      "originalBodySha256": "8ea4fdd960e1b010500de0a90edc4b1c2f5aead56364ad3e0f743a59c0304818",
+      "currentBodySha256": "8ea4fdd960e1b010500de0a90edc4b1c2f5aead56364ad3e0f743a59c0304818",
+      "adaptation": "none"
+    },
+    {
+      "command": "accession_format_get",
+      "source": "src-tauri/src/commands/catalogue.rs",
+      "originalBodySha256": "5e0ad0750da0420287dc65705f1d1b5264598d1a52494a9afc0cd82239e203cb",
+      "currentBodySha256": "5e0ad0750da0420287dc65705f1d1b5264598d1a52494a9afc0cd82239e203cb",
+      "adaptation": "none"
+    },
+    {
+      "command": "accession_format_set",
+      "source": "src-tauri/src/commands/catalogue.rs",
+      "originalBodySha256": "3d9afa7ba10d6526fa29e2d37c4bdba1b6328afb26d44620e429a6e2eac0bf7e",
+      "currentBodySha256": "3d9afa7ba10d6526fa29e2d37c4bdba1b6328afb26d44620e429a6e2eac0bf7e",
+      "adaptation": "none"
+    },
+    {
+      "command": "import_preview",
+      "source": "src-tauri/src/commands/import.rs",
+      "originalBodySha256": "ad451c047da58aff8af3fdc267d1c893cfa81cfb4c7766b0b34360ca8dfcc0d5",
+      "currentBodySha256": "ad451c047da58aff8af3fdc267d1c893cfa81cfb4c7766b0b34360ca8dfcc0d5",
+      "adaptation": "none"
+    },
+    {
+      "command": "import_commit",
+      "source": "src-tauri/src/commands/import.rs",
+      "originalBodySha256": "2a7fab433a0914ac2fcdfa905935012530a75ddc69f55a54d6c6b0118af189a5",
+      "currentBodySha256": "2a7fab433a0914ac2fcdfa905935012530a75ddc69f55a54d6c6b0118af189a5",
+      "adaptation": "none"
+    },
+    {
+      "command": "import_cancel",
+      "source": "src-tauri/src/commands/import.rs",
+      "originalBodySha256": "4a3e329123324ae35b8d628986abfc6cdb94f0a6e20b76a71e05256afdc503b4",
+      "currentBodySha256": "4a3e329123324ae35b8d628986abfc6cdb94f0a6e20b76a71e05256afdc503b4",
+      "adaptation": "none"
+    },
+    {
+      "command": "members_list",
+      "source": "src-tauri/src/commands/members.rs",
+      "originalBodySha256": "8fb8599d39bc2040a95242d9f26f7675f220dcd20e7c192d9bbda4f270babe0e",
+      "currentBodySha256": "8fb8599d39bc2040a95242d9f26f7675f220dcd20e7c192d9bbda4f270babe0e",
+      "adaptation": "none"
+    },
+    {
+      "command": "members_list_loans",
+      "source": "src-tauri/src/commands/members.rs",
+      "originalBodySha256": "75d7e104e1108f7fb5d258571b66922dd3f1998cb99d4684d86870e7c9163d1f",
+      "currentBodySha256": "75d7e104e1108f7fb5d258571b66922dd3f1998cb99d4684d86870e7c9163d1f",
+      "adaptation": "none"
+    },
+    {
+      "command": "members_fine_account",
+      "source": "src-tauri/src/commands/members.rs",
+      "originalBodySha256": "697dfbd8f01bc8cdc0e556205597b7b6da24d98903a8c12cf27002e6c563a1c0",
+      "currentBodySha256": "697dfbd8f01bc8cdc0e556205597b7b6da24d98903a8c12cf27002e6c563a1c0",
+      "adaptation": "none"
+    },
+    {
+      "command": "members_fine_history",
+      "source": "src-tauri/src/commands/members.rs",
+      "originalBodySha256": "71c777cd62ac39936970c94f2901bc530ca4bc81c87e6cf47212cd01de793784",
+      "currentBodySha256": "71c777cd62ac39936970c94f2901bc530ca4bc81c87e6cf47212cd01de793784",
+      "adaptation": "none"
+    },
+    {
+      "command": "members_save",
+      "source": "src-tauri/src/commands/members.rs",
+      "originalBodySha256": "09a446140c5d640f7aa7142e331fa5ca62d9bac0d244df0df73dd7819f7a7ffb",
+      "currentBodySha256": "09a446140c5d640f7aa7142e331fa5ca62d9bac0d244df0df73dd7819f7a7ffb",
+      "adaptation": "none"
+    },
+    {
+      "command": "members_archive",
+      "source": "src-tauri/src/commands/members.rs",
+      "originalBodySha256": "417058e8b20fca86d36edb78ea4301f1d5742938fd5067103634939e3a8b327f",
+      "currentBodySha256": "417058e8b20fca86d36edb78ea4301f1d5742938fd5067103634939e3a8b327f",
+      "adaptation": "none"
+    },
+    {
+      "command": "members_preview_koha",
+      "source": "src-tauri/src/commands/members.rs",
+      "originalBodySha256": "c21129d919c297da06e2b07cb8a2606c4ae7c0e2dace13d3ae021ab6a79f1647",
+      "currentBodySha256": "c21129d919c297da06e2b07cb8a2606c4ae7c0e2dace13d3ae021ab6a79f1647",
+      "adaptation": "none"
+    },
+    {
+      "command": "members_import_koha",
+      "source": "src-tauri/src/commands/members.rs",
+      "originalBodySha256": "66e5ac894c426f6b1b1c7dea68aca9ff6d51f808e073f57740e744227cbe732b",
+      "currentBodySha256": "66e5ac894c426f6b1b1c7dea68aca9ff6d51f808e073f57740e744227cbe732b",
+      "adaptation": "none"
+    },
+    {
+      "command": "members_get_photo",
+      "source": "src-tauri/src/commands/members.rs",
+      "originalBodySha256": "a5538a7b5c0f36fd2c56a85a62494d5311f10b3feaa65784e1b5ec8beee179d1",
+      "currentBodySha256": "a5538a7b5c0f36fd2c56a85a62494d5311f10b3feaa65784e1b5ec8beee179d1",
+      "adaptation": "none"
+    },
+    {
+      "command": "members_set_photo",
+      "source": "src-tauri/src/commands/members.rs",
+      "originalBodySha256": "30a5c9a0d43a21ca154f55eabc014093b9ce7a299c9cfa82c992a12d5d32334f",
+      "currentBodySha256": "30a5c9a0d43a21ca154f55eabc014093b9ce7a299c9cfa82c992a12d5d32334f",
+      "adaptation": "none"
+    },
+    {
+      "command": "circulation_preview_import",
+      "source": "src-tauri/src/commands/circulation.rs",
+      "originalBodySha256": "25421fcbe8ebc25fa3d6596b6a4df0803dbf1a0ee03e3db38658941d30aae632",
+      "currentBodySha256": "25421fcbe8ebc25fa3d6596b6a4df0803dbf1a0ee03e3db38658941d30aae632",
+      "adaptation": "none"
+    },
+    {
+      "command": "circulation_preview_history",
+      "source": "src-tauri/src/commands/circulation.rs",
+      "originalBodySha256": "4c53b7df4caa6bfbc56162c8b732ed96195e37cc44de3be98ecf3ece123503a6",
+      "currentBodySha256": "4c53b7df4caa6bfbc56162c8b732ed96195e37cc44de3be98ecf3ece123503a6",
+      "adaptation": "none"
+    },
+    {
+      "command": "circulation_history_imports",
+      "source": "src-tauri/src/commands/circulation.rs",
+      "originalBodySha256": "f667aa7997e9305423a29a676cf41624b4bdf89fce125eb77d0076e886be60d9",
+      "currentBodySha256": "f667aa7997e9305423a29a676cf41624b4bdf89fce125eb77d0076e886be60d9",
+      "adaptation": "none"
+    },
+    {
+      "command": "circulation_commit_history",
+      "source": "src-tauri/src/commands/circulation.rs",
+      "originalBodySha256": "ebac9242b9bf190fc17b760b2f77c8c1ebfae4d9731ef951cb4bf8e6364236b9",
+      "currentBodySha256": "ebac9242b9bf190fc17b760b2f77c8c1ebfae4d9731ef951cb4bf8e6364236b9",
+      "adaptation": "none"
+    },
+    {
+      "command": "circulation_preview_renewal_import",
+      "source": "src-tauri/src/commands/circulation.rs",
+      "originalBodySha256": "e7a91dbbab0475b98f5eea9d72ac476c76b38d9bdb0ce38eeecbfda834597827",
+      "currentBodySha256": "e7a91dbbab0475b98f5eea9d72ac476c76b38d9bdb0ce38eeecbfda834597827",
+      "adaptation": "none"
+    },
+    {
+      "command": "circulation_commit_renewal_import",
+      "source": "src-tauri/src/commands/circulation.rs",
+      "originalBodySha256": "ec0284c082442025db83518a519dae88af3f55217778f9117aae7e827b97a98e",
+      "currentBodySha256": "ec0284c082442025db83518a519dae88af3f55217778f9117aae7e827b97a98e",
+      "adaptation": "none"
+    },
+    {
+      "command": "circulation_commit_import",
+      "source": "src-tauri/src/commands/circulation.rs",
+      "originalBodySha256": "a84264c98a755789e6a927fa1d8221ca8569cba2c641e9db9c1a74e9dc2a4c0c",
+      "currentBodySha256": "a84264c98a755789e6a927fa1d8221ca8569cba2c641e9db9c1a74e9dc2a4c0c",
+      "adaptation": "none"
+    },
+    {
+      "command": "circulation_prepare_issue",
+      "source": "src-tauri/src/commands/circulation.rs",
+      "originalBodySha256": "3873b598b5d74b6c1a43e477e33893ff1c54550b3519ae9b0fa10d8df831d305",
+      "currentBodySha256": "3873b598b5d74b6c1a43e477e33893ff1c54550b3519ae9b0fa10d8df831d305",
+      "adaptation": "none"
+    },
+    {
+      "command": "circulation_prepare_return",
+      "source": "src-tauri/src/commands/circulation.rs",
+      "originalBodySha256": "ae59a72707167ccb0ebd451869b235080c020c811312b09b3d7865887bb807f5",
+      "currentBodySha256": "ae59a72707167ccb0ebd451869b235080c020c811312b09b3d7865887bb807f5",
+      "adaptation": "none"
+    },
+    {
+      "command": "circulation_issue",
+      "source": "src-tauri/src/commands/circulation.rs",
+      "originalBodySha256": "4ee973fe66fd32f70640dbeb696a7f46e33830bb50e92f5202ab6a2aeab6f4e4",
+      "currentBodySha256": "4ee973fe66fd32f70640dbeb696a7f46e33830bb50e92f5202ab6a2aeab6f4e4",
+      "adaptation": "none"
+    },
+    {
+      "command": "circulation_return",
+      "source": "src-tauri/src/commands/circulation.rs",
+      "originalBodySha256": "c35713c62461137e1ec78a8a918cffb080017975e8b23253e22b2b3d1f93a60b",
+      "currentBodySha256": "c35713c62461137e1ec78a8a918cffb080017975e8b23253e22b2b3d1f93a60b",
+      "adaptation": "none"
+    },
+    {
+      "command": "circulation_prepare_renewal",
+      "source": "src-tauri/src/commands/circulation.rs",
+      "originalBodySha256": "71e23e0c0e6ab94625ba29504046c2c03fcc4f8d2845fd784c0ff7ea4129df8b",
+      "currentBodySha256": "71e23e0c0e6ab94625ba29504046c2c03fcc4f8d2845fd784c0ff7ea4129df8b",
+      "adaptation": "none"
+    },
+    {
+      "command": "circulation_renew",
+      "source": "src-tauri/src/commands/circulation.rs",
+      "originalBodySha256": "01dcb4d6c9bf74926c84142f370264d67f9433c816592c55112145a3f61e9721",
+      "currentBodySha256": "01dcb4d6c9bf74926c84142f370264d67f9433c816592c55112145a3f61e9721",
+      "adaptation": "none"
+    },
+    {
+      "command": "circulation_list_overdue",
+      "source": "src-tauri/src/commands/circulation.rs",
+      "originalBodySha256": "a4a636032c474c0ad645649659a1434cc625d7776bde352ef4200352a0adc10c",
+      "currentBodySha256": "a4a636032c474c0ad645649659a1434cc625d7776bde352ef4200352a0adc10c",
+      "adaptation": "none"
+    },
+    {
+      "command": "circulation_list_open_loans",
+      "source": "src-tauri/src/commands/circulation.rs",
+      "originalBodySha256": "efdca87751729cfae3c2595793718a0cf776a7149dbd36531c3b514e3fd153c3",
+      "currentBodySha256": "efdca87751729cfae3c2595793718a0cf776a7149dbd36531c3b514e3fd153c3",
+      "adaptation": "none"
+    },
+    {
+      "command": "circulation_list_reservations",
+      "source": "src-tauri/src/commands/circulation.rs",
+      "originalBodySha256": "a821d11f982c06f03cb05ece0d9f5fcec969a72c90f70835734f7e28616e97a9",
+      "currentBodySha256": "a821d11f982c06f03cb05ece0d9f5fcec969a72c90f70835734f7e28616e97a9",
+      "adaptation": "none"
+    },
+    {
+      "command": "circulation_place_reservation",
+      "source": "src-tauri/src/commands/circulation.rs",
+      "originalBodySha256": "fd0b5a293de3ae6b291f7a72f4d8e9c240708e88b456788defe3bdd771d76e14",
+      "currentBodySha256": "fd0b5a293de3ae6b291f7a72f4d8e9c240708e88b456788defe3bdd771d76e14",
+      "adaptation": "none"
+    },
+    {
+      "command": "circulation_cancel_reservation",
+      "source": "src-tauri/src/commands/circulation.rs",
+      "originalBodySha256": "fe078b4c57af00c36493806ec0392bcf1975554dc737c44965dbf60448aa2515",
+      "currentBodySha256": "fe078b4c57af00c36493806ec0392bcf1975554dc737c44965dbf60448aa2515",
+      "adaptation": "none"
+    },
+    {
+      "command": "circulation_list_fines",
+      "source": "src-tauri/src/commands/circulation.rs",
+      "originalBodySha256": "7617ff8efb26d3a60974e002590417116ee3f3fc36cb88d5f6a7af29bc7f5232",
+      "currentBodySha256": "7617ff8efb26d3a60974e002590417116ee3f3fc36cb88d5f6a7af29bc7f5232",
+      "adaptation": "none"
+    },
+    {
+      "command": "circulation_settle_fine",
+      "source": "src-tauri/src/commands/circulation.rs",
+      "originalBodySha256": "3039a0af19d8e784f8b38f30987bc2e194aa3eea26db1248cb2d9133cf5aa94f",
+      "currentBodySha256": "3039a0af19d8e784f8b38f30987bc2e194aa3eea26db1248cb2d9133cf5aa94f",
+      "adaptation": "none"
+    },
+    {
+      "command": "circulation_fine_history",
+      "source": "src-tauri/src/commands/circulation.rs",
+      "originalBodySha256": "8a9506fe2c7102077a14f32a0791d7e8ec4ad096807ada59fbd650c27804123d",
+      "currentBodySha256": "8a9506fe2c7102077a14f32a0791d7e8ec4ad096807ada59fbd650c27804123d",
+      "adaptation": "none"
+    },
+    {
+      "command": "reports_circulation_activity",
+      "source": "src-tauri/src/commands/reports.rs",
+      "originalBodySha256": "f5d1728aaf4f0529010214f8d47d545ecd0809b0424895032eec4f38e8338beb",
+      "currentBodySha256": "f5d1728aaf4f0529010214f8d47d545ecd0809b0424895032eec4f38e8338beb",
+      "adaptation": "none"
+    },
+    {
+      "command": "reports_popular_titles",
+      "source": "src-tauri/src/commands/reports.rs",
+      "originalBodySha256": "b4c60f54c1fc7dd698f13eef2a0f92e03a839ac289d11a56e869c8f74608128f",
+      "currentBodySha256": "b4c60f54c1fc7dd698f13eef2a0f92e03a839ac289d11a56e869c8f74608128f",
+      "adaptation": "none"
+    },
+    {
+      "command": "reports_stock_by_location",
+      "source": "src-tauri/src/commands/reports.rs",
+      "originalBodySha256": "141e3846fb63b22b8e3a529f9b291e09f862a584d554b146c9c86ab90f4687fb",
+      "currentBodySha256": "141e3846fb63b22b8e3a529f9b291e09f862a584d554b146c9c86ab90f4687fb",
+      "adaptation": "none"
+    },
+    {
+      "command": "reports_fine_summary",
+      "source": "src-tauri/src/commands/reports.rs",
+      "originalBodySha256": "b326c272c690147ad68c2aa12620a0cf3c78fa3a6cd17e3d30d13bb3314e6625",
+      "currentBodySha256": "b326c272c690147ad68c2aa12620a0cf3c78fa3a6cd17e3d30d13bb3314e6625",
+      "adaptation": "none"
+    },
+    {
+      "command": "reports_member_summary",
+      "source": "src-tauri/src/commands/reports.rs",
+      "originalBodySha256": "0d873cc7cdafb1ade4af03805ce2b80a112cd2c4f9e28f27eb63c0d90b96c772",
+      "currentBodySha256": "0d873cc7cdafb1ade4af03805ce2b80a112cd2c4f9e28f27eb63c0d90b96c772",
+      "adaptation": "none"
+    },
+    {
+      "command": "reports_catalogue_growth",
+      "source": "src-tauri/src/commands/reports.rs",
+      "originalBodySha256": "2f2a6867ed78d08936c78ff06beb20985ea93b0557bacfe56f98b8d1db1495dd",
+      "currentBodySha256": "2f2a6867ed78d08936c78ff06beb20985ea93b0557bacfe56f98b8d1db1495dd",
+      "adaptation": "none"
+    },
+    {
+      "command": "reports_overdues_list",
+      "source": "src-tauri/src/commands/reports.rs",
+      "originalBodySha256": "1a2ea1dea351fcf5cfd820decfe57fa07b0488ec77ad754e06d5cb7a61d949da",
+      "currentBodySha256": "1a2ea1dea351fcf5cfd820decfe57fa07b0488ec77ad754e06d5cb7a61d949da",
+      "adaptation": "none"
+    },
+    {
+      "command": "reports_accession_list",
+      "source": "src-tauri/src/commands/reports.rs",
+      "originalBodySha256": "b37666725565b1774a0de74bcf13209383ebcf030f39329f69f09cfdce8d7d56",
+      "currentBodySha256": "b37666725565b1774a0de74bcf13209383ebcf030f39329f69f09cfdce8d7d56",
+      "adaptation": "none"
+    },
+    {
+      "command": "reports_expenditure_summary",
+      "source": "src-tauri/src/commands/reports.rs",
+      "originalBodySha256": "6b0fe5d5f0142c824d68ac3a8d9aac525b8a7d330f95ec7c9ce91482372f30c5",
+      "currentBodySha256": "6b0fe5d5f0142c824d68ac3a8d9aac525b8a7d330f95ec7c9ce91482372f30c5",
+      "adaptation": "none"
+    },
+    {
+      "command": "reports_loss_damage_list",
+      "source": "src-tauri/src/commands/reports.rs",
+      "originalBodySha256": "f0abd3fc0819892c656872a691d32e601f583757f5881947cdb1e368a8632f09",
+      "currentBodySha256": "f0abd3fc0819892c656872a691d32e601f583757f5881947cdb1e368a8632f09",
+      "adaptation": "none"
+    },
+    {
+      "command": "reports_export_file",
+      "source": "src-tauri/src/commands/reports.rs",
+      "originalBodySha256": "c12c0117e1fd93acb11e4f342c39e0fed6e12b1c3b07332739c6988112cbb347",
+      "currentBodySha256": "c12c0117e1fd93acb11e4f342c39e0fed6e12b1c3b07332739c6988112cbb347",
+      "adaptation": "none"
+    },
+    {
+      "command": "reports_save_export",
+      "source": "src-tauri/src/commands/reports.rs",
+      "originalBodySha256": "0c2a695bf2835a7a2c92b272aac1500f761dabfdf3dc74fe0d8111108dd70505",
+      "currentBodySha256": "0c2a695bf2835a7a2c92b272aac1500f761dabfdf3dc74fe0d8111108dd70505",
+      "adaptation": "none"
+    },
+    {
+      "command": "backup_list",
+      "source": "src-tauri/src/commands/backup.rs",
+      "originalBodySha256": "4f25ec0bbb75e6170cb326cc6214c7c4e3bba66ed5c21633aa2d15537ac9ef13",
+      "currentBodySha256": "4f25ec0bbb75e6170cb326cc6214c7c4e3bba66ed5c21633aa2d15537ac9ef13",
+      "adaptation": "none"
+    },
+    {
+      "command": "backup_create",
+      "source": "src-tauri/src/commands/backup.rs",
+      "originalBodySha256": "9b8a36dcc5a9513f4eebd6b8a6daa229448fb22e132efcfdf69cdcd038d5b1c7",
+      "currentBodySha256": "9b8a36dcc5a9513f4eebd6b8a6daa229448fb22e132efcfdf69cdcd038d5b1c7",
+      "adaptation": "none"
+    },
+    {
+      "command": "backup_copy_to_folder",
+      "source": "src-tauri/src/commands/backup.rs",
+      "originalBodySha256": "a393f0bdc072b16bac5db8ee5cd769a4664a11356d55762db18e6869681cd6d6",
+      "currentBodySha256": "a393f0bdc072b16bac5db8ee5cd769a4664a11356d55762db18e6869681cd6d6",
+      "adaptation": "none"
+    },
+    {
+      "command": "backup_set_daily",
+      "source": "src-tauri/src/commands/backup.rs",
+      "originalBodySha256": "da2951ef720a31ff8d9d9515f2fc80fe7355e4679162edc5c840593a0de9c346",
+      "currentBodySha256": "da2951ef720a31ff8d9d9515f2fc80fe7355e4679162edc5c840593a0de9c346",
+      "adaptation": "none"
+    },
+    {
+      "command": "backup_verify",
+      "source": "src-tauri/src/commands/backup.rs",
+      "originalBodySha256": "8c436e6c996352d22970383393f4773c200ed00e465b05a133eee11659b74098",
+      "currentBodySha256": "8c436e6c996352d22970383393f4773c200ed00e465b05a133eee11659b74098",
+      "adaptation": "none"
+    },
+    {
+      "command": "backup_request_restore",
+      "source": "src-tauri/src/commands/backup.rs",
+      "originalBodySha256": "5a448380a56e11997ea4afdee575fd29d6392b3987e63858670b78c9e95dd071",
+      "currentBodySha256": "5a448380a56e11997ea4afdee575fd29d6392b3987e63858670b78c9e95dd071",
+      "adaptation": "none"
+    },
+    {
+      "command": "backup_cancel_restore",
+      "source": "src-tauri/src/commands/backup.rs",
+      "originalBodySha256": "f84492158f0d1ea31c3116f13cc094ff1af531582b7cc6a7dedd5020772e570e",
+      "currentBodySha256": "f84492158f0d1ea31c3116f13cc094ff1af531582b7cc6a7dedd5020772e570e",
+      "adaptation": "none"
+    },
+    {
+      "command": "audit_search",
+      "source": "src-tauri/src/commands/audit.rs",
+      "originalBodySha256": "6b345afc0b3b5e296e942207d1243582314bb6baf89b769e46b8eeb78e40e710",
+      "currentBodySha256": "6b345afc0b3b5e296e942207d1243582314bb6baf89b769e46b8eeb78e40e710",
+      "adaptation": "none"
+    },
+    {
+      "command": "staff_list",
+      "source": "src-tauri/src/commands/staff.rs",
+      "originalBodySha256": "2493d3a9ebcbef1cc1bf096941cd24283e3a50bd84327351a025b47df3ca84f2",
+      "currentBodySha256": "2493d3a9ebcbef1cc1bf096941cd24283e3a50bd84327351a025b47df3ca84f2",
+      "adaptation": "none"
+    },
+    {
+      "command": "staff_create",
+      "source": "src-tauri/src/commands/staff.rs",
+      "originalBodySha256": "5099848fdbdc95dd602a628e0b748b9366014d3848f09857f36b557a798e5507",
+      "currentBodySha256": "5099848fdbdc95dd602a628e0b748b9366014d3848f09857f36b557a798e5507",
+      "adaptation": "none"
+    },
+    {
+      "command": "staff_update",
+      "source": "src-tauri/src/commands/staff.rs",
+      "originalBodySha256": "61764501a3aa4cd8b6bcff04b997b639d3502768a055ba57dd59ba7f97c7c73f",
+      "currentBodySha256": "61764501a3aa4cd8b6bcff04b997b639d3502768a055ba57dd59ba7f97c7c73f",
+      "adaptation": "none"
+    },
+    {
+      "command": "staff_reset_password",
+      "source": "src-tauri/src/commands/staff.rs",
+      "originalBodySha256": "654f3012f4b66262aee77b6427b87306a8edb229c00387be9da9a1fb6d3ba0fe",
+      "currentBodySha256": "654f3012f4b66262aee77b6427b87306a8edb229c00387be9da9a1fb6d3ba0fe",
+      "adaptation": "none"
+    },
+    {
+      "command": "staff_unlock",
+      "source": "src-tauri/src/commands/staff.rs",
+      "originalBodySha256": "0b470a43caed4262d8e7010b46e05bf43f71236faf3df70008ebb14e4833648a",
+      "currentBodySha256": "0b470a43caed4262d8e7010b46e05bf43f71236faf3df70008ebb14e4833648a",
+      "adaptation": "none"
+    },
+    {
+      "command": "staff_change_password",
+      "source": "src-tauri/src/commands/staff.rs",
+      "originalBodySha256": "15a9af4e39f58897b53b62adee519e3d9a3c1957c27a5c2ddeb8018c545f882b",
+      "currentBodySha256": "15a9af4e39f58897b53b62adee519e3d9a3c1957c27a5c2ddeb8018c545f882b",
+      "adaptation": "none"
+    },
+    {
+      "command": "staff_generate_recovery_code",
+      "source": "src-tauri/src/commands/staff.rs",
+      "originalBodySha256": "c0ecd6a523683156397b1535439fc95493ec5abd4e292940284294d6fa369c33",
+      "currentBodySha256": "c0ecd6a523683156397b1535439fc95493ec5abd4e292940284294d6fa369c33",
+      "adaptation": "none"
+    },
+    {
+      "command": "staff_recover",
+      "source": "src-tauri/src/commands/staff.rs",
+      "originalBodySha256": "a5fc762c46e971cbbc6e73ed60b715ac0b1ec2bb82d231e790db1bac2fc541c4",
+      "currentBodySha256": "a5fc762c46e971cbbc6e73ed60b715ac0b1ec2bb82d231e790db1bac2fc541c4",
+      "adaptation": "none"
+    },
+    {
+      "command": "stock_check_list",
+      "source": "src-tauri/src/commands/inventory.rs",
+      "originalBodySha256": "058435d49bc056fc36d779c27565807fbf3ae22192ab310ddc70aca1d5403024",
+      "currentBodySha256": "058435d49bc056fc36d779c27565807fbf3ae22192ab310ddc70aca1d5403024",
+      "adaptation": "none"
+    },
+    {
+      "command": "stock_check_review",
+      "source": "src-tauri/src/commands/inventory.rs",
+      "originalBodySha256": "f020976c91439e0f12bd3c3e5a3de51449e4bf85a1dc8cbbaec0d7e878051586",
+      "currentBodySha256": "f020976c91439e0f12bd3c3e5a3de51449e4bf85a1dc8cbbaec0d7e878051586",
+      "adaptation": "none"
+    },
+    {
+      "command": "stock_check_start",
+      "source": "src-tauri/src/commands/inventory.rs",
+      "originalBodySha256": "10ea4f9978661d79bb362f95d284ac3ec30c5416d5f56cca15940e888f8995f0",
+      "currentBodySha256": "10ea4f9978661d79bb362f95d284ac3ec30c5416d5f56cca15940e888f8995f0",
+      "adaptation": "none"
+    },
+    {
+      "command": "stock_check_scan",
+      "source": "src-tauri/src/commands/inventory.rs",
+      "originalBodySha256": "68b3775801906148eb2bb41b93577342e4c1d842b8b2a6b7b7eed88a761f9a7c",
+      "currentBodySha256": "68b3775801906148eb2bb41b93577342e4c1d842b8b2a6b7b7eed88a761f9a7c",
+      "adaptation": "none"
+    },
+    {
+      "command": "stock_check_close",
+      "source": "src-tauri/src/commands/inventory.rs",
+      "originalBodySha256": "e199d7095e9cfc7c3c8fa3d8576987a34e61b845516c020eba73f23a57426af5",
+      "currentBodySha256": "e199d7095e9cfc7c3c8fa3d8576987a34e61b845516c020eba73f23a57426af5",
+      "adaptation": "none"
+    },
+    {
+      "command": "stock_transfer_list",
+      "source": "src-tauri/src/commands/inventory.rs",
+      "originalBodySha256": "571c36f391afa9d74af83c0e13e3d2edf1a57f98bd2c1fad6ee0f68c5b0d10f7",
+      "currentBodySha256": "571c36f391afa9d74af83c0e13e3d2edf1a57f98bd2c1fad6ee0f68c5b0d10f7",
+      "adaptation": "none"
+    },
+    {
+      "command": "stock_transfer_send",
+      "source": "src-tauri/src/commands/inventory.rs",
+      "originalBodySha256": "f2a9d37b242cb0725e691bf1d7d7e88255c92bfb22b243a56628f6fee3f1ee3d",
+      "currentBodySha256": "f2a9d37b242cb0725e691bf1d7d7e88255c92bfb22b243a56628f6fee3f1ee3d",
+      "adaptation": "none"
+    },
+    {
+      "command": "stock_transfer_finish",
+      "source": "src-tauri/src/commands/inventory.rs",
+      "originalBodySha256": "8c3d38c8050a9ade079420af135fe9e9c9cba71e0c90508535ad2dc54778414c",
+      "currentBodySha256": "8c3d38c8050a9ade079420af135fe9e9c9cba71e0c90508535ad2dc54778414c",
+      "adaptation": "none"
+    },
+    {
+      "command": "acquisitions_list_vendors",
+      "source": "src-tauri/src/commands/acquisitions.rs",
+      "originalBodySha256": "592ec3301800a74ea9990185d23698d75c9831b2c7cab97fbad984fdd8ac4db8",
+      "currentBodySha256": "592ec3301800a74ea9990185d23698d75c9831b2c7cab97fbad984fdd8ac4db8",
+      "adaptation": "none"
+    },
+    {
+      "command": "acquisitions_save_vendor",
+      "source": "src-tauri/src/commands/acquisitions.rs",
+      "originalBodySha256": "ff763a8d44f595459d5888269decdf49ea39da18752662e872495e4600ddc1c6",
+      "currentBodySha256": "ff763a8d44f595459d5888269decdf49ea39da18752662e872495e4600ddc1c6",
+      "adaptation": "none"
+    },
+    {
+      "command": "acquisitions_archive_vendor",
+      "source": "src-tauri/src/commands/acquisitions.rs",
+      "originalBodySha256": "9dfd61fb469eec46d4c71392a367224c10888109b69274c0c8e71128ef118aa8",
+      "currentBodySha256": "9dfd61fb469eec46d4c71392a367224c10888109b69274c0c8e71128ef118aa8",
+      "adaptation": "none"
+    },
+    {
+      "command": "acquisitions_list_budgets",
+      "source": "src-tauri/src/commands/acquisitions.rs",
+      "originalBodySha256": "66e6a57f38aafa37247199683fe7b7ba720e9a8ae72cf83ad5ca6825c76dc30a",
+      "currentBodySha256": "66e6a57f38aafa37247199683fe7b7ba720e9a8ae72cf83ad5ca6825c76dc30a",
+      "adaptation": "none"
+    },
+    {
+      "command": "acquisitions_save_budget",
+      "source": "src-tauri/src/commands/acquisitions.rs",
+      "originalBodySha256": "2f45a3170795a7daf0ba4aa7f1f730f8d94704ff4eff418c45fcf00dbd5c3881",
+      "currentBodySha256": "2f45a3170795a7daf0ba4aa7f1f730f8d94704ff4eff418c45fcf00dbd5c3881",
+      "adaptation": "none"
+    },
+    {
+      "command": "acquisitions_archive_budget",
+      "source": "src-tauri/src/commands/acquisitions.rs",
+      "originalBodySha256": "5da6375ae1ab26aaa0df672883cd9d3958a86cbd2158779aebfc3c7a5686e0c9",
+      "currentBodySha256": "5da6375ae1ab26aaa0df672883cd9d3958a86cbd2158779aebfc3c7a5686e0c9",
+      "adaptation": "none"
+    },
+    {
+      "command": "acquisitions_list_requests",
+      "source": "src-tauri/src/commands/acquisitions.rs",
+      "originalBodySha256": "a827163d8f2fa3830ff688c4fa6d8ef70c9088fe7f0731169e9d371869fce15e",
+      "currentBodySha256": "a827163d8f2fa3830ff688c4fa6d8ef70c9088fe7f0731169e9d371869fce15e",
+      "adaptation": "none"
+    },
+    {
+      "command": "acquisitions_create_request",
+      "source": "src-tauri/src/commands/acquisitions.rs",
+      "originalBodySha256": "5b69217fb7ab03d4c01486a2065400e260568a516c6cd477f51114e0bcf8f440",
+      "currentBodySha256": "5b69217fb7ab03d4c01486a2065400e260568a516c6cd477f51114e0bcf8f440",
+      "adaptation": "none"
+    },
+    {
+      "command": "acquisitions_approve_request",
+      "source": "src-tauri/src/commands/acquisitions.rs",
+      "originalBodySha256": "7133fb4bd8a33c1467eb220d99762af69ed502f068f73b94c06cc9f90b70377f",
+      "currentBodySha256": "7133fb4bd8a33c1467eb220d99762af69ed502f068f73b94c06cc9f90b70377f",
+      "adaptation": "none"
+    },
+    {
+      "command": "acquisitions_reject_request",
+      "source": "src-tauri/src/commands/acquisitions.rs",
+      "originalBodySha256": "89510cbc58ea58ed59400d9084ee2c8c596a23e7f07949623a744f5f600c5983",
+      "currentBodySha256": "89510cbc58ea58ed59400d9084ee2c8c596a23e7f07949623a744f5f600c5983",
+      "adaptation": "none"
+    },
+    {
+      "command": "acquisitions_list_orders",
+      "source": "src-tauri/src/commands/acquisitions.rs",
+      "originalBodySha256": "985ed62cbca933299a5019aa05c68da17540d59fd13a5c5885a75f3c6a064865",
+      "currentBodySha256": "985ed62cbca933299a5019aa05c68da17540d59fd13a5c5885a75f3c6a064865",
+      "adaptation": "none"
+    },
+    {
+      "command": "acquisitions_get_order",
+      "source": "src-tauri/src/commands/acquisitions.rs",
+      "originalBodySha256": "a71ba95c02f6cfb917cbab31a8f663a770526781ce768a7158cf1d548722eff3",
+      "currentBodySha256": "a71ba95c02f6cfb917cbab31a8f663a770526781ce768a7158cf1d548722eff3",
+      "adaptation": "none"
+    },
+    {
+      "command": "acquisitions_create_order",
+      "source": "src-tauri/src/commands/acquisitions.rs",
+      "originalBodySha256": "33d9413689d34f83bbb04be3328df8b1e01b6133af214166029207cbf3954b96",
+      "currentBodySha256": "33d9413689d34f83bbb04be3328df8b1e01b6133af214166029207cbf3954b96",
+      "adaptation": "none"
+    },
+    {
+      "command": "acquisitions_update_order_status",
+      "source": "src-tauri/src/commands/acquisitions.rs",
+      "originalBodySha256": "229517d517bc6f8882c24279ac1c16d17433a7eeff515ef19d350e95e9f23ed3",
+      "currentBodySha256": "229517d517bc6f8882c24279ac1c16d17433a7eeff515ef19d350e95e9f23ed3",
+      "adaptation": "none"
+    },
+    {
+      "command": "acquisitions_receive_items",
+      "source": "src-tauri/src/commands/acquisitions.rs",
+      "originalBodySha256": "6f39cfb7f9029be0eeab67b067884db804bc75e3eb1e218abaafff88b488355a",
+      "currentBodySha256": "6f39cfb7f9029be0eeab67b067884db804bc75e3eb1e218abaafff88b488355a",
+      "adaptation": "none"
+    },
+    {
+      "command": "serials_list_subscriptions",
+      "source": "src-tauri/src/commands/serials.rs",
+      "originalBodySha256": "c63e8806ca32643bfc9dccfa0efb535883b826ce3be0352c5a6b87ad8a569b3a",
+      "currentBodySha256": "c63e8806ca32643bfc9dccfa0efb535883b826ce3be0352c5a6b87ad8a569b3a",
+      "adaptation": "none"
+    },
+    {
+      "command": "serials_get_subscription",
+      "source": "src-tauri/src/commands/serials.rs",
+      "originalBodySha256": "feca66984169568ac24a408c584b4148f9c2a748c00713e2d698c15adaf3b02c",
+      "currentBodySha256": "feca66984169568ac24a408c584b4148f9c2a748c00713e2d698c15adaf3b02c",
+      "adaptation": "none"
+    },
+    {
+      "command": "serials_save_subscription",
+      "source": "src-tauri/src/commands/serials.rs",
+      "originalBodySha256": "b87d5f31db48b6c0a58add8e67154061fc16c31f5fd18f3bd1bef28a1063c34b",
+      "currentBodySha256": "b87d5f31db48b6c0a58add8e67154061fc16c31f5fd18f3bd1bef28a1063c34b",
+      "adaptation": "none"
+    },
+    {
+      "command": "serials_cancel_subscription",
+      "source": "src-tauri/src/commands/serials.rs",
+      "originalBodySha256": "4f82e6af5dad745419874900df7f561b74aa554d0d8d11da49c50c45c3614d4c",
+      "currentBodySha256": "4f82e6af5dad745419874900df7f561b74aa554d0d8d11da49c50c45c3614d4c",
+      "adaptation": "none"
+    },
+    {
+      "command": "serials_list_issues",
+      "source": "src-tauri/src/commands/serials.rs",
+      "originalBodySha256": "cf51b81733b30872c17ac6836d1b8be311ccad84251a55f09918078a9a48f730",
+      "currentBodySha256": "cf51b81733b30872c17ac6836d1b8be311ccad84251a55f09918078a9a48f730",
+      "adaptation": "none"
+    },
+    {
+      "command": "serials_list_missing_issues",
+      "source": "src-tauri/src/commands/serials.rs",
+      "originalBodySha256": "a2b7c620fe48e18c38b448532973214620506bf3e11274846aeb1abed6704f2b",
+      "currentBodySha256": "a2b7c620fe48e18c38b448532973214620506bf3e11274846aeb1abed6704f2b",
+      "adaptation": "none"
+    },
+    {
+      "command": "serials_add_issue",
+      "source": "src-tauri/src/commands/serials.rs",
+      "originalBodySha256": "cccab0825ccff1e5a40c07e067da9d11738afb209b0abf5626c680af220c3d2e",
+      "currentBodySha256": "cccab0825ccff1e5a40c07e067da9d11738afb209b0abf5626c680af220c3d2e",
+      "adaptation": "none"
+    },
+    {
+      "command": "serials_check_in_issue",
+      "source": "src-tauri/src/commands/serials.rs",
+      "originalBodySha256": "51e9ef9e98ad7b62357299079f8cec7686a1f5fb5b005d12c5ed2e9c842c8756",
+      "currentBodySha256": "51e9ef9e98ad7b62357299079f8cec7686a1f5fb5b005d12c5ed2e9c842c8756",
+      "adaptation": "none"
+    },
+    {
+      "command": "serials_update_issue_status",
+      "source": "src-tauri/src/commands/serials.rs",
+      "originalBodySha256": "92241b88b811615205f9e24a4d72bf2c3dd68fccaeae1b1de27ca11025214a61",
+      "currentBodySha256": "92241b88b811615205f9e24a4d72bf2c3dd68fccaeae1b1de27ca11025214a61",
+      "adaptation": "none"
+    },
+    {
+      "command": "serials_renew_subscription",
+      "source": "src-tauri/src/commands/serials.rs",
+      "originalBodySha256": "736da4e3c7065044d3fdf76f7cdd02df9740e8a67aac6df04234e335db523015",
+      "currentBodySha256": "736da4e3c7065044d3fdf76f7cdd02df9740e8a67aac6df04234e335db523015",
+      "adaptation": "none"
+    },
+    {
+      "command": "serials_list_renewals",
+      "source": "src-tauri/src/commands/serials.rs",
+      "originalBodySha256": "f96bcb73e9505fbf253a993f705104dd01e86892f6f5b651c51ca1e7c097764f",
+      "currentBodySha256": "f96bcb73e9505fbf253a993f705104dd01e86892f6f5b651c51ca1e7c097764f",
+      "adaptation": "none"
+    },
+    {
+      "command": "serials_get_expenditure",
+      "source": "src-tauri/src/commands/serials.rs",
+      "originalBodySha256": "9e460e66666e8ce80e256c2bb78c66393d572b5184918e5761462f584b8160f3",
+      "currentBodySha256": "9e460e66666e8ce80e256c2bb78c66393d572b5184918e5761462f584b8160f3",
+      "adaptation": "none"
+    },
+    {
+      "command": "serials_list_expiring",
+      "source": "src-tauri/src/commands/serials.rs",
+      "originalBodySha256": "83c8767b998269e194c2fc68971db6b06829d1e1540377b800cd25fca75dc398",
+      "currentBodySha256": "83c8767b998269e194c2fc68971db6b06829d1e1540377b800cd25fca75dc398",
+      "adaptation": "none"
+    },
+    {
+      "command": "classification_list_schemes",
+      "source": "src-tauri/src/commands/classification.rs",
+      "originalBodySha256": "d33010722cd299f4116e92db5fcb463f6975c00ef66be4e618dc9a06511f9059",
+      "currentBodySha256": "d33010722cd299f4116e92db5fcb463f6975c00ef66be4e618dc9a06511f9059",
+      "adaptation": "none"
+    },
+    {
+      "command": "classification_save_scheme",
+      "source": "src-tauri/src/commands/classification.rs",
+      "originalBodySha256": "a00614b746937cdcd7f1573b2c86e14f87b0d81ac01e14402116eb275de46cc0",
+      "currentBodySha256": "a00614b746937cdcd7f1573b2c86e14f87b0d81ac01e14402116eb275de46cc0",
+      "adaptation": "none"
+    },
+    {
+      "command": "classification_delete_scheme",
+      "source": "src-tauri/src/commands/classification.rs",
+      "originalBodySha256": "6d4cc107dd2035e767ba1e2bff0700ac3f77acbbe2efc37eca613e45e6292237",
+      "currentBodySha256": "6d4cc107dd2035e767ba1e2bff0700ac3f77acbbe2efc37eca613e45e6292237",
+      "adaptation": "none"
+    },
+    {
+      "command": "classification_list_entries",
+      "source": "src-tauri/src/commands/classification.rs",
+      "originalBodySha256": "9b0064bc729923a9cc9efee4ea06e266b6233ee10f9b4789c93efb2e600df968",
+      "currentBodySha256": "9b0064bc729923a9cc9efee4ea06e266b6233ee10f9b4789c93efb2e600df968",
+      "adaptation": "none"
+    },
+    {
+      "command": "classification_save_entry",
+      "source": "src-tauri/src/commands/classification.rs",
+      "originalBodySha256": "7af9c624878e793ced685afdbde8c8f9cd6e786479bbd81866e47c4dac1e83a0",
+      "currentBodySha256": "7af9c624878e793ced685afdbde8c8f9cd6e786479bbd81866e47c4dac1e83a0",
+      "adaptation": "none"
+    },
+    {
+      "command": "classification_delete_entry",
+      "source": "src-tauri/src/commands/classification.rs",
+      "originalBodySha256": "dd10f5f5165676ac1175e9b57dc87f6148adea781e70d7a44e594bfa07699352",
+      "currentBodySha256": "dd10f5f5165676ac1175e9b57dc87f6148adea781e70d7a44e594bfa07699352",
+      "adaptation": "none"
+    },
+    {
+      "command": "classification_list_authors",
+      "source": "src-tauri/src/commands/classification.rs",
+      "originalBodySha256": "42bc03eb5370a67264f58b5dc2089f655e001af03e67412fac53751d706c0615",
+      "currentBodySha256": "42bc03eb5370a67264f58b5dc2089f655e001af03e67412fac53751d706c0615",
+      "adaptation": "none"
+    },
+    {
+      "command": "classification_save_author",
+      "source": "src-tauri/src/commands/classification.rs",
+      "originalBodySha256": "ce6c65b17aa565e99967e9071766272a00f6326b672662cf75451cedce4a4fce",
+      "currentBodySha256": "ce6c65b17aa565e99967e9071766272a00f6326b672662cf75451cedce4a4fce",
+      "adaptation": "none"
+    },
+    {
+      "command": "classification_merge_authors",
+      "source": "src-tauri/src/commands/classification.rs",
+      "originalBodySha256": "10976a997e21e040c35e2a2f575b4ccd0f30344b6457dc1f74970429eb18b576",
+      "currentBodySha256": "10976a997e21e040c35e2a2f575b4ccd0f30344b6457dc1f74970429eb18b576",
+      "adaptation": "none"
+    },
+    {
+      "command": "classification_list_publishers",
+      "source": "src-tauri/src/commands/classification.rs",
+      "originalBodySha256": "973a45df7bd7b17c75fad87936b5ad35593d1d1fde7918003a7df938d526931f",
+      "currentBodySha256": "973a45df7bd7b17c75fad87936b5ad35593d1d1fde7918003a7df938d526931f",
+      "adaptation": "none"
+    },
+    {
+      "command": "classification_save_publisher",
+      "source": "src-tauri/src/commands/classification.rs",
+      "originalBodySha256": "06711bedea48993c4a6d916b0307c81bdff1cd31eb4ece141e51320349bb5d5a",
+      "currentBodySha256": "06711bedea48993c4a6d916b0307c81bdff1cd31eb4ece141e51320349bb5d5a",
+      "adaptation": "none"
+    },
+    {
+      "command": "classification_merge_publishers",
+      "source": "src-tauri/src/commands/classification.rs",
+      "originalBodySha256": "f3c1c034c43fdeaf119dc8db1aa51e98bf97fd77b528fbf6242c7da42d85be98",
+      "currentBodySha256": "f3c1c034c43fdeaf119dc8db1aa51e98bf97fd77b528fbf6242c7da42d85be98",
+      "adaptation": "none"
+    },
+    {
+      "command": "classification_list_subjects",
+      "source": "src-tauri/src/commands/classification.rs",
+      "originalBodySha256": "baad3e55579ecd83443e34e3943d0ff7be993d7035c8501878df57fe089b31c4",
+      "currentBodySha256": "baad3e55579ecd83443e34e3943d0ff7be993d7035c8501878df57fe089b31c4",
+      "adaptation": "none"
+    },
+    {
+      "command": "classification_save_subject",
+      "source": "src-tauri/src/commands/classification.rs",
+      "originalBodySha256": "b730b96996e4ecbcb9e739c23fc68be85fcffcfa009997be8db7666c6d94c293",
+      "currentBodySha256": "b730b96996e4ecbcb9e739c23fc68be85fcffcfa009997be8db7666c6d94c293",
+      "adaptation": "none"
+    },
+    {
+      "command": "classification_merge_subjects",
+      "source": "src-tauri/src/commands/classification.rs",
+      "originalBodySha256": "451dbd7e42e3b7ed5987d13c3e81ef7f2bae5955e51d847a6e3d8f59effee134",
+      "currentBodySha256": "451dbd7e42e3b7ed5987d13c3e81ef7f2bae5955e51d847a6e3d8f59effee134",
+      "adaptation": "none"
+    },
+    {
+      "command": "classification_list_marc_mappings",
+      "source": "src-tauri/src/commands/classification.rs",
+      "originalBodySha256": "018fab2981c850e49078deacb3c0e3a28b71adfd4966e4fdb247a418a3237f9e",
+      "currentBodySha256": "018fab2981c850e49078deacb3c0e3a28b71adfd4966e4fdb247a418a3237f9e",
+      "adaptation": "none"
+    },
+    {
+      "command": "classification_save_marc_mapping",
+      "source": "src-tauri/src/commands/classification.rs",
+      "originalBodySha256": "6f6c1b903fae1e13a1badc387b0025ea8fe4dfbaaeef7b666345a6047a2b246f",
+      "currentBodySha256": "6f6c1b903fae1e13a1badc387b0025ea8fe4dfbaaeef7b666345a6047a2b246f",
+      "adaptation": "none"
+    },
+    {
+      "command": "classification_test_marc_mapping",
+      "source": "src-tauri/src/commands/classification.rs",
+      "originalBodySha256": "3d3de67eda9f3e650c7619c392521470aafdfcdd1ea9cd1098981edc1af472af",
+      "currentBodySha256": "3d3de67eda9f3e650c7619c392521470aafdfcdd1ea9cd1098981edc1af472af",
+      "adaptation": "none"
+    },
+    {
+      "command": "lan_get_config",
+      "source": "src-tauri/src/commands/lan.rs",
+      "originalBodySha256": "76a6c84712cfc7d7730a1f4904b98390befcddb91c53253b3eead35a57cb4269",
+      "currentBodySha256": "963dc1a07f7ff1c8b45f5be0a9ca4c80103999374d85c95ae8fb56e1ff25b870",
+      "adaptation": "Remove redundant borrow after State<AppState> becomes &AppState"
+    },
+    {
+      "command": "lan_update_config",
+      "source": "src-tauri/src/commands/lan.rs",
+      "originalBodySha256": "7ea21074df632c64b2af9ec03274790981766659116f449a811fa42bc2091fe3",
+      "currentBodySha256": "d26d60412825bacdf8cd7fc6d64f5d5cb9fd0783e39f5df720e528fd718ae6e3",
+      "adaptation": "Remove redundant borrow after State<AppState> becomes &AppState"
+    },
+    {
+      "command": "lan_generate_pairing_code",
+      "source": "src-tauri/src/commands/lan.rs",
+      "originalBodySha256": "2e3d976dc582e0febbba05593d96006c6b7f734c8ef53648e31bd7044b592a74",
+      "currentBodySha256": "2e3d976dc582e0febbba05593d96006c6b7f734c8ef53648e31bd7044b592a74",
+      "adaptation": "none"
+    },
+    {
+      "command": "lan_list_pairing_codes",
+      "source": "src-tauri/src/commands/lan.rs",
+      "originalBodySha256": "3128b5e00d554a5e349d85fc932ce80c0c5fa89f75d333aaf736fa4476a9ffa0",
+      "currentBodySha256": "3128b5e00d554a5e349d85fc932ce80c0c5fa89f75d333aaf736fa4476a9ffa0",
+      "adaptation": "none"
+    },
+    {
+      "command": "lan_list_paired_clients",
+      "source": "src-tauri/src/commands/lan.rs",
+      "originalBodySha256": "de080b9b9455f4ece3e5a6b46b02f037fe1e8691b89c7b6b7c6cd533a6b9fec6",
+      "currentBodySha256": "de080b9b9455f4ece3e5a6b46b02f037fe1e8691b89c7b6b7c6cd533a6b9fec6",
+      "adaptation": "none"
+    },
+    {
+      "command": "lan_revoke_client",
+      "source": "src-tauri/src/commands/lan.rs",
+      "originalBodySha256": "00bbe3eb2e3bac7d0ee1e751f82c51531fd415ea96f1baa568286a063030a944",
+      "currentBodySha256": "00bbe3eb2e3bac7d0ee1e751f82c51531fd415ea96f1baa568286a063030a944",
+      "adaptation": "none"
+    },
+    {
+      "command": "lan_pair_client",
+      "source": "src-tauri/src/commands/lan.rs",
+      "originalBodySha256": "45cd544554893435fd18d811d2b2803b3e879fa354e32ea9670584225a3c3a98",
+      "currentBodySha256": "45cd544554893435fd18d811d2b2803b3e879fa354e32ea9670584225a3c3a98",
+      "adaptation": "none"
+    },
+    {
+      "command": "lan_login",
+      "source": "src-tauri/src/commands/lan.rs",
+      "originalBodySha256": "3239fe68c9e623a551250b0d2a5a75bf290c5bb7251baa8d2016c70bd12156d4",
+      "currentBodySha256": "3239fe68c9e623a551250b0d2a5a75bf290c5bb7251baa8d2016c70bd12156d4",
+      "adaptation": "none"
+    },
+    {
+      "command": "lan_opac_search",
+      "source": "src-tauri/src/commands/lan.rs",
+      "originalBodySha256": "9c35f4fa164d1c9204d7c6e28ab9b107705fc3097580aeb545e352288e93fecb",
+      "currentBodySha256": "9c35f4fa164d1c9204d7c6e28ab9b107705fc3097580aeb545e352288e93fecb",
+      "adaptation": "none"
+    },
+    {
+      "command": "lan_opac_get_record",
+      "source": "src-tauri/src/commands/lan.rs",
+      "originalBodySha256": "6c10d4a1d40c203f17e09b50fba996fc39370ea4d203163cc992ef85051dfc20",
+      "currentBodySha256": "6c10d4a1d40c203f17e09b50fba996fc39370ea4d203163cc992ef85051dfc20",
+      "adaptation": "none"
+    }
+  ]
+}

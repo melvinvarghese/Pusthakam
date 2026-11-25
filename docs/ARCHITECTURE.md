@@ -61,3 +61,7 @@ Tauri bundler: NSIS/MSI (Windows), `.app`/DMG (macOS), AppImage/deb/rpm (Linux).
 
 ## 10. Modularity of library types
 One core. Library **profile** (school, college, …) seeds defaults (member categories, policies, fields) at setup; everything remains editable configuration. Optional modules (acquisitions, serials) are toggled by `application_settings` and hidden from navigation when off.
+
+## V3 browser/server extension — implementation in progress
+
+Target: one shared staff frontend, desktop IPC or explicitly advertised same-origin HTTP transport, common permission-checked application services and a host-owned database. Library PC is default; optional always-on host uses the same authoritative data/services. Shared data/runtime must be separate from individual session and pending-import contexts. Native save/export/backup operations need client-safe adapters. Full target/acceptance and deployment boundaries: STAFF_BROWSER_PARITY.md. Current minimal portal is not full staff parity or internet-ready.

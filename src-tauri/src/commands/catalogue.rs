@@ -10,13 +10,16 @@ use crate::services::reservations;
 use crate::state::AppState;
 use tauri::State;
 
-#[tauri::command]
+crate::shared_command! {
+
 pub fn catalogue_get_cover(state: State<'_, AppState>, id: i64) -> AppResult<Option<String>> {
     state.require("catalogue.read")?;
     state.with_conn(|conn| crate::services::book_cover::get(conn, id))
 }
+}
 
-#[tauri::command]
+crate::shared_command! {
+
 pub fn catalogue_set_cover(
     state: State<'_, AppState>,
     id: i64,
@@ -25,24 +28,30 @@ pub fn catalogue_set_cover(
     let actor = state.require("catalogue.write")?;
     crate::services::book_cover::set(&mut *state.conn()?, &actor, id, png_base64.as_deref())
 }
+}
 
-#[tauri::command]
+crate::shared_command! {
+
 pub fn catalogue_search(state: State<'_, AppState>, query: SearchQuery) -> AppResult<SearchResult> {
     state.require("catalogue.read")?;
     let mut conn = state.conn()?;
     reservations::refresh(&mut conn)?;
     catalogue::search(&conn, &query)
 }
+}
 
-#[tauri::command]
+crate::shared_command! {
+
 pub fn catalogue_get_record(state: State<'_, AppState>, id: i64) -> AppResult<RecordDetail> {
     state.require("catalogue.read")?;
     let mut conn = state.conn()?;
     reservations::refresh(&mut conn)?;
     catalogue::get_record(&conn, id)
 }
+}
 
-#[tauri::command]
+crate::shared_command! {
+
 pub fn catalogue_save_record(state: State<'_, AppState>, input: RecordInput) -> AppResult<i64> {
     let who = state.require("catalogue.write")?;
     // One transaction so the record, its people, subjects and search entry are saved together or not at all.
@@ -52,8 +61,10 @@ pub fn catalogue_save_record(state: State<'_, AppState>, input: RecordInput) -> 
     tx.commit()?;
     Ok(id)
 }
+}
 
-#[tauri::command]
+crate::shared_command! {
+
 pub fn catalogue_find_duplicates(
     state: State<'_, AppState>,
     probe: DuplicateProbe,
@@ -61,8 +72,10 @@ pub fn catalogue_find_duplicates(
     state.require("catalogue.read")?;
     state.with_conn(|c| catalogue::find_duplicates(c, &probe))
 }
+}
 
-#[tauri::command]
+crate::shared_command! {
+
 pub fn catalogue_archive_record(
     state: State<'_, AppState>,
     id: i64,
@@ -70,13 +83,16 @@ pub fn catalogue_archive_record(
 ) -> AppResult<()> {
     archive_records(state, vec![id], archived)
 }
+}
 
-#[tauri::command]
+crate::shared_command! {
+
 pub fn catalogue_archive_records(state: State<'_, AppState>, ids: Vec<i64>) -> AppResult<()> {
     archive_records(state, ids, true)
 }
+}
 
-fn archive_records(state: State<'_, AppState>, mut ids: Vec<i64>, archived: bool) -> AppResult<()> {
+fn archive_records(state: &AppState, mut ids: Vec<i64>, archived: bool) -> AppResult<()> {
     let who = state.require("catalogue.write")?;
     if ids.is_empty() || ids.len() > 100 {
         return Err(crate::error::AppError::Validation(
@@ -95,7 +111,8 @@ fn archive_records(state: State<'_, AppState>, mut ids: Vec<i64>, archived: bool
     Ok(())
 }
 
-#[tauri::command]
+crate::shared_command! {
+
 pub fn catalogue_add_copies(
     state: State<'_, AppState>,
     record_id: i64,
@@ -109,8 +126,10 @@ pub fn catalogue_add_copies(
     tx.commit()?;
     Ok(copies)
 }
+}
 
-#[tauri::command]
+crate::shared_command! {
+
 pub fn catalogue_update_copy(
     state: State<'_, AppState>,
     id: i64,
@@ -119,8 +138,10 @@ pub fn catalogue_update_copy(
     let who = state.require("catalogue.write")?;
     state.with_conn(|c| catalogue::update_copy(c, Some(&who), id, &input))
 }
+}
 
-#[tauri::command]
+crate::shared_command! {
+
 pub fn catalogue_set_copy_status(
     state: State<'_, AppState>,
     id: i64,
@@ -132,36 +153,46 @@ pub fn catalogue_set_copy_status(
     reservations::refresh(&mut conn)?;
     catalogue::set_copy_status(&conn, Some(&who), id, &status, note.as_deref())
 }
+}
 
-#[tauri::command]
+crate::shared_command! {
+
 pub fn catalogue_list_copies(state: State<'_, AppState>, query: CopyQuery) -> AppResult<CopyPage> {
     state.require("catalogue.read")?;
     let mut conn = state.conn()?;
     reservations::refresh(&mut conn)?;
     catalogue::list_copies(&conn, &query)
 }
+}
 
-#[tauri::command]
+crate::shared_command! {
+
 pub fn catalogue_export_copies(state: State<'_, AppState>, query: CopyQuery) -> AppResult<String> {
     state.require("catalogue.read")?;
     let mut conn = state.conn()?;
     reservations::refresh(&mut conn)?;
     catalogue::export_copies_csv(&conn, &query)
 }
+}
 
-#[tauri::command]
+crate::shared_command! {
+
 pub fn accession_format_get(state: State<'_, AppState>) -> AppResult<AccessionFormat> {
     state.current()?;
     state.with_conn(catalogue::accession_format)
 }
+}
 
-#[tauri::command]
+crate::shared_command! {
+
 pub fn accession_format_set(state: State<'_, AppState>, format: AccessionFormat) -> AppResult<()> {
     let who = state.require("admin.settings")?;
     state.with_conn(|c| catalogue::set_accession_format(c, Some(&who), &format))
 }
+}
 
-#[tauri::command]
+crate::shared_command! {
+
 pub fn catalogue_export_records(
     state: State<'_, AppState>,
     ids: Vec<i64>,
@@ -169,6 +200,7 @@ pub fn catalogue_export_records(
 ) -> AppResult<crate::services::catalogue_export::ExportFile> {
     state.require("catalogue.read")?;
     crate::services::catalogue_export::export(&mut *state.conn()?, &ids, &format)
+}
 }
 
 #[tauri::command]

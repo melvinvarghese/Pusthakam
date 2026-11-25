@@ -61,7 +61,7 @@ describe("LanSettingsPanel", () => {
     render(<LanSettingsPanel />);
 
     await waitFor(() => {
-      expect(screen.getByText("LAN Multi-Computer & Browser Access")).toBeInTheDocument();
+      expect(screen.getByText("Wi-Fi / LAN Browser Access")).toBeInTheDocument();
     });
 
     expect(screen.getByText("Active on port 4318")).toBeInTheDocument();
@@ -71,6 +71,27 @@ describe("LanSettingsPanel", () => {
     expect(screen.getByText("Catalog Tablet")).toBeInTheDocument();
     expect(screen.getByText("Authorized")).toBeInTheDocument();
     expect(screen.getByText("Revoked")).toBeInTheDocument();
+  });
+
+  it("shows the host OPAC address immediately after enabling Wi-Fi hosting", async () => {
+    const user = userEvent.setup();
+    vi.mocked(lanApi.getConfig).mockResolvedValue({ ...mockConfig, enabled: false, listenerRunning: false });
+    vi.mocked(lanApi.updateConfig).mockResolvedValue(mockConfig);
+    render(<LanSettingsPanel />);
+    await user.click(await screen.findByRole("button", { name: "Enable Wi-Fi / LAN Hosting" }));
+    expect(await screen.findByText("http://192.168.1.100:4318/opac")).toBeInTheDocument();
+    expect(screen.getByText("Library computer IP:")).toBeInTheDocument();
+  });
+
+  it("can change a local-only listener to the shared Wi-Fi network", async () => {
+    const user = userEvent.setup();
+    vi.mocked(lanApi.getConfig).mockResolvedValue({ ...mockConfig, bindAddress: "127.0.0.1" });
+    vi.mocked(lanApi.updateConfig).mockResolvedValue(mockConfig);
+    render(<LanSettingsPanel />);
+    await user.selectOptions(await screen.findByLabelText("Network access"), "0.0.0.0");
+    await user.click(screen.getByRole("button", { name: "Save Server Settings" }));
+    expect(lanApi.updateConfig).toHaveBeenCalledWith(expect.objectContaining({ bindAddress: "0.0.0.0", enabled: true }));
+    expect(await screen.findByText("http://192.168.1.100:4318/opac")).toBeInTheDocument();
   });
 
   it("generates and displays a pairing code", async () => {
