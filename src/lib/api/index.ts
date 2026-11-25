@@ -5,6 +5,7 @@
 import { invoke } from "@tauri-apps/api/core";
 import { openUrl } from "@tauri-apps/plugin-opener";
 import { previewMode } from "@/lib/preview";
+import { staffHttpCommand, staffHttpConfig } from "./staffHttp";
 import type { HistoryBatchSummary, HistorySummary, HistoryPreview, RenewalImportPreview, LoanImportPreview, MemberFineAccount, LibraryCalendar, Holiday,
   CatalogueExportFormat, CatalogueExportFile, AccessionFormat, AppErrorPayload, AppInfo, ArchiveKind, CirculationDay, ConfigOverview, CopyBatchInput, CopyPage, CopyQuery,
   CopyRecord, CopyStatus, CopyUpdateInput, DashboardOverview, DuplicateHit, DuplicateProbe, FineAmount, FineHistoryPage, FinePage, FineSettlement, ImportOptions, ImportPreview,
@@ -64,6 +65,11 @@ async function call<T>(command: string, args?: Record<string, unknown>): Promise
     }
   }
   if (!isDesktop()) {
+    const web = staffHttpConfig();
+    if (web) {
+      try { return await staffHttpCommand<T>(web, command, args); }
+      catch (error) { throw toApiError(error); }
+    }
     throw new ApiError({
       code: "NOT_DESKTOP",
       message: "This feature needs the Pusthakam desktop app. It is not available in a plain browser.",

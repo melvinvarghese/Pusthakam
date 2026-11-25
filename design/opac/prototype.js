@@ -797,6 +797,15 @@ function updateResultsOnly() {
     bodyWrap.innerHTML = renderSovereignFolioCards(filtered);
   }
 
+  // Live search replaces the empty state, so its reset action needs a listener too.
+  document.querySelector("#reset-filters")?.addEventListener("click", () => {
+    searchQuery = "";
+    activeSubject = "All";
+    availableOnly = false;
+    render();
+    document.querySelector("#search-input")?.focus();
+  });
+
   // Re-attach card clicks
   document.querySelectorAll("[data-id]").forEach(card => {
     const id = Number(card.dataset.id);

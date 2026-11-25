@@ -64,3 +64,7 @@ Owner requests about 100 genuine, source-verified quotations about books/reading
 ## Startup presentation polish - 23 November 2026
 
 The splash uses the approved large book/P mark, a stronger title and larger balanced quotation with author/speaker credit. Plain loading text and a quiet progress line replace technical stage messages. A gentle entrance and sign-in/setup reveal respect reduced motion and add no startup hold. Existing 3000 ms minimum, pending-query hold and error handling remain authoritative. Verification and current native build are recorded in the latest handoff.
+
+## V3 scope expansion — local and internet browser access (25 November 2026)
+
+Owner requires OPAC and the full staff application through browser addresses on the local network and over the internet. Library-PC hosting is default; always-on server hosting is also required. Browser staff must have every desktop workflow permitted by their role, including file/print/backup equivalents. Use one authoritative library database per deployment; no automatic two-way database synchronization implied. Scope and acceptance: STAFF_BROWSER_PARITY.md. This is expanded v3 work, not completion of the existing v1 score.

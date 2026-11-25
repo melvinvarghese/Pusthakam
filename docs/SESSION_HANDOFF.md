@@ -2,6 +2,70 @@
 
 Repository files are the shared development memory. Chat history and machine-local temporary builds are not authoritative state.
 
+## Current: v3 full staff browser/local-internet access (25 November 2026)
+
+2026-11-25T04:41:41.071Z
+
+Owner confirmed both same-network and internet access, and /staff must provide every desktop app feature, subject to user permissions. Treat this as an explicit v3 scope expansion; existing v1 totals are not browser-parity completion. Audit found 164 registered desktop commands versus legacy staff sign-in/issue/return endpoints. Browser needs independent sessions, per-session import previews, full shared React UI/transport, server permission enforcement, and browser equivalents for native save/export/backup operations. Internet deployment choice (library PC or always-on hosted server) was asked asynchronously; no infrastructure selection, domain, server deployment, DNS/router/firewall changes or account connection is assumed. Immediate work: concrete command parity inventory and guarded same-origin browser transport foundation, retaining current desktop and legacy portal until backend parity is verified. Next dependent work: server/session refactor, typed allowlisted HTTP dispatch, browser file adapters, feature-by-feature parity and HTTPS deployment based on owner hosting answer. Not implemented or ready for internet exposure.
+
+V1 weighted totals remain 96.7/100/97/76; these do not score the expanded v3 requirement.
+
+## Current: OPAC/staff web-address scope clarification (25 November 2026)
+
+2026-11-25T03:20:56.350Z
+
+Owner requests web-address access for both OPAC and staff portal, comparable to their Koha workflow. Source audit confirms existing local HTTP /opac and /staff routes. OPAC is a public catalogue; the staff browser portal currently covers pairing/sign-in and issue/return, not the complete desktop staff workspace. Asked whether desired addresses are same-Wi-Fi/network only or also reachable over the internet; answer pending. Do not treat local IP access as public internet hosting, or the limited circulation portal as full browser parity. Next exact step: apply owner network-scope answer, then define address/hosting and full staff browser requirements against existing services; internet access requires an appropriate HTTPS deployment/authentication design before exposure. No DNS, router, firewall, server deployment or application change in this clarification turn. Preserve final standalone installer and cover work; cross-device acceptance remains open. No new task weights or product verification credit.
+
+Totals unchanged: 96.7% overall, 100% implementation, 97% verification, 76% release readiness.
+
+## Current: final standalone Wi-Fi/cover installer ready (25 November 2026)
+
+Final records check 2026-11-25T03:08:26.854Z: both progress validation modes and whitespace checks passed. Installer digest and pending owner checks agree.
+
+Updated 2026-11-25T03:08:03.631Z.
+
+Completed standalone Windows delivery, explicit same-Wi-Fi host addresses and desktop/OPAC ISBN covers. Diagnosis: prior plain cargo debug binary used Tauri devUrl 127.0.0.1:1420. New build:standalone-debug and build:windows commands use Tauri CLI frontend embedding; final standalone debug build passed (56.16s) and final release NSIS build passed (4m36s). Installer src-tauri/target/release/bundle/nsis/Pusthakam_0.1.0_x64-setup.exe: 4594047 bytes, SHA-256 EEAC317C9DE465D5E229CE880466B13E020F2A9568BAC7EE8AE6F469F79AB87F. Final debug executable 26966016 bytes and release executable 16946688 bytes; latest desktop assets and OPAC code included. Settings now show active host IP/full OPAC URL for other devices, copy/refresh controls, separate local-only addresses and a Network access selector; Windows enumerates all active IPv4 adapters without an internet requirement. Desktop catalogue results now show automatic cover thumbnails; details expose missing-cover/error/retry and direct ISBN image fallback. OPAC uses stored active-record PNG covers first, then optional Open Library ISBN images with a neutral unavailable/offline placeholder. Saved images remain usable without internet; public requests never write covers. Tests: 44 focused frontend across 5 files, 2 native adapter tests and 7 LAN/cover service tests passed. Production browser 20 checks passed, zero page exceptions; 3 expected provider image attempts were blocked, not actual live-provider acceptance. ESLint, TypeScript, JS syntax, Rust formatting and production frontend builds passed (existing chunk warning). Initial cover harness syntax and hidden/lazy-image defects corrected before passing. No user DB/settings/firewall changes, installer installation, interactive owner-data launch, commit or push. Next exact step: quit existing Pusthakam via tray, install/update from final NSIS, launch and verify desktop covers; enable Wi-Fi / LAN hosting with Same Wi-Fi or wired network, copy the displayed shared OPAC URL to another same-network device, then verify OPAC covers. KI-024 remote-device refusal remains open pending that walkthrough; no claim of being better than Koha or new product credit.
+
+Totals unchanged: 96.7% overall; 100% implementation; 97% verification; 76% release readiness. Current phase 7b, with catalogue cover refinement; no new weights. Earlier development-binary guidance and partial build checkpoints below are superseded.
+
+## Current: standalone delivery and Wi-Fi access addresses (25 November 2026)
+
+2026-11-25T02:42:10.543Z
+
+Owner reports debug executable shows 127.0.0.1 connection refused and same-network clients fail. Confirmed previous cargo build produced development-mode desktop configured for devUrl http://127.0.0.1:1420, not a standalone distribution. Correct by building with Tauri CLI production embedding/installer. Owner explicitly requires host IP/full OPAC URL when hosting is enabled. Implement separate this-computer and other-devices-on-same-Wi-Fi addresses; exclude loopback from shared URLs and respect bind address. Same Wi-Fi is supported by existing TCP listener, not limited to Ethernet. Current listener/process check found no Pusthakam listener on 1420 or 4318; this does not diagnose remote firewall. No user database/settings or firewall changes authorized by this investigation; preserve existing work. Next: address UI tests and standalone packaging, then host/remote walkthrough.
+
+## Current: Swiss Stacks OPAC implemented and built (25 November 2026)
+
+Final documentation check 2026-11-25T02:00:27.657Z: both progress validation modes and git diff --check passed; totals unchanged.
+
+Updated 2026-11-25T02:00:08.435Z.
+
+Swiss Stacks is implemented in the real embedded public OPAC at / and /opac: configured library masthead, horizontal numeric-classification navigation, availability filtering before pagination, compact holdings, safe text rendering, keyboard details/focus restoration, error/retry and stale-response protection. Uses existing public DTO only; fonts/logo embedded, no demonstration data in production. Public search reuses catalogue FTS tokenization and passes a Malayalam-title regression. Prototype mobile intrinsic-width clipping, live-search reset and small-screen alternative search layouts are fixed; review harness now targets current views. Verification: 15 prototype layout checks plus 21 interactions, 17 production checks including six widths, zero page exceptions/external page requests; screenshots visually reviewed. Seven final LAN service tests passed (2.74s); page-embedding regression passed in earlier service run. Initial broad service run 116/117 corrected by fixture indexing; initial IPC 34/35 corrected obsolete title assertion, then strengthened listener/filter HTTP IPC passed (0.46s). ESLint, TypeScript/Vite production build, Rust format check and JS syntax check passed. Final offline native Windows debug build passed (34.17s); src-tauri/target/debug/pusthakam.exe is refreshed but not interactively launched. Installer unchanged, no commit/push. Totals unchanged. Next exact step: owner opens refreshed debug executable and checks OPAC with real holdings on host, then another same-network device; remote-device ERR_CONNECTION_REFUSED remains unresolved and no network/firewall changes were made. macOS/Linux release smoke tests remain open.
+
+Overall 96.7%; implementation 100%; verification 97%; release readiness 76%. Current phase 7b (LAN/OPAC refinement), roadmap task LAN-CLIENT; no new task weights or release credit. Earlier checkpoints below are historical.
+
+## Current: Swiss Stacks implementation resumed (25 November 2026)
+
+2026-11-25T01:43:29.269Z
+
+Owner explicitly resumed development and authorized Swiss Stacks mobile fixes, current browser checks and integration with the real public catalogue. Audited embedded Rust OPAC route and public DTO: available fields are title/subtitle/authors/publisher/year/ISBN/classification/subjects/copy counts/locations, with no covers or precise shelf coordinates. Preserve this privacy boundary. Implement public masthead, classification navigation, accessible compact holdings, real pagination, safe text rendering and truthful loading/error/empty states. Investigating intrinsic flex/grid sizing as the mobile clipping mechanism. Python Playwright is unavailable; use isolated Edge CDP for actual browser checks. In progress; no new verification credit. Cross-device LAN acceptance remains separate.
+
+## Current: Swiss Stacks selected for OPAC (25 November 2026)
+
+Updated 2026-11-25T01:40:45.808Z.
+
+Owner selected The Swiss Stacks as the OPAC design direction on 25 November 2026. This supersedes earlier awaiting-selection notes; Reading Room and Sovereign Folio remain alternatives only. Preserve the public masthead, horizontal classification navigation and compact holdings presentation. Next exact implementation step when development resumes: repair narrow-screen clipping, update review.mjs for current views/selectors and verify mobile/desktop interactions before integrating with real public catalogue data. Selection does not establish runtime acceptance or resolve remote-device LAN. This update records the decision only; application code unchanged and no new product credit.
+
+Totals unchanged: 96.7% overall, 100% implementation, 97% verification, 76% release readiness. Earlier selection-pending entries below are historical.
+
+## Current: owner changes reviewed (25 November 2026)
+
+Updated 2026-11-25T01:34:20.352Z.
+
+Reviewed owner commit d891ea2 (swiss stack opac) against its parent, current prototype source, screenshots and handoff. Three new directions replace the old prototypes: Reading Room, Swiss Stacks and Sovereign Folio. Swiss Stacks now has a public masthead, horizontal classification chips and responsive bibliographic cards; demonstration holdings include native titles, ISBN, classification and shelf details. Saved Swiss mobile screenshot visibly clips content at the right edge; current responsive acceptance needs a fresh browser check. README, OPAC design notes and review.mjs still reference old shelf/index/table views and old selectors; earlier automated browser evidence must not be treated as validation of these new views. Existing documentation reports 229 tests, lint and typecheck passing in the previous session; these were not rerun during this source review. Production OPAC and LAN unchanged. Next exact step after owner resumes: reconcile prototype documentation/harness and verify Swiss Stacks at narrow widths before production integration; final design selection remains pending. No application code changed in this review.
+
+Product totals unchanged: 96.7% overall, 100% implementation, 97% verification, 76% release readiness.
+
 ## Current: OPAC redesign study — Swiss Stacks refined & paused for owner review (24 November 2026)
 
 Updated 2026-11-24T15:16:56.026Z.
@@ -330,3 +394,55 @@ Owner clarified that no logo had been supplied/designed by them. Develop a new s
 ## Logo concept / splash wording checkpoint
 
 Created and refined a book/P logo concept for owner review using relevant design guidance; concept is not adopted as final branding. Replaced the splash architecture/offline badge with More time for books and readers., retaining the main tagline and startup timing. All 4 splash tests, typecheck and lint passed. No production icon replacement or fresh native build; unrelated manual edits preserved. Design direction and next steps: docs/LOGO_DESIGN_DIRECTION.md. Next: owner review of the book/P direction, final asset refinement and integration only when the direction is accepted. Keep source BrandMark and installation icons unchanged for now; only the closing line is changed in application code. No weighted product completion credit.
+
+### Swiss Stacks implementation checkpoint 2026-11-25T01:47:00.571Z
+
+Partial implementation: embedded Swiss Stacks HTML/CSS/JS now renders public DTO fields with textContent, accessible book dialogs, server pagination, error/retry and classification/availability controls. Rust search applies classification/availability before pagination; existing unfiltered command remains compatible. Fonts and branding are embedded locally. Prototype intrinsic flex/grid width constraints added; browser reproduction/verification and regression checks are still pending. First LAN regression compilation is running. No completion credit yet.
+
+### Swiss Stacks checks 2026-11-25T01:54:31.251Z
+
+Verification checkpoint: initial Rust service suite 116/117; corrected missing fixture indexing then all 7 LAN tests passed. Browser startup configuration corrected; checks exposed prototype live-search reset handler and obsolete record selector, both corrected. Production layout widths 1366/1024/768/640/390/320 and text-injection check passed before keyboard harness correction. Full browser and IPC runs pending; native rebuild not yet run.
+
+### Swiss Stacks browser verification checkpoint 2026-11-25T01:57:35.757Z
+
+Swiss Stacks implemented in embedded OPAC with real public DTO data, server-side classification/available filters and pagination, safe text rendering, details dialogs, loading/error/retry and late-response protection. All 15 prototype layout checks and 21 interactions passed; production 17 checks passed (six widths, security/keyboard/focus, filtering/pagination, error/retry and stale responses), no page exceptions or external requests. Saved prototype and production screenshots visually reviewed. Seven LAN service tests passed after correcting fixture indexing; new page-embedding test passed in the earlier service run. Initial IPC run 34/35; old title capitalization assertion updated and strengthened with embedded assets/API markers and HTTP filter validation; corrected listener IPC test passed. ESLint passed after moving profile-path validation out of finally; TypeScript/Vite build passed with existing chunk-size warning. Native offline rebuild running; no installer rebuild or remote-device acceptance yet.
+
+### Malayalam search compatibility 2026-11-25T01:59:00.349Z
+
+Final source review found the old public search sanitizer discarded Malayalam combining vowel marks. Public OPAC now reuses catalogue::fts_expression instead of maintaining a separate tokenizer; added a native Malayalam-title regression with classification filtering. Final seven-test LAN rerun and refreshed offline native build are running. Browser/layout code is unchanged from passing checks.
+
+### Wi-Fi host address checkpoint 2026-11-25T02:45:51.034Z
+
+Implemented explicit Wi-Fi/shared host IP and complete OPAC URL display, per-address copy buttons, local-only separation, refresh addresses and actionable warning for loopback-only binding. Added Network access selection so owner can switch from local-only to same Wi-Fi/wired hosting. Frontend focused tests 11/11 and TypeScript passed. Added Windows GetAdaptersAddresses discovery for active IPv4 adapters instead of relying only on a default route; no outbound packets or firewall changes. Native adapter regressions compiling; standalone Tauri CLI packaging next. Ordinary cargo debug executable is not a distributable standalone build.
+
+### ISBN cover requirement 2026-11-25T02:49:21.317Z
+
+Owner reiterated automatic ISBN cover requirement while Wi-Fi/packaging work is ongoing. Existing desktop detail page already automatically fetches Open Library covers by ISBN and persists them for editable records. New public OPAC had omitted covers. Adding local saved-cover endpoint gated by enabled OPAC and active record, then automatic Open Library ISBN fallback for missing stored covers, in holdings and details; no cover/invalid ISBN/offline uses a neutral placeholder. This preserves local images without internet and uses only the public ISBN for optional external lookup. Native/HTTP/browser cover tests and final refreshed standalone builds pending; retain Wi-Fi host-address objective.
+
+### Desktop/OPAC cover checkpoint 2026-11-25T02:55:52.907Z
+
+Owner clarified covers are also missing in the desktop app and wants quality strong enough to choose Pusthakam over Koha. Concrete desktop gap: catalogue list had no cover component; only record detail fetched covers and lookup errors were suppressed. Added compact automatic cover display in desktop results, visible detail fallback/errors/retry, and direct ISBN image fallback if download/conversion fails (narrow Open Library img CSP allowance). OPAC saved-cover endpoint gates on enabled OPAC and active record; client tries saved PNG then ISBN Open Library image. Frontend cover tests and native cover HTTP/privacy tests running. Initial cover browser harness had a quoting syntax error; fixed. First real cover check exposed hidden+lazy images never loading; changed initial hidden state to opacity while retaining layout and rerunning. Browser fixtures block optional provider requests and do not prove real provider availability. Standalone debug packaging passed before these later cover edits; release build is running, and final rebuild must include the latest desktop assets and cover changes. No installer installation, user DB edits, commit/push or firewall change.
+
+### Wi-Fi/covers verification 2026-11-25T02:58:32.316Z
+
+Verification checkpoint: 44 focused frontend tests across 5 files passed (93.46s), including saved/automatic/read-only/compact covers, retry and same-Wi-Fi host-IP display and enable/bind workflows. ESLint and TypeScript passed. Windows native adapter tests 2/2 passed. LAN services 7/7 passed (13.05s), including real public PNG HTTP response and saved/archived/missing/disabled cover access. Production browser review passed 20 checks with zero page exceptions; optional Open Library requests were blocked deterministically (3 attempts), verifying fallback/offline behavior rather than actual provider availability. Standalone debug Tauri CLI build passed before final cover changes; release package still compiling. Final standalone rebuild must use current frontend and latest embedded cover code. Owner quality bar: Pusthakam must offer librarians a practical reason to prefer it over Koha; this is a quality goal, not evidence of feature superiority or a new product weight.
+
+### Standalone packaging checkpoint 2026-11-25T03:00:07.798Z
+
+First Tauri standalone debug build succeeded (1m47s) and release NSIS package succeeded (8m43s), confirming production frontend embedding. Desktop cover changes landed while that build was running, so a final Tauri standalone debug plus Windows NSIS rebuild is now running from the complete current source/frontend; do not use first-package timestamps as final cover-delivery evidence. All 44 focused frontend, 2 adapter and 7 LAN/cover tests passed; lint/TypeScript and production OPAC 20-check browser review passed. No owner-data launch or installer installation performed.
+
+### Hosting choice and frontend foundation 2026-11-25T04:49:35.095Z
+
+Owner selected both deployment options: library PC is default, with optional always-on hosted server. Both local/network and internet addresses are required for OPAC and full role-permitted staff functionality. Concrete audit now inventories all 164 registered commands across 16 modules in docs/STAFF_BROWSER_COMMAND_INVENTORY.json. docs/STAFF_BROWSER_PARITY.md defines host authority, feature matrix, browser file equivalents, migration and acceptance. Guarded same-origin HTTP client foundation integrated into the shared typed frontend API, activated only by explicit server metadata; current backend does not emit it, so no incomplete web app is exposed. Ten API/transport tests, inventory generation/check, TypeScript and ESLint passed. Starting request/session ownership separation; full staff backend, headless hosting, HTTPS deployment and end-to-end parity remain unimplemented. Existing v1 scores unchanged and not a measure of v3 parity.
+
+### Session ownership checkpoint 2026-11-25T04:51:38.038Z
+
+Desktop behavior baseline passed: all 35 real IPC tests green (13.44s) before ownership edits. Implemented shared Arc ownership for library DB, listener runtime and log guard, with independent login and pending-import slots through AppState::independent_session. Added tests for viewer vs librarian permissions, one-browser logout without signing out host/other browser, separate import previews, and revocation recheck. Updated desktop and test construction only; original command bodies/contracts remain unchanged. State, full IPC and security reruns are running; no HTTP session manager or full browser backend exposed yet. Both hosting modes confirmed; library PC default.
+
+### Shared-handler extraction checkpoint 2026-11-25T05:04:30.091Z
+
+Shared-handler extraction now covers 162 of 164 registered desktop commands; the two native-window save handlers remain explicit browser-adapter work. Shared ownership state tests 2/2 passed; desktop IPC 35/35 and security 7/7 passed after state extraction, then 35/35 IPC and 7/7 security passed after shared handler extraction. First shared-context test run 2/3: test fixture used librarian for admin.settings, so permission denial was correct; fixture changed to administrator, all 3 pass. Source preservation initially verified all 164 bodies exactly against d891ea2; Clippy then identified two newly redundant &state borrows and an attribute-forwarding gap. Fixed borrows and forwarded existing function attributes to shared execute; audit now requires 162 exact bodies and two explicit reference-only adaptations. Command extraction count guard first found 161 because reports_export_file has an intervening allow attribute; that handler was then extracted too. No permission check or original service body logic removed. Final Clippy/inventory checks pending. Full browser routes, browser-native adapters, headless runtime and HTTPS deployment remain unimplemented; current opt-in metadata is not emitted.
+
+### Authenticated gateway handoff 2026-11-25T05:11:23.041Z
+
+Shared-handler foundation proof complete: 162 common typed handlers, 164 registered commands audited (162 exact bodies, 2 reference-only adaptations). Final shared handler tests 3/3 and targeted live listener IPC passed after Clippy fixes; full 35 IPC/7 security passed after extraction. Frontend production build passed. Continuing authenticated web gateway: per-session login/import slots now use independent Arc<Mutex> handles, so an HTTP session store can retain only those handles and weak listener ownership rather than creating a runtime reference cycle. This latest handle adjustment is not yet reverified. Next exact step: bounded HTTP parser, explicit authenticated dispatch, embedded /staff assets, browser backup/export adapters and headless host; then full parity verification. Do not emit server web-mode metadata until these are implemented. Internet DNS/HTTPS ingress remains operator configuration, no external changes made.

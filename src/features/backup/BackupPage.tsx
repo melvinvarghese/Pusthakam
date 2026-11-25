@@ -7,10 +7,12 @@ import { Modal } from "@/components/ui/Modal";
 import { Panel } from "@/components/ui/Panel";
 import { backupApi, toApiError } from "@/lib/api";
 import { can, useSession } from "@/lib/session";
+import { staffHttpConfig } from "@/lib/api/staffHttp";
 
 export function BackupPage() {
   const { session } = useSession();
   const allowed = can(session, "admin.backup");
+  const browserStaff = staffHttpConfig() !== null;
   const client = useQueryClient();
   const [restoreTarget, setRestoreTarget] = useState<string | null>(null);
   const [copyTarget, setCopyTarget] = useState<string | null>(null);
@@ -83,8 +85,8 @@ export function BackupPage() {
                     <Button size="sm" disabled={verify.isPending} onClick={() => verify.mutate(file.name)} aria-label={`Verify ${file.name}`}>
                       {verify.isPending && verify.variables === file.name ? "Checking…" : "Verify"}
                     </Button>
-                    <Button size="sm" onClick={() => { copy.reset(); setCopyTarget(file.name); }}
-                      aria-label={`Copy ${file.name} to folder`}>Copy to folder</Button>
+                    {browserStaff ? <a className="inline-flex min-h-9 items-center rounded border border-line px-3" href={`/api/staff/backups/${encodeURIComponent(file.name)}`} download={file.name} target="_blank" rel="noopener noreferrer">Download backup</a> :
+                      <Button size="sm" onClick={() => { copy.reset(); setCopyTarget(file.name); }} aria-label={`Copy ${file.name} to folder`}>Copy to folder</Button>}
                     <Button size="sm" disabled={list.data.pendingRestore !== null} aria-label={`Restore ${file.name}`}
                       onClick={() => { restore.reset(); setRestoreTarget(file.name); }}>Restore…</Button>
                   </div>

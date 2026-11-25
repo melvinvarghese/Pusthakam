@@ -13,4 +13,5 @@ pub mod lan;
 pub mod members;
 pub mod reports;
 pub mod serials;
+mod shared;
 pub mod staff;

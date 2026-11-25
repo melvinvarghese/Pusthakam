@@ -8,15 +8,18 @@ use crate::services::reservations::{self, ReservationPage};
 use crate::state::AppState;
 use tauri::State;
 
-#[tauri::command]
+crate::shared_command! {
+
 pub fn circulation_history_imports(
     state: State<'_, AppState>,
 ) -> AppResult<Vec<crate::services::history_import::BatchSummary>> {
     state.require("admin.settings")?;
     state.with_conn(crate::services::history_import::recent)
 }
+}
 
-#[tauri::command]
+crate::shared_command! {
+
 pub fn circulation_preview_history(
     state: State<'_, AppState>,
     data_base64: String,
@@ -24,7 +27,9 @@ pub fn circulation_preview_history(
     state.require("admin.settings")?;
     state.with_conn(|conn| crate::services::history_import::preview(conn, &data_base64))
 }
-#[tauri::command]
+}
+crate::shared_command! {
+
 pub fn circulation_commit_history(
     state: State<'_, AppState>,
     data_base64: String,
@@ -38,8 +43,10 @@ pub fn circulation_commit_history(
         &expected_fingerprint,
     )
 }
+}
 
-#[tauri::command]
+crate::shared_command! {
+
 pub fn circulation_preview_renewal_import(
     state: State<'_, AppState>,
     data_base64: String,
@@ -50,8 +57,10 @@ pub fn circulation_preview_renewal_import(
         crate::services::renewal_import::preview(conn, &data_base64, &source_system)
     })
 }
+}
 
-#[tauri::command]
+crate::shared_command! {
+
 pub fn circulation_commit_renewal_import(
     state: State<'_, AppState>,
     data_base64: String,
@@ -67,8 +76,10 @@ pub fn circulation_commit_renewal_import(
         &expected_fingerprint,
     )
 }
+}
 
-#[tauri::command]
+crate::shared_command! {
+
 pub fn circulation_preview_import(
     state: State<'_, AppState>,
     data_base64: String,
@@ -76,8 +87,10 @@ pub fn circulation_preview_import(
     state.require("admin.settings")?;
     state.with_conn(|conn| crate::services::loan_import::preview_base64(conn, &data_base64))
 }
+}
 
-#[tauri::command]
+crate::shared_command! {
+
 pub fn circulation_commit_import(
     state: State<'_, AppState>,
     data_base64: String,
@@ -95,14 +108,18 @@ pub fn circulation_commit_import(
         use_current_terms,
     )
 }
+}
 
-#[tauri::command]
+crate::shared_command! {
+
 pub fn circulation_list_overdue(state: State<'_, AppState>, page: i64) -> AppResult<OverduePage> {
     state.require("circulation.issue")?;
     state.with_conn(|conn| circulation::list_overdue(conn, page))
 }
+}
 
-#[tauri::command]
+crate::shared_command! {
+
 pub fn circulation_prepare_issue(
     state: State<'_, AppState>,
     member_number: String,
@@ -111,8 +128,10 @@ pub fn circulation_prepare_issue(
     state.require("circulation.issue")?;
     circulation::prepare_issue(&mut *state.conn()?, &member_number, &barcode)
 }
+}
 
-#[tauri::command]
+crate::shared_command! {
+
 pub fn circulation_prepare_return(
     state: State<'_, AppState>,
     barcode: String,
@@ -120,8 +139,10 @@ pub fn circulation_prepare_return(
     state.require("circulation.issue")?;
     state.with_conn(|conn| circulation::prepare_return(conn, &barcode))
 }
+}
 
-#[tauri::command]
+crate::shared_command! {
+
 pub fn circulation_issue(
     state: State<'_, AppState>,
     member_number: String,
@@ -139,8 +160,10 @@ pub fn circulation_issue(
         (member_id, item_id, &due_on),
     )
 }
+}
 
-#[tauri::command]
+crate::shared_command! {
+
 pub fn circulation_return(
     state: State<'_, AppState>,
     loan_id: i64,
@@ -154,8 +177,10 @@ pub fn circulation_return(
         condition.unwrap_or_default(),
     )
 }
+}
 
-#[tauri::command]
+crate::shared_command! {
+
 pub fn circulation_prepare_renewal(
     state: State<'_, AppState>,
     barcode: String,
@@ -163,8 +188,10 @@ pub fn circulation_prepare_renewal(
     state.require("circulation.issue")?;
     state.with_conn(|conn| circulation::prepare_renewal(conn, &barcode))
 }
+}
 
-#[tauri::command]
+crate::shared_command! {
+
 pub fn circulation_renew(
     state: State<'_, AppState>,
     confirmation: RenewalConfirmation,
@@ -172,8 +199,10 @@ pub fn circulation_renew(
     let actor = state.require("circulation.issue")?;
     circulation::renew(&mut *state.conn()?, &actor, &confirmation)
 }
+}
 
-#[tauri::command]
+crate::shared_command! {
+
 pub fn circulation_list_reservations(
     state: State<'_, AppState>,
     page: i64,
@@ -181,8 +210,10 @@ pub fn circulation_list_reservations(
     state.require("circulation.issue")?;
     reservations::list(&mut *state.conn()?, page)
 }
+}
 
-#[tauri::command]
+crate::shared_command! {
+
 pub fn circulation_place_reservation(
     state: State<'_, AppState>,
     member_number: String,
@@ -191,14 +222,18 @@ pub fn circulation_place_reservation(
     let actor = state.require("circulation.issue")?;
     reservations::place(&mut *state.conn()?, &actor, &member_number, &barcode)
 }
+}
 
-#[tauri::command]
+crate::shared_command! {
+
 pub fn circulation_cancel_reservation(state: State<'_, AppState>, id: i64) -> AppResult<()> {
     let actor = state.require("circulation.issue")?;
     reservations::cancel(&mut *state.conn()?, &actor, id)
 }
+}
 
-#[tauri::command]
+crate::shared_command! {
+
 pub fn circulation_list_fines(
     state: State<'_, AppState>,
     page: i64,
@@ -207,8 +242,10 @@ pub fn circulation_list_fines(
     state.require("circulation.issue")?;
     state.with_conn(|conn| fines::list(conn, page, include_settled))
 }
+}
 
-#[tauri::command]
+crate::shared_command! {
+
 pub fn circulation_settle_fine(
     state: State<'_, AppState>,
     fine_id: i64,
@@ -226,8 +263,10 @@ pub fn circulation_settle_fine(
         entry,
     )
 }
+}
 
-#[tauri::command]
+crate::shared_command! {
+
 pub fn circulation_fine_history(
     state: State<'_, AppState>,
     fine_id: i64,
@@ -236,8 +275,10 @@ pub fn circulation_fine_history(
     let actor = state.require("circulation.issue")?;
     state.with_conn(|conn| fines::history(conn, fine_id, page, actor.can("circulation.manage")))
 }
+}
 
-#[tauri::command]
+crate::shared_command! {
+
 pub fn circulation_list_open_loans(
     state: State<'_, AppState>,
     search: String,
@@ -245,4 +286,5 @@ pub fn circulation_list_open_loans(
 ) -> AppResult<circulation::OpenLoanPage> {
     state.require("circulation.issue")?;
     state.with_conn(|conn| circulation::list_open_loans(conn, &search, page))
+}
 }

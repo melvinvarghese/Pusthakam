@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { SavedSearches } from "./SavedSearches";
+import { BookCover } from "./BookCover";
 import { Link, useNavigate } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { CallNumberLabel } from "@/components/CallNumberLabel";
@@ -189,9 +190,14 @@ export function CataloguePage() {
                         }} />
                     </td>}
                     <td className="border-b border-line px-4 py-2.5">
+                      <div className="flex items-start gap-3">
+                      <BookCover key={`${r.id}:${r.isbn13}`} id={r.id} title={r.title} isbn={r.isbn13} editable={canWrite && !r.archived} compact />
+                      <div className="min-w-0">
                       <Link to={`/catalogue/${r.id}`} className="font-semibold hover:underline">{r.title}</Link>
                       {r.subtitle && <span className="text-muted">: {r.subtitle}</span>}
                       <span className="block text-xs text-muted">{r.authors || "No author"}{r.isbn13 ? ` · ISBN ${r.isbn13}` : ""}</span>
+                      </div>
+                      </div>
                     </td>
                     <td className="border-b border-line px-4 py-2.5">
                       {r.publisher ?? <span className="text-muted">Not set</span>}

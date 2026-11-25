@@ -7,6 +7,8 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
+    "build:windows": "tauri build --bundles nsis",
+    "build:standalone-debug": "tauri build --debug --no-bundle",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",

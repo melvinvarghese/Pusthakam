@@ -16,8 +16,9 @@ pub struct AppInfo {
     pub database_path: String,
 }
 
+crate::shared_command! {
 /// Safe to call before sign-in: contains no library data.
-#[tauri::command]
+
 pub fn app_info(state: State<'_, AppState>) -> AppResult<AppInfo> {
     let conn = state.conn()?;
     let schema_version: i64 = conn.query_row(
@@ -33,24 +34,31 @@ pub fn app_info(state: State<'_, AppState>) -> AppResult<AppInfo> {
         database_path: state.paths.database.display().to_string(),
     })
 }
+}
 
-#[tauri::command]
+crate::shared_command! {
+
 pub fn dashboard_overview(state: State<'_, AppState>) -> AppResult<dashboard::Overview> {
     let session = state.current()?;
     dashboard::overview(&mut *state.conn()?, &session)
 }
+}
 
-#[tauri::command]
+crate::shared_command! {
+
 pub fn get_setting(state: State<'_, AppState>, key: String) -> AppResult<Option<String>> {
     state.current()?;
     state.with_conn(|c| settings::get(c, &key))
 }
+}
 
-#[tauri::command]
+crate::shared_command! {
+
 pub fn set_setting(state: State<'_, AppState>, key: String, value: String) -> AppResult<()> {
     state.require("admin.settings")?;
     if key == backup::DAILY_SETTING {
         state.require("admin.backup")?;
     }
     state.with_conn(|c| settings::set(c, &key, &value))
+}
 }

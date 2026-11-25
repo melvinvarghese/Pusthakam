@@ -41,3 +41,7 @@ None so far.
 ## LAN browser and OPAC extension, 2026-11-18
 
 Owner requested phone/computer browser access for staff and anonymous OPAC for people on the same reachable local network. Extend Phase 7b: one host database, browser staff sessions with server permissions, separate read-only public catalogue contract, locally served assets, host enable controls and certificate trust guidance. Desktop Tauri invoke and single in-memory session are not a browser API. No cloud dependency or public-internet hosting implied. Implementation remains not started.
+
+## V3 hosting and staff browser parity — owner decision, 25 November 2026
+
+Support both local network and internet access for OPAC and the full role-permitted staff app. Default host is the library PC; optionally deploy the same application services on an always-on host. Reuse the staff frontend and typed contracts with independent browser sessions. One authoritative database; explicit verified backup/restore migration when changing host. This supersedes earlier statements that public-internet access is outside all planned scope, while preserving optional/offline PC operation and v1 accounting. No deployment or public domain has been configured.

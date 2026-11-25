@@ -37,11 +37,11 @@ impl Harness {
             .invoke_handler(pusthakam_lib::app_handlers!())
             .manage(AppState {
                 paths,
-                db: Mutex::new(conn),
-                lan: Mutex::new(Default::default()),
-                session: Mutex::new(None),
-                pending_import: Mutex::new(None),
-                _log_guard: guard,
+                db: std::sync::Arc::new(Mutex::new(conn)),
+                lan: std::sync::Arc::new(Mutex::new(Default::default())),
+                session: std::sync::Arc::new(Mutex::new(None)),
+                pending_import: std::sync::Arc::new(Mutex::new(None)),
+                _log_guard: std::sync::Arc::new(guard),
             })
             .build(mock_context(noop_assets()))
             .unwrap();

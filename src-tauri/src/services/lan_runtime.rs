@@ -8,27 +8,47 @@ use std::path::Path;
 #[derive(Default)]
 pub struct LanRuntime {
     listener: Option<(String, u16, LanServerHandle)>,
+    staff: Option<std::sync::Arc<crate::services::staff_web::StaffWeb>>,
 }
 impl LanRuntime {
     pub fn reconcile(&mut self, database: &Path, config: &mut LanConfig) {
+        self.reconcile_with_staff(database, config, None);
+    }
+    pub fn reconcile_with_staff(
+        &mut self,
+        database: &Path,
+        config: &mut LanConfig,
+        staff: Option<std::sync::Arc<crate::services::staff_web::StaffWeb>>,
+    ) {
         let matches = self
             .listener
             .as_ref()
             .is_some_and(|(bind, port, _)| bind == &config.bind_address && *port == config.port);
-        if !config.enabled || !matches {
+        if !config.enabled || !matches || (staff.is_some() && self.staff.is_none()) {
             self.listener.take();
+            self.staff.take();
         }
         config.listener_error = None;
         if config.enabled && self.listener.is_none() {
-            match lan::start_lan_listener(database.to_path_buf(), &config.bind_address, config.port)
-            {
+            match lan::start_lan_listener_with_staff(
+                database.to_path_buf(),
+                &config.bind_address,
+                config.port,
+                staff.clone(),
+            ) {
                 Ok(handle) => {
-                    self.listener = Some((config.bind_address.clone(), config.port, handle))
+                    self.listener = Some((config.bind_address.clone(), config.port, handle));
+                    self.staff = staff;
                 }
                 Err(error) => config.listener_error = Some(error.to_string()),
             }
         }
         config.listener_running = self.listener.is_some();
+        if !config.browser_staff_enabled {
+            if let Some(web) = &self.staff {
+                web.clear_sessions();
+            }
+        }
     }
 }
 
@@ -38,7 +58,13 @@ pub fn config(state: &crate::state::AppState) -> AppResult<LanConfig> {
         .lock()
         .map_err(|_| crate::error::AppError::Internal("LAN runtime lock poisoned".into()))?;
     let mut config = state.with_conn(lan::get_or_init_config)?;
-    runtime.reconcile(&state.paths.database, &mut config);
+    runtime.reconcile_with_staff(
+        &state.paths.database,
+        &mut config,
+        Some(std::sync::Arc::new(
+            crate::services::staff_web::StaffWeb::new(state),
+        )),
+    );
     Ok(config)
 }
 

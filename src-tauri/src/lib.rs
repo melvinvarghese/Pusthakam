@@ -207,11 +207,11 @@ pub fn run() {
             app.manage(services::backup::hold_library_lock(library_lock, exclusive)?);
             app.manage(state::AppState {
                 paths,
-                db: Mutex::new(conn),
-                lan: Mutex::new(Default::default()),
-                session: Mutex::new(None),
-                pending_import: Mutex::new(None),
-                _log_guard: guard,
+                db: std::sync::Arc::new(Mutex::new(conn)),
+                lan: std::sync::Arc::new(Mutex::new(Default::default())),
+                session: std::sync::Arc::new(Mutex::new(None)),
+                pending_import: std::sync::Arc::new(Mutex::new(None)),
+                _log_guard: std::sync::Arc::new(guard),
             });
             if let Err(error) = desktop_tray::install(app.handle()) {
                 tracing::warn!(%error, "System tray unavailable; normal window close remains enabled");

@@ -5,7 +5,8 @@ use crate::services::import::{self, CommitOptions, Preview, PreviewRequest, Repo
 use crate::state::AppState;
 use tauri::State;
 
-#[tauri::command]
+crate::shared_command! {
+
 pub fn import_preview(state: State<'_, AppState>, request: PreviewRequest) -> AppResult<Preview> {
     state.require("catalogue.write")?;
     let (pending, preview) = state.with_conn(|c| import::prepare(c, &request))?;
@@ -15,8 +16,10 @@ pub fn import_preview(state: State<'_, AppState>, request: PreviewRequest) -> Ap
         .map_err(|_| AppError::Internal("import lock poisoned".into()))? = Some(pending);
     Ok(preview)
 }
+}
 
-#[tauri::command]
+crate::shared_command! {
+
 pub fn import_commit(
     state: State<'_, AppState>,
     token: String,
@@ -56,8 +59,10 @@ pub fn import_commit(
         }
     }
 }
+}
 
-#[tauri::command]
+crate::shared_command! {
+
 pub fn import_cancel(state: State<'_, AppState>) -> AppResult<()> {
     state.require("catalogue.write")?;
     *state
@@ -65,4 +70,5 @@ pub fn import_cancel(state: State<'_, AppState>) -> AppResult<()> {
         .lock()
         .map_err(|_| AppError::Internal("import lock poisoned".into()))? = None;
     Ok(())
+}
 }

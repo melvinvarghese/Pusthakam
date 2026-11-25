@@ -102,3 +102,7 @@ Reservations title/copy search and searchable paginated Renew/Return open-loan l
 ## Linux release tooling synchronized locally - 24 November 2026
 
 Strict Debian package/asset/startup/restart/uninstall checks and regression tests are now in D:\Pusthakam, replacing the earlier cloud-only checkpoint. REL-LINUX remains implemented but unverified until target Ubuntu packaging and interactive setup/sign-in/restart acceptance pass. macOS, physical printing and cross-device Windows LAN checks remain separate. OPAC redesign remains deferred.
+
+## V3 browser parity and internet hosting — owner-authorized expansion (25 November 2026)
+
+Library PC by default plus optional always-on server; local and internet OPAC/full staff access. Sequence: command inventory and shared transport; independent request/session/import ownership; permission-preserving handlers and browser file adapters; shared /staff UI; headless host and HTTPS deployment profiles; full feature/role matrix, backup/restore host migration and real-device/internet acceptance. Track partial evidence in currentTask without inflating v1 weights. STAFF_BROWSER_PARITY.md is authoritative for this expansion.

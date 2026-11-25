@@ -12,7 +12,7 @@ export default tseslint.config(
     languageOptions: { globals: globals.browser },
   },
   {
-    files: ["tools/progress-monitor/*.mjs", "design/opac/*.mjs"],
+    files: ["tools/*.mjs", "tools/progress-monitor/*.mjs", "design/opac/*.mjs"],
     languageOptions: { globals: globals.node },
   },
   {

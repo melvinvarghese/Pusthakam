@@ -1,5 +1,12 @@
 # Pusthakam
 
+## Standalone Windows builds
+
+Use npm.cmd run build:windows to build the standalone application and NSIS installer. Use npm.cmd run build:standalone-debug for a standalone debug executable. Both commands use the Tauri CLI, which embeds the frontend through its production custom protocol. A plain cargo build produces a development executable that expects the Vite server at 127.0.0.1:1420; do not distribute it or use it for standalone acceptance.
+
+After installing/updating, enable Wi-Fi / LAN hosting in Settings and choose Same Wi-Fi or wired network. The app shows the library computer IP and complete OPAC address under Open on other devices on the same Wi-Fi. Copy that address to another device. Addresses under On this computer are for local testing. Keep the host application running.
+
+
 <p align="center">
   <img src="brand-assets/pusthakam-horizontal.svg" alt="Pusthakam — A Better Way to Manage Libraries" width="620" />
 </p>

@@ -1181,6 +1181,7 @@ export interface LanConfig {
   serverFingerprint: string;
   opacEnabled: boolean;
   browserStaffEnabled: boolean;
+  publicBaseUrl?: string | null;
   activeInterfaces: string[];
 }
 

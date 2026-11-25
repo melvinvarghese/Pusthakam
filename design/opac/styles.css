@@ -22,6 +22,26 @@
 }
 
 /* Base Reset & Custom Properties */
+/* Intrinsic flex/grid widths must not expand the page beyond a phone viewport. */
+#app, .opac-main, .swiss-masthead > *, .swiss-input-wrap,
+.swiss-input-wrap input, .swiss-spectrum-nav > *, .swiss-row > *,
+.main-body-wrap, .swiss-hero-inner, .swiss-search-bar-wrap {
+  min-width: 0;
+  max-width: 100%;
+}
+.swiss-spectrum-nav { flex-wrap: wrap; }
+.swiss-chips-scroll { min-width: 0; flex: 1 1 0; overflow-x: auto; }
+.swiss-row { overflow-wrap: anywhere; }
+.swiss-row .title-row, .swiss-row .row-author-line { flex-wrap: wrap; }
+@media (max-width: 640px) {
+  .study-bar, .header-inner, .top-nav, .stream-header-strip { min-width: 0; max-width: 100%; }
+  .study-switcher { min-width: 0; }
+  .study-switcher a { flex: 0 0 auto; }
+  .stream-header-strip { flex-wrap: wrap; gap: 8px; }
+  .swiss-chips-scroll { flex: auto; }
+  .swiss-input-wrap input { width: 0; flex: 1; }
+  .swiss-row .col-avail { flex-wrap: wrap; gap: 8px; }
+}
 *, *::before, *::after {
   box-sizing: border-box;
   margin: 0;
@@ -1289,7 +1309,7 @@ body[data-view="sovereign-folio"] {
 
 .folio-card-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr));
   gap: 24px;
 }
 
@@ -1805,6 +1825,10 @@ dialog::backdrop {
   }
 
   /* Swiss Stacks Mobile Optimization */
+  .folio-search-form { flex-direction: column; }
+  .folio-search-field { min-width: 0; }
+  .folio-search-field input { min-width: 0; }
+  .folio-submit-btn { min-height: 44px; }
   .swiss-stacks-hero {
     padding: 20px 16px 16px;
   }

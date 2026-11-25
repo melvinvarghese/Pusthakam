@@ -7,7 +7,9 @@ use rand_core::RngCore;
 use rusqlite::{params, Connection};
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
-use std::io::{Read, Write};
+#[cfg(test)]
+use std::io::Read;
+use std::io::Write;
 use std::net::{TcpListener, TcpStream};
 use std::path::PathBuf;
 use std::sync::atomic::{AtomicBool, Ordering};
@@ -25,6 +27,8 @@ pub struct LanConfig {
     pub server_fingerprint: String,
     pub opac_enabled: bool,
     pub browser_staff_enabled: bool,
+    #[serde(default)]
+    pub public_base_url: Option<String>,
     pub active_interfaces: Vec<String>,
     #[serde(default)]
     pub listener_running: bool,
@@ -166,17 +170,7 @@ pub struct StaffReturnResponse {
 // ============================================================================
 
 pub fn discover_local_ips() -> Vec<String> {
-    let mut ips = Vec::new();
-    if let Ok(socket) = std::net::UdpSocket::bind("0.0.0.0:0") {
-        if socket.connect("10.255.255.255:1").is_ok() {
-            if let Ok(addr) = socket.local_addr() {
-                let ip = addr.ip().to_string();
-                if ip != "0.0.0.0" && ip != "127.0.0.1" {
-                    ips.push(ip);
-                }
-            }
-        }
-    }
+    let mut ips = crate::services::network_addresses::local_ipv4_addresses();
     if !ips.contains(&"127.0.0.1".to_string()) {
         ips.push("127.0.0.1".to_string());
     }
@@ -234,6 +228,8 @@ pub fn get_or_init_config(conn: &Connection) -> AppResult<LanConfig> {
         server_fingerprint: row.4,
         opac_enabled: row.5,
         browser_staff_enabled: row.6,
+        public_base_url: crate::services::settings::get(conn, "web.public_url")?
+            .filter(|value| !value.is_empty()),
         active_interfaces: discover_local_ips(),
         listener_running: false,
         listener_error: None,
@@ -254,7 +250,13 @@ pub fn update_config(
         return Err(AppError::Validation("Server name cannot be empty.".into()));
     }
 
-    conn.execute(
+    let public_url = input
+        .public_base_url
+        .as_deref()
+        .map(crate::services::staff_web::normalize_public_url)
+        .transpose()?;
+    let tx = conn.unchecked_transaction()?;
+    tx.execute(
         "UPDATE lan_config SET
             enabled = ?1,
             bind_address = ?2,
@@ -274,6 +276,10 @@ pub fn update_config(
         ],
     )?;
 
+    if let Some(url) = public_url {
+        crate::services::settings::set(&tx, "web.public_url", &url)?;
+    }
+    tx.commit()?;
     get_or_init_config(conn)
 }
 
@@ -573,11 +579,36 @@ pub fn revoke_session(conn: &Connection, token: &str) -> AppResult<()> {
 // Public Anonymous OPAC
 // ============================================================================
 
+pub fn opac_cover(conn: &Connection, id: i64) -> AppResult<Option<Vec<u8>>> {
+    use rusqlite::OptionalExtension;
+    let config = get_or_init_config(conn)?;
+    if !config.enabled || !config.opac_enabled {
+        return Err(AppError::Permission(
+            "Public OPAC access is currently disabled.".into(),
+        ));
+    }
+    Ok(conn.query_row(
+        "SELECT c.png FROM book_covers c JOIN bibliographic_records r ON r.id = c.record_id WHERE r.id = ?1 AND r.archived_at IS NULL",
+        [id], |row| row.get(0),
+    ).optional()?)
+}
+
 pub fn opac_search(
     conn: &Connection,
     query_text: &str,
     page: i64,
     page_size: i64,
+) -> AppResult<PublicOpacSearchResult> {
+    opac_search_filtered(conn, query_text, page, page_size, None, false)
+}
+
+pub fn opac_search_filtered(
+    conn: &Connection,
+    query_text: &str,
+    page: i64,
+    page_size: i64,
+    classification: Option<&str>,
+    available_only: bool,
 ) -> AppResult<PublicOpacSearchResult> {
     let config = get_or_init_config(conn)?;
     if !config.enabled || !config.opac_enabled {
@@ -585,83 +616,57 @@ pub fn opac_search(
             "Public OPAC access is currently disabled.".into(),
         ));
     }
-
+    let class = classification.unwrap_or("");
+    if !class.is_empty() && (class.len() != 1 || !class.as_bytes()[0].is_ascii_digit()) {
+        return Err(AppError::Validation(
+            "Choose a valid classification group.".into(),
+        ));
+    }
     let p = page.max(1);
     let ps = page_size.clamp(1, 50);
-    let offset = (p - 1) * ps;
-    let query_clean = query_text.trim();
-
-    let (total, record_ids) = if query_clean.is_empty() {
-        let count: i64 = conn.query_row(
-            "SELECT COUNT(*) FROM bibliographic_records WHERE archived_at IS NULL",
-            [],
-            |r| r.get(0),
-        )?;
-        let mut stmt = conn.prepare(
-            "SELECT id FROM bibliographic_records WHERE archived_at IS NULL
-             ORDER BY title COLLATE NOCASE ASC LIMIT ?1 OFFSET ?2",
-        )?;
-        let rows = stmt.query_map(params![ps, offset], |r| r.get::<_, i64>(0))?;
-        let mut ids = Vec::new();
-        for id in rows {
-            ids.push(id?);
-        }
-        (count, ids)
+    let offset = (p - 1).saturating_mul(ps);
+    let query = query_text.trim();
+    let limited: String = query.chars().take(300).collect();
+    let fts = crate::services::catalogue::fts_expression(&limited).unwrap_or_default();
+    if !query.is_empty() && fts.is_empty() {
+        return Ok(PublicOpacSearchResult {
+            items: vec![],
+            total: 0,
+            page: p,
+            page_size: ps,
+        });
+    }
+    // Apply filters before counting and pagination, never to just the visible page.
+    let predicate = "r.archived_at IS NULL
+        AND (?1 = '' OR r.id IN (SELECT rowid FROM catalogue_fts WHERE catalogue_fts MATCH ?1))
+        AND (?2 = '' OR substr(trim(r.classification_number), 1, 1) = ?2)
+        AND (?3 = 0 OR EXISTS (SELECT 1 FROM physical_items pi WHERE pi.record_id = r.id AND pi.status = 'available'))";
+    // Empty MATCH expressions are invalid in SQLite even inside an OR. Omit the FTS subquery entirely.
+    let predicate = if fts.is_empty() {
+        predicate.replace(
+            "(?1 = '' OR r.id IN (SELECT rowid FROM catalogue_fts WHERE catalogue_fts MATCH ?1))",
+            "?1 = ''",
+        )
     } else {
-        // Build sanitized search term
-        let escaped = query_clean
-            .chars()
-            .map(|ch| {
-                if ch.is_alphanumeric() || ch == ' ' {
-                    ch
-                } else {
-                    ' '
-                }
-            })
-            .collect::<String>();
-        let fts_query = escaped
-            .split_whitespace()
-            .map(|w| format!("\"{w}\"*"))
-            .collect::<Vec<_>>()
-            .join(" AND ");
-
-        if fts_query.is_empty() {
-            (0, Vec::new())
-        } else {
-            let count: i64 = conn
-                .query_row(
-                    "SELECT COUNT(DISTINCT r.id)
-                 FROM bibliographic_records r
-                 JOIN catalogue_fts f ON f.rowid = r.id
-                 WHERE r.archived_at IS NULL AND catalogue_fts MATCH ?1",
-                    [&fts_query],
-                    |r| r.get(0),
-                )
-                .unwrap_or(0);
-
-            let mut stmt = conn.prepare(
-                "SELECT DISTINCT r.id
-                 FROM bibliographic_records r
-                 JOIN catalogue_fts f ON f.rowid = r.id
-                 WHERE r.archived_at IS NULL AND catalogue_fts MATCH ?1
-                 ORDER BY r.title COLLATE NOCASE ASC LIMIT ?2 OFFSET ?3",
-            )?;
-            let rows = stmt.query_map(params![fts_query, ps, offset], |r| r.get::<_, i64>(0))?;
-            let mut ids = Vec::new();
-            for id in rows {
-                ids.push(id?);
-            }
-            (count, ids)
-        }
+        predicate.to_string()
     };
-
+    let total: i64 = conn.query_row(
+        &format!("SELECT COUNT(*) FROM bibliographic_records r WHERE {predicate}"),
+        params![fts, class, available_only],
+        |r| r.get(0),
+    )?;
+    let mut stmt = conn.prepare(&format!(
+        "SELECT r.id FROM bibliographic_records r WHERE {predicate} ORDER BY r.title COLLATE NOCASE ASC, r.id ASC LIMIT ?4 OFFSET ?5"
+    ))?;
+    let rows = stmt.query_map(params![fts, class, available_only, ps, offset], |r| {
+        r.get::<_, i64>(0)
+    })?;
     let mut items = Vec::new();
-    for id in record_ids {
-        if let Some(item) = opac_get_record(conn, id)? {
+    for id in rows {
+        if let Some(item) = opac_get_record(conn, id?)? {
             items.push(item);
         }
     }
-
     Ok(PublicOpacSearchResult {
         items,
         total,
@@ -780,8 +785,17 @@ pub fn start_lan_listener(
     bind_address: &str,
     port: u16,
 ) -> AppResult<LanServerHandle> {
+    start_lan_listener_with_staff(db_path, bind_address, port, None)
+}
+
+pub fn start_lan_listener_with_staff(
+    db_path: PathBuf,
+    bind_address: &str,
+    port: u16,
+    staff: Option<Arc<crate::services::staff_web::StaffWeb>>,
+) -> AppResult<LanServerHandle> {
     let addr = format!("{bind_address}:{port}");
-    let listener = TcpListener::bind(&addr)
+    let listener = TcpListener::bind((bind_address, port))
         .map_err(|e| AppError::Internal(format!("Failed to bind LAN listener to {addr}: {e}")))?;
 
     let port = listener.local_addr().map_err(AppError::Io)?.port();
@@ -789,14 +803,29 @@ pub fn start_lan_listener(
 
     let shutdown = Arc::new(AtomicBool::new(false));
     let shutdown_thread = shutdown.clone();
+    let active = Arc::new(std::sync::atomic::AtomicUsize::new(0));
 
     let thread = thread::spawn(move || {
         while !shutdown_thread.load(Ordering::SeqCst) {
             match listener.accept() {
-                Ok((stream, _peer_addr)) => {
+                Ok((mut stream, _peer_addr)) => {
+                    if active.fetch_add(1, Ordering::SeqCst) >= 64 {
+                        active.fetch_sub(1, Ordering::SeqCst);
+                        let _ = crate::services::web_http::reject(&mut stream, 503);
+                        continue;
+                    }
                     let db_path_clone = db_path.clone();
+                    let staff = staff.clone();
+                    let active = Arc::clone(&active);
                     thread::spawn(move || {
-                        let _ = handle_http_connection(stream, &db_path_clone);
+                        struct Active(Arc<std::sync::atomic::AtomicUsize>);
+                        impl Drop for Active {
+                            fn drop(&mut self) {
+                                self.0.fetch_sub(1, Ordering::SeqCst);
+                            }
+                        }
+                        let _active = Active(active);
+                        let _ = handle_http_connection(stream, &db_path_clone, staff);
                     });
                 }
                 Err(ref e) if e.kind() == std::io::ErrorKind::WouldBlock => {
@@ -831,30 +860,57 @@ fn brand_browser_page(html: String) -> String {
         .replacen("<body>", &mark, 1)
 }
 
-fn handle_http_connection(mut stream: TcpStream, db_path: &PathBuf) -> std::io::Result<()> {
-    let _ = stream.set_read_timeout(Some(Duration::from_secs(5)));
+fn handle_http_connection(
+    mut stream: TcpStream,
+    db_path: &PathBuf,
+    staff: Option<Arc<crate::services::staff_web::StaffWeb>>,
+) -> std::io::Result<()> {
+    use crate::services::web_http;
     let _ = stream.set_write_timeout(Some(Duration::from_secs(5)));
-
-    let mut buffer = [0u8; 4096];
-    let bytes_read = match stream.read(&mut buffer) {
-        Ok(n) if n > 0 => n,
-        _ => return Ok(()),
+    let head = match web_http::read_head(&mut stream) {
+        Ok(head) => head,
+        Err(status) => return web_http::reject(&mut stream, status),
     };
-
-    let request_str = String::from_utf8_lossy(&buffer[..bytes_read]);
-    let mut lines = request_str.lines();
-    let request_line = match lines.next() {
-        Some(l) => l,
-        None => return Ok(()),
-    };
-
-    let parts: Vec<&str> = request_line.split_whitespace().collect();
-    if parts.len() < 2 {
-        return Ok(());
+    static LARGE_UPLOADS: std::sync::atomic::AtomicUsize = std::sync::atomic::AtomicUsize::new(0);
+    struct UploadPermit(bool);
+    impl Drop for UploadPermit {
+        fn drop(&mut self) {
+            if self.0 {
+                LARGE_UPLOADS.fetch_sub(1, Ordering::SeqCst);
+            }
+        }
     }
-
-    let method = parts[0];
-    let uri = parts[1];
+    let large = head.length > 1024 * 1024;
+    if large && LARGE_UPLOADS.fetch_add(1, Ordering::SeqCst) >= 2 {
+        LARGE_UPLOADS.fetch_sub(1, Ordering::SeqCst);
+        return web_http::reject(&mut stream, 503);
+    }
+    let _upload = UploadPermit(large);
+    let limit = staff
+        .as_ref()
+        .map_or(64 * 1024, |web| web.body_limit(&stream, &head));
+    let body = match web_http::read_body(&mut stream, &head, limit) {
+        Ok(body) => body,
+        Err(status) => return web_http::reject(&mut stream, status),
+    };
+    if let Some(web) = &staff {
+        if web.ready() && crate::services::staff_web::StaffWeb::handles(head.path()) {
+            return web.handle(&mut stream, &head, &body);
+        }
+        let public = web.public_request(&head)
+            || !crate::services::staff_web::private_peer(stream.peer_addr()?.ip());
+        if public && !matches!(head.path(), "/" | "/opac") && !head.path().starts_with("/api/opac/")
+        {
+            return web_http::reject(&mut stream, 403);
+        }
+    }
+    let body = match std::str::from_utf8(&body) {
+        Ok(body) => body,
+        Err(_) => return web_http::reject(&mut stream, 400),
+    };
+    let request_str = format!("{}\r\n\r\n{}", head.raw, body);
+    let method = head.method.as_str();
+    let uri = head.target.as_str();
 
     if method == "OPTIONS" {
         let cors_resp = "HTTP/1.1 204 No Content\r\nAccess-Control-Allow-Origin: *\r\nAccess-Control-Allow-Methods: GET, POST, OPTIONS\r\nAccess-Control-Allow-Headers: Authorization, Content-Type\r\nContent-Length: 0\r\n\r\n";
@@ -1154,20 +1210,55 @@ fn handle_http_connection(mut stream: TcpStream, db_path: &PathBuf) -> std::io::
         }
     }
 
+    // Public covers expose only an active record's stored image, never a filesystem path.
+    if method == "GET" && uri.starts_with("/api/opac/cover/") {
+        let id = uri
+            .trim_start_matches("/api/opac/cover/")
+            .parse::<i64>()
+            .ok()
+            .filter(|id| *id > 0);
+        if let Some(id) = id {
+            match opac_cover(&conn, id) {
+                Ok(Some(png)) => {
+                    let headers = format!("HTTP/1.1 200 OK\r\nContent-Type: image/png\r\nCache-Control: no-store\r\nX-Content-Type-Options: nosniff\r\nContent-Length: {}\r\nConnection: close\r\n\r\n", png.len());
+                    stream.write_all(headers.as_bytes())?;
+                    return stream.write_all(&png);
+                }
+                Err(AppError::Permission(_)) => {
+                    return send_json(
+                        &mut stream,
+                        403,
+                        "{\"error\":\"Public catalogue disabled\"}",
+                    )
+                }
+                Err(_) => return send_json(&mut stream, 500, "{\"error\":\"Cover unavailable\"}"),
+                Ok(None) => {}
+            }
+        }
+        return send_json(&mut stream, 404, "{\"error\":\"Cover not found\"}");
+    }
+
     // Route: GET /api/opac/search?q=...
-    if method == "GET" && uri.starts_with("/api/opac/search") {
+    if method == "GET" && uri.split('?').next() == Some("/api/opac/search") {
         let q = extract_query_param(uri, "q").unwrap_or_default();
         let page = extract_query_param(uri, "page")
             .and_then(|p| p.parse().ok())
             .unwrap_or(1);
-        match opac_search(&conn, &q, page, 20) {
+        let class = extract_query_param(uri, "class").unwrap_or_default();
+        let available = extract_query_param(uri, "available").as_deref() == Some("true");
+        match opac_search_filtered(&conn, &q, page, 20, Some(&class), available) {
             Ok(res) => {
                 let json = serde_json::to_string(&res).unwrap_or_default();
                 return send_json(&mut stream, 200, &json);
             }
             Err(e) => {
+                let status = match &e {
+                    AppError::Permission(_) => 403,
+                    AppError::Validation(_) => 400,
+                    _ => 500,
+                };
                 let json = serde_json::json!({ "error": e.to_string() }).to_string();
-                return send_json(&mut stream, 403, &json);
+                return send_json(&mut stream, status, &json);
             }
         }
     }
@@ -1461,87 +1552,14 @@ init();
         return stream.write_all(resp.as_bytes());
     }
 
-    // Route: GET / or /opac -> Minimal Standalone OPAC HTML Page
+    // Route: GET / or /opac -> Swiss Stacks public catalogue
     if method == "GET" && (uri == "/" || uri == "/opac") {
         let config = get_or_init_config(&conn).ok();
         let server_name = config
             .as_ref()
             .map(|c| c.server_name.as_str())
             .unwrap_or("Pusthakam OPAC");
-        let html = format!(
-            r#"<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>{server_name} — Public Catalogue</title>
-<style>
-body {{ font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; margin: 0; padding: 20px; background: #f8fafc; color: #1e293b; }}
-.header {{ max-width: 800px; margin: 0 auto 24px; padding-bottom: 16px; border-bottom: 2px solid #e2e8f0; }}
-h1 {{ margin: 0 0 8px; font-size: 24px; font-weight: 700; color: #0f172a; }}
-.badge {{ display: inline-block; padding: 4px 10px; font-size: 12px; font-weight: 600; background: #e0f2fe; color: #0369a1; border-radius: 9999px; }}
-.search-box {{ max-width: 800px; margin: 0 auto 24px; display: flex; gap: 8px; }}
-input {{ flex: 1; padding: 12px 16px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 16px; outline: none; }}
-input:focus {{ border-color: #0284c7; ring: 2px solid #bae6fd; }}
-button {{ padding: 12px 24px; background: #0284c7; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; }}
-button:hover {{ background: #0369a1; }}
-#results {{ max-width: 800px; margin: 0 auto; display: flex; flex-direction: column; gap: 12px; }}
-.card {{ background: white; padding: 16px 20px; border-radius: 8px; border: 1px solid #e2e8f0; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }}
-.card h2 {{ margin: 0 0 4px; font-size: 18px; color: #0f172a; }}
-.meta {{ font-size: 14px; color: #64748b; margin-bottom: 10px; }}
-.avail {{ font-size: 13px; font-weight: 600; padding: 4px 8px; border-radius: 4px; display: inline-block; }}
-.avail-yes {{ background: #dcfce7; color: #15803d; }}
-.avail-no {{ background: #fee2e2; color: #b91c1c; }}
-</style>
-</head>
-<body>
-<div class="header">
-  <span class="badge">Local Network OPAC</span>
-  <h1>{server_name}</h1>
-  <div style="font-size: 14px; color: #64748b;">Search available library titles, locations, and real-time physical copies.</div>
-</div>
-<form class="search-box" onsubmit="searchBooks(event)">
-  <input type="text" id="q" placeholder="Search by title, author, subject, or ISBN..." autofocus />
-  <button type="submit">Search</button>
-</form>
-<div id="results"></div>
-<script>
-async function searchBooks(e) {{
-  if (e) e.preventDefault();
-  const q = document.getElementById('q').value;
-  const res = await fetch('/api/opac/search?q=' + encodeURIComponent(q));
-  const data = await res.json();
-  const container = document.getElementById('results');
-  container.innerHTML = '';
-  if (!data.items || data.items.length === 0) {{
-    container.innerHTML = '<div class="card" style="text-align: center; color: #64748b; padding: 32px;">No books found matching your query.</div>';
-    return;
-  }}
-  data.items.forEach(book => {{
-    const el = document.createElement('div');
-    el.className = 'card';
-    const authors = book.authors && book.authors.length ? book.authors.join(', ') : 'Unknown Author';
-    const locs = book.locations && book.locations.length ? ' • Location: ' + book.locations.join(', ') : '';
-    const classNum = book.classification ? ' [' + book.classification + ']' : '';
-    const isAvail = book.availableCopies > 0;
-    el.innerHTML = `
-      <h2>${{book.title}}${{classNum}}</h2>
-      <div class="meta">${{authors}}${{locs}}</div>
-      <div>
-        <span class="avail ${{isAvail ? 'avail-yes' : 'avail-no'}}">
-          ${{isAvail ? 'Available (' + book.availableCopies + ' of ' + book.totalCopies + ')' : 'All ' + book.totalCopies + ' copies currently issued'}}
-        </span>
-      </div>
-    `;
-    container.appendChild(el);
-  }});
-}}
-searchBooks();
-</script>
-</body>
-</html>"#
-        );
-        let html = brand_browser_page(html);
+        let html = crate::services::opac_page::render(server_name);
         let resp = format!(
             "HTTP/1.1 200 OK\r\nContent-Type: text/html; charset=utf-8\r\nContent-Length: {}\r\n\r\n{}",
             html.len(),
@@ -1688,6 +1706,7 @@ mod tests {
             server_name: "City Library Central".into(),
             opac_enabled: true,
             browser_staff_enabled: true,
+            public_base_url: None,
         };
 
         // Librarian cannot manage LAN
@@ -1723,6 +1742,7 @@ mod tests {
                 server_name: "Test Lib".into(),
                 opac_enabled: true,
                 browser_staff_enabled: true,
+                public_base_url: None,
             },
         )
         .unwrap();
@@ -1775,6 +1795,7 @@ mod tests {
                 server_name: "Test Lib".into(),
                 opac_enabled: true,
                 browser_staff_enabled: true,
+                public_base_url: None,
             },
         )
         .unwrap();
@@ -1860,6 +1881,7 @@ mod tests {
                 server_name: "Central Library".into(),
                 opac_enabled: true,
                 browser_staff_enabled: true,
+                public_base_url: None,
             },
         )
         .unwrap();
@@ -1908,6 +1930,84 @@ mod tests {
         assert_eq!(item.available_copies, 2);
         assert_eq!(item.locations, vec!["Computer Science Stack"]);
 
+        crate::services::catalogue::reindex(&conn, 101).unwrap();
+        // Filters must count and paginate the entire matching catalogue, not the first page.
+        for id in 500..525 {
+            conn.execute("INSERT INTO bibliographic_records (id, title, classification_number) VALUES (?1, ?2, '823')", params![id, format!("A fiction {id}")]).unwrap();
+        }
+        conn.execute("INSERT INTO bibliographic_records (id, title, classification_number) VALUES (600, 'Z Computing', '005.2')", []).unwrap();
+        conn.execute("INSERT INTO physical_items (record_id, location_id, item_category_id, barcode, accession_no, status) VALUES (600, 301, 401, 'Z-600', 'Z-600', 'available')", []).unwrap();
+        conn.execute("INSERT INTO bibliographic_records (id, title, classification_number, archived_at) VALUES (601, 'Archived', '005', '2026-01-01')", []).unwrap();
+        let filtered = opac_search_filtered(&conn, "", 2, 1, Some("0"), true).unwrap();
+        assert_eq!(filtered.total, 2);
+        assert_eq!(filtered.items.len(), 1);
+        assert_eq!(filtered.items[0].id, 600);
+        assert_eq!(
+            opac_search_filtered(&conn, "", 1, 20, Some("8"), true)
+                .unwrap()
+                .total,
+            0
+        );
+        assert_eq!(
+            opac_search_filtered(&conn, "Algorithms", 1, 20, Some("0"), true)
+                .unwrap()
+                .total,
+            1
+        );
+        assert_eq!(
+            opac_search_filtered(&conn, "Cormen", 1, 20, Some("0"), true)
+                .unwrap()
+                .total,
+            1
+        );
+        assert_eq!(
+            opac_search_filtered(&conn, "9780262046305", 1, 20, None, false)
+                .unwrap()
+                .total,
+            1
+        );
+        assert_eq!(
+            opac_search_filtered(&conn, "!!!", 1, 20, None, false)
+                .unwrap()
+                .total,
+            0
+        );
+        assert!(opac_search_filtered(&conn, "", 1, 20, Some("8%"), false).is_err());
+        assert!(opac_search_filtered(&conn, "", i64::MAX, 20, None, false)
+            .unwrap()
+            .items
+            .is_empty());
+        let payload = serde_json::to_string(&filtered).unwrap();
+        for private_field in [
+            "memberNumber",
+            "barcode",
+            "accessionNo",
+            "borrower",
+            "token",
+        ] {
+            assert!(!payload.contains(private_field));
+        }
+
+        // Reuse catalogue token handling so Malayalam vowel marks are retained.
+        conn.execute("INSERT INTO bibliographic_records (id, title, classification_number) VALUES (602, 'ബാല്യകാലസഖി', '894.8123')", []).unwrap();
+        crate::services::catalogue::reindex(&conn, 602).unwrap();
+        assert_eq!(
+            opac_search_filtered(&conn, "ബാല്യകാലസഖി", 1, 20, Some("8"), false)
+                .unwrap()
+                .total,
+            1
+        );
+
+        let png = include_bytes!("../../../src/assets/pusthakam-logo.png").to_vec();
+        conn.execute(
+            "INSERT INTO book_covers (record_id, png) VALUES (101, ?1), (601, ?1)",
+            [&png],
+        )
+        .unwrap();
+        assert_eq!(opac_cover(&conn, 101).unwrap(), Some(png));
+        assert!(opac_cover(&conn, 601).unwrap().is_none());
+        assert!(opac_cover(&conn, 999999).unwrap().is_none());
+
         // Turn off OPAC and assert access is denied
         update_config(
             &conn,
@@ -1919,11 +2019,13 @@ mod tests {
                 server_name: "Central Library".into(),
                 opac_enabled: false,
                 browser_staff_enabled: true,
+                public_base_url: None,
             },
         )
         .unwrap();
 
         assert!(opac_search(&conn, "", 1, 10).is_err());
+        assert!(opac_cover(&conn, 101).is_err());
     }
 
     #[test]
@@ -1943,7 +2045,19 @@ mod tests {
                 server_name: "Test HTTP Server".into(),
                 opac_enabled: true,
                 browser_staff_enabled: true,
+                public_base_url: None,
             },
+        )
+        .unwrap();
+
+        conn.execute(
+            "INSERT INTO bibliographic_records (id, title) VALUES (888, 'Cover test')",
+            [],
+        )
+        .unwrap();
+        conn.execute(
+            "INSERT INTO book_covers (record_id, png) VALUES (888, ?1)",
+            [include_bytes!("../../../src/assets/pusthakam-logo.png").as_slice()],
         )
         .unwrap();
 
@@ -1975,6 +2089,16 @@ mod tests {
         assert!(html_resp.contains("Test HTTP Server"));
         assert!(html_resp.contains("data:image/png;base64,"));
         assert!(html_resp.contains("alt=\"Pusthakam\""));
+
+        let mut cover_request = TcpStream::connect("127.0.0.1:4399").unwrap();
+        cover_request
+            .write_all(b"GET /api/opac/cover/888 HTTP/1.1\r\nHost: localhost\r\n\r\n")
+            .unwrap();
+        let mut cover_response = Vec::new();
+        cover_request.read_to_end(&mut cover_response).unwrap();
+        assert!(cover_response.starts_with(b"HTTP/1.1 200 OK"));
+        assert!(String::from_utf8_lossy(&cover_response).contains("Content-Type: image/png"));
+        assert!(cover_response.ends_with(include_bytes!("../../../src/assets/pusthakam-logo.png")));
 
         // Clean shutdown
         handle.stop();
@@ -2023,6 +2147,7 @@ mod tests {
                 server_name: "Circulation Server".into(),
                 opac_enabled: true,
                 browser_staff_enabled: true,
+                public_base_url: None,
             },
         )
         .unwrap();

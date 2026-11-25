@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Public catalogue — {{LIBRARY_NAME}}</title>
+<link rel="icon" href="data:image/png;base64,{{LOGO}}">
+<style>{{STYLES}}</style>
+</head>
+<body>
+<a class="skip" href="#q">Skip to search</a>
+<header class="brand"><img src="data:image/png;base64,{{LOGO}}" width="36" height="36" alt="Pusthakam"><span class="brand-name">Pusthakam</span><span>Public catalogue</span></header>
+<main>
+  <section class="masthead" aria-labelledby="catalogue-title">
+    <h1 id="catalogue-title">{{LIBRARY_NAME}}</h1>
+    <p>Find a book. Check its availability. Locate it in the library.</p>
+    <form id="search-form" role="search">
+      <label class="sr-only" for="q">Search by title, author, subject, or ISBN</label>
+      <input id="q" type="search" placeholder="Title, author, subject, or ISBN" maxlength="300" autocomplete="off">
+      <button type="submit">Search catalogue</button>
+    </form>
+    <div class="filters">
+      <div id="classes" class="class-ribbon" role="group" aria-label="Browse by classification"></div>
+      <label class="available-filter"><input id="available" type="checkbox"> Available copies only</label>
+    </div>
+  </section>
+  <section class="holdings" aria-label="Catalogue results">
+    <div class="result-heading"><p id="summary" role="status" aria-live="polite">Loading catalogue…</p><button id="reset" type="button">Clear filters</button></div>
+    <p id="error" role="alert" hidden></p>
+    <button id="retry" type="button" hidden>Try again</button>
+    <div id="results" aria-busy="true"></div>
+    <nav class="pagination" aria-label="Result pages" hidden><button id="previous" type="button">Previous</button><span id="page-label"></span><button id="next" type="button">Next</button></nav>
+  </section>
+</main>
+<footer>Library catalogue · Pusthakam</footer>
+<dialog id="details" aria-labelledby="detail-title"><button id="close-details" type="button">Close details</button><div id="detail-content"></div></dialog>
+<script>{{SCRIPT}}</script>
+</body>
+</html>

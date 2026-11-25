@@ -12,15 +12,18 @@ use tauri::State;
 // Classification Schemes & Entries
 // ============================================================================
 
-#[tauri::command]
+crate::shared_command! {
+
 pub fn classification_list_schemes(
     state: State<'_, AppState>,
 ) -> AppResult<Vec<ClassificationScheme>> {
     state.require("classification.read")?;
     state.with_conn(classification::list_schemes)
 }
+}
 
-#[tauri::command]
+crate::shared_command! {
+
 pub fn classification_save_scheme(
     state: State<'_, AppState>,
     input: ClassificationSchemeInput,
@@ -28,14 +31,18 @@ pub fn classification_save_scheme(
     let session = state.require("classification.write")?;
     classification::save_scheme(&*state.conn()?, &session, &input)
 }
+}
 
-#[tauri::command]
+crate::shared_command! {
+
 pub fn classification_delete_scheme(state: State<'_, AppState>, id: i64) -> AppResult<()> {
     let session = state.require("classification.write")?;
     classification::delete_custom_scheme(&*state.conn()?, &session, id)
 }
+}
 
-#[tauri::command]
+crate::shared_command! {
+
 pub fn classification_list_entries(
     state: State<'_, AppState>,
     scheme_id: i64,
@@ -52,8 +59,10 @@ pub fn classification_list_entries(
         )
     })
 }
+}
 
-#[tauri::command]
+crate::shared_command! {
+
 pub fn classification_save_entry(
     state: State<'_, AppState>,
     input: ClassificationEntryInput,
@@ -61,18 +70,22 @@ pub fn classification_save_entry(
     let session = state.require("classification.write")?;
     classification::save_entry(&*state.conn()?, &session, &input)
 }
+}
 
-#[tauri::command]
+crate::shared_command! {
+
 pub fn classification_delete_entry(state: State<'_, AppState>, id: i64) -> AppResult<()> {
     let session = state.require("classification.write")?;
     classification::delete_custom_entry(&*state.conn()?, &session, id)
+}
 }
 
 // ============================================================================
 // Author Authorities
 // ============================================================================
 
-#[tauri::command]
+crate::shared_command! {
+
 pub fn classification_list_authors(
     state: State<'_, AppState>,
     search_query: Option<String>,
@@ -83,8 +96,10 @@ pub fn classification_list_authors(
         classification::list_authors(conn, search_query.as_deref(), kind_filter.as_deref())
     })
 }
+}
 
-#[tauri::command]
+crate::shared_command! {
+
 pub fn classification_save_author(
     state: State<'_, AppState>,
     input: AuthorAuthorityInput,
@@ -92,8 +107,10 @@ pub fn classification_save_author(
     let session = state.require("classification.write")?;
     classification::save_author(&*state.conn()?, &session, &input)
 }
+}
 
-#[tauri::command]
+crate::shared_command! {
+
 pub fn classification_merge_authors(
     state: State<'_, AppState>,
     from_id: i64,
@@ -102,12 +119,14 @@ pub fn classification_merge_authors(
     let session = state.require("classification.write")?;
     classification::merge_authors(&*state.conn()?, &session, from_id, to_id)
 }
+}
 
 // ============================================================================
 // Publisher Authorities
 // ============================================================================
 
-#[tauri::command]
+crate::shared_command! {
+
 pub fn classification_list_publishers(
     state: State<'_, AppState>,
     search_query: Option<String>,
@@ -115,8 +134,10 @@ pub fn classification_list_publishers(
     state.require("classification.read")?;
     state.with_conn(|conn| classification::list_publishers(conn, search_query.as_deref()))
 }
+}
 
-#[tauri::command]
+crate::shared_command! {
+
 pub fn classification_save_publisher(
     state: State<'_, AppState>,
     input: PublisherAuthorityInput,
@@ -124,8 +145,10 @@ pub fn classification_save_publisher(
     let session = state.require("classification.write")?;
     classification::save_publisher(&*state.conn()?, &session, &input)
 }
+}
 
-#[tauri::command]
+crate::shared_command! {
+
 pub fn classification_merge_publishers(
     state: State<'_, AppState>,
     from_id: i64,
@@ -134,12 +157,14 @@ pub fn classification_merge_publishers(
     let session = state.require("classification.write")?;
     classification::merge_publishers(&*state.conn()?, &session, from_id, to_id)
 }
+}
 
 // ============================================================================
 // Subject Authorities
 // ============================================================================
 
-#[tauri::command]
+crate::shared_command! {
+
 pub fn classification_list_subjects(
     state: State<'_, AppState>,
     search_query: Option<String>,
@@ -150,8 +175,10 @@ pub fn classification_list_subjects(
         classification::list_subjects(conn, search_query.as_deref(), scheme_filter.as_deref())
     })
 }
+}
 
-#[tauri::command]
+crate::shared_command! {
+
 pub fn classification_save_subject(
     state: State<'_, AppState>,
     input: SubjectAuthorityInput,
@@ -159,8 +186,10 @@ pub fn classification_save_subject(
     let session = state.require("classification.write")?;
     classification::save_subject(&*state.conn()?, &session, &input)
 }
+}
 
-#[tauri::command]
+crate::shared_command! {
+
 pub fn classification_merge_subjects(
     state: State<'_, AppState>,
     from_id: i64,
@@ -169,20 +198,24 @@ pub fn classification_merge_subjects(
     let session = state.require("classification.write")?;
     classification::merge_subjects(&*state.conn()?, &session, from_id, to_id)
 }
+}
 
 // ============================================================================
 // Controlled MARC Mappings & Testing
 // ============================================================================
 
-#[tauri::command]
+crate::shared_command! {
+
 pub fn classification_list_marc_mappings(
     state: State<'_, AppState>,
 ) -> AppResult<Vec<MarcMapping>> {
     state.require("classification.read")?;
     state.with_conn(classification::list_marc_mappings)
 }
+}
 
-#[tauri::command]
+crate::shared_command! {
+
 pub fn classification_save_marc_mapping(
     state: State<'_, AppState>,
     input: MarcMappingInput,
@@ -190,12 +223,15 @@ pub fn classification_save_marc_mapping(
     let session = state.require("classification.write")?;
     classification::save_marc_mapping(&*state.conn()?, &session, &input)
 }
+}
 
-#[tauri::command]
+crate::shared_command! {
+
 pub fn classification_test_marc_mapping(
     state: State<'_, AppState>,
     input: MarcTestInput,
 ) -> AppResult<MarcTestResult> {
     state.require("classification.read")?;
     state.with_conn(|conn| classification::test_marc_mapping(conn, &input))
+}
 }
