@@ -1,4 +1,6 @@
-﻿import { useState, type ReactNode } from "react";
+import { useTranslation } from "@/lib/translations";
+import { LanguageSelect } from "@/components/LanguageSelect";
+import { useState, type ReactNode } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
@@ -38,6 +40,7 @@ function Empty({ children }: { children: ReactNode }) {
 }
 
 export function SettingsPage() {
+  const { t } = useTranslation();
   const { session } = useSession();
   const canEdit = can(session, "admin.settings");
   const qc = useQueryClient();
@@ -121,9 +124,11 @@ export function SettingsPage() {
   return (
     <div className="mx-auto max-w-[1100px] space-y-5 p-6">
       <PageHeader
-        title="Library Settings"
+        title={t("Library Settings")}
         description={canEdit ? "Everything about how your library works. Changes apply immediately." : "You can view these settings but not change them."}
       />
+
+      <Panel><div className="max-w-md p-4"><LanguageSelect /></div></Panel>
 
       {archive.isError && <p role="alert" className="text-danger">{archive.error instanceof ApiError ? archive.error.message : "Could not update."}</p>}
       <OptionalModules canEdit={canEdit} />

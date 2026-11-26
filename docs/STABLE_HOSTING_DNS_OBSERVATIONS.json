@@ -1,0 +1,39 @@
+{
+  "at": "2026-11-26T08:49:12.754Z",
+  "source": "Read-only Google DNS-over-HTTPS queries for NS/A/www CNAME/MX",
+  "domain": "melvinvarghese.in",
+  "records": [
+    {
+      "name": "melvinvarghese.in",
+      "type": "NS",
+      "values": [
+        "ns1.wordpress.com.",
+        "ns2.wordpress.com.",
+        "ns3.wordpress.com."
+      ]
+    },
+    {
+      "name": "melvinvarghese.in",
+      "type": "A",
+      "values": [
+        "192.0.78.241",
+        "192.0.78.132"
+      ]
+    },
+    {
+      "name": "www.melvinvarghese.in",
+      "type": "CNAME",
+      "values": [
+        "melvinvarghese.in."
+      ]
+    },
+    {
+      "name": "melvinvarghese.in",
+      "type": "MX",
+      "values": [
+        "0 smtp-fwd.wordpress.com."
+      ]
+    }
+  ],
+  "limits": "Partial public observation only, NOT a full DNS export. Does not enumerate TXT/DKIM/other subdomains. Review full WordPress DNS export before changing nameservers."
+}

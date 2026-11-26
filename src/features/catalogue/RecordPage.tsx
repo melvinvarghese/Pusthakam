@@ -1,3 +1,4 @@
+import { useTranslation } from "@/lib/translations";
 import { useState } from "react";
 import { BookCover } from "./BookCover";
 import { Link, useParams } from "react-router-dom";
@@ -23,6 +24,7 @@ type Dialog =
   | null;
 
 export function RecordPage() {
+  const { t } = useTranslation();
   const id = Number(useParams().id);
   const { session } = useSession();
   const canWrite = can(session, "catalogue.write");
@@ -37,12 +39,12 @@ export function RecordPage() {
     onSuccess: () => qc.invalidateQueries({ queryKey: ["catalogue"] }),
   });
 
-  if (record.isPending) return <div className="p-6 text-muted" role="status">Loading record…</div>;
+  if (record.isPending) return <div className="p-6 text-muted" role="status">{t("Loading record…")}</div>;
   if (record.isError || !record.data) {
     return (
       <div className="mx-auto max-w-[1100px] space-y-3 p-6" role="alert">
-        <p className="text-danger">{record.error instanceof ApiError ? record.error.message : "Could not load this record."}</p>
-        <Link to="/catalogue" className="underline">Back to the catalogue</Link>
+        <p className="text-danger">{record.error instanceof ApiError ? record.error.message : t("Could not load this record.")}</p>
+        <Link to="/catalogue" className="underline">{t("Back to the catalogue")}</Link>
       </div>
     );
   }
@@ -68,70 +70,70 @@ export function RecordPage() {
 
   return (
     <div className="mx-auto max-w-[1100px] space-y-5 p-6">
-      <p><Link to="/catalogue" className="text-muted hover:underline">Catalogue</Link></p>
+      <p><Link to="/catalogue" className="text-muted hover:underline">{t("Catalogue")}</Link></p>
       <PageHeader
         title={r.title}
         description={r.subtitle ?? undefined}
         actions={canWrite && (
           <>
-            <Button onClick={() => setDialog({ type: "edit" })}>Edit record</Button>
-            <Button disabled={archive.isPending} onClick={() => archive.mutate(!r.archived)}>{r.archived ? "Restore" : "Archive"}</Button>
-            {!r.archived && <Button variant="primary" onClick={() => setDialog({ type: "add" })}>Add copies</Button>}
+            <Button onClick={() => setDialog({ type: "edit" })}>{t("Edit record")}</Button>
+            <Button disabled={archive.isPending} onClick={() => archive.mutate(!r.archived)}>{r.archived ? t("Restore") : t("Archive")}</Button>
+            {!r.archived && <Button variant="primary" onClick={() => setDialog({ type: "add" })}>{t("Add copies")}</Button>}
           </>
         )}
       />
-      {r.archived && <p><Chip>Archived</Chip> <span className="text-muted">This record is hidden from search.</span></p>}
-      {archive.isError && <p role="alert" className="text-danger">{archive.error instanceof ApiError ? archive.error.message : "Could not update."}</p>}
+      {r.archived && <p><Chip>{t("Archived")}</Chip> <span className="text-muted">{t("This record is hidden from search.")}</span></p>}
+      {archive.isError && <p role="alert" className="text-danger">{archive.error instanceof ApiError ? archive.error.message : t("Could not update.")}</p>}
 
       <BookCover key={id} id={id} title={r.title} isbn={r.isbn13 ?? r.isbn10} editable={canWrite && !r.archived} />
       <Panel aria-labelledby="details-h">
-        <PanelHeader id="details-h" title="Details" />
+        <PanelHeader id="details-h" title={t("Details")} />
         <dl className="grid grid-cols-[11rem_1fr] gap-x-4 gap-y-2 p-4">
-          <dt className="text-muted">Contributors</dt>
-          <dd>{r.contributors.length ? r.contributors.map((c, i) => <span key={i} className="mr-3 inline-block">{c.name}{c.role !== "author" && <span className="text-muted"> ({ROLE_LABELS[c.role]})</span>}</span>) : <span className="text-muted">None</span>}</dd>
+          <dt className="text-muted">{t("Contributors")}</dt>
+          <dd>{r.contributors.length ? r.contributors.map((c, i) => <span key={i} className="mr-3 inline-block">{c.name}{c.role !== "author" && <span className="text-muted"> ({t(ROLE_LABELS[c.role])})</span>}</span>) : <span className="text-muted">{t("None")}</span>}</dd>
           {details.filter(([, v]) => v !== null && v !== "").map(([k, v]) => (
-            <div key={k} className="contents"><dt className="text-muted">{k}</dt><dd>{v}</dd></div>
+            <div key={k} className="contents"><dt className="text-muted">{t(k)}</dt><dd>{v}</dd></div>
           ))}
-          <dt className="text-muted">Subjects</dt>
-          <dd>{r.subjects.length ? r.subjects.join(" · ") : <span className="text-muted">None</span>}</dd>
-          {r.abstract && <><dt className="text-muted">Abstract</dt><dd className="max-w-prose">{r.abstract}</dd></>}
-          {r.notes && <><dt className="text-muted">Notes</dt><dd className="max-w-prose">{r.notes}</dd></>}
+          <dt className="text-muted">{t("Subjects")}</dt>
+          <dd>{r.subjects.length ? r.subjects.join(" · ") : <span className="text-muted">{t("None")}</span>}</dd>
+          {r.abstract && <><dt className="text-muted">{t("Abstract")}</dt><dd className="max-w-prose">{r.abstract}</dd></>}
+          {r.notes && <><dt className="text-muted">{t("Notes")}</dt><dd className="max-w-prose">{r.notes}</dd></>}
         </dl>
       </Panel>
 
       <Panel aria-labelledby="copies-h">
-        <PanelHeader id="copies-h" title={`Copies (${r.copies.length})`} />
+        <PanelHeader id="copies-h" title={t("Copies ({count})", { count: r.copies.length })} />
         {r.copies.length === 0 ? (
-          <p className="px-4 py-8 text-center text-muted">This title has no copies yet.{canWrite && !r.archived ? " Add copies to put it on the shelf." : ""}</p>
+          <p className="px-4 py-8 text-center text-muted">{t("This title has no copies yet.")}{canWrite && !r.archived ? ` ${t("Add copies to put it on the shelf.")}` : ""}</p>
         ) : (
           <table className="w-full table-fixed border-collapse">
             <thead>
               <tr className="h-8 text-left text-[11px] font-semibold uppercase tracking-wide text-muted">
-                <th className="w-32 border-b border-line px-4">Accession</th>
-                <th className="w-36 border-b border-line px-4">Call number</th>
-                <th className="border-b border-line px-4">Where</th>
-                <th className="w-28 border-b border-line px-4">Status</th>
+                <th className="w-32 border-b border-line px-4">{t("Accession")}</th>
+                <th className="w-36 border-b border-line px-4">{t("Call number")}</th>
+                <th className="border-b border-line px-4">{t("Where")}</th>
+                <th className="w-28 border-b border-line px-4">{t("Status")}</th>
                 <th className="w-52 border-b border-line px-4" />
               </tr>
             </thead>
             <tbody>
               {r.copies.map((c) => (
                 <tr key={c.id}>
-                  <td className="border-b border-line px-4 py-2 font-mono text-xs">{c.accessionNo}{c.barcode !== c.accessionNo && <span className="block text-muted">Barcode {c.barcode}</span>}</td>
-                  <td className="border-b border-line px-4 py-2">{c.callNumber ?? <span className="text-muted">Not set</span>}</td>
+                  <td className="border-b border-line px-4 py-2 font-mono text-xs">{c.accessionNo}{c.barcode !== c.accessionNo && <span className="block text-muted">{t("Barcode")} {c.barcode}</span>}</td>
+                  <td className="border-b border-line px-4 py-2">{c.callNumber ?? <span className="text-muted">{t("Not set")}</span>}</td>
                   <td className="border-b border-line px-4 py-2">
-                    {[name(cfg?.locations, c.locationId), shelfCode(c.shelfId)].filter(Boolean).join(" · ") || <span className="text-muted">Not set</span>}
+                    {[name(cfg?.locations, c.locationId), shelfCode(c.shelfId)].filter(Boolean).join(" · ") || <span className="text-muted">{t("Not set")}</span>}
                     <span className="block text-xs text-muted">
                       {[name(cfg?.collections, c.collectionId), name(cfg?.itemCategories, c.itemCategoryId), c.priceMinor != null ? formatMinor(c.priceMinor, currency) : null].filter(Boolean).join(" · ")}
                     </span>
                   </td>
                   <td className="border-b border-line px-4 py-2"><StatusChip status={c.status} /></td>
                   <td className="whitespace-nowrap border-b border-line px-4 py-2 text-right">
-                    <Button size="sm" variant="ghost" onClick={() => setDialog({ type: "label", copy: c })}>Label</Button>
+                    <Button size="sm" variant="ghost" onClick={() => setDialog({ type: "label", copy: c })}>{t("Label")}</Button>
                     {canWrite && cfg && (
                       <>
-                        <Button size="sm" variant="ghost" onClick={() => setDialog({ type: "copy", copy: c })}>Edit</Button>
-                        <Button size="sm" variant="ghost" onClick={() => setDialog({ type: "status", copy: c })}>Status</Button>
+                        <Button size="sm" variant="ghost" onClick={() => setDialog({ type: "copy", copy: c })}>{t("Edit")}</Button>
+                        <Button size="sm" variant="ghost" onClick={() => setDialog({ type: "status", copy: c })}>{t("Status")}</Button>
                       </>
                     )}
                   </td>

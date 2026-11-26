@@ -1,3 +1,5 @@
+import { act } from "@testing-library/react";
+import { setLanguage } from "@/lib/language";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -11,6 +13,7 @@ vi.mock("@tauri-apps/api/core", () => ({ invoke: vi.fn() }));
 beforeEach(() => { vi.spyOn(circulationApi, "listOpenLoans").mockResolvedValue({rows:[],page:1,pageSize:25,total:0}); });
 
 afterEach(() => {
+  setLanguage("en");
   vi.unstubAllGlobals();
   vi.restoreAllMocks();
   vi.mocked(invoke).mockReset();
@@ -29,6 +32,26 @@ function renderCirculation(admin = false, catalogue = false) {
     </QueryClientProvider>,
   );
 }
+
+it("renews in Malayalam without changing the barcode or confirmation payload", async () => {
+  const preview = { loanId: 17, memberName: "Members", title: "Catalogue", previousDueOn: "2026-11-20", dueOn: "2026-11-27" };
+  vi.mocked(invoke).mockResolvedValueOnce(preview).mockResolvedValueOnce(undefined);
+  renderCirculation();
+  await userEvent.click(screen.getByRole("button", { name: "Renew" }));
+  await userEvent.type(screen.getByRole("textbox", { name: "Book barcode or accession number" }), "000123");
+  act(() => setLanguage("ml"));
+  expect(screen.getByRole("textbox", { name: "പുസ്തകത്തിന്റെ ബാർകോഡ് അല്ലെങ്കിൽ അക്സഷൻ നമ്പർ" })).toHaveValue("000123");
+  await userEvent.click(screen.getByRole("button", { name: "നീട്ടേണ്ട കാലാവധി പരിശോധിക്കുക" }));
+  const dialog = within(await screen.findByRole("dialog", { name: "കാലാവധി നീട്ടുന്നത് ഉറപ്പാക്കുക" }));
+  expect(dialog.getByText("Catalogue")).toBeInTheDocument();
+  expect(dialog.getByText("Members")).toBeInTheDocument();
+  await userEvent.click(dialog.getByRole("button", { name: "കാലാവധി നീട്ടുക" }));
+  expect(invoke).toHaveBeenCalledWith("circulation_prepare_renewal", { barcode: "000123" });
+  expect(invoke).toHaveBeenLastCalledWith("circulation_renew", { confirmation: { loanId: 17, previousDueOn: "2026-11-20", dueOn: "2026-11-27" } });
+  expect(await screen.findByRole("status")).toHaveTextContent("Catalogue എന്ന പുസ്തകത്തിന്റെ കാലാവധി നീട്ടി.");
+  act(() => setLanguage("en"));
+  expect(screen.getByRole("status")).toHaveTextContent("Renewed Catalogue. Now due 2026-11-27.");
+});
 
 it("returns keyboard focus to the member lookup button when dismissed", async () => {
   renderCirculation();

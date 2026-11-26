@@ -1,0 +1,27 @@
+{
+  "approvedAt": "2026-11-26T14:43:30.016Z",
+  "status": "owner-approved",
+  "style": "Everyday Malayalam; familiar borrowed terms; avoid obscure jargon",
+  "terms": {
+    "Library": "ലൈബ്രറി",
+    "Books": "പുസ്തകങ്ങൾ",
+    "Catalogue": "പുസ്തകപ്പട്ടിക",
+    "Dashboard": "പ്രധാന പേജ്",
+    "Members": "അംഗങ്ങൾ",
+    "Issue book": "പുസ്തകം നൽകുക",
+    "Return book": "പുസ്തകം തിരികെ വാങ്ങുക",
+    "Renew": "കാലാവധി നീട്ടുക",
+    "Reserve book": "പുസ്തകം ബുക്ക് ചെയ്യുക",
+    "Due date": "തിരികെ നൽകേണ്ട തീയതി",
+    "Overdue": "കാലാവധി കഴിഞ്ഞത്",
+    "Fine": "പിഴ",
+    "Search": "തിരയുക",
+    "Add book": "പുസ്തകം ചേർക്കുക",
+    "Save": "സേവ് ചെയ്യുക",
+    "Cancel": "റദ്ദാക്കുക",
+    "Settings": "ക്രമീകരണങ്ങൾ",
+    "Sign in": "ലോഗിൻ ചെയ്യുക",
+    "Sign out": "ലോഗൗട്ട് ചെയ്യുക",
+    "Backup": "ബാക്കപ്പ്"
+  }
+}

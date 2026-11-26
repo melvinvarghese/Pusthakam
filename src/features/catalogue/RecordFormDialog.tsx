@@ -1,3 +1,4 @@
+import { useTranslation } from "@/lib/translations";
 import { useState, type FormEvent } from "react";
 import { Link } from "react-router-dom";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -18,6 +19,7 @@ const emptyToNull = (s: string) => (s.trim() === "" ? null : s.trim());
 
 /** Create or edit a bibliographic record. New records are checked for duplicates first; staff may still save. */
 export function RecordFormDialog({ record, onClose, onSaved }: Props) {
+  const { t } = useTranslation();
   const qc = useQueryClient();
   const config = useConfig();
   const schemes = config.data?.classificationSchemes ?? [];
@@ -101,11 +103,11 @@ export function RecordFormDialog({ record, onClose, onSaved }: Props) {
   const setPerson = (i: number, patch: Partial<Contributor>) => setPeople(people.map((p, j) => (j === i ? { ...p, ...patch } : p)));
 
   return (
-    <Modal title={record ? "Edit record" : "Add record"} onClose={onClose} wide>
+    <Modal title={record ? t("Edit record") : t("Add record")} onClose={onClose} wide>
       <form onSubmit={submit} className="space-y-4" noValidate>
         {duplicates && (
           <div role="alert" className="rounded-md border border-warn/40 bg-warn-bg p-3 text-warn">
-            <p className="font-semibold">This looks like a record you already have:</p>
+            <p className="font-semibold">{t("This looks like a record you already have:")}</p>
             <ul className="mt-1 list-disc pl-5">
               {duplicates.map((d) => (
                 <li key={d.id}>
@@ -114,77 +116,75 @@ export function RecordFormDialog({ record, onClose, onSaved }: Props) {
                 </li>
               ))}
             </ul>
-            <p className="mt-2">If this is another copy, open that record and add a copy instead. Otherwise save it as a new record.</p>
+            <p className="mt-2">{t("If this is another copy, open that record and add a copy instead. Otherwise save it as a new record.")}</p>
             <div className="mt-2 flex gap-2">
-              <Button type="button" onClick={() => setDuplicates(null)}>Keep editing</Button>
-              <Button type="button" variant="primary" disabled={busy} onClick={() => save.mutate()}>Save as a new record</Button>
+              <Button type="button" onClick={() => setDuplicates(null)}>{t("Keep editing")}</Button>
+              <Button type="button" variant="primary" disabled={busy} onClick={() => save.mutate()}>{t("Save as a new record")}</Button>
             </div>
           </div>
         )}
 
         <div className="grid grid-cols-2 gap-3">
-          <div className="col-span-2"><TextField label="Title" value={f.title} onChange={set("title")} /></div>
-          <div className="col-span-2"><TextField label="Subtitle" value={f.subtitle} onChange={set("subtitle")} /></div>
+          <div className="col-span-2"><TextField label={t("Title")} value={f.title} onChange={set("title")} /></div>
+          <div className="col-span-2"><TextField label={t("Subtitle")} value={f.subtitle} onChange={set("subtitle")} /></div>
         </div>
 
         <fieldset className="space-y-2">
-          <legend className="text-[13px] font-medium">Authors and other contributors</legend>
+          <legend className="text-[13px] font-medium">{t("Authors and other contributors")}</legend>
           {people.map((p, i) => (
             <div key={i} className="flex items-end gap-2">
-              <div className="flex-1"><TextField label={`Name ${i + 1}`} value={p.name} onChange={(e) => setPerson(i, { name: e.target.value })} /></div>
+              <div className="flex-1"><TextField label={t("Name {number}", { number: i + 1 })} value={p.name} onChange={(e) => setPerson(i, { name: e.target.value })} /></div>
               <div className="w-44">
-                <SelectField label="Role" value={p.role} onChange={(e) => setPerson(i, { role: e.target.value as ContributorRole })}>
-                  {Object.entries(ROLE_LABELS).map(([v, l]) => <option key={v} value={v}>{l}</option>)}
+                <SelectField label={t("Role")} value={p.role} onChange={(e) => setPerson(i, { role: e.target.value as ContributorRole })}>
+                  {Object.entries(ROLE_LABELS).map(([v, l]) => <option key={v} value={v}>{t(l)}</option>)}
                 </SelectField>
               </div>
-              <Button type="button" variant="ghost" aria-label={`Remove contributor ${i + 1}`} onClick={() => setPeople(people.filter((_, j) => j !== i))} disabled={people.length === 1 && !p.name}>
-                Remove
-              </Button>
+              <Button type="button" variant="ghost" aria-label={t("Remove contributor {number}", { number: i + 1 })} onClick={() => setPeople(people.filter((_, j) => j !== i))} disabled={people.length === 1 && !p.name}>
+                {t("Remove")}</Button>
             </div>
           ))}
           <Button type="button" size="sm" onClick={() => setPeople([...people, { name: "", role: people.some((p) => p.role === "author") ? "additional_author" : "author" }])}>
-            Add contributor
-          </Button>
+            {t("Add contributor")}</Button>
         </fieldset>
 
         <div className="grid grid-cols-3 gap-3">
-          <TextField label="ISBN" value={f.isbn} onChange={set("isbn")} hint="10 or 13 digits" />
-          <TextField label="Publisher" value={f.publisher} onChange={set("publisher")} />
-          <TextField label="Place of publication" value={f.place} onChange={set("place")} />
-          <TextField label="Year" value={f.year} onChange={set("year")} inputMode="numeric" />
-          <TextField label="Edition" value={f.edition} onChange={set("edition")} />
-          <TextField label="Language" value={f.language} onChange={set("language")} />
-          <TextField label="Pagination" value={f.pagination} onChange={set("pagination")} hint="For example 320 p." />
-          <TextField label="Physical description" value={f.physical} onChange={set("physical")} />
-          <TextField label="Series" value={f.series} onChange={set("series")} />
-          <SelectField label="Classification scheme" value={f.scheme} onChange={set("scheme")}>
+          <TextField label="ISBN" value={f.isbn} onChange={set("isbn")} hint={t("10 or 13 digits")} />
+          <TextField label={t("Publisher")} value={f.publisher} onChange={set("publisher")} />
+          <TextField label={t("Place of publication")} value={f.place} onChange={set("place")} />
+          <TextField label={t("Year")} value={f.year} onChange={set("year")} inputMode="numeric" />
+          <TextField label={t("Edition")} value={f.edition} onChange={set("edition")} />
+          <TextField label={t("Language")} value={f.language} onChange={set("language")} />
+          <TextField label={t("Pagination")} value={f.pagination} onChange={set("pagination")} hint={t("For example 320 p.")} />
+          <TextField label={t("Physical description")} value={f.physical} onChange={set("physical")} />
+          <TextField label={t("Series")} value={f.series} onChange={set("series")} />
+          <SelectField label={t("Classification scheme")} value={f.scheme} onChange={set("scheme")}>
             {schemes.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
           </SelectField>
-          <TextField label="Classification number" value={f.classification} onChange={set("classification")} hint="For example 894.8123" />
-          <TextField label="Keywords" value={f.keywords} onChange={set("keywords")} />
+          <TextField label={t("Classification number")} value={f.classification} onChange={set("classification")} hint={t("For example 894.8123")} />
+          <TextField label={t("Keywords")} value={f.keywords} onChange={set("keywords")} />
         </div>
 
         <div className="space-y-1">
-          <label htmlFor="subjects" className="block text-[13px] font-medium">Subjects</label>
+          <label htmlFor="subjects" className="block text-[13px] font-medium">{t("Subjects")}</label>
           <textarea id="subjects" value={f.subjects} onChange={set("subjects")} rows={3}
             className="w-full rounded-md border border-line-strong bg-surface px-3 py-2 text-[13px]" />
-          <p className="text-xs text-muted">One subject heading per line.</p>
+          <p className="text-xs text-muted">{t("One subject heading per line.")}</p>
         </div>
         <div className="grid grid-cols-2 gap-3">
           <div className="space-y-1">
-            <label htmlFor="abstract" className="block text-[13px] font-medium">Abstract</label>
+            <label htmlFor="abstract" className="block text-[13px] font-medium">{t("Abstract")}</label>
             <textarea id="abstract" value={f.abstract} onChange={set("abstract")} rows={3} className="w-full rounded-md border border-line-strong bg-surface px-3 py-2 text-[13px]" />
           </div>
           <div className="space-y-1">
-            <label htmlFor="notes" className="block text-[13px] font-medium">Notes</label>
+            <label htmlFor="notes" className="block text-[13px] font-medium">{t("Notes")}</label>
             <textarea id="notes" value={f.notes} onChange={set("notes")} rows={3} className="w-full rounded-md border border-line-strong bg-surface px-3 py-2 text-[13px]" />
           </div>
         </div>
 
-        {error && <p role="alert" className="text-xs text-danger">{error}</p>}
+        {error && <p role="alert" className="text-xs text-danger">{t(error)}</p>}
         <div className="flex justify-end gap-2 pt-1">
-          <Button type="button" onClick={onClose}>Cancel</Button>
-          <Button type="submit" variant="primary" disabled={busy}>{busy ? "Saving…" : record ? "Save changes" : "Save record"}</Button>
+          <Button type="button" onClick={onClose}>{t("Cancel")}</Button>
+          <Button type="submit" variant="primary" disabled={busy}>{busy ? t("Saving…") : record ? t("Save changes") : t("Save record")}</Button>
         </div>
       </form>
     </Modal>

@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import JsBarcode from "jsbarcode";
 import { Chip } from "@/components/ui/Chip";
+import { useTranslation } from "@/lib/translations";
 import { configApi } from "@/lib/api";
 import type { CopyStatus } from "@/lib/api/types";
 
@@ -29,7 +30,8 @@ export const STATUS_LABELS: Record<CopyStatus, string> = {
 export const MANUAL_STATUSES: CopyStatus[] = ["available", "in_repair", "damaged", "lost", "withdrawn", "in_transit"];
 
 export function StatusChip({ status }: { status: CopyStatus }) {
-  return <Chip>{STATUS_LABELS[status]}</Chip>;
+  const { t } = useTranslation();
+  return <Chip>{t(STATUS_LABELS[status])}</Chip>;
 }
 
 export const SOURCE_LABELS = { purchase: "Purchase", donation: "Donation", transfer: "Transfer", exchange: "Exchange", other: "Other" } as const;

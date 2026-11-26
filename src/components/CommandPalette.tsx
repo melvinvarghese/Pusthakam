@@ -1,3 +1,4 @@
+import { useTranslation } from "@/lib/translations";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Search } from "lucide-react";
@@ -11,6 +12,7 @@ interface Props {
 
 /** Ctrl/Cmd+K quick navigation. Record search joins this palette when the catalogue ships (Phase 3). */
 export function CommandPalette({ open, onClose }: Props) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [query, setQuery] = useState("");
   const [active, setActive] = useState(0);
@@ -19,7 +21,7 @@ export function CommandPalette({ open, onClose }: Props) {
 
   const q = query.trim().toLowerCase();
   const results = groups.flatMap((g) => g.items
-    .filter((item) => item.label.toLowerCase().includes(q))
+    .filter((item) => [item.label, t(item.label)].some(label => label.toLowerCase().includes(q)))
     .map((item) => ({ ...item, group: g.label })));
 
   useEffect(() => {
@@ -59,7 +61,7 @@ export function CommandPalette({ open, onClose }: Props) {
       <div
         role="dialog"
         aria-modal="true"
-        aria-label="Quick navigation"
+        aria-label={t("Quick navigation")}
         className="palette-in w-[min(32rem,90vw)] overflow-hidden rounded-lg border border-line-strong bg-surface shadow-[0_16px_40px_-8px_rgb(13_20_32/0.45)]"
         onMouseDown={(e) => e.stopPropagation()}
         onKeyDown={onKeyDown}
@@ -70,8 +72,8 @@ export function CommandPalette({ open, onClose }: Props) {
             ref={inputRef}
             value={query}
             onChange={(e) => { setQuery(e.target.value); setActive(0); }}
-            placeholder="Go to a section"
-            aria-label="Go to section"
+            placeholder={t("Go to a section")}
+            aria-label={t("Go to section")}
             role="combobox"
             aria-expanded="true"
             aria-controls="palette-list"
@@ -79,7 +81,7 @@ export function CommandPalette({ open, onClose }: Props) {
           />
         </div>
         <ul id="palette-list" role="listbox" className="max-h-72 overflow-auto p-1">
-          {results.length === 0 && <li className="px-3 py-6 text-center text-muted">No matching sections</li>}
+          {results.length === 0 && <li className="px-3 py-6 text-center text-muted">{t("No matching sections")}</li>}
           {results.map((item, i) => (
             <li
               key={item.path}
@@ -89,8 +91,8 @@ export function CommandPalette({ open, onClose }: Props) {
               onClick={() => go(item.path)}
               className={cn("flex cursor-pointer items-center gap-2 rounded-md px-3 py-2", i === active && "bg-band")}
             >
-              <span className={cn(!item.available && "text-muted")}>{item.label}</span>
-              <span className="ml-auto text-xs text-muted">{item.available ? item.group : `Phase ${item.phase}`}</span>
+              <span className={cn(!item.available && "text-muted")}>{t(item.label)}</span>
+              <span className="ml-auto text-xs text-muted">{item.available ? t(item.group) : `Phase ${item.phase}`}</span>
             </li>
           ))}
         </ul>

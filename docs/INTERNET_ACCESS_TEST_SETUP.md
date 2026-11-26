@@ -62,3 +62,8 @@ Owner acceptance26 November2026: fresh temporary public address worked on anothe
 
 
 Owner follow-up26 November2026: BOTH OPAC and staff worked on another device on another network, answering the portal/sign-in question. Both-portal external-device acceptance passes for this temporary isolated demo. Full workflows and production availability remain separate; no permanent custom domain/always-on deployment exists.
+
+
+## Final scope clarification: test complete
+
+Owner only wanted proof that Pusthakam OPAC and staff can be reached over the internet. Both were confirmed working from another device/network using an isolated demo library and the release server. No permanent domain, hosting purchase, alternative provider or email/DNS migration is requested. Stop permanent setup; preserve WordPress website/nameservers and existing Gmail forwarding. The real owner library has not been published. Historical stable-hosting instructions are not active next steps. Current temporary URL availability was not rechecked at this documentation checkpoint.
