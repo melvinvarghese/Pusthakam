@@ -1,11 +1,11 @@
 {
   "schemaVersion": 1,
-  "lastUpdated": "2026-11-26T03:05:19.393Z",
+  "lastUpdated": "2026-11-26T03:52:07.740Z",
   "currentPhase": "7b",
   "currentTask": {
-    "title": "Both public OPAC and staff confirmed across networks",
+    "title": "Malayalam requirement recorded; implementation deferred by owner",
     "status": "implemented",
-    "detail": "Owner explicitly confirms BOTH OPAC and staff worked on another device on another network, answering the OPAC/staff including sign-in acceptance question. Record both-portal outside-network walkthrough as passed for the temporary isolated demo. Full module workflows, imports/uploads, hardware, Safari/real-keyboard coverage and production availability are not inferred. Temporary origin https://assistant-habits-putting-completing.trycloudflare.com; requires PC and launcher running, changes on restart. Public DNS/HTTPS/API checks previously passed; WordPress main website/DNS untouched. No permanent custom domain or always-on server deployed. Next product step is optional stable domain/hosting integration and production acceptance, distinct from this successful demo. No app source, credentials, database or network changes made for this confirmation."
+    "detail": "Malayalam version requested for future development. Owner explicitly says do not start now; save the requirement in progress, roadmap and handover only. Implementation is DEFERRED until a later explicit instruction. Preliminary architecture/string audit preceded the clarification; its temporary inventory has been removed. No application source, translation framework, dependencies, language switch, build or installer changes were made. Localization coverage and language-selection design remain to be agreed when authorized. Reconcile the older English-only CLAUDE.md convention with this newer owner requirement when implementation starts. Existing English app and confirmed temporary cross-network OPAC/staff acceptance remain unchanged. Planned requirement only; no v1 weights or completion credit changed."
   },
   "nextMilestone": {
     "title": "macOS and Linux package smoke tests",
@@ -3839,6 +3839,12 @@
     }
   ],
   "recentActivity": [
+    {
+      "kind": "progress",
+      "at": "2026-11-26T03:52:07.740Z",
+      "title": "Malayalam version saved as a future requirement",
+      "detail": "Malayalam version requested for future development. Owner explicitly says do not start now; save the requirement in progress, roadmap and handover only. Implementation is DEFERRED until a later explicit instruction. Preliminary architecture/string audit preceded the clarification; its temporary inventory has been removed. No application source, translation framework, dependencies, language switch, build or installer changes were made. Localization coverage and language-selection design remain to be agreed when authorized. Reconcile the older English-only CLAUDE.md convention with this newer owner requirement when implementation starts. Existing English app and confirmed temporary cross-network OPAC/staff acceptance remain unchanged. Planned requirement only; no v1 weights or completion credit changed."
+    },
     {
       "kind": "progress",
       "at": "2026-11-26T03:05:19.393Z",

@@ -1,5 +1,11 @@
 # PROGRESS
 
+## Planned only: Malayalam version; do not implement yet
+
+2026-11-26T03:52:07.740Z
+
+Malayalam version requested for future development. Owner explicitly says do not start now; save the requirement in progress, roadmap and handover only. Implementation is DEFERRED until a later explicit instruction. Preliminary architecture/string audit preceded the clarification; its temporary inventory has been removed. No application source, translation framework, dependencies, language switch, build or installer changes were made. Localization coverage and language-selection design remain to be agreed when authorized. Reconcile the older English-only CLAUDE.md convention with this newer owner requirement when implementation starts. Existing English app and confirmed temporary cross-network OPAC/staff acceptance remain unchanged. Planned requirement only; no v1 weights or completion credit changed.
+
 ## Current: both portals work across networks
 
 2026-11-26T03:05:19.393Z

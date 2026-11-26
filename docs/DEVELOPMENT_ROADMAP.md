@@ -106,3 +106,10 @@ Strict Debian package/asset/startup/restart/uninstall checks and regression test
 ## V3 browser parity and internet hosting — owner-authorized expansion (25 November 2026)
 
 Library PC by default plus optional always-on server; local and internet OPAC/full staff access. Sequence: command inventory and shared transport; independent request/session/import ownership; permission-preserving handlers and browser file adapters; shared /staff UI; headless host and HTTPS deployment profiles; full feature/role matrix, backup/restore host migration and real-device/internet acceptance. Track partial evidence in currentTask without inflating v1 weights. STAFF_BROWSER_PARITY.md is authoritative for this expansion.
+
+
+## Deferred Malayalam version — owner request, 26 November 2026
+
+Owner requests a Malayalam version/interface of Pusthakam and explicitly says NOT to start implementation now. Record only. Status: PLANNED / NOT STARTED. Begin only after a later explicit instruction. No application source, translations, language switch, dependency, build or installer changes have been made.
+
+When authorized, agree localization coverage (desktop, browser staff, public OPAC and printed/exported material as applicable), language-selection behavior and Malayalam terminology. Preserve library records and reconcile the older English-only CLAUDE.md convention with this newer request. Existing English functionality and confirmed public-access test are unchanged. This future requirement adds no v1 weight or implementation/verification credit.
