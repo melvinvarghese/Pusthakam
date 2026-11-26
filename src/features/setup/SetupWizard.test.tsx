@@ -8,6 +8,7 @@ vi.mock("@/lib/api", async (orig) => ({ ...(await orig<typeof import("@/lib/api"
 
 import { ApiError } from "@/lib/api";
 import { SetupWizard, validateStep } from "./SetupWizard";
+import { setLanguage } from "@/lib/language";
 
 const FORM = {
   name: "Demo Library", profile: "school" as const, address: "", currency: "INR", applyDefaults: true, fine: "0",
@@ -21,6 +22,7 @@ function renderWizard() {
 
 // Braces matter: returning the mock from beforeEach would make Vitest call it again as "cleanup".
 beforeEach(() => {
+  setLanguage("en");
   api.completeSetup.mockReset();
 });
 
@@ -40,6 +42,31 @@ describe("validateStep", () => {
 });
 
 describe("SetupWizard", () => {
+  it("defaults to English and switches setup language without losing entered data", async () => {
+    const view = renderWizard();
+    expect(screen.getByLabelText("Language / ഭാഷ")).toHaveValue("en");
+    await userEvent.type(screen.getByLabelText("Library name"), "My Library");
+    await userEvent.selectOptions(screen.getByLabelText("Language / ഭാഷ"), "ml");
+    expect(screen.getByLabelText("ലൈബ്രറിയുടെ പേര്")).toHaveValue("My Library");
+    expect(document.documentElement.lang).toBe("ml");
+    expect(localStorage.getItem("pusthakam.language")).toBe("ml");
+    await userEvent.click(screen.getByRole("button", { name: "തുടരുക" }));
+    await userEvent.click(screen.getByRole("button", { name: "തുടരുക" }));
+    await userEvent.type(screen.getByLabelText("നിങ്ങളുടെ പേര്"), "Melvin");
+    await userEvent.type(screen.getByLabelText("ഉപയോക്തൃനാമം"), "admin");
+    await userEvent.type(screen.getByLabelText("പാസ്‌വേഡ്"), "long password");
+    await userEvent.type(screen.getByLabelText("പാസ്‌വേഡ് വീണ്ടും നൽകുക"), "long password");
+    api.completeSetup.mockResolvedValue({});
+    await userEvent.click(screen.getByRole("button", { name: "ലൈബ്രറി സൃഷ്ടിക്കുക" }));
+    expect(api.completeSetup.mock.calls[0]?.[0].library).toMatchObject({ name: "My Library", locale: "ml" });
+    view.unmount();
+    renderWizard();
+    expect(screen.getByLabelText("Language / ഭാഷ")).toHaveValue("ml");
+    await userEvent.selectOptions(screen.getByLabelText("Language / ഭാഷ"), "en");
+    expect(screen.getByLabelText("Library name")).toBeInTheDocument();
+    expect(document.documentElement.lang).toBe("en");
+  });
+
   it("will not move on without a library name", async () => {
     renderWizard();
     await userEvent.click(screen.getByRole("button", { name: "Continue" }));

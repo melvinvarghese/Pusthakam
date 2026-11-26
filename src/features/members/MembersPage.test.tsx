@@ -1,3 +1,5 @@
+import { act } from "@testing-library/react";
+import { setLanguage } from "@/lib/language";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -8,9 +10,33 @@ import { MembersPage } from "./MembersPage";
 
 vi.mock("@tauri-apps/api/core", () => ({ invoke: vi.fn() }));
 afterEach(() => {
+  setLanguage("en");
   vi.unstubAllGlobals();
   vi.restoreAllMocks();
   vi.mocked(invoke).mockReset();
+});
+
+it("keeps member data and unsaved registration fields when changing language", async () => {
+  vi.stubGlobal("__TAURI_INTERNALS__", {});
+  vi.mocked(invoke).mockImplementation(async command => {
+    if (command === "config_overview") return { memberCategories: [{ id: 1, name: "Students", archived: false }] } as never;
+    return { page: 1, pageSize: 25, total: 1, rows: [{ id: 4, name: "Save", memberNumber: "0001", categoryName: "Students", expiresOn: "2027-01-01" }] } as never;
+  });
+  render(<QueryClientProvider client={new QueryClient()}>
+    <SessionContext.Provider value={{ session: { userId: 1, username: "staff", displayName: "Staff", role: "librarian", permissions: ["members.read", "members.write"] }, signOut: async () => {} }}>
+      <MembersPage />
+    </SessionContext.Provider>
+  </QueryClientProvider>);
+  await screen.findByText("Save");
+  await userEvent.click(screen.getByRole("button", { name: "Register member" }));
+  await userEvent.type(screen.getByRole("textbox", { name: "Name" }), "Catalogue");
+  act(() => setLanguage("ml"));
+  const dialog = within(screen.getByRole("dialog", { name: "അംഗത്തെ ചേർക്കുക" }));
+  expect(dialog.getByRole("textbox", { name: "പേര്" })).toHaveValue("Catalogue");
+  expect(dialog.getByRole("option", { name: "Students" })).toBeInTheDocument();
+  await userEvent.click(dialog.getByRole("button", { name: "റദ്ദാക്കുക" }));
+  expect(screen.getByText("Save")).toBeInTheDocument();
+  expect(screen.getByText("0001")).toBeInTheDocument();
 });
 
 it("opens loan history for an archived member with read-only access", async () => {

@@ -6,6 +6,8 @@ import { CheckField, SelectField, TextField } from "@/components/ui/Field";
 import { ApiError, authApi } from "@/lib/api";
 import type { ProfileCode, SetupInput } from "@/lib/api/types";
 import { parseMinor } from "@/lib/money";
+import { setLanguage, type Language } from "@/lib/language";
+import { useTranslation } from "@/lib/translations";
 import { cn } from "@/lib/utils";
 
 const PROFILES: { code: ProfileCode; label: string; hint: string }[] = [
@@ -59,6 +61,8 @@ export function validateStep(step: number, f: Form): Partial<Record<keyof Form, 
 }
 
 export function SetupWizard() {
+  const { language, t } = useTranslation();
+  const translatedError = (text?: string) => text ? t(text) : undefined;
   const qc = useQueryClient();
   const [step, setStep] = useState(0);
   const [form, setForm] = useState<Form>(INITIAL);
@@ -70,7 +74,7 @@ export function SetupWizard() {
       const input: SetupInput = {
         library: {
           name: form.name, profile: form.profile, address: form.address || null, contact: null,
-          currency: form.currency, locale: "en",
+          currency: form.currency, locale: language,
         },
         admin: { username: form.username, displayName: form.displayName, password: form.password },
         applyProfileDefaults: form.applyDefaults,
@@ -103,17 +107,17 @@ export function SetupWizard() {
           <div className="text-[15px] font-bold">Pusthakam</div>
         </div>
         <div>
-          <h1 className="text-xl font-bold leading-7 text-white">Set up your library</h1>
-          <p className="mt-1 text-rail-mute">This takes about two minutes. You can change everything later.</p>
+          <h1 className="text-xl font-bold leading-7 text-white">{t("Set up your library")}</h1>
+          <p className="mt-1 text-rail-mute">{t("This takes about two minutes. You can change everything later.")}</p>
         </div>
-        <ol className="space-y-1" aria-label="Setup steps">
+        <ol className="space-y-1" aria-label={t("Setup steps")}>
           {STEPS.map((label, i) => (
             <li
               key={label}
               aria-current={i === step ? "step" : undefined}
               className={cn("rounded-md px-3 py-1.5", i === step ? "bg-ink-2 font-semibold text-white" : "text-rail-mute")}
             >
-              {i + 1}. {label}
+              {i + 1}. {t(label)}
             </li>
           ))}
         </ol>
@@ -121,26 +125,30 @@ export function SetupWizard() {
 
       <main className="flex items-start justify-center overflow-auto bg-bg p-10">
         <form onSubmit={next} className="w-[min(32rem,100%)] space-y-5" noValidate>
-          <h2 className="text-lg font-bold leading-7 tracking-tight">{STEPS[step]}</h2>
+          <SelectField label="Language / ഭാഷ" value={language} onChange={(e) => setLanguage(e.target.value as Language)}>
+            <option value="en">English</option>
+            <option value="ml">മലയാളം</option>
+          </SelectField>
+          <h2 className="text-lg font-bold leading-7 tracking-tight">{t(STEPS[step] ?? STEPS[0])}</h2>
 
           {step === 0 && (
             <>
-              <TextField label="Library name" value={form.name} onChange={(e) => set("name", e.target.value)} error={errors.name} autoFocus />
+              <TextField label={t("Library name")} value={form.name} onChange={(e) => set("name", e.target.value)} error={translatedError(errors.name)} autoFocus />
               <SelectField
-                label="Type of library"
+                label={t("Type of library")}
                 value={form.profile}
                 onChange={(e) => set("profile", e.target.value as ProfileCode)}
-                hint={profile?.hint}
+                hint={profile ? t(profile.hint) : undefined}
               >
-                {PROFILES.map((p) => <option key={p.code} value={p.code}>{p.label}</option>)}
+                {PROFILES.map((p) => <option key={p.code} value={p.code}>{t(p.label)}</option>)}
               </SelectField>
-              <TextField label="Address (optional)" value={form.address} onChange={(e) => set("address", e.target.value)} />
+              <TextField label={t("Address (optional)")} value={form.address} onChange={(e) => set("address", e.target.value)} />
               <TextField
-                label="Currency"
+                label={t("Currency")}
                 value={form.currency}
                 onChange={(e) => set("currency", e.target.value.toUpperCase())}
-                error={errors.currency}
-                hint="Used for fines and purchase prices."
+                error={translatedError(errors.currency)}
+                hint={t("Used for fines and purchase prices.")}
                 maxLength={3}
                 className="w-28"
               />
@@ -150,17 +158,17 @@ export function SetupWizard() {
           {step === 1 && (
             <>
               <CheckField
-                label="Start with typical member categories and loan rules"
-                hint={`Creates the usual categories, collections and loan periods for a ${profile?.label.toLowerCase()}. You can edit all of it in Library Settings.`}
+                label={t("Start with typical member categories and loan rules")}
+                hint={language === "ml" ? `${profile ? t(profile.label) : "ലൈബ്രറി"}: സാധാരണ അംഗവിഭാഗങ്ങൾ, ശേഖരങ്ങൾ, പുസ്തക വിതരണ കാലാവധികൾ എന്നിവ സൃഷ്ടിക്കും. ലൈബ്രറി ക്രമീകരണങ്ങളിൽ ഇവ മാറ്റാം.` : `Creates the usual categories, collections and loan periods for a ${profile?.label.toLowerCase()}. You can edit all of it in Library Settings.`}
                 checked={form.applyDefaults}
                 onChange={(e) => set("applyDefaults", e.target.checked)}
               />
               <TextField
-                label={`Late fine per day (${form.currency || "currency"})`}
+                label={`${language === "ml" ? "വൈകിയാൽ ദിവസേനയുള്ള പിഴ" : "Late fine per day"} (${form.currency || t("Currency")})`}
                 value={form.fine}
                 onChange={(e) => set("fine", e.target.value)}
-                error={errors.fine}
-                hint="Enter 0 if you do not charge fines. This applies to every starting loan rule."
+                error={translatedError(errors.fine)}
+                hint={t("Enter 0 if you do not charge fines. This applies to every starting loan rule.")}
                 inputMode="decimal"
                 className="w-32"
               />
@@ -169,34 +177,34 @@ export function SetupWizard() {
 
           {step === 2 && (
             <>
-              <p className="text-muted">You will use this account to sign in. It has full access to everything.</p>
-              <TextField label="Your name" value={form.displayName} onChange={(e) => set("displayName", e.target.value)} error={errors.displayName} autoFocus />
-              <TextField label="Username" value={form.username} onChange={(e) => set("username", e.target.value)} error={errors.username} autoComplete="username" />
+              <p className="text-muted">{t("You will use this account to sign in. It has full access to everything.")}</p>
+              <TextField label={t("Your name")} value={form.displayName} onChange={(e) => set("displayName", e.target.value)} error={translatedError(errors.displayName)} autoFocus />
+              <TextField label={t("Username")} value={form.username} onChange={(e) => set("username", e.target.value)} error={translatedError(errors.username)} autoComplete="username" />
               <TextField
-                label="Password"
+                label={t("Password")}
                 type="password"
                 value={form.password}
                 onChange={(e) => set("password", e.target.value)}
-                error={errors.password}
-                hint="At least 10 characters. A short phrase you can remember works well."
+                error={translatedError(errors.password)}
+                hint={t("At least 10 characters. A short phrase you can remember works well.")}
                 autoComplete="new-password"
               />
-              <TextField label="Repeat password" type="password" value={form.confirm} onChange={(e) => set("confirm", e.target.value)} error={errors.confirm} autoComplete="new-password" />
+              <TextField label={t("Repeat password")} type="password" value={form.confirm} onChange={(e) => set("confirm", e.target.value)} error={translatedError(errors.confirm)} autoComplete="new-password" />
             </>
           )}
 
           {create.isError && (
             <p role="alert" className="text-xs text-danger">
-              {create.error instanceof ApiError ? create.error.message : "Setup could not be completed."}
+              {create.error instanceof ApiError ? create.error.message : t("Setup could not be completed.")}
             </p>
           )}
 
           <div className="flex justify-between pt-2">
             <Button variant="secondary" size="lg" disabled={step === 0 || create.isPending} onClick={() => { setErrors({}); setStep(step - 1); }}>
-              Back
+              {t("Back")}
             </Button>
             <Button type="submit" variant="primary" size="lg" disabled={create.isPending}>
-              {step < STEPS.length - 1 ? "Continue" : create.isPending ? "Creating…" : "Create library"}
+              {t(step < STEPS.length - 1 ? "Continue" : create.isPending ? "Creating." : "Create library")}
             </Button>
           </div>
         </form>

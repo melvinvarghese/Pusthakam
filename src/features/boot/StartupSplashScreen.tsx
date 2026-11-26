@@ -1,3 +1,4 @@
+import { useTranslation } from "@/lib/translations";
 import { useEffect, useEffectEvent, useState } from "react";
 import { BrandMark } from "@/components/BrandMark";
 import { getLaunchSplashQuote, type SplashQuote } from "./splashQuotes";
@@ -18,6 +19,7 @@ export interface StartupSplashScreenProps {
  * (or `durationMs`) before transitioning into the main application or sign-in gate.
  */
 export function StartupSplashScreen({ durationMs = 3000, onComplete, quote: suppliedQuote }: StartupSplashScreenProps) {
+  const { t } = useTranslation();
   const [progress, setProgress] = useState(durationMs <= 0 ? 100 : 0);
   const [splashQuote] = useState(() => suppliedQuote ?? getLaunchSplashQuote());
 
@@ -55,7 +57,7 @@ export function StartupSplashScreen({ durationMs = 3000, onComplete, quote: supp
         <header className="startup-brand">
           <BrandMark size="splash" />
           <h1>Pusthakam</h1>
-          <p>A Better Way to Manage Libraries.</p>
+          <p>{t("A Better Way to Manage Libraries.")}</p>
         </header>
 
         <figure className="startup-quote">
@@ -74,12 +76,12 @@ export function StartupSplashScreen({ durationMs = 3000, onComplete, quote: supp
             aria-valuenow={progress}
             aria-valuemin={0}
             aria-valuemax={100}
-            aria-label="Application startup progress"
+            aria-label={t("Application startup progress")}
           >
             <div className="startup-progress-fill" style={{ width: `${progress}%` }} />
           </div>
           {/* Accessible Live Region & Status Text */}
-          <p role="status" aria-live="polite">{statusText}</p>
+          <p role="status" aria-live="polite">{t(statusText)}</p>
         </div>
       </div>
     </div>

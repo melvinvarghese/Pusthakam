@@ -1,0 +1,20 @@
+{
+  "at": "2026-11-26T14:50:36.724Z",
+  "scope": "Current React source with synthetic development preview; no owner data",
+  "status": "blocked",
+  "attempts": [
+    {
+      "stage": "Runtime.enable",
+      "result": "timeout"
+    },
+    {
+      "stage": "Page.navigate",
+      "result": "timeout"
+    }
+  ],
+  "visualChecksPassed": 0,
+  "unitChecksPassed": 42,
+  "build": "passed",
+  "lint": "passed",
+  "next": "Run rendered login/navigation/settings phone and desktop review, bundle Malayalam font and verify shaping; continue remaining feature translations."
+}

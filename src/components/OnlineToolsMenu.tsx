@@ -1,3 +1,4 @@
+import { useTranslation } from "@/lib/translations";
 import { useEffect, useRef, useState } from "react";
 import { ChevronUp, ExternalLink } from "lucide-react";
 import { ONLINE_TOOLS, toolUrl } from "@/features/online-tools/tools";
@@ -6,6 +7,7 @@ import { cn } from "@/lib/utils";
 
 /** Rail footer item that opens a small list of optional web tools. Closes on Escape or an outside click. */
 export function OnlineToolsMenu() {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const root = useRef<HTMLDivElement>(null);
@@ -61,19 +63,19 @@ export function OnlineToolsMenu() {
           open && "bg-ink-2 text-white",
         )}
       >
-        <span>Online Tools</span>
+        <span>{t("Online Tools")}</span>
         <ChevronUp aria-hidden="true" className={cn("size-4 transition-transform", !open && "rotate-180")} strokeWidth={1.75} />
       </button>
 
       {open && (
         <div
           role="dialog"
-          aria-label="Online Tools"
+          aria-label={t("Online Tools")}
           className="palette-in absolute bottom-full left-2 z-40 mb-1 w-[340px] rounded-lg border border-line-strong bg-surface p-1 text-fg shadow-[0_16px_40px_-8px_rgb(13_20_32/0.45)]"
         >
           <div className="px-3 pb-1 pt-2">
-            <h2 className="text-sm font-semibold">Online Tools</h2>
-            <p className="text-xs text-muted">Open in your web browser. These need an internet connection.</p>
+            <h2 className="text-sm font-semibold">{t("Online Tools")}</h2>
+            <p className="text-xs text-muted">{t("Open in your web browser. These need an internet connection.")}</p>
           </div>
           <ul>
             {ONLINE_TOOLS.map((tool, i) => (
@@ -95,7 +97,7 @@ export function OnlineToolsMenu() {
               </li>
             ))}
           </ul>
-          {error && <p role="alert" className="px-3 pb-2 text-xs text-danger">{error}</p>}
+          {error && <p role="alert" className="px-3 pb-2 text-xs text-danger">{t(error)}</p>}
         </div>
       )}
     </div>

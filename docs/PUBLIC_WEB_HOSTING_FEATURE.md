@@ -40,3 +40,21 @@ Owner acceptance26 November2026: fresh temporary public address worked on anothe
 
 
 Owner follow-up26 November2026: BOTH OPAC and staff worked on another device on another network, answering the portal/sign-in question. Both-portal external-device acceptance passes for this temporary isolated demo. Full workflows and production availability remain separate; no permanent custom domain/always-on deployment exists.
+
+
+## Stable address preparation, 26 November2026
+
+Owner resumed internet-hosting work; Malayalam remains deferred. Named-tunnel/domain preparation is saved in STABLE_INTERNET_HOSTING.md. Read-only partial DNS observations show WordPress website and email-forwarding records; a complete inventory is required before any nameserver change. No account or DNS access is configured. Next owner action: create/sign into free Cloudflare account; preserve current WordPress DNS until the actual change is reviewed.
+
+
+## Domain cutover dependency, 26 November2026
+
+WordPress DNS screenshot shows free email-forwarding configuration. Official WordPress guidance requires WordPress.com nameservers for forwarding. Hold Cloudflare activation/nameserver changes until actual usage is clarified and preservation/replacement agreed. Copied MX records alone do not establish continuity. See current STABLE_INTERNET_HOSTING.md and SESSION_HANDOFF.md. No external cutover performed.
+
+
+Owner decision26 November2026: keep WordPress DNS/nameservers and existing Gmail email forwarding unchanged. Do not perform the previously considered Cloudflare full-DNS or mail migration. Future stable hosting must work through a separate subdomain record with WordPress remaining authoritative. No provider purchase or deployment selected. See latest STABLE_INTERNET_HOSTING.md and SESSION_HANDOFF.md; older Cloudflare cutover instructions are superseded.
+
+
+## Final scope clarification: test complete
+
+Owner only wanted proof that Pusthakam OPAC and staff can be reached over the internet. Both were confirmed working from another device/network using an isolated demo library and the release server. No permanent domain, hosting purchase, alternative provider or email/DNS migration is requested. Stop permanent setup; preserve WordPress website/nameservers and existing Gmail forwarding. The real owner library has not been published. Historical stable-hosting instructions are not active next steps. Current temporary URL availability was not rechecked at this documentation checkpoint.

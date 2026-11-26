@@ -1,3 +1,5 @@
+import { act } from "@testing-library/react";
+import { setLanguage } from "@/lib/language";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { fireEvent, render, screen, within } from "@testing-library/react";
 import { invoke } from "@tauri-apps/api/core";
@@ -7,7 +9,18 @@ import { SessionContext } from "@/lib/session";
 import { Dashboard } from "./Dashboard";
 
 vi.mock("@tauri-apps/api/core", () => ({ invoke: vi.fn() }));
-afterEach(() => { vi.unstubAllGlobals(); vi.mocked(invoke).mockReset(); });
+
+it("shows Malayalam counts and alerts while leaving book titles unchanged", async () => {
+  act(() => setLanguage("ml"));
+  renderDashboard();
+  expect(screen.getByRole("heading", { name: "പ്രധാന പേജ്" })).toBeInTheDocument();
+  expect(await screen.findByText("2 പുസ്തകങ്ങളുടെ മടക്ക തീയതി കഴിഞ്ഞു.")).toBeInTheDocument();
+  expect(screen.getByText("ഇന്ന് തിരികെ നൽകേണ്ടത്")).toBeInTheDocument();
+  expect(await screen.findByText("The Lord of the Rings")).toBeInTheDocument();
+  expect(screen.getByText("7 തവണ നൽകി")).toBeInTheDocument();
+});
+afterEach(() => {
+  setLanguage("en"); vi.unstubAllGlobals(); vi.mocked(invoke).mockReset(); });
 
 function renderDashboard({
   error = false,

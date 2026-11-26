@@ -1,0 +1,2239 @@
+{
+  "at": "2026-11-26T15:11:39.684Z",
+  "scope": "319 core draft resource entries; owner review pending; not complete application coverage",
+  "rows": [
+    {
+      "id": "TXT-0aee9af9c16a",
+      "english": "{available} of {total} available",
+      "draft": "{total} കോപ്പികളിൽ {available} എണ്ണം ലഭ്യമാണ്",
+      "area": "Catalogue",
+      "source": "src/lib/core-translations.ts:48"
+    },
+    {
+      "id": "TXT-842026fb5a74",
+      "english": "10 or 13 digits",
+      "draft": "10 അല്ലെങ്കിൽ 13 അക്കങ്ങൾ",
+      "area": "Catalogue",
+      "source": "src/lib/core-translations.ts:65"
+    },
+    {
+      "id": "TXT-5013c2bb0e44",
+      "english": "A label for the search above, not search words.",
+      "draft": "മുകളിലെ തിരയലിന് നൽകുന്ന പേരാണിത്. തിരയാനുള്ള വാക്കുകൾ മുകളിൽ നൽകുക.",
+      "area": "Catalogue",
+      "source": "src/lib/core-translations.ts:307"
+    },
+    {
+      "id": "TXT-d21b4a64a2d8",
+      "english": "Abstract",
+      "draft": "സംഗ്രഹം",
+      "area": "Catalogue",
+      "source": "src/lib/core-translations.ts:90"
+    },
+    {
+      "id": "TXT-057fdb1eb48b",
+      "english": "Accession",
+      "draft": "അക്സഷൻ നമ്പർ",
+      "area": "Catalogue",
+      "source": "src/lib/core-translations.ts:91"
+    },
+    {
+      "id": "TXT-59d72a2a2a73",
+      "english": "Add contributor",
+      "draft": "പങ്കാളിയുടെ പേര് ചേർക്കുക",
+      "area": "Catalogue",
+      "source": "src/lib/core-translations.ts:92"
+    },
+    {
+      "id": "TXT-54da19c80420",
+      "english": "Add copies",
+      "draft": "കോപ്പികൾ ചേർക്കുക",
+      "area": "Catalogue",
+      "source": "src/lib/core-translations.ts:93"
+    },
+    {
+      "id": "TXT-009940e5e4bc",
+      "english": "Add copies to put it on the shelf.",
+      "draft": "ഷെൽഫിൽ വയ്ക്കാൻ കോപ്പികൾ ചേർക്കുക.",
+      "area": "Catalogue",
+      "source": "src/lib/core-translations.ts:78"
+    },
+    {
+      "id": "TXT-950eea0391cc",
+      "english": "Add record",
+      "draft": "പുസ്തകം ചേർക്കുക",
+      "area": "Catalogue",
+      "source": "src/lib/core-translations.ts:32"
+    },
+    {
+      "id": "TXT-ef6b229860f3",
+      "english": "Additional author",
+      "draft": "മറ്റൊരു എഴുത്തുകാരൻ",
+      "area": "Catalogue",
+      "source": "src/lib/core-translations.ts:294"
+    },
+    {
+      "id": "TXT-16a2d21226eb",
+      "english": "All collections",
+      "draft": "എല്ലാ ശേഖരങ്ങളും",
+      "area": "Catalogue",
+      "source": "src/lib/core-translations.ts:25"
+    },
+    {
+      "id": "TXT-48385342f4f9",
+      "english": "All titles (no search words saved)",
+      "draft": "എല്ലാ പുസ്തകങ്ങളും (തിരയാനുള്ള വാക്കുകൾ സേവ് ചെയ്തിട്ടില്ല)",
+      "area": "Catalogue",
+      "source": "src/lib/core-translations.ts:316"
+    },
+    {
+      "id": "TXT-8ec1d576169e",
+      "english": "Archive records",
+      "draft": "പുസ്തകവിവരങ്ങൾ മാറ്റിവയ്ക്കുക",
+      "area": "Catalogue",
+      "source": "src/lib/core-translations.ts:37"
+    },
+    {
+      "id": "TXT-78b3bec6a487",
+      "english": "Archive selected catalogue records",
+      "draft": "തിരഞ്ഞെടുത്ത പുസ്തകവിവരങ്ങൾ മാറ്റിവയ്ക്കുക",
+      "area": "Catalogue",
+      "source": "src/lib/core-translations.ts:36"
+    },
+    {
+      "id": "TXT-dd65b7d4a6f7",
+      "english": "Archive selected on this page ({count})",
+      "draft": "ഈ പേജിൽ തിരഞ്ഞെടുത്തവ മാറ്റിവയ്ക്കുക ({count})",
+      "area": "Catalogue",
+      "source": "src/lib/core-translations.ts:35"
+    },
+    {
+      "id": "TXT-d95082a2ee57",
+      "english": "Author",
+      "draft": "എഴുത്തുകാരൻ",
+      "area": "Catalogue",
+      "source": "src/lib/core-translations.ts:293"
+    },
+    {
+      "id": "TXT-16a6d8751e5a",
+      "english": "Authors and other contributors",
+      "draft": "എഴുത്തുകാരും മറ്റു പങ്കാളികളും",
+      "area": "Catalogue",
+      "source": "src/lib/core-translations.ts:94"
+    },
+    {
+      "id": "TXT-2a4729fa7647",
+      "english": "Available now",
+      "draft": "ഇപ്പോൾ ലഭ്യമായത്",
+      "area": "Catalogue",
+      "source": "src/lib/core-translations.ts:29"
+    },
+    {
+      "id": "TXT-7ba481e0328b",
+      "english": "Back to the catalogue",
+      "draft": "പുസ്തകപ്പട്ടികയിലേക്ക് മടങ്ങുക",
+      "area": "Catalogue",
+      "source": "src/lib/core-translations.ts:95"
+    },
+    {
+      "id": "TXT-a401f372102d",
+      "english": "Barcode",
+      "draft": "ബാർകോഡ്",
+      "area": "Catalogue",
+      "source": "src/lib/core-translations.ts:76"
+    },
+    {
+      "id": "TXT-d83ab68f7428",
+      "english": "Best match",
+      "draft": "ഏറ്റവും ചേരുന്നത്",
+      "area": "Catalogue",
+      "source": "src/lib/core-translations.ts:26"
+    },
+    {
+      "id": "TXT-f608292e6166",
+      "english": "Call number",
+      "draft": "കോൾ നമ്പർ",
+      "area": "Catalogue",
+      "source": "src/lib/core-translations.ts:62"
+    },
+    {
+      "id": "TXT-13dc33ab0bd9",
+      "english": "Catalogue search",
+      "draft": "പുസ്തകപ്പട്ടികയിൽ തിരയുക",
+      "area": "Catalogue",
+      "source": "src/lib/core-translations.ts:19"
+    },
+    {
+      "id": "TXT-be51c232bf81",
+      "english": "Choose a saved search",
+      "draft": "സേവ് ചെയ്ത ഒരു തിരയൽ തിരഞ്ഞെടുക്കുക",
+      "area": "Catalogue",
+      "source": "src/lib/core-translations.ts:308"
+    },
+    {
+      "id": "TXT-4f3a9bd00397",
+      "english": "Class",
+      "draft": "വർഗം",
+      "area": "Catalogue",
+      "source": "src/lib/core-translations.ts:43"
+    },
+    {
+      "id": "TXT-dc4163eeeab0",
+      "english": "Classification number",
+      "draft": "വർഗീകരണ നമ്പർ",
+      "area": "Catalogue",
+      "source": "src/lib/core-translations.ts:63"
+    },
+    {
+      "id": "TXT-560527ef32bf",
+      "english": "Classification scheme",
+      "draft": "വർഗീകരണ രീതി",
+      "area": "Catalogue",
+      "source": "src/lib/core-translations.ts:64"
+    },
+    {
+      "id": "TXT-7b790708ff1b",
+      "english": "Collection",
+      "draft": "ശേഖരം",
+      "area": "Catalogue",
+      "source": "src/lib/core-translations.ts:22"
+    },
+    {
+      "id": "TXT-350ad433c42f",
+      "english": "Contributors",
+      "draft": "പങ്കാളികൾ",
+      "area": "Catalogue",
+      "source": "src/lib/core-translations.ts:96"
+    },
+    {
+      "id": "TXT-39d4505d9a72",
+      "english": "Copies ({count})",
+      "draft": "കോപ്പികൾ ({count})",
+      "area": "Catalogue",
+      "source": "src/lib/core-translations.ts:283"
+    },
+    {
+      "id": "TXT-90152a058231",
+      "english": "Copies and loan history will be retained.",
+      "draft": "കോപ്പികളുടെ വിവരങ്ങളും വിതരണ ചരിത്രവും നിലനിർത്തും.",
+      "area": "Catalogue",
+      "source": "src/lib/core-translations.ts:38"
+    },
+    {
+      "id": "TXT-6146114ff05b",
+      "english": "Could not check for duplicates.",
+      "draft": "ഇതേ പുസ്തകം ഉണ്ടോ എന്ന് പരിശോധിക്കാനായില്ല.",
+      "area": "Catalogue",
+      "source": "src/lib/core-translations.ts:79"
+    },
+    {
+      "id": "TXT-de77cc72c0c6",
+      "english": "Could not load this record.",
+      "draft": "ഈ പുസ്തകവിവരങ്ങൾ തുറക്കാനായില്ല.",
+      "area": "Catalogue",
+      "source": "src/lib/core-translations.ts:80"
+    },
+    {
+      "id": "TXT-a98334c35d9e",
+      "english": "Could not save searches on this computer.",
+      "draft": "ഈ കമ്പ്യൂട്ടറിൽ തിരയലുകൾ സേവ് ചെയ്യാനായില്ല.",
+      "area": "Catalogue",
+      "source": "src/lib/core-translations.ts:318"
+    },
+    {
+      "id": "TXT-edae7c409911",
+      "english": "Could not save the record.",
+      "draft": "പുസ്തകവിവരങ്ങൾ സേവ് ചെയ്യാനായില്ല.",
+      "area": "Catalogue",
+      "source": "src/lib/core-translations.ts:81"
+    },
+    {
+      "id": "TXT-bf2a93c75d0f",
+      "english": "Could not search the catalogue.",
+      "draft": "പുസ്തകപ്പട്ടികയിൽ തിരയാനായില്ല.",
+      "area": "Catalogue",
+      "source": "src/lib/core-translations.ts:56"
+    },
+    {
+      "id": "TXT-d28e508eafd9",
+      "english": "Could not update.",
+      "draft": "മാറ്റം വരുത്താനായില്ല.",
+      "area": "Catalogue",
+      "source": "src/lib/core-translations.ts:88"
+    },
+    {
+      "id": "TXT-45989de49fb7",
+      "english": "Details",
+      "draft": "വിവരങ്ങൾ",
+      "area": "Catalogue",
+      "source": "src/lib/core-translations.ts:107"
+    },
+    {
+      "id": "TXT-20d0af43d405",
+      "english": "Edit record",
+      "draft": "പുസ്തകവിവരങ്ങൾ തിരുത്തുക",
+      "area": "Catalogue",
+      "source": "src/lib/core-translations.ts:33"
+    },
+    {
+      "id": "TXT-f37695a23c89",
+      "english": "Edition",
+      "draft": "പതിപ്പ്",
+      "area": "Catalogue",
+      "source": "src/lib/core-translations.ts:68"
+    },
+    {
+      "id": "TXT-936a161c3931",
+      "english": "Editor",
+      "draft": "എഡിറ്റർ",
+      "area": "Catalogue",
+      "source": "src/lib/core-translations.ts:295"
+    },
+    {
+      "id": "TXT-37fea0236a3e",
+      "english": "Enter a search name.",
+      "draft": "തിരയലിന് ഒരു പേര് നൽകുക.",
+      "area": "Catalogue",
+      "source": "src/lib/core-translations.ts:319"
+    },
+    {
+      "id": "TXT-8bca20c13b12",
+      "english": "Enter the title.",
+      "draft": "പുസ്തകത്തിന്റെ പേര് നൽകുക.",
+      "area": "Catalogue",
+      "source": "src/lib/core-translations.ts:82"
+    },
+    {
+      "id": "TXT-c3d69ffaa7be",
+      "english": "Enter words and filters in the catalogue search above, then save them with a name. Choose a saved search to run it, or use Run saved search to run it again. Saved for your staff account on this computer.",
+      "draft": "മുകളിലെ പുസ്തക തിരയലിൽ വാക്കുകളും ഫിൽട്ടറുകളും നൽകുക. തുടർന്ന് ഒരു പേര് നൽകി സേവ് ചെയ്യാം. സേവ് ചെയ്ത തിരയൽ തിരഞ്ഞെടുത്തോ വീണ്ടും നടത്താനുള്ള ബട്ടൺ ഉപയോഗിച്ചോ തിരയാം. ഈ കമ്പ്യൂട്ടറിലെ നിങ്ങളുടെ അക്കൗണ്ടിലാണ് ഇത് സേവ് ചെയ്യുന്നത്.",
+      "area": "Catalogue",
+      "source": "src/lib/core-translations.ts:317"
+    },
+    {
+      "id": "TXT-f2cfc9cc6566",
+      "english": "Export selected ({count})",
+      "draft": "തിരഞ്ഞെടുത്തവ എക്സ്പോർട്ട് ചെയ്യുക ({count})",
+      "area": "Catalogue",
+      "source": "src/lib/core-translations.ts:34"
+    },
+    {
+      "id": "TXT-a4fc6e1df6f3",
+      "english": "For example 320 p.",
+      "draft": "ഉദാഹരണം: 320 p.",
+      "area": "Catalogue",
+      "source": "src/lib/core-translations.ts:66"
+    },
+    {
+      "id": "TXT-19ad39d5f395",
+      "english": "For example 894.8123",
+      "draft": "ഉദാഹരണം: 894.8123",
+      "area": "Catalogue",
+      "source": "src/lib/core-translations.ts:67"
+    },
+    {
+      "id": "TXT-70824a6a039a",
+      "english": "Found {count} catalogue record.",
+      "draft": "പുസ്തകപ്പട്ടികയിൽ {count} വിവരം കണ്ടെത്തി.",
+      "area": "Catalogue",
+      "source": "src/lib/core-translations.ts:50"
+    },
+    {
+      "id": "TXT-88d911388b00",
+      "english": "Found {count} catalogue records.",
+      "draft": "പുസ്തകപ്പട്ടികയിൽ {count} വിവരങ്ങൾ കണ്ടെത്തി.",
+      "area": "Catalogue",
+      "source": "src/lib/core-translations.ts:49"
+    },
+    {
+      "id": "TXT-e32042c62a7b",
+      "english": "If this is another copy, open that record and add a copy instead. Otherwise save it as a new record.",
+      "draft": "ഇതേ പുസ്തകത്തിന്റെ മറ്റൊരു കോപ്പിയാണെങ്കിൽ നിലവിലുള്ള വിവരങ്ങൾ തുറന്ന് കോപ്പി ചേർക്കുക. അല്ലെങ്കിൽ പുതിയ പുസ്തകമായി സേവ് ചെയ്യുക.",
+      "area": "Catalogue",
+      "source": "src/lib/core-translations.ts:103"
+    },
+    {
+      "id": "TXT-62809bf1374f",
+      "english": "Illustrator",
+      "draft": "ചിത്രകാരൻ",
+      "area": "Catalogue",
+      "source": "src/lib/core-translations.ts:297"
+    },
+    {
+      "id": "TXT-2cff9baabf56",
+      "english": "Import",
+      "draft": "ഇംപോർട്ട് ചെയ്യുക",
+      "area": "Catalogue",
+      "source": "src/lib/core-translations.ts:31"
+    },
+    {
+      "id": "TXT-73ce158dba99",
+      "english": "In repair",
+      "draft": "അറ്റകുറ്റപ്പണിയിലുള്ളത്",
+      "area": "Catalogue",
+      "source": "src/lib/core-translations.ts:290"
+    },
+    {
+      "id": "TXT-72055ddc7257",
+      "english": "In transit",
+      "draft": "സ്ഥലം മാറ്റിക്കൊണ്ടിരിക്കുന്നത്",
+      "area": "Catalogue",
+      "source": "src/lib/core-translations.ts:292"
+    },
+    {
+      "id": "TXT-b6c3349ea061",
+      "english": "Include archived",
+      "draft": "മാറ്റിവച്ചവയും കാണിക്കുക",
+      "area": "Catalogue",
+      "source": "src/lib/core-translations.ts:30"
+    },
+    {
+      "id": "TXT-e76fd2add010",
+      "english": "Keep editing",
+      "draft": "തിരുത്തൽ തുടരുക",
+      "area": "Catalogue",
+      "source": "src/lib/core-translations.ts:97"
+    },
+    {
+      "id": "TXT-8bfdb93cafaa",
+      "english": "Keywords",
+      "draft": "തിരയാനുള്ള വാക്കുകൾ",
+      "area": "Catalogue",
+      "source": "src/lib/core-translations.ts:69"
+    },
+    {
+      "id": "TXT-0e66373f45dc",
+      "english": "Label",
+      "draft": "ലേബൽ",
+      "area": "Catalogue",
+      "source": "src/lib/core-translations.ts:98"
+    },
+    {
+      "id": "TXT-a4fe65264ef7",
+      "english": "Language",
+      "draft": "ഭാഷ",
+      "area": "Catalogue",
+      "source": "src/lib/core-translations.ts:70"
+    },
+    {
+      "id": "TXT-9a01090bfc1e",
+      "english": "Loading record…",
+      "draft": "പുസ്തകവിവരങ്ങൾ തുറക്കുന്നു…",
+      "area": "Catalogue",
+      "source": "src/lib/core-translations.ts:99"
+    },
+    {
+      "id": "TXT-c48768d1bcb0",
+      "english": "Name {number}",
+      "draft": "പേര് {number}",
+      "area": "Catalogue",
+      "source": "src/lib/core-translations.ts:280"
+    },
+    {
+      "id": "TXT-c6e997ca1f9c",
+      "english": "Newest publication",
+      "draft": "പുതിയ പ്രസിദ്ധീകരണം ആദ്യം",
+      "area": "Catalogue",
+      "source": "src/lib/core-translations.ts:27"
+    },
+    {
+      "id": "TXT-5241e6ea3e6b",
+      "english": "No author",
+      "draft": "എഴുത്തുകാരന്റെ പേരില്ല",
+      "area": "Catalogue",
+      "source": "src/lib/core-translations.ts:44"
+    },
+    {
+      "id": "TXT-519f4d5a1739",
+      "english": "No copies",
+      "draft": "കോപ്പികളില്ല",
+      "area": "Catalogue",
+      "source": "src/lib/core-translations.ts:47"
+    },
+    {
+      "id": "TXT-7ba998d4f9b2",
+      "english": "No records match. Try fewer words or clear a filter.",
+      "draft": "ചേരുന്ന പുസ്തകങ്ങളില്ല. കുറച്ച് വാക്കുകൾ ഉപയോഗിച്ചോ ഫിൽട്ടർ ഒഴിവാക്കിയോ തിരയുക.",
+      "area": "Catalogue",
+      "source": "src/lib/core-translations.ts:59"
+    },
+    {
+      "id": "TXT-dc937b598926",
+      "english": "None",
+      "draft": "ഇല്ല",
+      "area": "Catalogue",
+      "source": "src/lib/core-translations.ts:46"
+    },
+    {
+      "id": "TXT-4895f73177ab",
+      "english": "Not set",
+      "draft": "നൽകിയിട്ടില്ല",
+      "area": "Catalogue",
+      "source": "src/lib/core-translations.ts:45"
+    },
+    {
+      "id": "TXT-8a7525b1492f",
+      "english": "Notes",
+      "draft": "കുറിപ്പുകൾ",
+      "area": "Catalogue",
+      "source": "src/lib/core-translations.ts:8"
+    },
+    {
+      "id": "TXT-8a9c1c15233f",
+      "english": "Nothing to save yet. Enter words in Search the catalogue or choose a filter first. The saved search name is only a label.",
+      "draft": "സേവ് ചെയ്യാൻ തിരയൽ വിവരങ്ങളില്ല. പുസ്തകപ്പട്ടികയിൽ തിരയാനുള്ള വാക്കുകളോ ഒരു ഫിൽട്ടറോ ആദ്യം നൽകുക. തിരയലിന്റെ പേര് ഒരു ലേബൽ മാത്രമാണ്.",
+      "area": "Catalogue",
+      "source": "src/lib/core-translations.ts:320"
+    },
+    {
+      "id": "TXT-fbaeaff9b116",
+      "english": "One subject heading per line.",
+      "draft": "ഓരോ വരിയിലും ഒരു വിഷയം നൽകുക.",
+      "area": "Catalogue",
+      "source": "src/lib/core-translations.ts:100"
+    },
+    {
+      "id": "TXT-f97e9da0e3b8",
+      "english": "Other",
+      "draft": "മറ്റുള്ളവ",
+      "area": "Catalogue",
+      "source": "src/lib/core-translations.ts:298"
+    },
+    {
+      "id": "TXT-7b3f674b625e",
+      "english": "Pagination",
+      "draft": "പേജുകളുടെ എണ്ണം",
+      "area": "Catalogue",
+      "source": "src/lib/core-translations.ts:71"
+    },
+    {
+      "id": "TXT-dc84dbfd3f6e",
+      "english": "Physical description",
+      "draft": "പുസ്തകത്തിന്റെ രൂപവിവരങ്ങൾ",
+      "area": "Catalogue",
+      "source": "src/lib/core-translations.ts:74"
+    },
+    {
+      "id": "TXT-30d8a129a1bd",
+      "english": "Place of publication",
+      "draft": "പ്രസിദ്ധീകരിച്ച സ്ഥലം",
+      "area": "Catalogue",
+      "source": "src/lib/core-translations.ts:75"
+    },
+    {
+      "id": "TXT-21378545892f",
+      "english": "Publisher",
+      "draft": "പ്രസാധകൻ",
+      "area": "Catalogue",
+      "source": "src/lib/core-translations.ts:42"
+    },
+    {
+      "id": "TXT-96ec5d338ae3",
+      "english": "Recently added",
+      "draft": "അടുത്തിടെ ചേർത്തത്",
+      "area": "Catalogue",
+      "source": "src/lib/core-translations.ts:28"
+    },
+    {
+      "id": "TXT-c3812fc4acb8",
+      "english": "Remove",
+      "draft": "നീക്കുക",
+      "area": "Catalogue",
+      "source": "src/lib/core-translations.ts:16"
+    },
+    {
+      "id": "TXT-e03563770bc1",
+      "english": "Remove contributor {number}",
+      "draft": "പങ്കാളി {number} നീക്കുക",
+      "area": "Catalogue",
+      "source": "src/lib/core-translations.ts:281"
+    },
+    {
+      "id": "TXT-e711f4dd5570",
+      "english": "Remove saved search",
+      "draft": "സേവ് ചെയ്ത തിരയൽ നീക്കുക",
+      "area": "Catalogue",
+      "source": "src/lib/core-translations.ts:312"
+    },
+    {
+      "id": "TXT-3385ffe67470",
+      "english": "Reserved",
+      "draft": "ബുക്ക് ചെയ്തത്",
+      "area": "Catalogue",
+      "source": "src/lib/core-translations.ts:289"
+    },
+    {
+      "id": "TXT-14736a2eb9f4",
+      "english": "Role",
+      "draft": "ചുമതല",
+      "area": "Catalogue",
+      "source": "src/lib/core-translations.ts:77"
+    },
+    {
+      "id": "TXT-76d4adebd839",
+      "english": "Run saved search",
+      "draft": "സേവ് ചെയ്ത തിരയൽ നടത്തുക",
+      "area": "Catalogue",
+      "source": "src/lib/core-translations.ts:310"
+    },
+    {
+      "id": "TXT-d79009afdeb2",
+      "english": "Save as a new record",
+      "draft": "പുതിയ പുസ്തകമായി സേവ് ചെയ്യുക",
+      "area": "Catalogue",
+      "source": "src/lib/core-translations.ts:101"
+    },
+    {
+      "id": "TXT-dd0ae7a5cbcf",
+      "english": "Save changes",
+      "draft": "മാറ്റങ്ങൾ സേവ് ചെയ്യുക",
+      "area": "Catalogue",
+      "source": "src/lib/core-translations.ts:83"
+    },
+    {
+      "id": "TXT-0ad417a9c515",
+      "english": "Save record",
+      "draft": "പുസ്തകവിവരങ്ങൾ സേവ് ചെയ്യുക",
+      "area": "Catalogue",
+      "source": "src/lib/core-translations.ts:84"
+    },
+    {
+      "id": "TXT-426d6210e285",
+      "english": "Save search",
+      "draft": "തിരയൽ സേവ് ചെയ്യുക",
+      "area": "Catalogue",
+      "source": "src/lib/core-translations.ts:309"
+    },
+    {
+      "id": "TXT-855789e68bb3",
+      "english": "Saved search words:",
+      "draft": "സേവ് ചെയ്ത തിരയൽ വാക്കുകൾ:",
+      "area": "Catalogue",
+      "source": "src/lib/core-translations.ts:315"
+    },
+    {
+      "id": "TXT-3e3e125453ca",
+      "english": "Saved searches",
+      "draft": "സേവ് ചെയ്ത തിരയലുകൾ",
+      "area": "Catalogue",
+      "source": "src/lib/core-translations.ts:305"
+    },
+    {
+      "id": "TXT-ededd8e8761c",
+      "english": "Search every title, author, subject, ISBN, accession number or barcode.",
+      "draft": "പുസ്തകത്തിന്റെ പേര്, എഴുത്തുകാരൻ, വിഷയം, ISBN, അക്സഷൻ നമ്പർ അല്ലെങ്കിൽ ബാർകോഡ് ഉപയോഗിച്ച് തിരയാം.",
+      "area": "Catalogue",
+      "source": "src/lib/core-translations.ts:23"
+    },
+    {
+      "id": "TXT-121c9cb1ab5e",
+      "english": "Search name",
+      "draft": "തിരയലിന് ഒരു പേര്",
+      "area": "Catalogue",
+      "source": "src/lib/core-translations.ts:306"
+    },
+    {
+      "id": "TXT-ab23a13793fd",
+      "english": "Search the catalogue",
+      "draft": "പുസ്തകപ്പട്ടികയിൽ തിരയുക",
+      "area": "Catalogue",
+      "source": "src/lib/core-translations.ts:20"
+    },
+    {
+      "id": "TXT-c31723ab3302",
+      "english": "Searching…",
+      "draft": "തിരയുന്നു…",
+      "area": "Catalogue",
+      "source": "src/lib/core-translations.ts:58"
+    },
+    {
+      "id": "TXT-feaae900731e",
+      "english": "Select {title}",
+      "draft": "{title} തിരഞ്ഞെടുക്കുക",
+      "area": "Catalogue",
+      "source": "src/lib/core-translations.ts:40"
+    },
+    {
+      "id": "TXT-fdafd989278c",
+      "english": "Select records",
+      "draft": "പുസ്തകങ്ങൾ തിരഞ്ഞെടുക്കുക",
+      "area": "Catalogue",
+      "source": "src/lib/core-translations.ts:39"
+    },
+    {
+      "id": "TXT-a8295e08ff7a",
+      "english": "Series",
+      "draft": "പരമ്പര",
+      "area": "Catalogue",
+      "source": "src/lib/core-translations.ts:72"
+    },
+    {
+      "id": "TXT-c9129025bd3f",
+      "english": "Sort by",
+      "draft": "ക്രമത്തിൽ കാണിക്കുക",
+      "area": "Catalogue",
+      "source": "src/lib/core-translations.ts:21"
+    },
+    {
+      "id": "TXT-1a7529ab14fd",
+      "english": "Subjects",
+      "draft": "വിഷയങ്ങൾ",
+      "area": "Catalogue",
+      "source": "src/lib/core-translations.ts:109"
+    },
+    {
+      "id": "TXT-383cd6c0b871",
+      "english": "Subtitle",
+      "draft": "ഉപശീർഷകം",
+      "area": "Catalogue",
+      "source": "src/lib/core-translations.ts:73"
+    },
+    {
+      "id": "TXT-bdabc6dc5c9d",
+      "english": "That name already exists. Use Update saved search to replace it.",
+      "draft": "ഈ പേര് നിലവിലുണ്ട്. മാറ്റാൻ സേവ് ചെയ്ത തിരയൽ പുതുക്കാനുള്ള ബട്ടൺ ഉപയോഗിക്കുക.",
+      "area": "Catalogue",
+      "source": "src/lib/core-translations.ts:321"
+    },
+    {
+      "id": "TXT-340e10dbf629",
+      "english": "The catalogue is empty.",
+      "draft": "പുസ്തകപ്പട്ടികയിൽ വിവരങ്ങളില്ല.",
+      "area": "Catalogue",
+      "source": "src/lib/core-translations.ts:60"
+    },
+    {
+      "id": "TXT-5ae3912ee31c",
+      "english": "The catalogue is empty. Add your first record, or import your existing catalogue.",
+      "draft": "പുസ്തകപ്പട്ടികയിൽ വിവരങ്ങളില്ല. ഒരു പുസ്തകം ചേർക്കുക, അല്ലെങ്കിൽ നിലവിലുള്ള പട്ടിക ഇംപോർട്ട് ചെയ്യുക.",
+      "area": "Catalogue",
+      "source": "src/lib/core-translations.ts:61"
+    },
+    {
+      "id": "TXT-75a2283c5c90",
+      "english": "The publication year must be a number such as 1999.",
+      "draft": "പ്രസിദ്ധീകരിച്ച വർഷം 1999 എന്നതുപോലെ നൽകുക.",
+      "area": "Catalogue",
+      "source": "src/lib/core-translations.ts:87"
+    },
+    {
+      "id": "TXT-e42ec6f7d49e",
+      "english": "This entry saved all titles, without search words or filters.",
+      "draft": "തിരയാനുള്ള വാക്കുകളോ ഫിൽട്ടറുകളോ ഇല്ലാതെ എല്ലാ പുസ്തകങ്ങളും ഈ തിരയലിൽ സേവ് ചെയ്തിരിക്കുന്നു.",
+      "area": "Catalogue",
+      "source": "src/lib/core-translations.ts:313"
+    },
+    {
+      "id": "TXT-9c3e703e5eaf",
+      "english": "This looks like a record you already have:",
+      "draft": "ഇതേ പുസ്തകം പട്ടികയിൽ ഉള്ളതായി തോന്നുന്നു:",
+      "area": "Catalogue",
+      "source": "src/lib/core-translations.ts:102"
+    },
+    {
+      "id": "TXT-a2f5acaf15fd",
+      "english": "This record is hidden from search.",
+      "draft": "ഈ പുസ്തകം തിരയുമ്പോൾ കാണിക്കില്ല.",
+      "area": "Catalogue",
+      "source": "src/lib/core-translations.ts:104"
+    },
+    {
+      "id": "TXT-74560526c769",
+      "english": "This title has no copies yet.",
+      "draft": "ഈ പുസ്തകത്തിന് കോപ്പികൾ ചേർത്തിട്ടില്ല.",
+      "area": "Catalogue",
+      "source": "src/lib/core-translations.ts:105"
+    },
+    {
+      "id": "TXT-79300efcbc61",
+      "english": "Title and author",
+      "draft": "പുസ്തകവും എഴുത്തുകാരനും",
+      "area": "Catalogue",
+      "source": "src/lib/core-translations.ts:41"
+    },
+    {
+      "id": "TXT-fcc77e11e4c5",
+      "english": "Title, author, subject, ISBN, accession number or barcode",
+      "draft": "പുസ്തകത്തിന്റെ പേര്, എഴുത്തുകാരൻ, വിഷയം, ISBN, അക്സഷൻ നമ്പർ അല്ലെങ്കിൽ ബാർകോഡ്",
+      "area": "Catalogue",
+      "source": "src/lib/core-translations.ts:24"
+    },
+    {
+      "id": "TXT-e6fe8ee281de",
+      "english": "Translator",
+      "draft": "പരിഭാഷകൻ",
+      "area": "Catalogue",
+      "source": "src/lib/core-translations.ts:296"
+    },
+    {
+      "id": "TXT-4c7de9404556",
+      "english": "Update saved search",
+      "draft": "സേവ് ചെയ്ത തിരയൽ പുതുക്കുക",
+      "area": "Catalogue",
+      "source": "src/lib/core-translations.ts:311"
+    },
+    {
+      "id": "TXT-dcefb4f2216b",
+      "english": "Use saved name as search words",
+      "draft": "സേവ് ചെയ്ത പേര് ഉപയോഗിച്ച് തിരയുക",
+      "area": "Catalogue",
+      "source": "src/lib/core-translations.ts:314"
+    },
+    {
+      "id": "TXT-1daaa38f33cd",
+      "english": "Where",
+      "draft": "സ്ഥലം",
+      "area": "Catalogue",
+      "source": "src/lib/core-translations.ts:106"
+    },
+    {
+      "id": "TXT-00c0b03fcfa2",
+      "english": "Withdrawn",
+      "draft": "ശേഖരത്തിൽനിന്ന് ഒഴിവാക്കിയത്",
+      "area": "Catalogue",
+      "source": "src/lib/core-translations.ts:291"
+    },
+    {
+      "id": "TXT-89f6832560de",
+      "english": "Year",
+      "draft": "വർഷം",
+      "area": "Catalogue",
+      "source": "src/lib/core-translations.ts:108"
+    },
+    {
+      "id": "TXT-e674447337e8",
+      "english": "Available",
+      "draft": "ലഭ്യമാണ്",
+      "area": "Catalogue / Circulation",
+      "source": "src/lib/core-translations.ts:145"
+    },
+    {
+      "id": "TXT-3604e21d02f0",
+      "english": "Damaged",
+      "draft": "കേടുവന്നത്",
+      "area": "Catalogue / Circulation",
+      "source": "src/lib/core-translations.ts:146"
+    },
+    {
+      "id": "TXT-51e1357de85b",
+      "english": "Lost",
+      "draft": "നഷ്ടപ്പെട്ടത്",
+      "area": "Catalogue / Circulation",
+      "source": "src/lib/core-translations.ts:147"
+    },
+    {
+      "id": "TXT-41f0c27c00e8",
+      "english": "damaged",
+      "draft": "കേടുവന്നത്",
+      "area": "Catalogue / Circulation / Members",
+      "source": "src/lib/core-translations.ts:149"
+    },
+    {
+      "id": "TXT-76f75e6129fe",
+      "english": "lost",
+      "draft": "നഷ്ടപ്പെട്ടത്",
+      "area": "Catalogue / Circulation / Members",
+      "source": "src/lib/core-translations.ts:148"
+    },
+    {
+      "id": "TXT-7e8cd2056da7",
+      "english": "Title",
+      "draft": "പുസ്തകത്തിന്റെ പേര്",
+      "area": "Catalogue / Circulation / Members",
+      "source": "src/lib/core-translations.ts:3"
+    },
+    {
+      "id": "TXT-66f4804ee23d",
+      "english": "Archive",
+      "draft": "മാറ്റിവയ്ക്കുക",
+      "area": "Catalogue / Members",
+      "source": "src/lib/core-translations.ts:14"
+    },
+    {
+      "id": "TXT-bdb86505f806",
+      "english": "Archived",
+      "draft": "മാറ്റിവച്ചത്",
+      "area": "Catalogue / Members",
+      "source": "src/lib/core-translations.ts:13"
+    },
+    {
+      "id": "TXT-464c4ffd019e",
+      "english": "Edit",
+      "draft": "തിരുത്തുക",
+      "area": "Catalogue / Members",
+      "source": "src/lib/core-translations.ts:10"
+    },
+    {
+      "id": "TXT-a76e13b98392",
+      "english": "Restore",
+      "draft": "തിരികെ കൊണ്ടുവരുക",
+      "area": "Catalogue / Members",
+      "source": "src/lib/core-translations.ts:15"
+    },
+    {
+      "id": "TXT-23e39291d613",
+      "english": "Saving…",
+      "draft": "സേവ് ചെയ്യുന്നു…",
+      "area": "Catalogue / Members",
+      "source": "src/lib/core-translations.ts:86"
+    },
+    {
+      "id": "TXT-920e413c7d41",
+      "english": "Status",
+      "draft": "സ്ഥിതി",
+      "area": "Catalogue / Members",
+      "source": "src/lib/core-translations.ts:7"
+    },
+    {
+      "id": "TXT-b07e62813bb4",
+      "english": "{count} available",
+      "draft": "{count} എണ്ണം ലഭ്യമാണ്",
+      "area": "Circulation",
+      "source": "src/lib/core-translations.ts:282"
+    },
+    {
+      "id": "TXT-64cff1319d2f",
+      "english": "Action",
+      "draft": "ചെയ്യാവുന്ന കാര്യം",
+      "area": "Circulation",
+      "source": "src/lib/core-translations.ts:277"
+    },
+    {
+      "id": "TXT-0c694e250746",
+      "english": "Author not recorded",
+      "draft": "എഴുത്തുകാരന്റെ പേര് നൽകിയിട്ടില്ല",
+      "area": "Circulation",
+      "source": "src/lib/core-translations.ts:110"
+    },
+    {
+      "id": "TXT-94c4d3ed12c8",
+      "english": "Availability and reservation eligibility are checked again when you review the loan.",
+      "draft": "വിതരണ വിവരങ്ങൾ പരിശോധിക്കുമ്പോൾ ലഭ്യതയും ബുക്കിംഗ് സംബന്ധിച്ച അനുമതിയും വീണ്ടും പരിശോധിക്കും.",
+      "area": "Circulation",
+      "source": "src/lib/core-translations.ts:134"
+    },
+    {
+      "id": "TXT-71fa9f0414cc",
+      "english": "Book / Copy",
+      "draft": "പുസ്തകം / കോപ്പി",
+      "area": "Circulation",
+      "source": "src/lib/core-translations.ts:135"
+    },
+    {
+      "id": "TXT-9be13e9fcc57",
+      "english": "Book barcode or accession number",
+      "draft": "പുസ്തകത്തിന്റെ ബാർകോഡ് അല്ലെങ്കിൽ അക്സഷൻ നമ്പർ",
+      "area": "Circulation",
+      "source": "src/lib/core-translations.ts:133"
+    },
+    {
+      "id": "TXT-4a682cfe8e6a",
+      "english": "Book title",
+      "draft": "പുസ്തകത്തിന്റെ പേര്",
+      "area": "Circulation",
+      "source": "src/lib/core-translations.ts:128"
+    },
+    {
+      "id": "TXT-57709b5d727a",
+      "english": "Choose a copy",
+      "draft": "ഒരു കോപ്പി തിരഞ്ഞെടുക്കുക",
+      "area": "Circulation",
+      "source": "src/lib/core-translations.ts:111"
+    },
+    {
+      "id": "TXT-e474152478bb",
+      "english": "Choose another title",
+      "draft": "മറ്റൊരു പുസ്തകം തിരഞ്ഞെടുക്കുക",
+      "area": "Circulation",
+      "source": "src/lib/core-translations.ts:150"
+    },
+    {
+      "id": "TXT-d44b1c910c9b",
+      "english": "Circulation action",
+      "draft": "പുസ്തക വിതരണ പ്രവർത്തനം",
+      "area": "Circulation",
+      "source": "src/lib/core-translations.ts:112"
+    },
+    {
+      "id": "TXT-32fef0e14bfb",
+      "english": "Close loan as lost",
+      "draft": "നഷ്ടപ്പെട്ടതായി രേഖപ്പെടുത്തി വിതരണം അവസാനിപ്പിക്കുക",
+      "area": "Circulation",
+      "source": "src/lib/core-translations.ts:136"
+    },
+    {
+      "id": "TXT-e1a5f9561b2c",
+      "english": "Closed the loan for {title}. Marked {condition}.",
+      "draft": "{title} എന്ന പുസ്തകത്തിന്റെ വിതരണം അവസാനിപ്പിച്ചു. രേഖപ്പെടുത്തിയ അവസ്ഥ: {condition}.",
+      "area": "Circulation",
+      "source": "src/lib/core-translations.ts:190"
+    },
+    {
+      "id": "TXT-e1fa7f4dd56f",
+      "english": "Confirm issue",
+      "draft": "പുസ്തകം നൽകുന്നത് ഉറപ്പാക്കുക",
+      "area": "Circulation",
+      "source": "src/lib/core-translations.ts:123"
+    },
+    {
+      "id": "TXT-abd13124edfa",
+      "english": "Confirm renewal",
+      "draft": "കാലാവധി നീട്ടുന്നത് ഉറപ്പാക്കുക",
+      "area": "Circulation",
+      "source": "src/lib/core-translations.ts:125"
+    },
+    {
+      "id": "TXT-48121910c618",
+      "english": "Confirm return",
+      "draft": "പുസ്തകം തിരികെ വാങ്ങുന്നത് ഉറപ്പാക്കുക",
+      "area": "Circulation",
+      "source": "src/lib/core-translations.ts:124"
+    },
+    {
+      "id": "TXT-77f37bc5abde",
+      "english": "Copy condition",
+      "draft": "കോപ്പിയുടെ അവസ്ഥ",
+      "area": "Circulation",
+      "source": "src/lib/core-translations.ts:129"
+    },
+    {
+      "id": "TXT-347f90ecfcf7",
+      "english": "Current due",
+      "draft": "നിലവിലെ മടക്ക തീയതി",
+      "area": "Circulation",
+      "source": "src/lib/core-translations.ts:151"
+    },
+    {
+      "id": "TXT-3363c3507eb5",
+      "english": "Current loans, earliest due first",
+      "draft": "നൽകിയ പുസ്തകങ്ങൾ, ആദ്യം തിരികെ ലഭിക്കേണ്ടത് മുകളിൽ",
+      "area": "Circulation",
+      "source": "src/lib/core-translations.ts:152"
+    },
+    {
+      "id": "TXT-3a1fe5a1aa53",
+      "english": "Currently issued books",
+      "draft": "നൽകിയിരിക്കുന്ന പുസ്തകങ്ങൾ",
+      "area": "Circulation",
+      "source": "src/lib/core-translations.ts:153"
+    },
+    {
+      "id": "TXT-1f7e69254092",
+      "english": "Days overdue",
+      "draft": "വൈകിയ ദിവസങ്ങൾ",
+      "area": "Circulation",
+      "source": "src/lib/core-translations.ts:144"
+    },
+    {
+      "id": "TXT-b5c6c3d9a1ff",
+      "english": "Estimated overdue fine",
+      "draft": "വൈകിയതിനുള്ള ഏകദേശ പിഴ",
+      "area": "Circulation",
+      "source": "src/lib/core-translations.ts:154"
+    },
+    {
+      "id": "TXT-d636568a6c77",
+      "english": "Find book by name",
+      "draft": "പേര് ഉപയോഗിച്ച് പുസ്തകം കണ്ടെത്തുക",
+      "area": "Circulation",
+      "source": "src/lib/core-translations.ts:179"
+    },
+    {
+      "id": "TXT-2555d616a1f8",
+      "english": "Find member by name",
+      "draft": "പേര് ഉപയോഗിച്ച് അംഗത്തെ കണ്ടെത്തുക",
+      "area": "Circulation",
+      "source": "src/lib/core-translations.ts:180"
+    },
+    {
+      "id": "TXT-a2a32de6d35a",
+      "english": "Find open loan",
+      "draft": "നൽകിയ പുസ്തകം കണ്ടെത്തുക",
+      "area": "Circulation",
+      "source": "src/lib/core-translations.ts:121"
+    },
+    {
+      "id": "TXT-f444344aa73d",
+      "english": "Import renewal history",
+      "draft": "കാലാവധി നീട്ടിയ വിവരങ്ങൾ ഇംപോർട്ട് ചെയ്യുക",
+      "area": "Circulation",
+      "source": "src/lib/core-translations.ts:181"
+    },
+    {
+      "id": "TXT-7a7afe491db3",
+      "english": "Import reservations and fines",
+      "draft": "ബുക്കിംഗുകളും പിഴകളും ഇംപോർട്ട് ചെയ്യുക",
+      "area": "Circulation",
+      "source": "src/lib/core-translations.ts:155"
+    },
+    {
+      "id": "TXT-48dc76dfa23a",
+      "english": "Issue",
+      "draft": "പുസ്തകം നൽകുക",
+      "area": "Circulation",
+      "source": "src/lib/core-translations.ts:115"
+    },
+    {
+      "id": "TXT-fb5a1b7854cc",
+      "english": "Issue copy",
+      "draft": "കോപ്പി നൽകുക",
+      "area": "Circulation",
+      "source": "src/lib/core-translations.ts:117"
+    },
+    {
+      "id": "TXT-73d97bb8ca0f",
+      "english": "Issued {title}. Due {dueOn}.",
+      "draft": "{title} നൽകി. തിരികെ നൽകേണ്ട തീയതി: {dueOn}.",
+      "area": "Circulation",
+      "source": "src/lib/core-translations.ts:187"
+    },
+    {
+      "id": "TXT-4cad8f0e1c03",
+      "english": "Loading copies.",
+      "draft": "കോപ്പികളുടെ വിവരങ്ങൾ തുറക്കുന്നു…",
+      "area": "Circulation",
+      "source": "src/lib/core-translations.ts:183"
+    },
+    {
+      "id": "TXT-03b60a15219c",
+      "english": "Loading current loans.",
+      "draft": "നിലവിലെ വിതരണ വിവരങ്ങൾ തുറക്കുന്നു…",
+      "area": "Circulation",
+      "source": "src/lib/core-translations.ts:156"
+    },
+    {
+      "id": "TXT-90c2d9ab0eb0",
+      "english": "Loading fines.",
+      "draft": "പിഴ വിവരങ്ങൾ തുറക്കുന്നു…",
+      "area": "Circulation",
+      "source": "src/lib/core-translations.ts:157"
+    },
+    {
+      "id": "TXT-582ff8b58d0c",
+      "english": "Loading history import.",
+      "draft": "ചരിത്രം ഇംപോർട്ട് ചെയ്യാനുള്ള പേജ് തുറക്കുന്നു…",
+      "area": "Circulation",
+      "source": "src/lib/core-translations.ts:158"
+    },
+    {
+      "id": "TXT-d24af4e2853d",
+      "english": "Loading import preview.",
+      "draft": "ഇംപോർട്ട് വിവരങ്ങൾ തുറക്കുന്നു…",
+      "area": "Circulation",
+      "source": "src/lib/core-translations.ts:159"
+    },
+    {
+      "id": "TXT-4e659ce493f6",
+      "english": "Loading overdue loans.",
+      "draft": "കാലാവധി കഴിഞ്ഞ വിതരണ വിവരങ്ങൾ തുറക്കുന്നു…",
+      "area": "Circulation",
+      "source": "src/lib/core-translations.ts:160"
+    },
+    {
+      "id": "TXT-24ca57d3d50d",
+      "english": "Loading renewal import.",
+      "draft": "കാലാവധി നീട്ടിയ വിവരങ്ങൾ ഇംപോർട്ട് ചെയ്യാനുള്ള പേജ് തുറക്കുന്നു…",
+      "area": "Circulation",
+      "source": "src/lib/core-translations.ts:161"
+    },
+    {
+      "id": "TXT-33d5db2c75cb",
+      "english": "Loading reservations.",
+      "draft": "ബുക്കിംഗുകൾ തുറക്കുന്നു…",
+      "area": "Circulation",
+      "source": "src/lib/core-translations.ts:162"
+    },
+    {
+      "id": "TXT-c10c50aa4bb9",
+      "english": "Looking up loan.",
+      "draft": "വിതരണ വിവരങ്ങൾ കണ്ടെത്തുന്നു…",
+      "area": "Circulation",
+      "source": "src/lib/core-translations.ts:163"
+    },
+    {
+      "id": "TXT-a84f1079ee0e",
+      "english": "Looking up…",
+      "draft": "കണ്ടെത്തുന്നു…",
+      "area": "Circulation",
+      "source": "src/lib/core-translations.ts:138"
+    },
+    {
+      "id": "TXT-21d9a616aa29",
+      "english": "Matching books",
+      "draft": "ചേരുന്ന പുസ്തകങ്ങൾ",
+      "area": "Circulation",
+      "source": "src/lib/core-translations.ts:113"
+    },
+    {
+      "id": "TXT-4f12fcced9fa",
+      "english": "Matching members",
+      "draft": "ചേരുന്ന അംഗങ്ങൾ",
+      "area": "Circulation",
+      "source": "src/lib/core-translations.ts:114"
+    },
+    {
+      "id": "TXT-7c968fb71f50",
+      "english": "Member",
+      "draft": "അംഗം",
+      "area": "Circulation",
+      "source": "src/lib/core-translations.ts:186"
+    },
+    {
+      "id": "TXT-bba36aed946a",
+      "english": "Member and copy eligibility are checked when you place the reservation.",
+      "draft": "ബുക്ക് ചെയ്യുമ്പോൾ അംഗത്തിന്റെയും കോപ്പിയുടെയും യോഗ്യത പരിശോധിക്കും.",
+      "area": "Circulation",
+      "source": "src/lib/core-translations.ts:139"
+    },
+    {
+      "id": "TXT-22b86d4f81bf",
+      "english": "Member name",
+      "draft": "അംഗത്തിന്റെ പേര്",
+      "area": "Circulation",
+      "source": "src/lib/core-translations.ts:130"
+    },
+    {
+      "id": "TXT-ec4f341b6e23",
+      "english": "New due date",
+      "draft": "പുതിയ മടക്ക തീയതി",
+      "area": "Circulation",
+      "source": "src/lib/core-translations.ts:140"
+    },
+    {
+      "id": "TXT-3b03174ee6bf",
+      "english": "Next matches",
+      "draft": "അടുത്ത ഫലങ്ങൾ",
+      "area": "Circulation",
+      "source": "src/lib/core-translations.ts:164"
+    },
+    {
+      "id": "TXT-1c993a84196b",
+      "english": "No currently issued books.",
+      "draft": "നിലവിൽ പുസ്തകങ്ങൾ നൽകിയിട്ടില്ല.",
+      "area": "Circulation",
+      "source": "src/lib/core-translations.ts:141"
+    },
+    {
+      "id": "TXT-986a0b6ca9f5",
+      "english": "No matching books.",
+      "draft": "ചേരുന്ന പുസ്തകങ്ങളില്ല.",
+      "area": "Circulation",
+      "source": "src/lib/core-translations.ts:166"
+    },
+    {
+      "id": "TXT-d9c4f12684d3",
+      "english": "No matching current loans.",
+      "draft": "ചേരുന്ന വിതരണ വിവരങ്ങളില്ല.",
+      "area": "Circulation",
+      "source": "src/lib/core-translations.ts:142"
+    },
+    {
+      "id": "TXT-54ee0bf55214",
+      "english": "No overdue loans.",
+      "draft": "കാലാവധി കഴിഞ്ഞ വിതരണങ്ങളില്ല.",
+      "area": "Circulation",
+      "source": "src/lib/core-translations.ts:167"
+    },
+    {
+      "id": "TXT-749d510bf9f2",
+      "english": "Overdue fine: {amount}.",
+      "draft": "വൈകിയതിനുള്ള പിഴ: {amount}.",
+      "area": "Circulation",
+      "source": "src/lib/core-translations.ts:191"
+    },
+    {
+      "id": "TXT-8760308f6ff8",
+      "english": "Overdue loans, oldest due first",
+      "draft": "കാലാവധി കഴിഞ്ഞവ, ഏറ്റവും പഴയത് മുകളിൽ",
+      "area": "Circulation",
+      "source": "src/lib/core-translations.ts:168"
+    },
+    {
+      "id": "TXT-1bf997bc5b15",
+      "english": "Preview loan import",
+      "draft": "ഇംപോർട്ട് ചെയ്യേണ്ട വിതരണ വിവരങ്ങൾ കാണുക",
+      "area": "Circulation",
+      "source": "src/lib/core-translations.ts:182"
+    },
+    {
+      "id": "TXT-725bd1237e67",
+      "english": "Previous matches",
+      "draft": "മുൻ ഫലങ്ങൾ",
+      "area": "Circulation",
+      "source": "src/lib/core-translations.ts:165"
+    },
+    {
+      "id": "TXT-0916059688e6",
+      "english": "Renew loan",
+      "draft": "കാലാവധി നീട്ടുക",
+      "area": "Circulation",
+      "source": "src/lib/core-translations.ts:119"
+    },
+    {
+      "id": "TXT-c6bd3591a52a",
+      "english": "Renewed {title}. Now due {dueOn}.",
+      "draft": "{title} എന്ന പുസ്തകത്തിന്റെ കാലാവധി നീട്ടി. പുതിയ മടക്ക തീയതി: {dueOn}.",
+      "area": "Circulation",
+      "source": "src/lib/core-translations.ts:189"
+    },
+    {
+      "id": "TXT-5c210b27b08e",
+      "english": "Reservations",
+      "draft": "ബുക്കിംഗുകൾ",
+      "area": "Circulation",
+      "source": "src/lib/core-translations.ts:169"
+    },
+    {
+      "id": "TXT-76a68ea8964b",
+      "english": "Retry copies",
+      "draft": "കോപ്പികൾ വീണ്ടും പരിശോധിക്കുക",
+      "area": "Circulation",
+      "source": "src/lib/core-translations.ts:170"
+    },
+    {
+      "id": "TXT-a33388bc480c",
+      "english": "Retry loans",
+      "draft": "വിതരണ വിവരങ്ങൾ വീണ്ടും പരിശോധിക്കുക",
+      "area": "Circulation",
+      "source": "src/lib/core-translations.ts:171"
+    },
+    {
+      "id": "TXT-f468ed38f202",
+      "english": "Retry search",
+      "draft": "വീണ്ടും തിരയുക",
+      "area": "Circulation",
+      "source": "src/lib/core-translations.ts:172"
+    },
+    {
+      "id": "TXT-6b0143d03864",
+      "english": "Return",
+      "draft": "പുസ്തകം തിരികെ വാങ്ങുക",
+      "area": "Circulation",
+      "source": "src/lib/core-translations.ts:116"
+    },
+    {
+      "id": "TXT-c8c2729c11d5",
+      "english": "Return copy",
+      "draft": "കോപ്പി തിരികെ വാങ്ങുക",
+      "area": "Circulation",
+      "source": "src/lib/core-translations.ts:118"
+    },
+    {
+      "id": "TXT-b573871f1b3e",
+      "english": "Return copy {barcode}",
+      "draft": "{barcode} എന്ന കോപ്പി തിരികെ വാങ്ങുക",
+      "area": "Circulation",
+      "source": "src/lib/core-translations.ts:288"
+    },
+    {
+      "id": "TXT-e453ee3602a7",
+      "english": "Returned {title}.",
+      "draft": "{title} തിരികെ വാങ്ങി.",
+      "area": "Circulation",
+      "source": "src/lib/core-translations.ts:188"
+    },
+    {
+      "id": "TXT-4989870da362",
+      "english": "Review loan",
+      "draft": "വിതരണ വിവരങ്ങൾ പരിശോധിക്കുക",
+      "area": "Circulation",
+      "source": "src/lib/core-translations.ts:120"
+    },
+    {
+      "id": "TXT-296b17af347c",
+      "english": "Review renew for copy {barcode}",
+      "draft": "{barcode} എന്ന കോപ്പിയുടെ കാലാവധി നീട്ടുന്നത് പരിശോധിക്കുക",
+      "area": "Circulation",
+      "source": "src/lib/core-translations.ts:287"
+    },
+    {
+      "id": "TXT-d5bcc7bed1b6",
+      "english": "Review renewal",
+      "draft": "നീട്ടേണ്ട കാലാവധി പരിശോധിക്കുക",
+      "area": "Circulation",
+      "source": "src/lib/core-translations.ts:122"
+    },
+    {
+      "id": "TXT-56dac27e6055",
+      "english": "Review return",
+      "draft": "മടക്ക വിവരങ്ങൾ പരിശോധിക്കുക",
+      "area": "Circulation",
+      "source": "src/lib/core-translations.ts:143"
+    },
+    {
+      "id": "TXT-9466346bed7f",
+      "english": "Review return for copy {barcode}",
+      "draft": "{barcode} എന്ന കോപ്പിയുടെ മടക്ക വിവരങ്ങൾ പരിശോധിക്കുക",
+      "area": "Circulation",
+      "source": "src/lib/core-translations.ts:286"
+    },
+    {
+      "id": "TXT-adf16808bb44",
+      "english": "Search by book, member, barcode or accession number.",
+      "draft": "പുസ്തകം, അംഗം, ബാർകോഡ് അല്ലെങ്കിൽ അക്സഷൻ നമ്പർ ഉപയോഗിച്ച് തിരയുക.",
+      "area": "Circulation",
+      "source": "src/lib/core-translations.ts:126"
+    },
+    {
+      "id": "TXT-3656e300a50f",
+      "english": "Search current loans",
+      "draft": "നൽകിയിരിക്കുന്ന പുസ്തകങ്ങളിൽ തിരയുക",
+      "area": "Circulation",
+      "source": "src/lib/core-translations.ts:131"
+    },
+    {
+      "id": "TXT-5305d4060cd4",
+      "english": "Searching books.",
+      "draft": "പുസ്തകങ്ങൾ തിരയുന്നു…",
+      "area": "Circulation",
+      "source": "src/lib/core-translations.ts:173"
+    },
+    {
+      "id": "TXT-4fbc9742f223",
+      "english": "Searching members…",
+      "draft": "അംഗങ്ങളെ തിരയുന്നു…",
+      "area": "Circulation",
+      "source": "src/lib/core-translations.ts:174"
+    },
+    {
+      "id": "TXT-abdee58baf85",
+      "english": "This title has no copies.",
+      "draft": "ഈ പുസ്തകത്തിന് കോപ്പികളില്ല.",
+      "area": "Circulation",
+      "source": "src/lib/core-translations.ts:175"
+    },
+    {
+      "id": "TXT-15dd38382837",
+      "english": "This title is archived. Choose another book.",
+      "draft": "ഈ പുസ്തകം മാറ്റിവച്ചതാണ്. മറ്റൊന്ന് തിരഞ്ഞെടുക്കുക.",
+      "area": "Circulation",
+      "source": "src/lib/core-translations.ts:176"
+    },
+    {
+      "id": "TXT-2d9a7276b439",
+      "english": "Type a name or member number, then choose a match.",
+      "draft": "പേരോ അംഗത്തിന്റെ നമ്പറോ നൽകി ചേരുന്ന അംഗത്തെ തിരഞ്ഞെടുക്കുക.",
+      "area": "Circulation",
+      "source": "src/lib/core-translations.ts:127"
+    },
+    {
+      "id": "TXT-8bf54f9d2b06",
+      "english": "Type part of a title, choose a match, then select the copy to issue.",
+      "draft": "പുസ്തകത്തിന്റെ പേരിന്റെ ഒരു ഭാഗം നൽകുക. ചേരുന്ന പുസ്തകവും നൽകേണ്ട കോപ്പിയും തിരഞ്ഞെടുക്കുക.",
+      "area": "Circulation",
+      "source": "src/lib/core-translations.ts:284"
+    },
+    {
+      "id": "TXT-44bfd701188d",
+      "english": "Type part of a title, choose a match, then select the copy to reserve.",
+      "draft": "പുസ്തകത്തിന്റെ പേരിന്റെ ഒരു ഭാഗം നൽകുക. ചേരുന്ന പുസ്തകവും ബുക്ക് ചെയ്യേണ്ട കോപ്പിയും തിരഞ്ഞെടുക്കുക.",
+      "area": "Circulation",
+      "source": "src/lib/core-translations.ts:285"
+    },
+    {
+      "id": "TXT-53f5ce048df4",
+      "english": "View due slip",
+      "draft": "മടക്ക തീയതിയുള്ള സ്ലിപ്പ് കാണുക",
+      "area": "Circulation",
+      "source": "src/lib/core-translations.ts:177"
+    },
+    {
+      "id": "TXT-d8c64a723ac1",
+      "english": "You do not have permission to issue, return, or renew loans.",
+      "draft": "പുസ്തകം നൽകാനോ തിരികെ വാങ്ങാനോ കാലാവധി നീട്ടാനോ നിങ്ങൾക്ക് അനുമതിയില്ല.",
+      "area": "Circulation",
+      "source": "src/lib/core-translations.ts:178"
+    },
+    {
+      "id": "TXT-7d9eb7acb13e",
+      "english": "Close",
+      "draft": "അടയ്ക്കുക",
+      "area": "Circulation / Members",
+      "source": "src/lib/core-translations.ts:9"
+    },
+    {
+      "id": "TXT-e6734cfcd5a8",
+      "english": "Fines",
+      "draft": "പിഴകൾ",
+      "area": "Circulation / Members",
+      "source": "src/lib/core-translations.ts:185"
+    },
+    {
+      "id": "TXT-5f32af552a91",
+      "english": "Member number",
+      "draft": "അംഗത്തിന്റെ നമ്പർ",
+      "area": "Circulation / Members",
+      "source": "src/lib/core-translations.ts:132"
+    },
+    {
+      "id": "TXT-7c3606f77479",
+      "english": "No matching members.",
+      "draft": "ചേരുന്ന അംഗങ്ങളില്ല.",
+      "area": "Circulation / Members",
+      "source": "src/lib/core-translations.ts:184"
+    },
+    {
+      "id": "TXT-240ab6d8dc2c",
+      "english": "Page {page} of {pages}",
+      "draft": "{pages} പേജുകളിൽ {page}",
+      "area": "Circulation / Shared",
+      "source": "src/lib/core-translations.ts:265"
+    },
+    {
+      "id": "TXT-dd54c64c09e6",
+      "english": "{count} borrow",
+      "draft": "{count} തവണ നൽകി",
+      "area": "Dashboard",
+      "source": "src/lib/core-translations.ts:54"
+    },
+    {
+      "id": "TXT-45daab425303",
+      "english": "{count} borrows",
+      "draft": "{count} തവണ നൽകി",
+      "area": "Dashboard",
+      "source": "src/lib/core-translations.ts:276"
+    },
+    {
+      "id": "TXT-51523ac76028",
+      "english": "{count} hold is ready for pickup.",
+      "draft": "ബുക്ക് ചെയ്ത {count} പുസ്തകം എടുക്കാൻ തയ്യാറാണ്.",
+      "area": "Dashboard",
+      "source": "src/lib/core-translations.ts:52"
+    },
+    {
+      "id": "TXT-97ef10c6170b",
+      "english": "{count} holds are ready for pickup.",
+      "draft": "ബുക്ക് ചെയ്ത {count} പുസ്തകങ്ങൾ എടുക്കാൻ തയ്യാറാണ്.",
+      "area": "Dashboard",
+      "source": "src/lib/core-translations.ts:227"
+    },
+    {
+      "id": "TXT-bbb79e9b02e9",
+      "english": "{count} loan is due today.",
+      "draft": "{count} പുസ്തകം ഇന്ന് തിരികെ നൽകണം.",
+      "area": "Dashboard",
+      "source": "src/lib/core-translations.ts:53"
+    },
+    {
+      "id": "TXT-c53f418266fd",
+      "english": "{count} loan is overdue.",
+      "draft": "{count} പുസ്തകത്തിന്റെ മടക്ക തീയതി കഴിഞ്ഞു.",
+      "area": "Dashboard",
+      "source": "src/lib/core-translations.ts:51"
+    },
+    {
+      "id": "TXT-74cfc033e97a",
+      "english": "{count} loans are due today.",
+      "draft": "{count} പുസ്തകങ്ങൾ ഇന്ന് തിരികെ നൽകണം.",
+      "area": "Dashboard",
+      "source": "src/lib/core-translations.ts:228"
+    },
+    {
+      "id": "TXT-ad7211ad469f",
+      "english": "{count} loans are overdue.",
+      "draft": "{count} പുസ്തകങ്ങളുടെ മടക്ക തീയതി കഴിഞ്ഞു.",
+      "area": "Dashboard",
+      "source": "src/lib/core-translations.ts:226"
+    },
+    {
+      "id": "TXT-a41248a59b7c",
+      "english": "{count}d",
+      "draft": "{count} ദിവസം",
+      "area": "Dashboard",
+      "source": "src/lib/core-translations.ts:55"
+    },
+    {
+      "id": "TXT-595c7c405986",
+      "english": "Action required:",
+      "draft": "ശ്രദ്ധിക്കുക:",
+      "area": "Dashboard",
+      "source": "src/lib/core-translations.ts:204"
+    },
+    {
+      "id": "TXT-d396810b31fc",
+      "english": "Actionable alerts",
+      "draft": "ശ്രദ്ധിക്കേണ്ട കാര്യങ്ങൾ",
+      "area": "Dashboard",
+      "source": "src/lib/core-translations.ts:192"
+    },
+    {
+      "id": "TXT-dcc56e9dfa24",
+      "english": "Active members",
+      "draft": "നിലവിലെ അംഗങ്ങൾ",
+      "area": "Dashboard",
+      "source": "src/lib/core-translations.ts:193"
+    },
+    {
+      "id": "TXT-a71abed00006",
+      "english": "Activity & growth trends",
+      "draft": "വിതരണവും ശേഖര വളർച്ചയും",
+      "area": "Dashboard",
+      "source": "src/lib/core-translations.ts:222"
+    },
+    {
+      "id": "TXT-5caabf86f707",
+      "english": "Available copies",
+      "draft": "ലഭ്യമായ കോപ്പികൾ",
+      "area": "Dashboard",
+      "source": "src/lib/core-translations.ts:194"
+    },
+    {
+      "id": "TXT-8f1113619fc8",
+      "english": "Catalogue titles",
+      "draft": "പുസ്തകപ്പട്ടികയിലെ പുസ്തകങ്ങൾ",
+      "area": "Dashboard",
+      "source": "src/lib/core-translations.ts:195"
+    },
+    {
+      "id": "TXT-97c717b952b2",
+      "english": "Checking local database…",
+      "draft": "ഡാറ്റാബേസ് പരിശോധിക്കുന്നു…",
+      "area": "Dashboard",
+      "source": "src/lib/core-translations.ts:205"
+    },
+    {
+      "id": "TXT-9a833e593f40",
+      "english": "Could not read system status.",
+      "draft": "സിസ്റ്റത്തിന്റെ വിവരങ്ങൾ പരിശോധിക്കാനായില്ല.",
+      "area": "Dashboard",
+      "source": "src/lib/core-translations.ts:203"
+    },
+    {
+      "id": "TXT-494ca78f7374",
+      "english": "Custom",
+      "draft": "തിരഞ്ഞെടുക്കുക",
+      "area": "Dashboard",
+      "source": "src/lib/core-translations.ts:272"
+    },
+    {
+      "id": "TXT-3e55f576865b",
+      "english": "Data folder",
+      "draft": "ഡാറ്റ സൂക്ഷിക്കുന്ന ഫോൾഡർ",
+      "area": "Dashboard",
+      "source": "src/lib/core-translations.ts:196"
+    },
+    {
+      "id": "TXT-812d995bccaf",
+      "english": "Database file",
+      "draft": "ഡാറ്റാബേസ് ഫയൽ",
+      "area": "Dashboard",
+      "source": "src/lib/core-translations.ts:197"
+    },
+    {
+      "id": "TXT-bf3efcb83e0c",
+      "english": "Database schema",
+      "draft": "ഡാറ്റാബേസ് ഘടന",
+      "area": "Dashboard",
+      "source": "src/lib/core-translations.ts:198"
+    },
+    {
+      "id": "TXT-19e82138c35f",
+      "english": "Due today",
+      "draft": "ഇന്ന് തിരികെ നൽകേണ്ടത്",
+      "area": "Dashboard",
+      "source": "src/lib/core-translations.ts:199"
+    },
+    {
+      "id": "TXT-e370e3aa0bd7",
+      "english": "Due today:",
+      "draft": "ഇന്ന് തിരികെ നൽകേണ്ടത്:",
+      "area": "Dashboard",
+      "source": "src/lib/core-translations.ts:206"
+    },
+    {
+      "id": "TXT-14303aa0c4a0",
+      "english": "End date",
+      "draft": "അവസാന തീയതി",
+      "area": "Dashboard",
+      "source": "src/lib/core-translations.ts:18"
+    },
+    {
+      "id": "TXT-8d825ee1285c",
+      "english": "Holds ready",
+      "draft": "എടുക്കാൻ തയ്യാറായ ബുക്കിംഗുകൾ",
+      "area": "Dashboard",
+      "source": "src/lib/core-translations.ts:200"
+    },
+    {
+      "id": "TXT-666067dd376e",
+      "english": "Issues",
+      "draft": "നൽകിയ പുസ്തകങ്ങൾ",
+      "area": "Dashboard",
+      "source": "src/lib/core-translations.ts:219"
+    },
+    {
+      "id": "TXT-03b0e56a4b27",
+      "english": "Library at a glance",
+      "draft": "ലൈബ്രറി ഒറ്റനോട്ടത്തിൽ",
+      "area": "Dashboard",
+      "source": "src/lib/core-translations.ts:223"
+    },
+    {
+      "id": "TXT-20014d642e0c",
+      "english": "Library modules",
+      "draft": "ലൈബ്രറിയിലെ വിഭാഗങ്ങൾ",
+      "area": "Dashboard",
+      "source": "src/lib/core-translations.ts:224"
+    },
+    {
+      "id": "TXT-a2c030e5bb4b",
+      "english": "Loading library overview.",
+      "draft": "ലൈബ്രറിയുടെ വിവരങ്ങൾ തുറക്കുന്നു…",
+      "area": "Dashboard",
+      "source": "src/lib/core-translations.ts:207"
+    },
+    {
+      "id": "TXT-4bdcfc279b62",
+      "english": "Most borrowed titles in this period",
+      "draft": "ഈ കാലയളവിൽ കൂടുതൽ വായിക്കാൻ നൽകിയ പുസ്തകങ്ങൾ",
+      "area": "Dashboard",
+      "source": "src/lib/core-translations.ts:208"
+    },
+    {
+      "id": "TXT-7486f9ef7fc8",
+      "english": "New copies",
+      "draft": "പുതിയ കോപ്പികൾ",
+      "area": "Dashboard",
+      "source": "src/lib/core-translations.ts:209"
+    },
+    {
+      "id": "TXT-1811cdd6b2a1",
+      "english": "New titles",
+      "draft": "പുതിയ പുസ്തകങ്ങൾ",
+      "area": "Dashboard",
+      "source": "src/lib/core-translations.ts:210"
+    },
+    {
+      "id": "TXT-d7c20bc5072e",
+      "english": "No circulation recorded for this period.",
+      "draft": "ഈ കാലയളവിൽ പുസ്തക വിതരണം രേഖപ്പെടുത്തിയിട്ടില്ല.",
+      "area": "Dashboard",
+      "source": "src/lib/core-translations.ts:211"
+    },
+    {
+      "id": "TXT-0fcb29b04743",
+      "english": "Open circulation desk →",
+      "draft": "പുസ്തക വിതരണത്തിലേക്ക് പോകുക →",
+      "area": "Dashboard",
+      "source": "src/lib/core-translations.ts:212"
+    },
+    {
+      "id": "TXT-fd06125c94ed",
+      "english": "Outstanding fines",
+      "draft": "അടയ്ക്കാനുള്ള പിഴകൾ",
+      "area": "Dashboard",
+      "source": "src/lib/core-translations.ts:201"
+    },
+    {
+      "id": "TXT-a7323be7baad",
+      "english": "Pickup waiting:",
+      "draft": "എടുക്കാൻ തയ്യാറാണ്:",
+      "area": "Dashboard",
+      "source": "src/lib/core-translations.ts:213"
+    },
+    {
+      "id": "TXT-01059eb32cda",
+      "english": "Range:",
+      "draft": "കാലയളവ്:",
+      "area": "Dashboard",
+      "source": "src/lib/core-translations.ts:214"
+    },
+    {
+      "id": "TXT-6bb027cae12f",
+      "english": "Renewals",
+      "draft": "കാലാവധി നീട്ടിയവ",
+      "area": "Dashboard",
+      "source": "src/lib/core-translations.ts:221"
+    },
+    {
+      "id": "TXT-16dcaa923f16",
+      "english": "Returns",
+      "draft": "തിരികെ ലഭിച്ചവ",
+      "area": "Dashboard",
+      "source": "src/lib/core-translations.ts:220"
+    },
+    {
+      "id": "TXT-0d0336bc56c0",
+      "english": "Review overdue loans →",
+      "draft": "കാലാവധി കഴിഞ്ഞവ പരിശോധിക്കുക →",
+      "area": "Dashboard",
+      "source": "src/lib/core-translations.ts:215"
+    },
+    {
+      "id": "TXT-8169693101a4",
+      "english": "Start date",
+      "draft": "തുടങ്ങുന്ന തീയതി",
+      "area": "Dashboard",
+      "source": "src/lib/core-translations.ts:17"
+    },
+    {
+      "id": "TXT-1a553d985333",
+      "english": "Summary for {from} to {to}",
+      "draft": "{from} മുതൽ {to} വരെ: ചുരുക്കം",
+      "area": "Dashboard",
+      "source": "src/lib/core-translations.ts:275"
+    },
+    {
+      "id": "TXT-25b128ae6598",
+      "english": "System status",
+      "draft": "സിസ്റ്റത്തിന്റെ വിവരങ്ങൾ",
+      "area": "Dashboard",
+      "source": "src/lib/core-translations.ts:225"
+    },
+    {
+      "id": "TXT-dd167905de0d",
+      "english": "Version",
+      "draft": "പതിപ്പ്",
+      "area": "Dashboard",
+      "source": "src/lib/core-translations.ts:202"
+    },
+    {
+      "id": "TXT-3c7be9dbe2e7",
+      "english": "View full reports →",
+      "draft": "മുഴുവൻ റിപ്പോർട്ടുകൾ കാണുക →",
+      "area": "Dashboard",
+      "source": "src/lib/core-translations.ts:217"
+    },
+    {
+      "id": "TXT-cd7e6fa41976",
+      "english": "View reservations queue →",
+      "draft": "ബുക്കിംഗ് പട്ടിക കാണുക →",
+      "area": "Dashboard",
+      "source": "src/lib/core-translations.ts:218"
+    },
+    {
+      "id": "TXT-c95a7105b666",
+      "english": "Copies",
+      "draft": "കോപ്പികൾ",
+      "area": "Dashboard / Catalogue",
+      "source": "src/lib/core-translations.ts:4"
+    },
+    {
+      "id": "TXT-5ed8ddb4f284",
+      "english": "On loan",
+      "draft": "വായിക്കാൻ നൽകിയവ",
+      "area": "Dashboard / Catalogue / Members",
+      "source": "src/lib/core-translations.ts:89"
+    },
+    {
+      "id": "TXT-ff8059dc6752",
+      "english": "Actions",
+      "draft": "ചെയ്യാവുന്ന കാര്യങ്ങൾ",
+      "area": "Members",
+      "source": "src/lib/core-translations.ts:260"
+    },
+    {
+      "id": "TXT-92340695899b",
+      "english": "Active",
+      "draft": "നിലവിലുള്ളത്",
+      "area": "Members",
+      "source": "src/lib/core-translations.ts:12"
+    },
+    {
+      "id": "TXT-adb16f1540f1",
+      "english": "An active member category is required to register members.",
+      "draft": "അംഗങ്ങളെ ചേർക്കാൻ നിലവിലുള്ള ഒരു അംഗവിഭാഗം വേണം.",
+      "area": "Members",
+      "source": "src/lib/core-translations.ts:242"
+    },
+    {
+      "id": "TXT-730b44da6b12",
+      "english": "Archive member",
+      "draft": "അംഗത്തെ മാറ്റിവയ്ക്കുക",
+      "area": "Members",
+      "source": "src/lib/core-translations.ts:236"
+    },
+    {
+      "id": "TXT-be3702e3f1af",
+      "english": "Card",
+      "draft": "കാർഡ്",
+      "area": "Members",
+      "source": "src/lib/core-translations.ts:243"
+    },
+    {
+      "id": "TXT-27e3bfd2a468",
+      "english": "Card for {name} ({number})",
+      "draft": "{name} ({number}): അംഗത്വ കാർഡ്",
+      "area": "Members",
+      "source": "src/lib/core-translations.ts:263"
+    },
+    {
+      "id": "TXT-292c06f0045a",
+      "english": "Category",
+      "draft": "വിഭാഗം",
+      "area": "Members",
+      "source": "src/lib/core-translations.ts:235"
+    },
+    {
+      "id": "TXT-42d2f266dffd",
+      "english": "Choose a category",
+      "draft": "ഒരു വിഭാഗം തിരഞ്ഞെടുക്കുക",
+      "area": "Members",
+      "source": "src/lib/core-translations.ts:244"
+    },
+    {
+      "id": "TXT-9071738f1459",
+      "english": "Due",
+      "draft": "മടക്ക തീയതി",
+      "area": "Members",
+      "source": "src/lib/core-translations.ts:279"
+    },
+    {
+      "id": "TXT-a07deaf5beb8",
+      "english": "Edit member",
+      "draft": "അംഗത്തിന്റെ വിവരങ്ങൾ തിരുത്തുക",
+      "area": "Members",
+      "source": "src/lib/core-translations.ts:238"
+    },
+    {
+      "id": "TXT-969ccbd3cf63",
+      "english": "Email",
+      "draft": "ഇമെയിൽ",
+      "area": "Members",
+      "source": "src/lib/core-translations.ts:5"
+    },
+    {
+      "id": "TXT-70a46a7ef904",
+      "english": "Expiry date",
+      "draft": "കാലാവധി അവസാനിക്കുന്ന തീയതി",
+      "area": "Members",
+      "source": "src/lib/core-translations.ts:234"
+    },
+    {
+      "id": "TXT-9500871f5370",
+      "english": "Fines for {name} ({number})",
+      "draft": "{name} ({number}): പിഴകൾ",
+      "area": "Members",
+      "source": "src/lib/core-translations.ts:262"
+    },
+    {
+      "id": "TXT-a7422a4a3d9d",
+      "english": "Import Koha patrons",
+      "draft": "Koha അംഗങ്ങളെ ഇംപോർട്ട് ചെയ്യുക",
+      "area": "Members",
+      "source": "src/lib/core-translations.ts:254"
+    },
+    {
+      "id": "TXT-4169c811c03c",
+      "english": "Imported from {source}. Source staff label: {staff}.",
+      "draft": "ഇംപോർട്ട് ചെയ്ത ഉറവിടം: {source}. അവിടെ രേഖപ്പെടുത്തിയ ജീവനക്കാരൻ: {staff}.",
+      "area": "Members",
+      "source": "src/lib/core-translations.ts:304"
+    },
+    {
+      "id": "TXT-0221e4875188",
+      "english": "Issued",
+      "draft": "നൽകിയ തീയതി",
+      "area": "Members",
+      "source": "src/lib/core-translations.ts:278"
+    },
+    {
+      "id": "TXT-3595c4692b22",
+      "english": "Leave blank to use the category’s membership period.",
+      "draft": "അംഗവിഭാഗത്തിലെ കാലാവധി ഉപയോഗിക്കാൻ ഇത് ഒഴിച്ചിടുക.",
+      "area": "Members",
+      "source": "src/lib/core-translations.ts:258"
+    },
+    {
+      "id": "TXT-99a12ce28125",
+      "english": "Loading loan history.",
+      "draft": "വിതരണ ചരിത്രം തുറക്കുന്നു…",
+      "area": "Members",
+      "source": "src/lib/core-translations.ts:246"
+    },
+    {
+      "id": "TXT-a1e63c5b92e2",
+      "english": "Loading members.",
+      "draft": "അംഗങ്ങളുടെ വിവരങ്ങൾ തുറക്കുന്നു…",
+      "area": "Members",
+      "source": "src/lib/core-translations.ts:255"
+    },
+    {
+      "id": "TXT-65dbcf602386",
+      "english": "Loading patron import.",
+      "draft": "അംഗങ്ങളെ ഇംപോർട്ട് ചെയ്യാനുള്ള പേജ് തുറക്കുന്നു…",
+      "area": "Members",
+      "source": "src/lib/core-translations.ts:247"
+    },
+    {
+      "id": "TXT-b991de5d0141",
+      "english": "Loans",
+      "draft": "വായിക്കാൻ നൽകിയ പുസ്തകങ്ങൾ",
+      "area": "Members",
+      "source": "src/lib/core-translations.ts:248"
+    },
+    {
+      "id": "TXT-6fcf920ccf67",
+      "english": "Loans for {name}",
+      "draft": "{name}: നൽകിയ പുസ്തകങ്ങൾ",
+      "area": "Members",
+      "source": "src/lib/core-translations.ts:264"
+    },
+    {
+      "id": "TXT-d5cadbf9b5c4",
+      "english": "Loans for {name} ({number})",
+      "draft": "{name} ({number}): നൽകിയ പുസ്തകങ്ങൾ",
+      "area": "Members",
+      "source": "src/lib/core-translations.ts:261"
+    },
+    {
+      "id": "TXT-eefeb8f770ed",
+      "english": "Member loan history, open loans first",
+      "draft": "അംഗത്തിന്റെ വിതരണ ചരിത്രം, മടക്കാത്തവ ആദ്യം",
+      "area": "Members",
+      "source": "src/lib/core-translations.ts:249"
+    },
+    {
+      "id": "TXT-dcd1d5223f73",
+      "english": "Name",
+      "draft": "പേര്",
+      "area": "Members",
+      "source": "src/lib/core-translations.ts:11"
+    },
+    {
+      "id": "TXT-65f1ca525bc4",
+      "english": "Name or member number",
+      "draft": "പേര് അല്ലെങ്കിൽ അംഗത്തിന്റെ നമ്പർ",
+      "area": "Members",
+      "source": "src/lib/core-translations.ts:241"
+    },
+    {
+      "id": "TXT-9f5455c3fef4",
+      "english": "No archived members.",
+      "draft": "മാറ്റിവച്ച അംഗങ്ങളില്ല.",
+      "area": "Members",
+      "source": "src/lib/core-translations.ts:256"
+    },
+    {
+      "id": "TXT-eb17e56741b2",
+      "english": "No members registered yet.",
+      "draft": "അംഗങ്ങളെ ചേർത്തിട്ടില്ല.",
+      "area": "Members",
+      "source": "src/lib/core-translations.ts:257"
+    },
+    {
+      "id": "TXT-04c7be84c4d0",
+      "english": "Open Library Settings",
+      "draft": "ലൈബ്രറി ക്രമീകരണങ്ങൾ തുറക്കുക",
+      "area": "Members",
+      "source": "src/lib/core-translations.ts:250"
+    },
+    {
+      "id": "TXT-63dceb8800b2",
+      "english": "Phone",
+      "draft": "ഫോൺ",
+      "area": "Members",
+      "source": "src/lib/core-translations.ts:6"
+    },
+    {
+      "id": "TXT-0aaae223b86d",
+      "english": "Register member",
+      "draft": "അംഗത്തെ ചേർക്കുക",
+      "area": "Members",
+      "source": "src/lib/core-translations.ts:239"
+    },
+    {
+      "id": "TXT-31b3265cb432",
+      "english": "Renewals:",
+      "draft": "കാലാവധി നീട്ടിയത്:",
+      "area": "Members",
+      "source": "src/lib/core-translations.ts:251"
+    },
+    {
+      "id": "TXT-99c0f6080360",
+      "english": "Restore member",
+      "draft": "അംഗത്തെ തിരികെ കൊണ്ടുവരുക",
+      "area": "Members",
+      "source": "src/lib/core-translations.ts:237"
+    },
+    {
+      "id": "TXT-90f8cd7276aa",
+      "english": "Returned {date}",
+      "draft": "തിരികെ ലഭിച്ചത്: {date}",
+      "area": "Members",
+      "source": "src/lib/core-translations.ts:301"
+    },
+    {
+      "id": "TXT-7a89d25405f8",
+      "english": "Save member",
+      "draft": "അംഗത്തിന്റെ വിവരങ്ങൾ സേവ് ചെയ്യുക",
+      "area": "Members",
+      "source": "src/lib/core-translations.ts:240"
+    },
+    {
+      "id": "TXT-6497fc6f8400",
+      "english": "Search members",
+      "draft": "അംഗങ്ങളെ തിരയുക",
+      "area": "Members",
+      "source": "src/lib/core-translations.ts:233"
+    },
+    {
+      "id": "TXT-f30521fe3e78",
+      "english": "This member has no loans.",
+      "draft": "ഈ അംഗത്തിന് പുസ്തകങ്ങൾ നൽകിയിട്ടില്ല.",
+      "area": "Members",
+      "source": "src/lib/core-translations.ts:252"
+    },
+    {
+      "id": "TXT-1bcd7779ca42",
+      "english": "You do not have permission to view members.",
+      "draft": "അംഗങ്ങളുടെ വിവരങ്ങൾ കാണാൻ നിങ്ങൾക്ക് അനുമതിയില്ല.",
+      "area": "Members",
+      "source": "src/lib/core-translations.ts:253"
+    },
+    {
+      "id": "TXT-3ea14aac102e",
+      "english": "{first}-{last} of {total}",
+      "draft": "{total} ഫലങ്ങളിൽ {first}-{last}",
+      "area": "Shared",
+      "source": "src/lib/core-translations.ts:271"
+    },
+    {
+      "id": "TXT-1ff57a29d7c9",
+      "english": "Next",
+      "draft": "അടുത്തത്",
+      "area": "Shared",
+      "source": "src/lib/core-translations.ts:269"
+    },
+    {
+      "id": "TXT-a43619f32117",
+      "english": "No results",
+      "draft": "ഫലങ്ങളില്ല",
+      "area": "Shared",
+      "source": "src/lib/core-translations.ts:270"
+    },
+    {
+      "id": "TXT-a57b08a480b8",
+      "english": "Previous",
+      "draft": "മുൻപുള്ളത്",
+      "area": "Shared",
+      "source": "src/lib/core-translations.ts:268"
+    },
+    {
+      "id": "TXT-e9f0a85930cc",
+      "english": "{count} days",
+      "draft": "{count} ദിവസം",
+      "area": "Shared / usage to confirm",
+      "source": "src/lib/core-translations.ts:274"
+    },
+    {
+      "id": "TXT-c858c64211f1",
+      "english": "Checking local database.",
+      "draft": "ഡാറ്റാബേസ് പരിശോധിക്കുന്നു…",
+      "area": "Shared / usage to confirm",
+      "source": "src/lib/core-translations.ts:300"
+    },
+    {
+      "id": "TXT-add9164abf66",
+      "english": "Custom range",
+      "draft": "കാലയളവ് തിരഞ്ഞെടുക്കുക",
+      "area": "Shared / usage to confirm",
+      "source": "src/lib/core-translations.ts:232"
+    },
+    {
+      "id": "TXT-512505c56bea",
+      "english": "Imported from",
+      "draft": "ഇംപോർട്ട് ചെയ്ത ഉറവിടം",
+      "area": "Shared / usage to confirm",
+      "source": "src/lib/core-translations.ts:245"
+    },
+    {
+      "id": "TXT-f8f03fb441b8",
+      "english": "Last 30 days",
+      "draft": "കഴിഞ്ഞ 30 ദിവസം",
+      "area": "Shared / usage to confirm",
+      "source": "src/lib/core-translations.ts:230"
+    },
+    {
+      "id": "TXT-0603deca4fcb",
+      "english": "Last 7 days",
+      "draft": "കഴിഞ്ഞ 7 ദിവസം",
+      "area": "Shared / usage to confirm",
+      "source": "src/lib/core-translations.ts:229"
+    },
+    {
+      "id": "TXT-9902d7ae89e2",
+      "english": "Last 90 days",
+      "draft": "കഴിഞ്ഞ 90 ദിവസം",
+      "area": "Shared / usage to confirm",
+      "source": "src/lib/core-translations.ts:231"
+    },
+    {
+      "id": "TXT-7e996515fba7",
+      "english": "Leave blank to use the category's membership period.",
+      "draft": "അംഗവിഭാഗത്തിലെ കാലാവധി ഉപയോഗിക്കാൻ ഇത് ഒഴിച്ചിടുക.",
+      "area": "Shared / usage to confirm",
+      "source": "src/lib/core-translations.ts:259"
+    },
+    {
+      "id": "TXT-f4aa07cb0c16",
+      "english": "Loading record.",
+      "draft": "പുസ്തകവിവരങ്ങൾ തുറക്കുന്നു…",
+      "area": "Shared / usage to confirm",
+      "source": "src/lib/core-translations.ts:299"
+    },
+    {
+      "id": "TXT-d2e35739c9e2",
+      "english": "Looking up.",
+      "draft": "കണ്ടെത്തുന്നു…",
+      "area": "Shared / usage to confirm",
+      "source": "src/lib/core-translations.ts:137"
+    },
+    {
+      "id": "TXT-7c5cbd9d589d",
+      "english": "Lost · {date}",
+      "draft": "നഷ്ടപ്പെട്ടത് · {date}",
+      "area": "Shared / usage to confirm",
+      "source": "src/lib/core-translations.ts:302"
+    },
+    {
+      "id": "TXT-c08ac736a5e2",
+      "english": "Next page",
+      "draft": "അടുത്ത പേജ്",
+      "area": "Shared / usage to confirm",
+      "source": "src/lib/core-translations.ts:267"
+    },
+    {
+      "id": "TXT-1208ec01f223",
+      "english": "Previous page",
+      "draft": "മുൻ പേജ്",
+      "area": "Shared / usage to confirm",
+      "source": "src/lib/core-translations.ts:266"
+    },
+    {
+      "id": "TXT-09979f0545fe",
+      "english": "Returned damaged · {date}",
+      "draft": "കേടുവന്ന നിലയിൽ തിരികെ ലഭിച്ചത് · {date}",
+      "area": "Shared / usage to confirm",
+      "source": "src/lib/core-translations.ts:303"
+    },
+    {
+      "id": "TXT-11335a99b708",
+      "english": "Saving.",
+      "draft": "സേവ് ചെയ്യുന്നു…",
+      "area": "Shared / usage to confirm",
+      "source": "src/lib/core-translations.ts:85"
+    },
+    {
+      "id": "TXT-2d77e6f0dd2e",
+      "english": "Searching.",
+      "draft": "തിരയുന്നു…",
+      "area": "Shared / usage to confirm",
+      "source": "src/lib/core-translations.ts:57"
+    },
+    {
+      "id": "TXT-09eb40fd93c1",
+      "english": "Summary for",
+      "draft": "ചുരുക്കം:",
+      "area": "Shared / usage to confirm",
+      "source": "src/lib/core-translations.ts:216"
+    },
+    {
+      "id": "TXT-663ea1bfffe5",
+      "english": "to",
+      "draft": "മുതൽ",
+      "area": "Shared / usage to confirm",
+      "source": "src/lib/core-translations.ts:273"
+    }
+  ]
+}

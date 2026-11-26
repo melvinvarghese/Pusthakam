@@ -1,3 +1,4 @@
+import { useTranslation } from "@/lib/translations";
 import { useEffect, useRef, useState } from "react";
 import { NavLink, Outlet } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
@@ -27,15 +28,16 @@ function Brand({ libraryName }: { libraryName?: string }) {
 }
 
 function NavRail({ libraryName, mobile, inactive, onNavigate }: { libraryName?: string; mobile?: boolean; inactive?: boolean; onNavigate?: () => void }) {
+  const { t } = useTranslation();
   const groups = useVisibleNavGroups();
   return (
     <aside inert={inactive} className={cn("staff-sidebar row-span-2 flex min-h-0 flex-col bg-ink text-rail-text", mobile && "staff-mobile-rail")}>
       <Brand libraryName={libraryName} />
-      <nav aria-label="Primary" className="rail-scroll min-h-0 flex-1 overflow-y-auto px-2 pb-3">
+      <nav aria-label={t("Primary")} className="rail-scroll min-h-0 flex-1 overflow-y-auto px-2 pb-3">
         {groups.map((group) => (
           <div key={group.label}>
             <div className="px-2 pb-1 pt-4 text-[11px] font-semibold uppercase leading-4 tracking-[0.08em] text-rail-mute">
-              {group.label}
+              {t(group.label)}
             </div>
             <ul>
               {group.items.map((item) => (
@@ -44,16 +46,16 @@ function NavRail({ libraryName, mobile, inactive, onNavigate }: { libraryName?: 
                     onClick={onNavigate}
                     to={item.path}
                     end={item.path === "/"}
-                    title={item.available ? undefined : "Not available in this version yet"}
+                    title={item.available ? undefined : t("Not available in this version yet")}
                     className={({ isActive }) =>
                       cn(
-                        "block h-8 rounded-md px-3 leading-8 transition-colors hover:bg-ink-2 hover:text-white",
+                        "block min-h-8 rounded-md px-3 py-1.5 leading-5 transition-colors hover:bg-ink-2 hover:text-white",
                         item.available ? "text-rail-text" : "text-rail-mute",
                         isActive && "bg-ink-2 font-semibold text-white",
                       )
                     }
                   >
-                    {item.label}
+                    {t(item.label)}
                   </NavLink>
                 </li>
               ))}
@@ -67,6 +69,7 @@ function NavRail({ libraryName, mobile, inactive, onNavigate }: { libraryName?: 
 }
 
 export function AppShell() {
+  const { t } = useTranslation();
   const [paletteOpen, setPaletteOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const menuButton = useRef<HTMLButtonElement>(null);
@@ -103,23 +106,23 @@ export function AppShell() {
         href="#main"
         className="sr-only focus:not-sr-only focus:absolute focus:left-2 focus:top-2 focus:z-50 focus:rounded-md focus:bg-surface focus:px-3 focus:py-1"
       >
-        Skip to content
+        {t("Skip to content")}
       </a>
       <LiveAnnouncer />
       <NavRail libraryName={config.data?.library?.name} inactive={mobileMenuOpen} />
       <header inert={mobileMenuOpen} className="staff-topbar flex min-w-0 items-center gap-4 border-b border-ink-3 bg-ink px-6">
-        <button ref={menuButton} type="button" className="staff-menu-toggle" aria-label="Open navigation" aria-haspopup="dialog" aria-expanded={mobileMenuOpen} onClick={() => setMobileMenuOpen(true)}>
+        <button ref={menuButton} type="button" className="staff-menu-toggle" aria-label={t("Open navigation")} aria-haspopup="dialog" aria-expanded={mobileMenuOpen} onClick={() => setMobileMenuOpen(true)}>
           <Menu aria-hidden="true" className="size-5" />
         </button>
         <button
           type="button"
-          aria-label="Search or go to a section"
+          aria-label={t("Search or go to a section")}
           onClick={() => setPaletteOpen(true)}
           className="staff-search flex h-9 w-[min(540px,100%)] items-center gap-2 rounded-md border border-ink-3 bg-ink-2 px-2.5 text-rail-field transition-colors hover:border-rail-line"
         >
           <Search aria-hidden="true" className="size-4" strokeWidth={1.75} />
-          <span className="flex-1 text-left">Search or go to a section</span>
-          <span className="staff-search-short">Search</span>
+          <span className="flex-1 text-left">{t("Search or go to a section")}</span>
+          <span className="staff-search-short">{t("Search")}</span>
           <kbd className="rounded border border-rail-line px-1.5 font-sans text-[11px] leading-[18px] text-rail-text">Ctrl K</kbd>
         </button>
         <div className="staff-account ml-auto flex items-center gap-4">
@@ -127,14 +130,14 @@ export function AppShell() {
           <div className="flex items-center gap-3 text-white">
             <div className="staff-account-name text-right leading-4">
               <div className="font-medium">{session.displayName}</div>
-              <div className="text-xs capitalize text-rail-mute">{session.role}</div>
+              <div className="text-xs capitalize text-rail-mute">{t(session.role)}</div>
             </div>
             <button
               type="button"
               onClick={() => void signOut()}
               className="h-8 rounded-md border border-ink-3 px-3 text-rail-text transition-colors hover:border-rail-line hover:text-white"
             >
-              Sign out
+              {t("Sign out")}
             </button>
           </div>
         </div>
@@ -146,8 +149,8 @@ export function AppShell() {
       </main>
       <CommandPalette open={paletteOpen} onClose={() => setPaletteOpen(false)} />
     </div>
-    {mobileMenuOpen && <Modal title="Navigation" onClose={closeMobileMenu} footer={<button type="button" className="min-h-11 rounded border border-line-strong px-4" onClick={closeMobileMenu}>Close navigation</button>}>
-      <p className="text-sm text-muted">{session.displayName} · {session.role}</p>
+    {mobileMenuOpen && <Modal title={t("Navigation")} onClose={closeMobileMenu} footer={<button type="button" className="min-h-11 rounded border border-line-strong px-4" onClick={closeMobileMenu}>{t("Close navigation")}</button>}>
+      <p className="text-sm text-muted">{session.displayName} · {t(session.role)}</p>
       <NavRail mobile libraryName={config.data?.library?.name} onNavigate={closeMobileMenu} />
     </Modal>}
     </>

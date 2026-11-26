@@ -1,3 +1,4 @@
+import { useTranslation } from "@/lib/translations";
 import { useState, type FormEvent } from "react";
 import { AuthLayout } from "./AuthLayout";
 import { Button } from "@/components/ui/Button";
@@ -5,6 +6,7 @@ import { TextField } from "@/components/ui/Field";
 import { staffApi, toApiError } from "@/lib/api";
 
 export function RecoverAccount({ onCancel, onRecovered }: { onCancel: () => void; onRecovered: () => void }) {
+  const { t } = useTranslation();
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   async function submit(event: FormEvent<HTMLFormElement>) {
@@ -30,17 +32,17 @@ export function RecoverAccount({ onCancel, onRecovered }: { onCancel: () => void
   return (
     <AuthLayout>
       <form onSubmit={(event) => void submit(event)} className="w-[min(24rem,100%)] space-y-4 rounded-lg border border-line bg-surface p-6 text-fg">
-        <h1 className="text-xl font-bold">Recover administrator account</h1>
+        <h1 className="text-xl font-bold">{t("Recover administrator account")}</h1>
         <fieldset disabled={saving} className="space-y-3">
-          <TextField label="Administrator username" name="username" autoComplete="username" required autoFocus />
-          <TextField label="Recovery code" name="code" type="password" autoComplete="off" required maxLength={64} />
-          <TextField label="New password" name="password" type="password" autoComplete="new-password" required maxLength={200} />
-          <TextField label="Confirm new password" name="confirmPassword" type="password" autoComplete="new-password" required maxLength={200} />
+          <TextField label={t("Administrator username")} name="username" autoComplete="username" required autoFocus />
+          <TextField label={t("Recovery code")} name="code" type="password" autoComplete="off" required maxLength={64} />
+          <TextField label={t("New password")} name="password" type="password" autoComplete="new-password" required maxLength={200} />
+          <TextField label={t("Confirm new password")} name="confirmPassword" type="password" autoComplete="new-password" required maxLength={200} />
         </fieldset>
-        {error && <p role="alert" className="text-sm text-danger">{error}</p>}
+        {error && <p role="alert" className="text-sm text-danger">{t(error)}</p>}
         <div className="flex flex-wrap justify-end gap-2">
-          <Button disabled={saving} onClick={onCancel}>Back to sign in</Button>
-          <Button type="submit" variant="primary" disabled={saving}>{saving ? "Resetting…" : "Reset password"}</Button>
+          <Button disabled={saving} onClick={onCancel}>{t("Back to sign in")}</Button>
+          <Button type="submit" variant="primary" disabled={saving}>{t(saving ? "Resetting…" : "Reset password")}</Button>
         </div>
       </form>
     </AuthLayout>

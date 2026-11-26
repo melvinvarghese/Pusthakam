@@ -1,3 +1,4 @@
+import { useTranslation } from "@/lib/translations";
 import { Monitor, Moon, Sun } from "lucide-react";
 import { useTheme, type ThemePreference } from "@/lib/theme";
 import { cn } from "@/lib/utils";
@@ -13,9 +14,10 @@ const ARROW_DIRECTION: Partial<Record<string, number>> = {
 
 /** Segmented control that sits on the ink top bar. */
 export function ThemeToggle() {
+  const { t } = useTranslation();
   const { preference, setPreference } = useTheme();
   return (
-    <div role="radiogroup" aria-label="Theme" className="flex rounded-md border border-ink-3 p-0.5">
+    <div role="radiogroup" aria-label={t("Theme")} className="flex rounded-md border border-ink-3 p-0.5">
       {OPTIONS.map(({ value, label, icon: Icon }, index) => (
         <button
           key={value}
@@ -23,8 +25,8 @@ export function ThemeToggle() {
           role="radio"
           aria-checked={preference === value}
           tabIndex={preference === value ? 0 : -1}
-          aria-label={label}
-          title={label}
+          aria-label={t(label)}
+          title={t(label)}
           onClick={() => setPreference(value)}
           onKeyDown={(event) => {
             const direction = ARROW_DIRECTION[event.key];

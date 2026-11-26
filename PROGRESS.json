@@ -1,11 +1,11 @@
 {
   "schemaVersion": 1,
-  "lastUpdated": "2026-11-26T03:52:07.740Z",
-  "currentPhase": "7b",
+  "lastUpdated": "2026-11-26T15:12:32.816Z",
+  "currentPhase": "2",
   "currentTask": {
-    "title": "Malayalam requirement recorded; implementation deferred by owner",
-    "status": "implemented",
-    "detail": "Malayalam version requested for future development. Owner explicitly says do not start now; save the requirement in progress, roadmap and handover only. Implementation is DEFERRED until a later explicit instruction. Preliminary architecture/string audit preceded the clarification; its temporary inventory has been removed. No application source, translation framework, dependencies, language switch, build or installer changes were made. Localization coverage and language-selection design remain to be agreed when authorized. Reconcile the older English-only CLAUDE.md convention with this newer owner requirement when implementation starts. Existing English app and confirmed temporary cross-network OPAC/staff acceptance remain unchanged. Planned requirement only; no v1 weights or completion credit changed."
+    "title": "Paused by owner; 319-draft Malayalam review workbook delivered",
+    "status": "blocked",
+    "detail": "OWNER PAUSE: owner will return tomorrow and requested all necessary documents updated. Stop application implementation and design until explicit resume. Created and delivered docs/translations/Pusthakam_Malayalam_Drafts_319.xlsx, a separate correction-only workbook for exactly 319 current core draft resource entries, not the earlier 1641-candidate workbook. English/Malayalam pairs prefilled; editable correction/status/notes columns, filterable inferred screen context, hidden stable phrase IDs, instructions/example, separate 20-term approved glossary. Not reviewed/OK/Changed/Question statuses prevent blank corrections from implying approval. Partial reviews are welcome. Snapshot docs/translations/core-draft-review.json and reproducible tools/create-core-draft-review.mjs + tools/create-core-draft-workbook.py saved. Reopened XLSX and verified 319 exact pairs, unique IDs, 20 approved terms, empty correction cells, no formulas; placeholder parity and exporter ESLint passed. New workbook saved successfully for download; old workbook/user work preserved. No app source edits, new translations, native build, owner-data or external-domain changes in this pause operation. Existing core screen tests/build passed in previous checkpoint; full localization and rendering/font/mobile/native acceptance remain incomplete. Next on explicit resume: accept partially or fully reviewed XLSX, reconcile IDs against snapshot/current English, validate placeholders, review questions and apply only approved corrections. Do not make owner translate all phrases or infer unreviewed rows approved. Then continue remaining core dialogs/fines/reservations, other modules/OPAC, font/mobile rendering and installer. English default, everyday Malayalam, 20 approved terms and unchanged records/API contracts remain requirements. V1 totals unchanged; no commit/push performed."
   },
   "nextMilestone": {
     "title": "macOS and Linux package smoke tests",
@@ -3836,9 +3836,187 @@
       "check": "npm.cmd run typecheck && npm.cmd run lint && headless Chrome screenshot capture (desktop 1366x950, mobile 390x844)",
       "outcome": "passed",
       "result": "TypeScript typecheck (tsc --noEmit) passed with zero errors. ESLint passed with 0 errors and 0 warnings. Captured updated desktop and mobile screenshots for The Swiss Stacks, confirming removal of app-like dark terminal header and verifying mobile swipeable chips and responsive cards."
+    },
+    {
+      "at": "2026-11-26T13:10:34.334Z",
+      "result": "8 focused tests pass after correcting Continue translation; initial typecheck optional index corrected; corrected typecheck and lint pass. No native rebuild or visual verification.",
+      "id": "malayalam-setup-1795698676181",
+      "title": "Malayalam first-run setup tests",
+      "check": "npm.cmd test -- src/features/setup/SetupWizard.test.tsx; npm.cmd run typecheck; npm.cmd run lint",
+      "outcome": "passed"
+    },
+    {
+      "id": "malayalam-build-1795698815450",
+      "title": "Malayalam setup production frontend build",
+      "at": "2026-11-26T13:13:35.449Z",
+      "check": "npm.cmd run build; node tools/progress-monitor/validate.mjs --write; node tools/progress-monitor/validate.mjs",
+      "outcome": "passed",
+      "result": "TypeScript and Vite production build passed; existing large-chunk warning. Progress validation passed after correcting new evidence schema and in-progress spelling. No native rebuild or rendered glyph verification."
+    },
+    {
+      "id": "translation-workbook-1795699355660",
+      "title": "Translation inventory and XLSX validation",
+      "at": "2026-11-26T13:22:35.653Z",
+      "check": "node tools/export-translation-review.mjs; python tools/create-translation-workbook.py; npx.cmd eslint tools/export-translation-review.mjs",
+      "outcome": "passed",
+      "result": "1641 unique phrases and 47 setup drafts; reopened XLSX, checked IDs and input cells, no formulas; extractor lint passed. openpyxl temporary-directory installation succeeded after two denied target paths."
+    },
+    {
+      "id": "malayalam-shared-tests-1795704636726",
+      "title": "Malayalam shared UI focused checks",
+      "at": "2026-11-26T14:50:36.724Z",
+      "check": "npm.cmd test -- src/lib/translations.test.tsx; affected SetupWizard/RecoverAccount/AppShell/StartupSplashScreen/SettingsPage tests; npm.cmd run build; npm.cmd run lint; git diff --check",
+      "outcome": "passed",
+      "result": "3 new translation tests and 39 affected tests passed in separate runs. Production TypeScript/Vite and ESLint passed. Existing bundle-size warning. Initial 31/32 failed for untranslated submit button; corrected. Initial lint BOM issue corrected."
+    },
+    {
+      "id": "malayalam-browser-1795704636726",
+      "title": "Malayalam source browser layout review incomplete",
+      "at": "2026-11-26T14:50:36.724Z",
+      "check": "node tools/review-malayalam.mjs (two attempts)",
+      "outcome": "failed",
+      "result": "Isolated Edge debugger timed out at Runtime.enable on first attempt and Page.navigate on second. No screen layout, shaping, screenshot or native verification claimed."
+    },
+    {
+      "id": "malayalam-core-1795705528710",
+      "title": "Core Malayalam workflow and data-preservation checks",
+      "at": "2026-11-26T15:05:28.706Z",
+      "check": "Affected 9-file Vitest run; final 5-file workflow run; final member/translation subset; npm.cmd run build; npm.cmd run lint; git diff --check",
+      "outcome": "passed",
+      "result": "67/67 affected baseline; 58/58 after five added tests; 10/10 final subset including placeholder parity. Tests preserve raw member/catalogue names, unsaved fields, leading-zero barcode, renewal confirmation payload and language switching after completion. Final TypeScript/Vite/ESLint passed, existing chunk-size/canvas notices. No native/browser acceptance."
+    },
+    {
+      "id": "malayalam-core-build-correction-1795705528710",
+      "title": "Initial core build test typing failure corrected",
+      "at": "2026-11-26T15:05:28.706Z",
+      "check": "npm.cmd run build (first final-build attempt)",
+      "outcome": "failed",
+      "result": "Two new ByRole queries used unsupported exact options; removed those options. Subsequent subset tests and production build passed."
+    },
+    {
+      "id": "malayalam-review-workbook-1795705952819",
+      "title": "319-draft review workbook validation",
+      "at": "2026-11-26T15:12:32.816Z",
+      "check": "node tools/create-core-draft-review.mjs; python tools/create-core-draft-workbook.py; npx.cmd eslint tools/create-core-draft-review.mjs",
+      "outcome": "passed",
+      "result": "319 source-exact English/Malayalam pairs, unique stable IDs and placeholder parity; workbook reopen validates correction cells and 20 approved terms; no formulas; lint passed. No app tests repeated because only review artifacts/docs changed."
     }
   ],
   "recentActivity": [
+    {
+      "kind": "progress",
+      "at": "2026-11-26T15:12:32.816Z",
+      "title": "Owner pause and prefilled Malayalam review workbook saved",
+      "detail": "OWNER PAUSE: owner will return tomorrow and requested all necessary documents updated. Stop application implementation and design until explicit resume. Created and delivered docs/translations/Pusthakam_Malayalam_Drafts_319.xlsx, a separate correction-only workbook for exactly 319 current core draft resource entries, not the earlier 1641-candidate workbook. English/Malayalam pairs prefilled; editable correction/status/notes columns, filterable inferred screen context, hidden stable phrase IDs, instructions/example, separate 20-term approved glossary. Not reviewed/OK/Changed/Question statuses prevent blank corrections from implying approval. Partial reviews are welcome. Snapshot docs/translations/core-draft-review.json and reproducible tools/create-core-draft-review.mjs + tools/create-core-draft-workbook.py saved. Reopened XLSX and verified 319 exact pairs, unique IDs, 20 approved terms, empty correction cells, no formulas; placeholder parity and exporter ESLint passed. New workbook saved successfully for download; old workbook/user work preserved. No app source edits, new translations, native build, owner-data or external-domain changes in this pause operation. Existing core screen tests/build passed in previous checkpoint; full localization and rendering/font/mobile/native acceptance remain incomplete. Next on explicit resume: accept partially or fully reviewed XLSX, reconcile IDs against snapshot/current English, validate placeholders, review questions and apply only approved corrections. Do not make owner translate all phrases or infer unreviewed rows approved. Then continue remaining core dialogs/fines/reservations, other modules/OPAC, font/mobile rendering and installer. English default, everyday Malayalam, 20 approved terms and unchanged records/API contracts remain requirements. V1 totals unchanged; no commit/push performed."
+    },
+    {
+      "kind": "progress",
+      "at": "2026-11-26T15:05:28.706Z",
+      "title": "Malayalam core screen workflow checks passed",
+      "detail": "Implemented the core Malayalam screen increment with 319 draft phrases, keeping approved 20-term glossary authoritative. Dashboard counts/alerts/date controls, catalogue search/results/details/record form/saved searches, circulation issue/return/renew plus member/book lookups/current/overdue lists, member list/registration/history, shared copy-status chips and pagination are localized. Named interpolation preserves all placeholders and treats inserted user data literally. Completion messages retain structured values and re-render in the selected language without repeating transactions. Tests: initial 67/67 across 9 affected files passed; after five new workflow/interpolation tests, 58/58 across 5 files passed; final member/translation subset 10/10 passed including added placeholder parity check. Initial final-build attempt found two new test-only unsupported exact options; removed, then TypeScript/Vite production build and full ESLint passed. jsdom emits its existing canvas-not-implemented notice; no canvas dependency added. git diff --check passed. No claim of complete module translation: copy dialogs, covers, fines/reservations, imports/exports/printing, remaining settings/modules, public OPAC and unmatched backend errors still need work. No browser layout/font/native checks in this increment; previous browser-debugger timeouts remain unresolved. Added docs/translations/README.md with coverage/boundaries. Next: remaining core dialogs and fine/reservation screens, then other modules/OPAC; bundle/test Malayalam font and phone layouts before a new installer. English stays default, user-entered data and backend API payloads unchanged. Progress totals unchanged; no commit/push, installer or owner-data changes."
+    },
+    {
+      "kind": "progress",
+      "at": "2026-11-26T15:03:14.728Z",
+      "title": "Malayalam core workflows source checkpoint",
+      "detail": "Continuing authorized Malayalam work on dashboard, catalogue, circulation and members. Added core translation resource, safe named-placeholder interpolation and stable translation hook. Localized main page labels, catalogue search/results/detail/record form/saved searches, member list/registration/history, circulation issue/return/renew confirmations, member/book lookup and current/overdue loan lists, plus shared pagination and copy-status chips. Circulation completion messages retain structured values so changing language updates the message without reissuing transactions. User names, titles, category names, barcodes, dates and backend contracts are preserved. Baseline affected regression run 67/67 passed across 9 files; first typechecks and lint passed. Added five new tests covering core Malayalam screens, literal placeholder data, unsaved fields, raw catalogue/member names, barcode/renewal confirmation and switching back after completion; rerun/build/lint in progress. Still partial: copy-edit/add dialogs, covers, fine/reservation submodules, import/export/printing and other modules/OPAC/backend messages need additional translation; visual/font/mobile verification remains pending from prior debugger timeout. No native build or weighted v1 credit, owner data, external configuration, commit or push."
+    },
+    {
+      "kind": "progress",
+      "at": "2026-11-26T14:50:36.724Z",
+      "title": "Malayalam shared UI checks passed; browser review blocked",
+      "detail": "Malayalam shared UI increment implemented: reusable language selector on sign-in/recovery and Library Settings; translated authentication/recovery text, desktop/mobile navigation, bilingual command search, theme labels, startup status/tagline, online-tools shell and settings title. Setup uses same translator, with owner-approved 20 terms overriding drafts. Credentials, records, query caches, routing and backend permission/command values preserved. 3 new translation tests passed after untranslated login submit fix; 39 affected setup/recovery/AppShell/splash/settings tests passed in 5 files. TypeScript/Vite build and full ESLint passed; git diff --check passed. Initial focused run 31/32 and initial lint BOM issue were corrected. Browser source preview tool added; both attempts failed before inspecting screens (Runtime.enable timeout then Page.navigate timeout). No screenshots/layout acceptance earned. Native installer unchanged. Remaining work: rendered Malayalam font/shaping and phone header/navigation checks; translate dashboard/catalogue/circulation/members and other modules, independent public OPAC, generated reports and backend errors. Existing setup drafts/new wording beyond approved glossary remain reviewable drafts. Keep English default and simple everyday wording; owner reviews small batches, never require all 1641 workbook rows. No new v1 weights/credit, owner-data changes, external actions, commit or push."
+    },
+    {
+      "kind": "progress",
+      "at": "2026-11-26T14:48:27.349Z",
+      "title": "Malayalam sign-in and navigation implemented",
+      "detail": "Malayalam continuation: shared translations now merge owner-approved 20-term glossary with setup and new everyday draft strings. Added reusable per-device language selector to sign-in/recovery and Library Settings; localized sign-in/recovery, navigation/mobile menu, command palette (searches both English and Malayalam), theme labels, startup status/tagline, online-tools shell and settings page title. User-entered records/credentials and backend contracts unchanged. Setup now shares the same glossary-backed translator. Tests: first focused run 31/32; new login test exposed untranslated submit button, corrected, then all 3 new translation tests passed. First ESLint found existing BOM moved to line 3 when adding imports; removed BOM and rerun passed before latest review-tool addition. Typecheck passed before latest changes. Running remaining affected tests and actual browser source preview review now; no native installer build. Remaining modules/OPAC/backend errors/reports not fully localized; font bundling/rendered shaping acceptance pending. Current work is partial and unweighted v3 scope, no new completion credit. Next exact step: finish focused tests/browser layout review, fix any issues, build frontend and record evidence. No owner-data/external-domain actions."
+    },
+    {
+      "kind": "progress",
+      "at": "2026-11-26T14:43:30.016Z",
+      "title": "Owner approved Malayalam terminology and small-batch review",
+      "detail": "Owner approved all 20 proposed common English/Malayalam terms (reply: perfect). Saved docs/translations/approved-glossary.json as the terminology authority. Use everyday Malayalam and familiar borrowed terms; avoid obscure/formal jargon. Workflow now supersedes the large blank workbook assignment: assistant drafts translations using approved terms; owner reviews small contextual batches or screens and flags awkward wording. Do not require owner to translate all 1641 candidates. Approval applies to these 20 terms only, not all existing setup drafts or future translations. Next: draft remaining UI phrases consistently, handle context and placeholders, integrate incrementally with tests and rendering checks. First-run English default remains. No application code, workbook, database or installer changed in this approval checkpoint; v1 weights unchanged."
+    },
+    {
+      "kind": "progress",
+      "at": "2026-11-26T13:22:35.653Z",
+      "title": "Malayalam owner translation workbook prepared",
+      "detail": "Owner chose to provide Malayalam translations through Excel. Created docs/translations/Pusthakam_Malayalam_Translation.xlsx with 1641 unique source-derived frontend/public OPAC candidate phrases, stable phrase IDs, editable blank Malayalam/notes/status columns, screen context and source references; 47 existing setup drafts are separate for owner review. Instructions include one Malayalam example, preserve brace placeholders, translate in batches, note context-dependent meanings and assembled sentence fragments. Source inventory is docs/translations/english-review.json; reproducible scripts tools/export-translation-review.mjs and tools/create-translation-workbook.py. Workbook validated by reopening: row count, unique IDs, blank owner input cells, zero formulas; extractor ESLint passed. Initial openpyxl installs to user profile and D:/workspace were denied; successfully installed only in Windows temp and generated workbook. Saved downloadable workbook successfully. This is a candidate review inventory, not a claim of exhaustive runtime/backend/report coverage. Existing setup implementation unchanged. Next: accept owner-completed workbook, match stable IDs against snapshot/current source, review placeholders/ambiguous terms, then integrate approved translations; do not treat setup drafts as owner-approved. V1 scores unchanged; no native build, database edits, commit or push."
+    },
+    {
+      "kind": "progress",
+      "at": "2026-11-26T13:10:34.334Z",
+      "title": "English/Malayalam setup selector implemented",
+      "detail": "Owner explicitly authorized Malayalam implementation, starting with an English-default Language / Malayalam dropdown on first-run setup. Implemented persisted per-device language choice, document lang, immediate translated setup labels/profile descriptions/validation/steps, preservation of entered data, and selected locale in existing setup API. No migration, provider, network requirement or catalogue-data translation. Focused SetupWizard tests 8/8 passed, including Malayalam submission and remount persistence; initial run 7/8 exposed untranslated Continue, fixed. Initial typecheck exposed optional step index, fixed; corrected typecheck and ESLint passed. First increment only: sign-in, application modules, public OPAC, backend errors and reports remain untranslated; bundled Malayalam font, rendered shaping/mobile checks, full translation coverage and native installer rebuild remain pending. Current installed/release exe has no Malayalam changes. Next: extend translation resources and selectors to sign-in/shared app navigation/settings, then feature screens and independent public OPAC; verify font/rendering offline. Owner also confirmed temporary internet-test launcher already quit; domain cleanup complete, do not resume DNS work. V1 weights unchanged."
+    },
+    {
+      "kind": "progress",
+      "at": "2026-11-26T12:49:37.335Z",
+      "title": "Owner confirms Cloudflare cleanup complete; WordPress unchanged",
+      "detail": "Owner confirms DONE after instructions to remove the unused pending melvinvarghese.in domain entry from Cloudflare. Record cleanup as owner-confirmed; no Cloudflare API/account inspection performed by agent. Owner previously confirmed no WordPress changes or nameserver activation occurred, so WordPress website/DNS/email forwarding remain on existing setup. Original task COMPLETE: Pusthakam OPAC and staff both worked over internet from another device/network with isolated demo release server. Permanent domain/hosting setup and email migration are stopped; do not restart them without a new request. Malayalam remains planned/not started until explicit instruction. No source changes, database changes, external actions or test-process shutdown performed in this confirmation step. Progress/handoff saved locally; no commit/push."
+    },
+    {
+      "kind": "progress",
+      "at": "2026-11-26T12:44:21.973Z",
+      "title": "Pending Cloudflare cleanup requested; WordPress unchanged confirmed",
+      "detail": "Owner explicitly confirms no WordPress changes were made: only pending Cloudflare record additions, no activation or nameserver change. Owner now wants to remove the pending melvinvarghese.in domain entry from Cloudflare. Provide official Overview > Advanced Actions > Remove from Cloudflare > Confirm steps; removal has not been performed or confirmed yet. Do not change WordPress nameservers, website records, email forwarding or domain registration. Cloudflare domain-removal documentation states removal does not change domain registration; pending/initializing onboarding states may affect menu availability, but do not activate/cut over just to remove. If removal action is missing, inspect actual current dashboard rather than guessing. Original OPAC/staff temporary cross-network test remains complete; permanent hosting, mail migration and Malayalam implementation remain out of current scope. Source https://developers.cloudflare.com/fundamentals/manage-domains/remove-domain/."
+    },
+    {
+      "kind": "progress",
+      "at": "2026-11-26T12:30:20.259Z",
+      "title": "Owner clarifies test-only scope; permanent hosting setup stopped",
+      "detail": "OWNER SCOPE CORRECTION: only wants to test whether Pusthakam OPAC and staff can be accessed over the internet. That task is COMPLETE: both public HTTPS routes and staff authentication/API were checked using the same release server with an isolated demo library, and owner explicitly confirmed both worked on another device on another network. This does not publish the real owner library or prove permanent production hosting. STOP permanent-domain/nameserver/email migration/provider-selection work; no additional Cloudflare/ngrok account, paid host, custom domain or stable URL is required for this completed test. Do not activate pending Cloudflare DNS or change WordPress website/nameservers/Gmail forwarding. Earlier stable-hosting plans are deferred, not active next steps. Temporary URL may expire and requires PC/launcher running while used; current availability not rechecked in this documentation step. No test process stopped or external configuration changed. Malayalam remains planned/not started. Source and documentation saved locally; no commit/push performed."
+    },
+    {
+      "kind": "progress",
+      "at": "2026-11-26T12:26:38.149Z",
+      "title": "Owner keeps WordPress DNS and Gmail forwarding unchanged",
+      "detail": "Owner explicitly chooses UNCHANGED for WordPress DNS and email forwarding. Preserve WordPress nameservers, website routing and email@melvinvarghese.in -> existing Gmail forward. Do not activate the pending Cloudflare full-DNS setup, change registrar nameservers, migrate mail to Cloudflare Email Routing, remove WordPress records or treat prior subdomain goal as authorization for those changes. Cloudflare scanned-zone preparations do not by themselves change live WordPress DNS; no cutover has been performed by agent. Stable-hosting plan must use a method compatible with WordPress retaining authoritative DNS, such as an external reachable host with only a new library subdomain record; exact endpoint/provider/cost remains undecided, no purchase authorized. Standard free full-setup Cloudflare custom-hostname tunnel path is no longer the selected route. Existing successful temporary Quick Tunnel demo remains separate and temporary. Continue optional library-PC hosting/default plus always-on option without changing main-site/email services. Malayalam remains deferred."
+    },
+    {
+      "kind": "progress",
+      "at": "2026-11-26T12:24:44.504Z",
+      "title": "Existing Gmail forward confirmed; free replacement plan prepared for review",
+      "detail": "Owner confirms actively using email@melvinvarghese.in as WordPress forwarding to an existing Gmail inbox. Preserve this address and delivery; Gmail destination itself has not been requested or recorded. Nameserver activation remains held. Verified official Cloudflare Email Routing offers free forwarding to verified destination addresses. Proposed optional replacement: same email alias -> same existing Gmail, with destination verification before cutover, Cloudflare-provided MX values, one consolidated SPF preserving needed existing senders, retained applicable DKIM/verification records, website DNS-only, external sender delivery test and WordPress-DNS rollback. This changes the forwarding provider, so owner choice/authorization is required; no forwarding, MX/SPF, account routing or nameserver changes have been made. Alternative is retain WordPress DNS/forwarding and revisit stable-hosting route. Do not assume alias-use confirmation authorizes email migration. No product implementation; Malayalam deferred."
+    },
+    {
+      "kind": "progress",
+      "at": "2026-11-26T12:22:00.858Z",
+      "title": "WordPress nameserver dependency found for free email forwarding",
+      "detail": "Owner supplied lower WordPress DNS table: www CNAME root, MX handled by WordPress.com email forwarding, NS handled by WordPress.com, TXT _domainconnect=public-api.wordpress.com/rest/v1.3/domain-connect, _dmarc, root verification/Pinterest and SPF records. Domain Connect TXT absent from prior Cloudflare scan; this is DNS-provider discovery, not a Pusthakam prerequisite, and must not be copied blindly with old NS. More importantly official WordPress email-forwarding support explicitly requires WordPress.com nameservers (Required name servers missing section). Earlier plan assuming copied MX alone preserves forwarding is not sufficient. HOLD nameserver cutover/activation and ask whether owner actively uses any @melvinvarghese.in forwarding address. If used, preserve service or agree verified replacement before DNS move. No domain/DNS/forwarding changes made by agent. Public DNS TXT verification attempt timed out; screenshot observation is not a full value-by-value Cloudflare comparison. Sources: https://wordpress.com/support/add-email/email-forwarding/ and https://wordpress.com/support/domains/custom-dns/view-or-restore-default-dns-records/. Malayalam remains deferred."
+    },
+    {
+      "kind": "progress",
+      "at": "2026-11-26T12:18:34.384Z",
+      "title": "Updated Cloudflare screenshot confirms DNS-only website and added DKIM rows",
+      "detail": "Owner supplied updated Cloudflare DNS-review screenshot. Both WordPress root A records192.0.78.132/192.0.78.241 and www CNAME now DNS only. Two wpcloud1/wpcloud2 DKIM CNAME rows now present and DNS only; names/targets truncated in screenshot, so exact target values are not independently confirmed. Link A52.72.49.79 remains proxied and service purpose unassessed. MX and four TXT rows visible. Still on Continue to activation screen; no nameserver cutover confirmed. Need lower portion of original WordPress DNS table/full inventory to compare remaining email/TXT/subdomain records, not another Cloudflare table. Keep activation pending until comparison complete. No agent external DNS edits; Malayalam remains deferred."
+    },
+    {
+      "kind": "progress",
+      "at": "2026-11-26T12:08:53.774Z",
+      "title": "Two missing email-authentication CNAMEs identified in WordPress DNS",
+      "detail": "Owner supplied WordPress.com DNS screenshot. Visible rows: root A handled by WordPress.com; link A52.72.49.79; CNAME wpcloud2._domainkey -> wpcloud2._domainkey.wpcloud.com; CNAME wpcloud1._domainkey -> wpcloud1._domainkey.wpcloud.com. Both DKIM CNAMEs were absent from previously shown Cloudflare scan table. Need add them to Cloudflare as CNAME DNS-only, preserving exact names/targets, then review remaining lower WordPress rows before activation. Current screenshot is partial; full DNS inventory/email verification is not complete. No external DNS or nameserver edits performed by agent. Do not activate or change WordPress nameservers yet; Malayalam remains deferred."
+    },
+    {
+      "kind": "progress",
+      "at": "2026-11-26T08:58:53.670Z",
+      "title": "Cloudflare DNS screenshot reviewed; DNS-only and full comparison pending",
+      "detail": "Owner provided Cloudflare scanned-DNS review screenshot on Free/full setup, before Continue to activation. Visible imported records: A link52.72.49.79; two root A192.0.78.241/192.0.78.132; www CNAME melvinvarghese.in; root MX priority0 smtp-fwd.wordpress...; TXT _dmarc plus root domain-verification/SPF/Pinterest records. Root A/www values match earlier public DNS observations. Four A/CNAME rows currently Proxied, email/TXT DNS only. Per official WordPress Cloudflare guidance, set the two WordPress root A records and www CNAME to DNS only before activation; unknown link service is not assessed. Full TXT values are truncated, and automated scan completeness is not proven. Need full WordPress DNS inventory/table comparison before nameserver cutover; do not activate/change WordPress nameservers yet. No external records changed by agent. Malayalam remains deferred."
+    },
+    {
+      "kind": "progress",
+      "at": "2026-11-26T08:55:05.100Z",
+      "title": "Cloudflare account ready; domain DNS review next",
+      "detail": "Owner confirms logged into Cloudflare. Stable internet-hosting onboarding can proceed to adding root domain melvinvarghese.in on Free plan with existing-DNS quick scan, then stop at DNS review. Official current Cloudflare guide verified. No account credentials shared or available to agent; no nameserver/DNS change made. Need compare full WordPress DNS inventory (including existing email forwarding and verification records) with Cloudflare scan before any cutover; scan may miss records. Owner should share DNS review table, not tokens/passwords. Malayalam remains deferred. Prior both-portal external-network demo remains confirmed; stable domain/always-on deployment not yet configured."
+    },
+    {
+      "kind": "progress",
+      "at": "2026-11-26T08:49:12.754Z",
+      "title": "Internet hosting resumed; stable-domain plan and public DNS observations saved",
+      "detail": "Owner explicitly selected INTERNET HOSTING after clarification; Malayalam remains deferred. Continue from successful both-portal external-device/network demo toward a stable optional address on the default library-PC host. Reviewed official Cloudflare/WordPress guides and public DNS: current WordPress NS, root A192.0.78.241/192.0.78.132, www CNAME root, MX0 smtp-fwd.wordpress.com. Partial observation saved; not a full DNS export. Stable named tunnel requires Cloudflare account and domain/DNS setup. Owner previously has no Cloudflare account; next required action is create free account/sign in. Prepared STABLE_INTERNET_HOSTING.md with concrete sequence, complete-DNS review/rollback before any approved nameserver change, preserving main website/email, isolated test library and later persistent host/startup/public acceptance. No DNS, nameservers, services, owner DB, installed app or product code changed. Do not expose real library data or request credentials/tokens in chat. No server purchase requested; PC remains default, always-on hosting optional. V1 totals unchanged."
+    },
     {
       "kind": "progress",
       "at": "2026-11-26T03:52:07.740Z",

@@ -1,3 +1,5 @@
+import { act } from "@testing-library/react";
+import { setLanguage } from "@/lib/language";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -70,6 +72,7 @@ function renderAt(path: string, session: Session = ADMIN) {
 }
 
 beforeEach(() => {
+  setLanguage("en");
   [...Object.values(cat), ...Object.values(cfg)].forEach((f) => f.mockReset());
   cfg.overview.mockResolvedValue(CONFIG);
   cat.getCover.mockResolvedValue(null);
@@ -77,6 +80,22 @@ beforeEach(() => {
   cat.getRecord.mockResolvedValue(RECORD);
   cat.findDuplicates.mockResolvedValue([]);
   cat.accessionFormat.mockResolvedValue({ prefix: "", padding: 6, next: 4220 });
+});
+
+it("switches catalogue language while preserving search words and catalogue data", async () => {
+  renderAt("/catalogue");
+  await screen.findByRole("link", { name: RECORD.title });
+  await userEvent.type(screen.getByRole("searchbox", { name: "Search the catalogue" }), "Catalogue");
+  act(() => setLanguage("ml"));
+  expect(screen.getByRole("heading", { name: "പുസ്തകപ്പട്ടിക" })).toBeInTheDocument();
+  expect(screen.getByRole("searchbox", { name: "പുസ്തകപ്പട്ടികയിൽ തിരയുക" })).toHaveValue("Catalogue");
+  expect(screen.getByRole("link", { name: RECORD.title })).toBeInTheDocument();
+  expect(screen.getByText("3 കോപ്പികളിൽ 2 എണ്ണം ലഭ്യമാണ്")).toBeInTheDocument();
+  await userEvent.click(screen.getByRole("link", { name: RECORD.title }));
+  expect(await screen.findByRole("heading", { name: RECORD.title })).toBeInTheDocument();
+  expect(screen.getByText("DC Books")).toBeInTheDocument();
+  expect(screen.getByText("ലഭ്യമാണ്")).toBeInTheDocument();
+  act(() => setLanguage("en"));
 });
 
 describe("CataloguePage", () => {
