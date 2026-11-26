@@ -1,0 +1,23 @@
+{
+  "at": "2026-11-26T01:28:34.285Z",
+  "directory": "C:\\Users\\Melvin\\AppData\\Local\\Temp\\pusthakam-public-tools-sv7xMj",
+  "tools": [
+    {
+      "repository": "cloudflare/cloudflared",
+      "version": "2026.11.2",
+      "path": "C:\\Users\\Melvin\\AppData\\Local\\Temp\\pusthakam-public-tools-sv7xMj\\cloudflared-windows-amd64.exe",
+      "url": "https://github.com/cloudflare/cloudflared/releases/download/2026.11.2/cloudflared-windows-amd64.exe",
+      "bytes": 55470800,
+      "digest": "sha256:555b46c85582461d189cac30d14ad05480d612613801be9f110b8ce08c5b2113"
+    },
+    {
+      "repository": "caddyserver/caddy",
+      "version": "v2.11.9",
+      "path": "C:\\Users\\Melvin\\AppData\\Local\\Temp\\pusthakam-public-tools-sv7xMj\\caddy_2.11.9_windows_amd64.zip",
+      "url": "https://github.com/caddyserver/caddy/releases/download/v2.11.9/caddy_2.11.9_windows_amd64.zip",
+      "bytes": 18384117,
+      "digest": "sha256:ad93112d335ee687100c4c9f11bced16ca590377976b7fe7883882b9e797e472"
+    }
+  ],
+  "note": "Portable test tools only; no service, PATH, DNS or firewall changes."
+}

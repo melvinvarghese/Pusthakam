@@ -21,3 +21,22 @@ Mobile work retains Swiss Stacks for the public catalogue and the Spine Label st
 ## Saved owner test plan, 25 November 2026
 
 The owner has WordPress.com DNS access for melvinvarghese.in and no Cloudflare account. A free temporary HTTPS tunnel was discussed as the first outside-network test, before custom-domain or paid-server setup. No tunnel, public origin or DNS changes have been made. Work is paused until the owner returns; see INTERNET_ACCESS_CHECKPOINT.md for exact next steps and safety boundaries.
+
+
+## Resume26 November2026
+
+Owner resumed the free temporary public test. Isolated-test tooling is prepared, syntax checked and pending execution; official binary download timeouts require browser downloads first. No public URL, account, purchase or WordPress DNS changes exist. See INTERNET_ACCESS_TEST_SETUP.md and the current SESSION_HANDOFF.md entry.
+
+
+Update after owner downloads26 November2026: portable tools are verified and prepared; seven real local proxy/auth checks pass. Actual tunnel startup hit an outbound socket-permission denial in the agent environment, so the owner must run the prepared launcher from normal Windows PowerShell. No active public endpoint or outside-network acceptance exists yet. See INTERNET_ACCESS_TEST_SETUP.md.
+
+
+## Live demo update26 November2026
+
+Owner launched the prepared helper successfully. Temporary origin: https://configure-habitat-relationships-commodities.trycloudflare.com (only while its console remains running). Public OPAC/search, Secure staff session/login, authenticated staff data, origin rejection and backup creation pass; legacy routes return404. See INTERNET_PUBLIC_REVIEW.json and latest SESSION_HANDOFF.md. No real library data or WordPress DNS changes. Owner mobile-data/browser acceptance remains pending; previous agent socket-denial notes are historical, not a current failure of this owner-launched tunnel. Credentials stay outside the repository.
+
+
+Owner acceptance26 November2026: fresh temporary public address worked on another device using another network. This confirms cross-network reachability. Portal-specific coverage and staff authenticated workflows were not specified and need confirmation. Temporary demo/PC uptime requirements remain; no permanent domain or always-on deployment configured.
+
+
+Owner follow-up26 November2026: BOTH OPAC and staff worked on another device on another network, answering the portal/sign-in question. Both-portal external-device acceptance passes for this temporary isolated demo. Full workflows and production availability remain separate; no permanent custom domain/always-on deployment exists.

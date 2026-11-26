@@ -1,0 +1,39 @@
+{
+  "at": "2026-11-26T01:42:25.923Z",
+  "origin": "https://configure-habitat-relationships-commodities.trycloudflare.com",
+  "binarySha256": "450b56e89127e98853e5ea399914c6390c8c12452859f2ffbf96544eb44a099e",
+  "checks": [
+    "public HTTPS staff HTML and Secure cookie",
+    "public anonymous access to staff data rejected",
+    "real staff login over public HTTPS",
+    "authenticated public staff API returns isolated library",
+    "untrusted Origin rejected",
+    "checked backup created through public staff API"
+  ],
+  "ownerDataUsed": false,
+  "limits": "Actual public HTTPS requests from agent network; physical mobile-data browser acceptance still pending.",
+  "publicRoutes": [
+    {
+      "path": "/opac",
+      "status": 200
+    },
+    {
+      "path": "/staff",
+      "status": 200,
+      "secureCookie": true
+    },
+    {
+      "path": "/api/opac/search",
+      "status": 200,
+      "testBookFound": true
+    },
+    {
+      "path": "/api/lan/config",
+      "status": 404
+    },
+    {
+      "path": "/api/staff/login",
+      "status": 404
+    }
+  ]
+}
