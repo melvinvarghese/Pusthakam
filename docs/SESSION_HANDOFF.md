@@ -1,5 +1,61 @@
 # Development handoff
 
+## Current: both portals work across networks
+
+2026-11-26T03:05:19.393Z
+
+Owner explicitly confirms BOTH OPAC and staff worked on another device on another network, answering the OPAC/staff including sign-in acceptance question. Record both-portal outside-network walkthrough as passed for the temporary isolated demo. Full module workflows, imports/uploads, hardware, Safari/real-keyboard coverage and production availability are not inferred. Temporary origin https://assistant-habits-putting-completing.trycloudflare.com; requires PC and launcher running, changes on restart. Public DNS/HTTPS/API checks previously passed; WordPress main website/DNS untouched. No permanent custom domain or always-on server deployed. Next product step is optional stable domain/hosting integration and production acceptance, distinct from this successful demo. No app source, credentials, database or network changes made for this confirmation.
+
+## Current: owner confirms outside-network access
+
+2026-11-26T02:57:03.873Z
+
+Owner confirms the fresh temporary public address worked on another device on another network. This is actual cross-network device reachability acceptance, beyond prior public DNS/HTTPS checks. Owner did not specify which portal(s) or whether staff sign-in/workflows were exercised; do not infer both authenticated portals or full workflow/mobile usability acceptance. Fresh origin: https://assistant-habits-putting-completing.trycloudflare.com. Both public resolvers and OPAC/staff/search200 were independently verified earlier. Temporary isolated demo only, keep PC/launcher running; no permanent domain or hosted service configured. No WordPress DNS/firewall/owner DB changes. Next clarify OPAC and staff sign-in coverage, then choose next product/public-hosting step without requiring a paid server or DNS change for this demo.
+
+## Current: replacement public URL verified
+
+2026-11-26T02:45:10.412Z
+
+Owner restarted temporary launcher and supplied fresh origin https://assistant-habits-putting-completing.trycloudflare.com. Both Google and Cloudflare DNS now return Status0 with A records104.16.231.132/104.16.230.132. Actual public HTTPS /opac200, /staff200 with Secure cookie and /api/opac/search200 containing demo book. Launcher report matches fresh origin. Evidence INTERNET_ENDPOINT_RECHECK.json. Old configure-habitat URL NXDOMAIN diagnosis remains historical. Fresh demo credentials are outside repository in its current test directory, not copied into progress. Next owner opens fresh OPAC/staff on PC, then phone mobile data with Wi-Fi off and signs in with new demo credentials. Keep launcher running. Physical-device acceptance and current fresh-origin staff login still pending; no WordPress DNS/firewall/owner DB changes.
+
+## Current: temporary public hostname unavailable
+
+2026-11-26T02:41:39.240Z
+
+Owner reports ERR_NAME_NOT_RESOLVED on host PC. Diagnosed current temporary hostname with OS lookup and Google/Cloudflare DoH: ENOTFOUND and both DNS Status3(NXDOMAIN); public HTTPS fetch nowECONNRESET. Recorded Caddy/cloudflared/Pusthakam processes still alive. Thus hostname is currently unavailable publicly; exact provider/connection cause not proven, not a local-only resolver issue. Previous successful public HTTP/auth checks remain historical. Need owner stop launcher with quit and rerun node .\tools\internet-test.mjs from D:\Pusthakam in normal PowerShell to obtain fresh URL, then verify public DNS/HTTPS before mobile-data acceptance. Agent connector still blocked by execution-environment socket permissions; no attempt to bypass. No owner data, DNS/firewall changes. Evidence INTERNET_DNS_REVIEW.json.
+
+## Current: public HTTPS works; phone test pending
+
+2026-11-26T01:42:58.657Z
+
+Owner successfully launched prepared demo from normal PowerShell. Live temporary origin https://configure-habitat-relationships-commodities.trycloudflare.com; launcher must remain running. Actual public requests via configured network proxy verified /opac200, /staff200 with Secure cookie, /api/opac/search200 containing test book, legacy /api/lan/config404 and /api/staff/login404. Six further public HTTPS checks PASSED: staff HTML/Secure cookie, anonymous staff data401, real login, authenticated config for isolated demo, foreign Origin403 and real backup creation. Report INTERNET_PUBLIC_REVIEW.json; launcher/report INTERNET_ACCESS_TEST.json records7 local checks and running process IDs. No real library data used; random staff credentials remain in outside-repo test-login.json, never log/commit them. Public tunnel connectivity is now verified, replacing prior agent-only socket blocker; owner mobile-data/browser acceptance still pending. Next owner opens both public /opac and /staff with Wi-Fi off/mobile data on, signs in using local demo credentials, reports results. PC and console must remain on; quit stops tunnel; restarting yields new URL. WordPress DNS, main site, firewall and installed app unchanged. Permanent domain/always-on hosting remains separate.
+
+## Current: proxy verified locally; manual tunnel launch needed
+
+2026-11-26T01:32:39.248Z
+
+Owner downloads verified against official SHA256/size; cloudflared2026.11.2 and Caddy2.11.9 prepared successfully. Fixed unavailable PowerShell Archive module by verified Windows tar.exe extraction. Caddy preflight revealed Host127.0.0.1 matcher/all-interface listen; changed temporary proxy to any-host HTTP matcher with explicit loopback bind. Further isolated echo test proved Node fetch discards overridden Host; harness uses node:http.request for actual public-host simulation. Initial login test400 corrected to existing flat login arguments. Local-check now PASSES7 real-backend/proxy checks including OPAC/staff, CSRF login/Secure session rotation and legacy-route404s; report INTERNET_PROXY_REVIEW.json. Actual cloudflared launch hit socket-permission denial on outbound api.trycloudflare.com connection in agent environment; all failed-run processes stopped. No live tunnel is currently running; public internet access not yet confirmed. Next owner runs Set-Location D:/Pusthakam then node tools/internet-test.mjs from normal Windows PowerShell, leaves it running and shares generated HTTPS URL. Random demo credentials saved outside repo; no owner data, DNS, firewall or service changes. Updated launcher prints human-readable OPAC/staff URLs and login-file path. Remaining actual HTTPS/mobile-data and upload acceptance.
+
+## Current: portable tools verified; proxy preflight rerun
+
+2026-11-26T01:29:43.345Z
+
+Owner downloaded official tools. Both SHA256/size checks passed: cloudflared2026.11.2 and Caddy2.11.9. PowerShell Archive module failed to load; preparation helper now uses verified Windows tar.exe and completed extraction. First isolated demo run created a tunnel URL but failed required Secure-cookie validation; its server/proxy/tunnel were stopped. Caddy adapt proved config matched Host127.0.0.1 and listened on all interfaces; helper corrected to HTTP any-host matcher with explicit bind127.0.0.1. This is operator test configuration, no product code/owner DB/DNS/firewall changes. Fresh isolated demo rerun in progress; actual public sign-in and mobile-data acceptance still pending.
+
+## Current: internet test prepared; tool downloads needed
+
+2026-11-26T01:18:51.404Z
+
+Resumed26 November2026 and prepared tools/prepare-internet-test-tools.mjs plus tools/internet-test.mjs for an isolated temporary OPAC/staff demo (no owner DB/DNS/service changes). Initial checks found no running app/listener4318 and no cloudflared/Caddy on PATH; released server exists. PowerShell HTTPS failed with SSPI0x8009030E; Node using configured proxy/system CA fetched official release metadata successfully without disabling certificate verification. Both official binary downloads timed out, as did GitHub asset API fallback. No tunnel, public URL or public access established. Need owner browser-download cloudflared-windows-amd64.exe2026.11.2 and caddy_2.11.9_windows_amd64.zip into Windows Downloads, retaining filenames. Helper checks those named local files, verifies official SHA256/size and extracts Caddy before execution. Launcher prepares isolated sample library/random credential file outside repo, loopback backend/Caddy allowlist/buffering, temporary tunnel and configured public origin, checks Secure cookies and blocked legacy routes, supports quit cleanup. Syntax checks and full-project ESLint pass; progress validation and git diff --check pass. Full helper/Caddy/Cloudflare execution remains unverified; do not claim working internet access. Next after files available: prepare tools, run isolated demo, verify public HTTPS login/API/backup and owner mobile-data test. Main WordPress website untouched; no purchase/account needed for temporary test.
+
+Setup: docs/INTERNET_ACCESS_TEST_SETUP.md. Earlier pause has been explicitly lifted.
+
+## Current: resumed public-access preparation
+
+2026-11-26T01:12:37.943Z
+
+Owner explicitly resumed26 November2026. Continuing free temporary internet-access test for OPAC/staff; preserve WordPress.com DNS and owner data. Checkpoint and hosting contract read. No app listener on4318 or tunnel/proxy tool found during initial checks; released console binary exists. Preparing isolated test host and reviewing Cloudflare Quick Tunnel plus Caddy route/header/upload proxy requirements; public access not yet established. No pause remains; no permanent service/domain changes authorized by this preparation.
+
 ## PAUSED: owner returning tomorrow
 
 2026-11-25T15:57:48.149Z

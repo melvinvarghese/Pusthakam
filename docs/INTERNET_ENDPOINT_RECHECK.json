@@ -1,0 +1,60 @@
+{
+  "at": "2026-11-26T02:44:51.690Z",
+  "origin": "https://assistant-habits-putting-completing.trycloudflare.com",
+  "results": [
+    {
+      "resolver": "dns.google",
+      "status": 0,
+      "answers": [
+        {
+          "name": "assistant-habits-putting-completing.trycloudflare.com.",
+          "type": 1,
+          "TTL": 300,
+          "data": "104.16.231.132"
+        },
+        {
+          "name": "assistant-habits-putting-completing.trycloudflare.com.",
+          "type": 1,
+          "TTL": 300,
+          "data": "104.16.230.132"
+        }
+      ]
+    },
+    {
+      "resolver": "cloudflare-dns.com",
+      "status": 0,
+      "answers": [
+        {
+          "name": "assistant-habits-putting-completing.trycloudflare.com",
+          "type": 1,
+          "TTL": 300,
+          "data": "104.16.231.132"
+        },
+        {
+          "name": "assistant-habits-putting-completing.trycloudflare.com",
+          "type": 1,
+          "TTL": 300,
+          "data": "104.16.230.132"
+        }
+      ]
+    },
+    {
+      "path": "/opac",
+      "status": 200,
+      "secureCookie": false,
+      "testBookFound": false
+    },
+    {
+      "path": "/staff",
+      "status": 200,
+      "secureCookie": true,
+      "testBookFound": false
+    },
+    {
+      "path": "/api/opac/search",
+      "status": 200,
+      "secureCookie": false,
+      "testBookFound": true
+    }
+  ]
+}

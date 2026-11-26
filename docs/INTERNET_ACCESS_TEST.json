@@ -1,0 +1,39 @@
+{
+  "at": "2026-11-26T02:43:10.777Z",
+  "publicUrl": "https://assistant-habits-putting-completing.trycloudflare.com",
+  "localOnly": false,
+  "binarySha256": "450b56e89127e98853e5ea399914c6390c8c12452859f2ffbf96544eb44a099e",
+  "checks": [
+    "isolated library setup and sample catalogue through real API",
+    "local proxy /opac and public-origin headers",
+    "local proxy /staff and public-origin headers",
+    "real staff login through proxy with CSRF and Secure session rotation",
+    "proxy blocks /api/lan/config",
+    "proxy blocks /api/staff/login",
+    "proxy blocks /api/staff/issue"
+  ],
+  "directory": "C:\\Users\\Melvin\\AppData\\Local\\Temp\\pusthakam-internet-demo-OLBFny",
+  "processes": [
+    {
+      "name": "Caddy",
+      "pid": 21884
+    },
+    {
+      "name": "Cloudflare tunnel",
+      "pid": 14496
+    },
+    {
+      "name": "Pusthakam",
+      "pid": 3232
+    }
+  ],
+  "note": "Temporary isolated demo only. Credentials stored outside repository. Awaiting actual mobile-data acceptance.",
+  "ownerCrossNetworkAcceptance": {
+    "at": "2026-11-26T03:05:19.393Z",
+    "confirmed": true,
+    "opac": true,
+    "staff": true,
+    "statement": "both worked",
+    "scope": "Owner confirmation responding to both-portals/staff-sign-in question; complete workflows and production availability remain separate"
+  }
+}

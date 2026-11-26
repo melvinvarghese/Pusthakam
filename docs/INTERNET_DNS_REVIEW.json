@@ -1,0 +1,25 @@
+{
+  "at": "2026-11-26T02:41:39.240Z",
+  "host": "configure-habitat-relationships-commodities.trycloudflare.com",
+  "ownerError": "ERR_NAME_NOT_RESOLVED",
+  "osDns": "ENOTFOUND",
+  "googleDnsStatus": 3,
+  "cloudflareDnsStatus": 3,
+  "publicHttpsError": "ECONNRESET",
+  "processesObservedAlive": [
+    {
+      "name": "caddy",
+      "pid": 17276
+    },
+    {
+      "name": "cloudflared-windows-amd64",
+      "pid": 13616
+    },
+    {
+      "name": "pusthakam-server",
+      "pid": 11820
+    }
+  ],
+  "conclusion": "Public hostname currently returns NXDOMAIN on both independent resolvers. Not specific to owner PC DNS; reason for disappearance not proven. Fresh temporary tunnel URL required.",
+  "next": "Owner types quit in launcher, reruns node .\\tools\\internet-test.mjs from D:\\Pusthakam, shares newly generated URL. Do not alter DNS/firewall."
+}
