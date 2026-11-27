@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "lastUpdated": "2026-11-27T15:34:01.261Z",
+  "lastUpdated": "2026-11-27T15:51:18.437Z",
   "currentPhase": "4",
   "currentTask": {
     "title": "PAUSED until Monday: Member Profile Batches 1-2, OPAC credentials, and README updated",
@@ -5609,5 +5609,47 @@
       "title": "Refined The Swiss Stacks OPAC direction to remove app-like appearance and optimized mobile layout",
       "detail": "Replaced dark admin header and vertical facet rail with a public typographic masthead, horizontal Dewey classification ribbon, and mobile-optimized touch cards with swipeable chips. Verified via headless Chrome screenshots and clean ESLint/typecheck runs."
     }
-  ]
+  ],
+  "ciDiagnostics": {
+    "updatedAt": "2026-11-27T15:51:18.437Z",
+    "status": "failing",
+    "scope": "CI diagnosis only; no source or workflow fixes applied",
+    "runs": [
+      {
+        "id": 46019761127,
+        "branch": "fix/ci-node-version",
+        "commit": "452eb34dc157464ea4229b87ba8834f986e77c61",
+        "url": "https://github.com/melvinvarghese/Pusthakam/actions/runs/46019761127",
+        "findings": [
+          "Rust fmt failed in lan.rs, opac_patron.rs, reservations.rs",
+          "Frontend typecheck and ESLint passed",
+          "Vitest: 272/274 passed; Pager separator assertion and Circulation reservation interaction assertion failed",
+          "Dependent release/package jobs skipped"
+        ]
+      },
+      {
+        "id": 46023033720,
+        "branch": "daily-backups-and-tray-startup",
+        "url": "https://github.com/melvinvarghese/Pusthakam/actions/runs/46023033720",
+        "findings": [
+          "Rust fmt passed",
+          "Windows Clippy compile failed because three Fontsource WOFF2 files were absent from node_modules during include_bytes! compilation",
+          "Frontend typecheck and ESLint passed",
+          "Vitest fork workers failed to start across many test files"
+        ]
+      }
+    ],
+    "nextActions": [
+      "Install locked frontend dependencies before Rust compilation on Windows or relocate embedded font assets to a build-independent location",
+      "Bound Vitest worker concurrency without disabling tests",
+      "Resolve Pager separator expectation consistently",
+      "Investigate Circulation reservation test versus intended UI behavior",
+      "Rerun complete CI and packaging matrix; do not mark skipped jobs verified"
+    ],
+    "guardrails": [
+      "Keep Node.js 22.22.2 in both jobs",
+      "Do not disable or weaken quality checks",
+      "Do not mark CI verified until all required jobs pass"
+    ]
+  }
 }
