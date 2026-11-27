@@ -5677,14 +5677,16 @@
       "Post-expiry access and feature restrictions",
       "Price",
       "Licence scope (for example, number of library installations)",
-      "Update and major-version entitlement",
       "Activation, online validation and device-transfer rules",
       "Support entitlement"
     ],
     "dataProtection": "Do not delete or corrupt library data when a trial expires; preserve data and provide a clear purchase/activation path.",
-    "implementationStatus": "Not implemented or verified; documentation decision only.",
+    "implementationStatus": "Commercial policy documented only; licence enforcement and payment implementation not started or verified.",
     "licenceDuration": "perpetual",
-    "licenceDurationDecision": "Owner selected perpetual use after a one-time payment; lifetime upgrades, major-version upgrades, maintenance and support are not implied and remain undecided."
+    "licenceDurationDecision": "After a one-time payment, the customer may use Pusthakam indefinitely.",
+    "futureUpdates": "All future Pusthakam updates, including later version upgrades, are included for existing purchasers without additional payment.",
+    "priceChangePolicy": "Future price increases apply only to new purchases; existing purchasers do not pay the difference or purchase again.",
+    "internalOnlyPolicy": "Keep the future-update and price-protection policy internal. Customer-facing messaging focuses on the 30-day trial and one-time payment; do not separately advertise this additional entitlement."
   },
   "decisions": [
     {
@@ -5692,6 +5694,12 @@
       "at": "2026-11-27",
       "title": "Perpetual licence duration for one-time payment",
       "detail": "Owner selected a perpetual licence: after a one-time purchase, the customer may continue using the licensed Pusthakam product indefinitely, subject to final terms. This does not promise lifetime upgrades, major-version upgrades, maintenance or support. Licence scope, price and those entitlements remain undecided; no implementation claimed."
+    },
+    {
+      "kind": "decision",
+      "at": "2026-11-27",
+      "title": "Future updates included in one-time purchase; price protection for existing customers",
+      "detail": "Internal policy: a one-time Pusthakam purchase includes future product updates, including later version upgrades. Later price increases apply only to new purchases; existing customers do not pay a difference or repurchase. Do not separately advertise this policy; customer-facing messaging focuses on the 30-day trial and one-time payment."
     }
   ]
 }
