@@ -60,6 +60,18 @@ Suggested order: section 1, then the [owner] tests in section 3, then section 4.
 - [ ] Make CI fail when the Windows or macOS package is missing; align CI Node version. Source: S-R10, KI-033, KI-003.
 - [ ] Host-failure recovery guide; run `pusthakam-server` as a Windows service or at start-up. Source: S-R11, WEB_HOSTING.md.
 
+### Commercial trial release readiness
+
+- [ ] **[owner/product]** Decide the 30-day trial start trigger and offline clock policy.
+- [ ] **[owner/product]** Decide the exact post-expiry access policy; preserve all library data and never make it inaccessible through destructive expiry handling.
+- [ ] **[owner/product]** Set the one-time licence price, licence scope/duration, update entitlement and support entitlement.
+- [ ] **[owner/product]** Decide activation, online/offline validation and device-transfer rules.
+- [ ] Implement and test trial countdown/expiry, purchase and licence activation only after the owner decisions above are recorded.
+- [ ] Complete CI, security, installer and supported-platform acceptance; run a controlled library beta/pilot before the public official release.
+- [ ] At official release, publish clear 30-day trial terms and purchase/activation instructions.
+
+Source: owner decision recorded 27 November 2026 in PROGRESS.md, PROGRESS.json, DEVELOPMENT_ROADMAP.md and SESSION_HANDOFF.md.
+
 ## 5. Documentation
 
 - [ ] Rewrite `docs/USER_MANUAL.md` as a short, accurate librarian guide with screenshots; move developer material elsewhere. Source: S-R06, KI-031.
