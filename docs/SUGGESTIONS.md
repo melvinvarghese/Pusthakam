@@ -42,6 +42,7 @@ _Purpose: Repository of architectural, ergonomic, and operational suggestions to
 ## 3. Data Safety & Disaster Recovery
 
 ### S-004: Dedicated "Backup to USB / External Drive" Action
+_Status 27 Nov 2026: largely covered. "Copy to folder" already existed; daily backups can now go straight to a chosen folder (USB or another drive). See S-R01._
 * **Context:** Database snapshots currently save to the local OS app-data directory (`pusthakam/backups`). If the primary drive suffers hardware failure or ransomware, local backups on that same physical drive are compromised. Many community and school librarians rely on physical USB thumb drives kept securely off-system.
 * **Proposal:**
   * Provide an explicit **"Backup to Flash Drive / External Folder"** action in the Backup & Restore screen and/or the main dashboard.
@@ -110,6 +111,7 @@ _Added by a read-only review of D:\Pusthakam on 27 November 2026. Nothing below 
 * **Seen:** `run_daily` in `src-tauri/src/services/backup.rs` deletes every older `pusthakam-YYYYMMDD-daily.sqlite3` after creating today's. Only one day of history exists, in the same folder and disk as the live database.
 * **Proposal:** keep 7 daily, 4 weekly and 12 monthly copies. Let the librarian choose a second backup folder (USB or another drive) that receives a copy automatically when present. Show "last backup copied off this computer" on the dashboard, with a warning after 7 days.
 * **Also:** USER_MANUAL section 12 says "rolling daily snapshots"; correct it once retention is fixed.
+* **Status 27 Nov 2026 (partly done, owner spec):** the installer asks for a backup folder and suggests another drive or USB; the first launch each day writes `pusthakam-YYYYMMDD-daily.sqlite3` there; the newest 7 are kept and the oldest goes when the 8th is made. If the folder is missing (USB unplugged) that day's backup is saved in the data folder and the Backup page says so. Pusthakam now starts with Windows in the system tray so the daily backup happens even if nobody opens it. USER_MANUAL section 12 updated. Not done: weekly/monthly copies and the dashboard "last off-computer backup" warning.
 
 ### S-R02: Protect staff sign-in on Wi-Fi (see KI-028)
 * **Seen:** the LAN listener serves `/staff` and `/api/staff/*` over plain HTTP. No TLS crate is in `src-tauri/Cargo.toml`. DECISIONS D-026 promised an encrypted LAN API. Staff passwords and session cookies cross shared Wi-Fi unencrypted.

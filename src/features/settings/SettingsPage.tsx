@@ -11,6 +11,7 @@ import { LibraryCalendarPanel } from "./LibraryCalendarPanel";
 import { OptionalModules } from "./OptionalModules";
 import { LibraryCustomFields } from "./LibraryCustomFields";
 import { LanSettingsPanel } from "./LanSettingsPanel";
+import { StartupPanel } from "./StartupPanel";
 import type { AccessionFormat, ArchiveKind, ConfigOverview, Library, Named, Policy, Shelf } from "@/lib/api/types";
 import { formatMinor } from "@/lib/money";
 import { can, useSession } from "@/lib/session";
@@ -129,6 +130,7 @@ export function SettingsPage() {
       />
 
       <Panel><div className="max-w-md p-4"><LanguageSelect /></div></Panel>
+      <StartupPanel canEdit={canEdit} />
 
       {archive.isError && <p role="alert" className="text-danger">{archive.error instanceof ApiError ? archive.error.message : "Could not update."}</p>}
       <OptionalModules canEdit={canEdit} />

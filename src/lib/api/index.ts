@@ -11,7 +11,7 @@ import type { HistoryBatchSummary, HistorySummary, HistoryPreview, RenewalImport
   CopyRecord, CopyStatus, CopyUpdateInput, DashboardOverview, DuplicateHit, DuplicateProbe, FineAmount, FineHistoryPage, FinePage, FineSettlement, ImportOptions, ImportPreview,
   ImportPreviewRequest, ImportReport, IssuePreview, KohaPatronPreview, LibraryInput, MemberCategoryInput, MemberInput, MemberLoanPage, MemberPage, OpenLoanPage, OverduePage, RenewalPreview, ReservationPage, ReturnCondition, ReturnPreview,
   NamedInput, NamedKind, PolicyInput, PopularTitle, RecordDetail, RecordInput, SearchQuery, SearchResult, Session, SetupInput,
-  SetupStatus, ShelfInput, StockRow, FineSummary, CatalogueGrowthDay, MemberSummary, BackupFile, BackupList, AuditPage, AuditQuery,
+  SetupStatus, ShelfInput, StockRow, FineSummary, CatalogueGrowthDay, MemberSummary, BackupFile, BackupList, StartupSetting, AuditPage, AuditQuery,
   OverdueRow, AccessionRow, ExpenditureRow, LossDamageRow, ReportExportFile,
   NewStaff, StaffChanges, StaffDirectory,
   ScanOutcome, StockCheck, StockCheckPage, StockCheckReview, StockCheckView, StockTransfer,
@@ -86,6 +86,8 @@ export const appApi = {
   setting: (key: string) => call<string | null>("get_setting", { key }),
   setSetting: (key: string, value: string) => call<void>("set_setting", { key, value }),
   info: () => call<AppInfo>("app_info"),
+  startup: () => call<StartupSetting>("launch_at_startup_get"),
+  setStartup: (enabled: boolean) => call<StartupSetting>("launch_at_startup_set", { enabled }),
   overview: () => call<DashboardOverview>("dashboard_overview"),
 };
 
@@ -110,6 +112,7 @@ export const backupApi = {
   create: () => call<BackupFile>("backup_create"),
   copyToFolder: (name: string, folder: string) => call<BackupFile>("backup_copy_to_folder", { name, folder }),
   setDaily: (enabled: boolean) => call<void>("backup_set_daily", { enabled }),
+  setDailyFolder: (folder: string) => call<string | null>("backup_set_daily_folder", { folder }),
   verify: (name: string) => call<number>("backup_verify", { name }),
   requestRestore: (name: string) => call<void>("backup_request_restore", { name }),
   cancelRestore: () => call<void>("backup_cancel_restore"),
