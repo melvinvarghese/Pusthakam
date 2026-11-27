@@ -508,6 +508,7 @@ fn record_input(r: &ImportRecord, ddc_id: Option<i64>) -> RecordInput {
         keywords: r.keywords.clone(),
         contributors: r.contributors.clone(),
         subjects: r.subjects.clone(),
+        categories: None,
     }
 }
 

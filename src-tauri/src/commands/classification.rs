@@ -1,4 +1,5 @@
 use crate::error::AppResult;
+use crate::services::browse_categories::{self, BrowseCategory, BrowseCategoryInput};
 use crate::services::classification::{
     self, AuthorAuthority, AuthorAuthorityInput, ClassificationEntry, ClassificationEntryInput,
     ClassificationScheme, ClassificationSchemeInput, MarcMapping, MarcMappingInput, MarcTestInput,
@@ -233,5 +234,43 @@ pub fn classification_test_marc_mapping(
 ) -> AppResult<MarcTestResult> {
     state.require("classification.read")?;
     state.with_conn(|conn| classification::test_marc_mapping(conn, &input))
+}
+}
+
+// ============================================================================
+// Browse Categories (member-facing OPAC groupings)
+// ============================================================================
+
+crate::shared_command! {
+
+pub fn browse_categories_list(
+    state: State<'_, AppState>,
+    include_archived: Option<bool>,
+) -> AppResult<Vec<BrowseCategory>> {
+    state.require("catalogue.read")?;
+    state.with_conn(|conn| browse_categories::list_categories(conn, include_archived.unwrap_or(false)))
+}
+}
+
+crate::shared_command! {
+
+pub fn browse_categories_save(
+    state: State<'_, AppState>,
+    input: BrowseCategoryInput,
+) -> AppResult<i64> {
+    let session = state.require("classification.write")?;
+    browse_categories::save_category(&*state.conn()?, &session, &input)
+}
+}
+
+crate::shared_command! {
+
+pub fn browse_categories_set_archived(
+    state: State<'_, AppState>,
+    id: i64,
+    archived: bool,
+) -> AppResult<()> {
+    let session = state.require("classification.write")?;
+    browse_categories::set_category_archived(&*state.conn()?, &session, id, archived)
 }
 }

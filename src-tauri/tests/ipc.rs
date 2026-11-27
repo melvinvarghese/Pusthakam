@@ -5129,8 +5129,10 @@ fn lan_settings_start_and_stop_the_actual_http_listener() {
     assert!(response.contains("/api/opac/search?"));
     assert!(response.contains("data:font/woff2;base64,"));
     for (path, status) in [
-        ("/api/opac/search?class=8&available=true&page=2", "200"),
-        ("/api/opac/search?class=invalid", "400"),
+        ("/api/opac/search?category=1&available=true&page=2", "200"),
+        ("/api/opac/search?category=invalid", "400"),
+        ("/api/opac/search?category=-3", "400"),
+        ("/api/opac/categories", "200"),
     ] {
         let mut request = TcpStream::connect(("127.0.0.1", port)).unwrap();
         request
@@ -5233,5 +5235,100 @@ fn open_loan_directory_paginates_due_order_and_excludes_closed_loans() {
             json!({"search":"DIR-27","page":1})
         )["total"],
         0
+    );
+}
+
+#[test]
+fn browse_categories_drive_record_categories_and_need_permission() {
+    let h = Harness::new();
+    h.ok("complete_setup", setup_body());
+    let categories = h.ok("browse_categories_list", json!({}));
+    let categories = categories.as_array().unwrap();
+    let id_of = |name: &str| {
+        categories.iter().find(|c| c["name"] == name).unwrap()["id"]
+            .as_i64()
+            .unwrap()
+    };
+    let physics = id_of("Physics");
+    let exams = id_of("Competitive Exams");
+
+    // A DDC number places the record automatically when categories are not sent.
+    let record = |categories: Value| {
+        let mut input = json!({
+            "title": "Concepts of Physics", "contributors": [], "subjects": [],
+            "classificationNumber": "530"
+        });
+        if !categories.is_null() {
+            input["categories"] = categories;
+        }
+        input
+    };
+    let id = h.ok(
+        "catalogue_save_record",
+        json!({"input": record(Value::Null)}),
+    );
+    let detail = h.ok("catalogue_get_record", json!({"id": id}));
+    assert_eq!(
+        detail["categories"],
+        json!([{"id": physics, "name": "Physics"}])
+    );
+
+    // Staff choose categories explicitly.
+    let mut input = record(json!([exams]));
+    input["id"] = id.clone();
+    h.ok("catalogue_save_record", json!({"input": input}));
+    let detail = h.ok("catalogue_get_record", json!({"id": id}));
+    assert_eq!(
+        detail["categories"],
+        json!([{"id": exams, "name": "Competitive Exams"}])
+    );
+
+    let created = h.ok(
+        "browse_categories_save",
+        json!({"input": {"name": "Kerala History", "ddcRules": "954.83"}}),
+    );
+    assert!(created.as_i64().unwrap() > 0);
+    assert_eq!(
+        h.code(
+            "browse_categories_save",
+            json!({"input": {"name": "Bad", "ddcRules": "5%"}})
+        ),
+        "VALIDATION"
+    );
+    h.ok(
+        "browse_categories_set_archived",
+        json!({"id": created, "archived": true}),
+    );
+    let active = h.ok("browse_categories_list", json!({}));
+    assert!(!active
+        .as_array()
+        .unwrap()
+        .iter()
+        .any(|c| c["id"] == created));
+
+    {
+        let state = h.webview.state::<AppState>();
+        let conn = state.conn().unwrap();
+        auth::create_user(&conn, "catviewer", "Viewer", "viewer passphrase", "viewer").unwrap();
+    }
+    h.ok("logout", json!({}));
+    h.ok(
+        "login",
+        json!({"username":"catviewer","password":"viewer passphrase"}),
+    );
+    assert!(h.ok("browse_categories_list", json!({})).is_array());
+    assert_eq!(
+        h.code(
+            "browse_categories_save",
+            json!({"input": {"name": "Not allowed"}})
+        ),
+        "PERMISSION_DENIED"
+    );
+    assert_eq!(
+        h.code(
+            "browse_categories_set_archived",
+            json!({"id": physics, "archived": true})
+        ),
+        "PERMISSION_DENIED"
     );
 }
