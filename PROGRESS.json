@@ -1,11 +1,11 @@
 {
   "schemaVersion": 1,
-  "lastUpdated": "2026-11-27T03:24:51.045Z",
+  "lastUpdated": "2026-11-27T06:13:47.403Z",
   "currentPhase": "2",
   "currentTask": {
-    "title": "519 Malayalam drafts delivered; awaiting owner review",
-    "status": "blocked",
-    "detail": "Owner authorized 200 additional Malayalam review drafts, to review with the earlier 319. Completed exactly 200 unique new English/Malayalam pairs in docs/translations/additional-draft-pairs.json, verified against current source and against existing translation resources/glossary (no duplicates), plus Malayalam script and placeholder checks. Covers copy/cover/stock labels, fines/reservations, member fines/cards, database backups, catalogue import/export and public OPAC. Review snapshot additional-draft-review.json records stable IDs, current source references and draft-not-integrated status. Delivered new combined docs/translations/Pusthakam_Malayalam_Drafts_519.xlsx: original 319 rows followed by 200 additions, Batch column (Original 319 / New 200), correction/status/notes columns, approved terms and instructions. Original 319 workbook preserved byte-for-byte; all original review cells preserved in combined copy. Local original currently had no saved corrections, notes or reviewed statuses; no approval inferred. Workbook reopening validated 519 unique IDs, 200 exact new pairs, 319 preserved rows, empty new correction cells, Not reviewed statuses, no formulas. New exporter ESLint passed; downloadable copy saved successfully. Reproducible scripts tools/create-additional-draft-review.mjs and tools/create-expanded-draft-workbook.py saved; expanded generator refuses overwriting an existing review file. Request resumes draft preparation only: no application source/integration, installer, database, network configuration, commit or push changes. Broader implementation remains paused awaiting owner review/explicit resume. Next: owner reviews 519 workbook (partial file welcome), match reviewed IDs/English and validate placeholders before applying approved corrections. Preserve earlier 20-term glossary and everyday wording; pending modules/font/mobile/native checks unchanged. V1 totals unchanged."
+    "title": "Hyperlinked Melvin Varghese copyright notice to melvinvarghese.in/support/ with UTM and SEO attributes",
+    "status": "in-progress",
+    "detail": "Hyperlinked Melvin Varghese in the runtime copyright footer (AppShell sidebar, AuthLayout setup/sign-in, and embedded OPAC footer) to https://melvinvarghese.in/support/ with static UTM attribution (utm_source=pusthakam, utm_medium=app|opac, utm_campaign=copyright_footer, utm_content=app_sidebar|app_auth|opac_footer), target=_blank, rel=noopener noreferrer, and descriptive title attribute. Uses openExternal() in desktop/web app via existing melvinvarghese.in/* opener capability."
   },
   "nextMilestone": {
     "title": "macOS and Linux package smoke tests",
@@ -3908,9 +3908,109 @@
       "check": "node tools/create-additional-draft-review.mjs; python tools/create-expanded-draft-workbook.py; npx.cmd eslint tools/create-additional-draft-review.mjs",
       "outcome": "passed",
       "result": "200 new unique source-verified draft phrases, no overlap with existing resources, Malayalam script and placeholder checks; reopened 519-row workbook validates IDs, original319 review-cell equality, source pairs and new blank correction/status cells. Original319 SHA256 unchanged. No formulas; lint passed. Linguistic approval/integration not inferred."
+    },
+    {
+      "id": "noto-font-bundle-1795757541378",
+      "title": "Local Malayalam font bundling and OPAC embedding",
+      "at": "2026-11-27T05:32:21.374Z",
+      "check": "npm.cmd run build; npm.cmd run lint; bundled WOFF2 and licence file assertions; cargo test --offline --manifest-path src-tauri/Cargo.toml --lib services::opac_page::tests::catalogue_embeds_assets_and_escapes_library_name; git diff --check",
+      "outcome": "passed",
+      "result": "TypeScript/Vite and ESLint passed; actual Malayalam wOF2 asset and OFL licence present in dist. Focused native test 1/1 passed; embedded font marker/licence and no unresolved template placeholders verified. Existing installer unchanged; no browser shaping or fresh-install test."
+    },
+    {
+      "id": "auto-review-status-1795757877693",
+      "title": "Future spreadsheet auto-status tooling checks",
+      "at": "2026-11-27T05:37:57.690Z",
+      "check": "Python in-memory helper assertions and compile() for four workbook scripts",
+      "outcome": "passed",
+      "result": "Formula references, preserved OK status, table expansion and auto calculation configuration checked. Four scripts compile. No workbook generated or Excel evaluation claimed; recalc verification required on next deliverable."
+    },
+    {
+      "id": "update319-1795758496157",
+      "title": "319 workbook preservation and formula check",
+      "at": "2026-11-27T05:48:16.146Z",
+      "check": "openpyxl update/reopen; Excel COM recalculation attempt",
+      "outcome": "passed",
+      "result": "319 rows and formulas intact, four contributor labels updated, existing corrections/notes/IDs preserved. Actual Excel recalculation attempt incomplete/hung; shell stopped and no runtime success claimed."
+    },
+    {
+      "id": "preserve519-1795758838686",
+      "title": "519 workbook preservation and formula checks",
+      "at": "2026-11-27T05:53:58.680Z",
+      "check": "openpyxl keyed per-row validation, lock/hash guard, reopen and formula structure checks",
+      "outcome": "passed",
+      "result": "519 rows, all13 corrections, notes, IDs, batches and non-target draft text preserved. Four contributor drafts updated. 519 automatic formulas verified structurally; prior manual statuses moved to optional review. Byte backup saved. Live Excel recalculation not run."
+    },
+    {
+      "id": "runtime-copyright-notice-2026-11-27",
+      "title": "Runtime copyright helper, UI shell/auth integration, and OPAC footer verification",
+      "at": "2026-11-27T06:06:22.146Z",
+      "check": "npm.cmd run typecheck && npm.cmd run lint && npx.cmd vitest run src/lib/copyright.test.ts src/app/AppShell.test.tsx src/features/boot/Gate.test.tsx",
+      "outcome": "passed",
+      "result": "TypeScript typecheck passed (0 errors), ESLint passed (0 errors), and all 21 focused tests across 3 files passed."
     }
   ],
   "recentActivity": [
+    {
+      "kind": "progress",
+      "at": "2026-11-27T06:13:47.403Z",
+      "title": "Hyperlinked Melvin Varghese copyright notice with UTM and SEO attributes",
+      "detail": "Added CopyrightNotice component and updated embedded OPAC footer to link Melvin Varghese to https://melvinvarghese.in/support/ with utm_source=pusthakam, utm_medium, utm_campaign, utm_content, target=_blank, rel=noopener noreferrer, and descriptive title."
+    },
+    {
+      "kind": "progress",
+      "at": "2026-11-27T06:06:22.146Z",
+      "title": "Added runtime 2026–current-year copyright notice to React UI and OPAC",
+      "detail": "Created src/lib/copyright.ts with unit tests; added dynamic copyright notice to AppShell, AuthLayout, and embedded OPAC footer."
+    },
+    {
+      "kind": "progress",
+      "at": "2026-11-27T05:55:09.986Z",
+      "title": "Updated app authorship and copyright to Melvin Varghese",
+      "detail": "Set copyright to Copyright © 2026 Melvin Varghese in src-tauri/tauri.conf.json and added Melvin Varghese as author in package.json and src-tauri/Cargo.toml."
+    },
+    {
+      "kind": "progress",
+      "at": "2026-11-27T05:54:52.909Z",
+      "title": "Updated app authorship and copyright to Melvin Varghese",
+      "detail": "Set copyright to Copyright © 2026 Melvin Varghese in src-tauri/tauri.conf.json and added Melvin Varghese as author in package.json and src-tauri/Cargo.toml."
+    },
+    {
+      "kind": "progress",
+      "at": "2026-11-27T05:53:58.680Z",
+      "title": "Updated active 519 review workbook safely",
+      "detail": "Owner explicitly authorized updating the current 519 workbook while preserving saved translation edits. Updated only docs/translations/Pusthakam_Malayalam_Drafts_519.xlsx with Noto Sans Malayalam, four approved contributor draft labels and 519 automatic status formulas. All 13 existing correction cells preserved exactly; notes, IDs, English, context and batches unchanged; all other draft text preserved, including any custom drafts. Existing manual review statuses retained in new optional Your review (OK / Question) column I; nonempty correction in D overrides computed E to Changed. Open-file lock and SHA256 guard used before atomic replacement. Original byte-for-byte backup in docs/translations/backups; exact path/counts in WORKBOOK_519_UPDATE.json. Reopened workbook validated all 519 rows/formulas and protected values. No live Excel recalculation attempted due prior automation hang; auto calculation on open enabled, formula runtime acceptance still pending. Same downloadable file updated to version1. 519 is the active combined review file; do not make owner duplicate review in319. No application/installer changes, translation integration, commit or push."
+    },
+    {
+      "kind": "progress",
+      "at": "2026-11-27T05:48:16.146Z",
+      "title": "Updated only 319 workbook as requested",
+      "detail": "Owner is editing the 519 workbook and explicitly requested prior changes applied to 319 only. Updated docs/translations/Pusthakam_Malayalam_Drafts_319.xlsx in place: Noto Sans Malayalam on Malayalam text, four contributor labels follow approved glossary, 319 automatic Review status formulas (correction => Changed; otherwise optional OK/Question/Not reviewed). Added separate optional manual review column and updated guidance. Existing correction/notes/IDs preserved; temporary pre-edit backup saved outside repo. 519 workbook and owner Excel session not modified. Updated same downloadable 319 file to version 1. Reopen/formula structure/count/preservation checks passed. Excel COM recalculation/runtime attempt hung, isolated review process disappeared, then own automation shell stopped; no completed Excel calculation or Changed/OK interaction test claimed. Cached formula values may remain blank in preview until Excel calculates on open; auto calculation enabled. No application or installer changes. Review scopes overlap: 519 already contains original319; this edit applies only319, do not overwrite reviewed519 rows during future consolidation."
+    },
+    {
+      "kind": "progress",
+      "at": "2026-11-27T05:46:30.776Z",
+      "title": "Commercial one-time-payment licensing decision recorded",
+      "detail": "Owner confirmed plan to sell Pusthakam to libraries for a one-time payment. Recorded requirements to keep source private, use a Commercial EULA instead of an open-source license, bundle third-party dependency attributions, and update README.md/tauri.conf.json before release. No code or installer changes made."
+    },
+    {
+      "kind": "progress",
+      "at": "2026-11-27T05:44:10.695Z",
+      "title": "Contributor terminology approved",
+      "detail": "Owner approved Contributor terminology in approved-glossary.json, replacing prior wording with sambhaavakan and its grammatical/plural forms. Glossary and core resource updated; existing owner Excel and review snapshots untouched. Reconcile this approval on returned workbook import. No installer rebuild or other translations changed."
+    },
+    {
+      "kind": "progress",
+      "at": "2026-11-27T05:37:57.690Z",
+      "title": "Automatic correction review status added to future Excel exports",
+      "detail": "Owner requires future translation Excels to automatically set Review status to Changed whenever a correction cell is filled. Updated all three translation workbook generators with shared tools/translation_review_status.py: Excel IF formula prioritizes nonempty correction; separate optional Your review (OK / Question) input preserves manual approval/questions without breaking automatic status. Clearing correction returns to optional review or Not reviewed. Automatic calculation/full recalculation on open requested; tables and validation ranges expanded. Existing manual statuses transferred to optional input, including when expanding future workbooks. In-memory helper/table/manual-status/formula checks and four Python syntax checks passed. No current workbook regenerated/modified; owner editing 519 file is preserved. No new XLSX delivered and no Excel recalculation/runtime verification claimed; next generated file must undergo actual formula recalculation verification before delivery. Initial edit-command quoting syntax failed without changing files, corrected using patch. Scope is future review-sheet tooling only, no application translations or installer changes. Overall localization still awaits owner review; previous bundled Noto font checks remain valid. No commit/push."
+    },
+    {
+      "kind": "progress",
+      "at": "2026-11-27T05:31:45.363Z",
+      "title": "Noto Sans Malayalam packaged locally",
+      "detail": "Owner confirms Nirmala UI caused rendering issue and Noto Sans Malayalam fixed it; explicitly requests font included when Pusthakam is installed. Implemented app-private font bundling: @fontsource-variable/noto-sans-malayalam 5.3.0, local CSS import, Noto fallback ahead of OS fonts in sans/mono stacks, removed Nirmala fallback. Independent public OPAC embeds Malayalam WOFF2 as data URI; OFL licence retained in frontend public/licenses and embedded OPAC CSS. No system-wide font registration/admin requirement: installed Pusthakam carries and uses its own font offline; standalone font availability in Excel depends on OS installation already performed by owner. Future workbook generators now select Noto Sans Malayalam. Owner-modified/open 519 workbook and lock file left untouched; no draft wording/approval edits. Frontend build and ESLint passed, bundled WOFF2 magic bytes and dist licence checked. Focused native OPAC embedding test compiling. Initial npm install failed on default cache permissions; retry using authorized temporary cache downloaded/registered package successfully, install command finalization still pending. Existing installer not rebuilt and actual fresh-install/rendered font acceptance pending. This request resumes font integration only; remaining translations await owner review. No owner DB/external-hosting/commit/push changes."
+    },
     {
       "kind": "progress",
       "at": "2026-11-27T03:24:51.045Z",

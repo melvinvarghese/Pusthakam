@@ -6,7 +6,7 @@ For work continued on another computer, also read `docs/SESSION_HANDOFF.md`. Aft
 
 ## Maintain progress in every Codex session
 
-1. Before starting work, read `PROGRESS.json` and `PROGRESS.md`. Identify the current phase, the next milestone, and the roadmap task that the requested work advances.
+1. Before starting work, read `PROGRESS.json` and `PROGRESS.md`. To choose what to work on next, use `docs/PENDING_WORK.md`; when an item is finished, tick it there with the date and evidence. Identify the current phase, the next milestone, and the roadmap task that the requested work advances.
 2. Record the current task and its status in both files. Set `currentPhase` to the relevant development phase. For work outside the v1 product scope, describe it in `currentTask` without a roadmap task ID or a new product weight.
 3. After meaningful work, check the task's acceptance criteria against the implementation and run the relevant tests. Record the actual command or walkthrough, outcome, timestamp, and result in `verificationRuns`. Include failures and incomplete checks. Add evidence references to the relevant tasks and summarize the results in `PROGRESS.md`.
 4. Update the status only when the evidence supports it. A placeholder or partial implementation earns no implementation credit for that task. Use `implemented` once the implementation criteria are met, and `verified` once all required checks have passed and the evidence is recorded. Keep outstanding checks in `verificationNeeded`.

@@ -51,3 +51,24 @@ Browser rendering remains unverified for these additions: prior isolated Edge re
 Development is paused until the owner explicitly resumes. Use [Pusthakam_Malayalam_Drafts_319.xlsx](Pusthakam_Malayalam_Drafts_319.xlsx) for this batch. It contains English and Malayalam drafts side by side: correct only awkward wording, mark reviewed rows OK/Changed/Question, leave other rows Not reviewed. A partial file is sufficient. The previous larger workbook is preserved.
 
 The exact review snapshot is core-draft-review.json. On return, match IDs and English source, check placeholders, and apply only approved wording; blank correction cells do not approve unreviewed drafts. Current language coverage and pending visual/native checks above remain unchanged. No application implementation was performed during this pause/save operation.
+
+
+## Malayalam font decision
+
+Owner confirmed Nirmala UI rendered poorly and selected Noto Sans Malayalam. The app bundles its own Noto Sans Malayalam Variable WOFF2 files through Fontsource; public OPAC embeds the Malayalam subset. All font loading is local; SIL OFL licence accompanies both builds. Workbook generators select Noto Sans Malayalam; do not overwrite owner review files to change fonts. Existing installer must be rebuilt before distribution. Browser/fresh-install glyph acceptance remains pending. This is application-local bundling, not system-wide registration for other applications.
+
+
+## Automatic status in future review sheets
+
+Typing a correction must automatically make Review status Changed. It is a computed column; use the separate optional Your review (OK / Question) column for unchanged drafts. Clearing a correction returns to that choice or Not reviewed. Preserve original review inputs when copying/expanding a workbook. Excel automatic calculation is enabled; verify formulas by recalculating the next generated deliverable before sending. Current 519 workbook remains unchanged.
+
+
+Contributor now follows the new owner-approved glossary entry and grammatical forms; preserve existing owner review files.
+
+
+Owner currently edits 519; only the 319 file was updated with Noto font, approved contributor labels and auto-status formulas. Do not overwrite owner519 work when reconciling overlapping rows. Excel runtime recalculation check was incomplete; formulas recalculate on open.
+
+
+## Active combined review file updated
+
+The owner authorized updating 519 in place. Noto Sans Malayalam, approved contributor labels and auto-status formulas applied; all13 saved corrections and notes/IDs/batches preserved. Use519 as the review file, no duplicate319 review needed. Backup path and preservation checks: WORKBOOK_519_UPDATE.json. ColumnE is computed; type corrections inD and optional OK/Question inI. Live Excel calculation remains unverified; automatic calculation on open enabled.

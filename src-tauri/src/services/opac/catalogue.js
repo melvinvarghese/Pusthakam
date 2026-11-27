@@ -135,5 +135,10 @@
   document.addEventListener('keydown', event => {
     if (event.key === '/' && !$('#details').open && !['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName)) { event.preventDefault(); $('#q').focus(); }
   });
+  const copyrightYearEl = $('#copyright-year');
+  if (copyrightYearEl) {
+    const year = new Date().getFullYear();
+    copyrightYearEl.textContent = year > 2026 ? `2026–${year}` : '2026';
+  }
   load();
 })();

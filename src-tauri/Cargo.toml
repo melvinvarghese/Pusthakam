@@ -1,6 +1,7 @@
 [package]
 name = "pusthakam"
 version = "0.1.0"
+authors = ["Melvin Varghese"]
 description = "Pusthakam - offline library management system"
 edition = "2021"
 rust-version = "1.80"

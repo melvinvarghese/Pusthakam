@@ -2,6 +2,7 @@
   "name": "pusthakam",
   "private": true,
   "version": "0.1.0",
+  "author": "Melvin Varghese",
   "type": "module",
   "description": "Pusthakam - a better way to manage libraries. Offline desktop library management system.",
   "scripts": {
@@ -20,6 +21,7 @@
   },
   "dependencies": {
     "@fontsource-variable/hanken-grotesk": "^5.3.0",
+    "@fontsource-variable/noto-sans-malayalam": "^5.3.0",
     "@fontsource/courier-prime": "^5.3.0",
     "@tanstack/react-query": "^5.107.1",
     "@tauri-apps/api": "^2.12.4",

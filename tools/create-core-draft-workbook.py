@@ -5,6 +5,7 @@ import tempfile
 from pathlib import Path
 
 sys.path.insert(0, str(Path(tempfile.gettempdir()) / 'pusthakam-sheet-deps'))
+from translation_review_status import automatic_review_status, validate_review_status
 from openpyxl import Workbook, load_workbook
 from openpyxl.styles import Alignment, Font, PatternFill
 from openpyxl.worksheet.table import Table, TableStyleInfo
@@ -78,17 +79,18 @@ for n in range(2, ws.max_row + 1):
     for col in ('D', 'E', 'F'):
         ws[f'{col}{n}'].fill = PatternFill('solid', fgColor='FFF2CC')
     for col in ('C', 'D'):
-        ws[f'{col}{n}'].font = Font(name='Nirmala UI', size=12, color='174EA6' if col == 'D' else '203239')
+        ws[f'{col}{n}'].font = Font(name='Noto Sans Malayalam', size=12, color='174EA6' if col == 'D' else '203239')
     longest = max(len(str(ws.cell(n, c).value or '')) for c in (2, 3))
     ws.row_dimensions[n].height = min(170, max(48, 19 * (longest // 48 + 1)))
 for n in range(2, guide.max_row + 1):
     guide.row_dimensions[n].height = 45
 for n in range(2, approved.max_row + 1):
-    approved.cell(n, 2).font = Font(name='Nirmala UI', size=12)
+    approved.cell(n, 2).font = Font(name='Noto Sans Malayalam', size=12)
     approved.row_dimensions[n].height = 32
 wb.properties.creator = ''
 wb.properties.lastModifiedBy = ''
 out = root / 'docs/translations/Pusthakam_Malayalam_Drafts_319.xlsx'
+automatic_review_status(ws, 4, 5, guide)
 wb.save(out)
 check = load_workbook(out)
 assert check['319 drafts'].max_row == 320
@@ -98,5 +100,5 @@ for n, entry in enumerate(snapshot['rows'], 2):
     assert check['319 drafts'].cell(n, 2).value == entry['english']
     assert check['319 drafts'].cell(n, 3).value == entry['draft']
     assert check['319 drafts'].cell(n, 4).value is None
-assert not any(cell.data_type == 'f' for sheet in check for row in sheet for cell in row)
-print(json.dumps({'file': str(out), 'drafts': 319, 'approved_terms': 20, 'validation': 'passed: exact pairs, unique IDs, blank correction cells, no formulas'}, ensure_ascii=True))
+validate_review_status(check['319 drafts'], 4, 5)
+print(json.dumps({'file': str(out), 'drafts': 319, 'approved_terms': 20, 'validation': 'passed: exact pairs, unique IDs, blank correction cells, automatic status formulas'}, ensure_ascii=True))

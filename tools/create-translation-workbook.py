@@ -5,6 +5,7 @@ import tempfile
 from pathlib import Path
 
 sys.path.insert(0, str(Path(tempfile.gettempdir()) / 'pusthakam-sheet-deps'))
+from translation_review_status import automatic_review_status, validate_review_status
 from openpyxl import Workbook, load_workbook
 from openpyxl.styles import Alignment, Font, PatternFill
 from openpyxl.worksheet.table import Table, TableStyleInfo
@@ -71,8 +72,8 @@ for sheet in wb:
 for row in range(2, ws.max_row + 1):
     for col in ('C', 'F', 'G'):
         ws[f'{col}{row}'].fill = PatternFill('solid', fgColor='FFF2CC')
-    ws[f'C{row}'].font = Font(name='Nirmala UI', size=12, color='174EA6')
-    ws[f'D{row}'].font = Font(name='Nirmala UI', size=12, color='52636B')
+    ws[f'C{row}'].font = Font(name='Noto Sans Malayalam', size=12, color='174EA6')
+    ws[f'D{row}'].font = Font(name='Noto Sans Malayalam', size=12, color='52636B')
     length = max(len(str(ws.cell(row, c).value or '')) for c in (2,4,5))
     ws.row_dimensions[row].height = min(160, max(44, 16 * (length // 65 + 1)))
 for row in range(2, guide.max_row + 1):
@@ -80,10 +81,11 @@ for row in range(2, guide.max_row + 1):
 wb.properties.creator = ''
 wb.properties.lastModifiedBy = ''
 out = root / 'docs/translations/Pusthakam_Malayalam_Translation.xlsx'
+automatic_review_status(ws, 3, 6, guide)
 wb.save(out)
 check = load_workbook(out)
 assert check['Translations'].max_row == len(inventory['rows']) + 1
 assert len({r[0].value for r in check['Translations'].iter_rows(min_row=2)}) == len(inventory['rows'])
-assert all(not c.data_type == 'f' for sheet in check for row in sheet for c in row)
+validate_review_status(check['Translations'], 3, 6)
 assert all(check['Translations'].cell(r, 3).value is None for r in range(2, check['Translations'].max_row + 1))
-print(json.dumps({'path': str(out), 'phrases': len(inventory['rows']), 'drafts': sum(bool(r['draft']) for r in inventory['rows']), 'validation': 'passed: reopen, unique IDs, blank owner input, no formulas'}, ensure_ascii=True))
+print(json.dumps({'path': str(out), 'phrases': len(inventory['rows']), 'drafts': sum(bool(r['draft']) for r in inventory['rows']), 'validation': 'passed: reopen, unique IDs, blank owner input, automatic status formulas'}, ensure_ascii=True))

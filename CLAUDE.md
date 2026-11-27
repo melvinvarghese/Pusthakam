@@ -40,7 +40,7 @@ Approved branding (owner decision, 23 November 2026): use the teal book-shaped P
 - Pass `beforeEach` bodies in braces in Vitest: returning a mock makes Vitest call it as cleanup.
 
 ## Project docs
-`PROGRESS.md` (status, update after each milestone) · `CHANGELOG.md` · `docs/` (PRODUCT_SPECIFICATION, ARCHITECTURE, DATABASE_DESIGN, DEVELOPMENT_ROADMAP, TESTING_STRATEGY, DECISIONS, KNOWN_ISSUES).
+`PROGRESS.md` (status, update after each milestone) · `CHANGELOG.md` · `docs/PENDING_WORK.md` (open-work checklist; tick items and update their source when done) · `docs/` (PRODUCT_SPECIFICATION, ARCHITECTURE, DATABASE_DESIGN, DEVELOPMENT_ROADMAP, TESTING_STRATEGY, DECISIONS, KNOWN_ISSUES).
 Statuses: NOT STARTED · IN PROGRESS · IMPLEMENTED · VERIFIED · BLOCKED.
 
 ## Environment notes

@@ -22,6 +22,12 @@
     "Settings": "ക്രമീകരണങ്ങൾ",
     "Sign in": "ലോഗിൻ ചെയ്യുക",
     "Sign out": "ലോഗൗട്ട് ചെയ്യുക",
-    "Backup": "ബാക്കപ്പ്"
-  }
+    "Backup": "ബാക്കപ്പ്",
+    "Contributor": "സംഭാവകൻ",
+    "Contributors": "സംഭാവകർ",
+    "Add contributor": "സംഭാവകന്റെ പേര് ചേർക്കുക",
+    "Authors and other contributors": "എഴുത്തുകാരും മറ്റു സംഭാവകരും",
+    "Remove contributor {number}": "സംഭാവകനെ {number} നീക്കുക"
+  },
+  "lastUpdated": "2026-11-27T05:43:55.454Z"
 }
