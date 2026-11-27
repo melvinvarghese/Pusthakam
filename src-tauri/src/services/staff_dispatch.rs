@@ -421,6 +421,15 @@ pub fn dispatch(
         "classification_merge_subjects" => {
             crate::commands::classification::classification_merge_subjects::dispatch(state, args)
         }
+        "browse_categories_list" => {
+            crate::commands::classification::browse_categories_list::dispatch(state, args)
+        }
+        "browse_categories_save" => {
+            crate::commands::classification::browse_categories_save::dispatch(state, args)
+        }
+        "browse_categories_set_archived" => {
+            crate::commands::classification::browse_categories_set_archived::dispatch(state, args)
+        }
         "classification_list_marc_mappings" => {
             crate::commands::classification::classification_list_marc_mappings::dispatch(
                 state, args,
