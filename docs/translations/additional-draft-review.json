@@ -1,0 +1,1806 @@
+{
+  "at": "2026-11-27T03:23:22.562Z",
+  "scope": "200 new source-verified Malayalam review drafts; not integrated into application",
+  "rows": [
+    {
+      "id": "TXT-9dd2145468bf",
+      "english": "Accession number",
+      "draft": "അക്സഷൻ നമ്പർ",
+      "area": "Copies and book covers",
+      "source": "src/features/catalogue/CopyDialogs.tsx:188\nsrc/features/catalogue/ImportDialog.tsx:25",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-b737ba6b6734",
+      "english": "Other authors",
+      "draft": "മറ്റ് എഴുത്തുകാർ",
+      "area": "Copies and book covers",
+      "source": "src/features/catalogue/ImportDialog.tsx:22",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-f44c7c14a460",
+      "english": "Mark when checked",
+      "draft": "പരിശോധിച്ച ശേഷം അടയാളപ്പെടുത്തുക",
+      "area": "Copies and book covers",
+      "source": "src/features/catalogue/AccessionPage.tsx:36",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-2ecbc07fe419",
+      "english": "Search copies",
+      "draft": "കോപ്പികൾ തിരയുക",
+      "area": "Copies and book covers",
+      "source": "src/features/catalogue/AccessionPage.tsx:94",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-c0c2cfd2298d",
+      "english": "Select copies on this page",
+      "draft": "ഈ പേജിലെ കോപ്പികൾ തിരഞ്ഞെടുക്കുക",
+      "area": "Copies and book covers",
+      "source": "src/features/catalogue/AccessionPage.tsx:127",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-b90ba0778f13",
+      "english": "Book cover",
+      "draft": "പുസ്തകത്തിന്റെ പുറംചട്ട",
+      "area": "Copies and book covers",
+      "source": "src/features/catalogue/BookCover.tsx:57\nsrc/features/catalogue/BookCover.tsx:58",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-e90b4142eaa1",
+      "english": "Item category",
+      "draft": "പുസ്തക വിഭാഗം",
+      "area": "Copies and book covers",
+      "source": "src/features/catalogue/CopyDialogs.tsx:89\nsrc/features/catalogue/ImportDialog.tsx:26\nsrc/features/settings/dialogs.tsx:197",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-51be1a11e7b1",
+      "english": "Number of copies",
+      "draft": "കോപ്പികളുടെ എണ്ണം",
+      "area": "Copies and book covers",
+      "source": "src/features/catalogue/CopyDialogs.tsx:151\nsrc/features/catalogue/ImportDialog.tsx:26",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-9ab2d4ff8206",
+      "english": "Date acquired",
+      "draft": "ലൈബ്രറിയിൽ ലഭിച്ച തീയതി",
+      "area": "Copies and book covers",
+      "source": "src/features/catalogue/CopyDialogs.tsx:105\nsrc/features/catalogue/ImportDialog.tsx:26",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-e9e383f54c73",
+      "english": "Every copy in the library, in accession order.",
+      "draft": "ലൈബ്രറിയിലെ എല്ലാ കോപ്പികളും അക്സഷൻ നമ്പറിന്റെ ക്രമത്തിൽ.",
+      "area": "Copies and book covers",
+      "source": "src/features/catalogue/AccessionPage.tsx:82",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-f38046070d25",
+      "english": "For example 894.8123 BAS",
+      "draft": "ഉദാഹരണം: 894.8123 BAS",
+      "area": "Copies and book covers",
+      "source": "src/features/catalogue/CopyDialogs.tsx:104",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-bd398b9d5c80",
+      "english": "Keeps the identifiers your library already uses. Without a barcode, numbers follow your accession format.",
+      "draft": "ലൈബ്രറിയിൽ ഇപ്പോൾ ഉപയോഗിക്കുന്ന നമ്പറുകൾ നിലനിർത്തും. ബാർകോഡ് ഇല്ലെങ്കിൽ നിങ്ങളുടെ അക്സഷൻ നമ്പർ രീതിയിൽ നമ്പറുകൾ നൽകും.",
+      "area": "Copies and book covers",
+      "source": "src/features/catalogue/ImportDialog.tsx:292",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-ed20953f3513",
+      "english": "Recorded in the copy's history.",
+      "draft": "കോപ്പിയുടെ ചരിത്രത്തിൽ രേഖപ്പെടുത്തും.",
+      "area": "Copies and book covers",
+      "source": "src/features/catalogue/CopyDialogs.tsx:211",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-5e252e03bbef",
+      "english": "Choose book cover",
+      "draft": "പുസ്തകത്തിന്റെ പുറംചട്ട തിരഞ്ഞെടുക്കുക",
+      "area": "Copies and book covers",
+      "source": "src/features/catalogue/BookCover.tsx:62",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-98cfe5b0b64e",
+      "english": "Invoice reference",
+      "draft": "ബില്ലിന്റെ നമ്പർ",
+      "area": "Copies and book covers",
+      "source": "src/features/catalogue/CopyDialogs.tsx:111",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-f9b73e1abc37",
+      "english": "Note (optional)",
+      "draft": "കുറിപ്പ് (നിർബന്ധമില്ല)",
+      "area": "Copies and book covers",
+      "source": "src/features/catalogue/CopyDialogs.tsx:211",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-c3288a17d17f",
+      "english": "Vendor or donor",
+      "draft": "വിൽപ്പനക്കാരൻ അല്ലെങ്കിൽ സംഭാവന നൽകിയയാൾ",
+      "area": "Copies and book covers",
+      "source": "src/features/catalogue/CopyDialogs.tsx:110\nsrc/features/catalogue/ImportDialog.tsx:26",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-338c8ac89226",
+      "english": "Shelf",
+      "draft": "ഷെൽഫ്",
+      "area": "Copies and book covers",
+      "source": "src/features/catalogue/CopyDialogs.tsx:100\nsrc/features/catalogue/ImportDialog.tsx:25\nsrc/features/inventory/InventoryPage.tsx:34\nsrc/features/settings/SettingsPage.tsx:217",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-0e570ca6fabe",
+      "english": "Source",
+      "draft": "ലഭിച്ച വഴി",
+      "area": "Copies and book covers",
+      "source": "src/features/catalogue/CopyDialogs.tsx:106\nsrc/features/reports/ReportsPage.tsx:174\nsrc/features/reports/ReportsPage.tsx:655",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-4f12ee2f6af9",
+      "english": "Add an item category in Library Settings first.",
+      "draft": "ആദ്യം ലൈബ്രറി ക്രമീകരണങ്ങളിൽ ഒരു പുസ്തക വിഭാഗം ചേർക്കുക.",
+      "area": "Copies and book covers",
+      "source": "src/features/catalogue/CopyDialogs.tsx:69",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-118d007da252",
+      "english": "Could not load the register.",
+      "draft": "രജിസ്റ്റർ തുറക്കാനായില്ല.",
+      "area": "Copies and book covers",
+      "source": "src/features/catalogue/AccessionPage.tsx:118",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-4e6c7b5bb015",
+      "english": "Enter how many copies, from 1 to 500.",
+      "draft": "കോപ്പികളുടെ എണ്ണം 1 മുതൽ 500 വരെ നൽകുക.",
+      "area": "Copies and book covers",
+      "source": "src/features/catalogue/CopyDialogs.tsx:138",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-af89e9effcde",
+      "english": "Export matching copies",
+      "draft": "ചേരുന്ന കോപ്പികളുടെ വിവരങ്ങൾ എക്സ്പോർട്ട് ചെയ്യുക",
+      "area": "Copies and book covers",
+      "source": "src/features/catalogue/AccessionPage.tsx:114",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-145354d920e5",
+      "english": "Loading cover…",
+      "draft": "പുറംചട്ട തുറക്കുന്നു…",
+      "area": "Copies and book covers",
+      "source": "src/features/catalogue/BookCover.tsx:54",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-fc38674b534a",
+      "english": "Location / shelf",
+      "draft": "സ്ഥലം / ഷെൽഫ്",
+      "area": "Copies and book covers",
+      "source": "src/features/catalogue/AccessionPage.tsx:29",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-afb6c8cbc913",
+      "english": "No copies match.",
+      "draft": "ചേരുന്ന കോപ്പികളില്ല.",
+      "area": "Copies and book covers",
+      "source": "src/features/catalogue/AccessionPage.tsx:121",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-d28b3f732428",
+      "english": "No copies yet. Add copies from a catalogue record.",
+      "draft": "കോപ്പികൾ ചേർത്തിട്ടില്ല. പുസ്തകപ്പട്ടികയിൽ പുസ്തകവിവരങ്ങൾ തുറന്ന് കോപ്പികൾ ചേർക്കുക.",
+      "area": "Copies and book covers",
+      "source": "src/features/catalogue/AccessionPage.tsx:121",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-bf6a0792a21b",
+      "english": "No cover available",
+      "draft": "പുറംചട്ട ലഭ്യമല്ല",
+      "area": "Copies and book covers",
+      "source": "src/features/catalogue/BookCover.tsx:54",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-30a3b02cbee4",
+      "english": "No title",
+      "draft": "പുസ്തകത്തിന്റെ പേരില്ല",
+      "area": "Copies and book covers",
+      "source": "src/features/catalogue/ImportDialog.tsx:253",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-0fca9a992b87",
+      "english": "Preview labels",
+      "draft": "ലേബലുകൾ മുൻകൂട്ടി കാണുക",
+      "area": "Copies and book covers",
+      "source": "src/features/catalogue/AccessionPage.tsx:86",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-fd1d0cebc203",
+      "english": "Select copies for labels",
+      "draft": "ലേബലുകൾക്കായി കോപ്പികൾ തിരഞ്ഞെടുക്കുക",
+      "area": "Copies and book covers",
+      "source": "src/features/catalogue/AccessionPage.tsx:82",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-2136c71e3a8c",
+      "english": "The accession number and barcode cannot be empty.",
+      "draft": "അക്സഷൻ നമ്പറും ബാർകോഡും നൽകണം.",
+      "area": "Copies and book covers",
+      "source": "src/features/catalogue/CopyDialogs.tsx:181",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-2d466c15848e",
+      "english": "The price must look like 250 or 249.50.",
+      "draft": "വില 250 അല്ലെങ്കിൽ 249.50 എന്നതുപോലെ നൽകുക.",
+      "area": "Copies and book covers",
+      "source": "src/features/catalogue/CopyDialogs.tsx:70",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-a1fa01eb83dd",
+      "english": "Type one accession number on each line, matching the number of copies.",
+      "draft": "കോപ്പികളുടെ എണ്ണത്തിനനുസരിച്ച് ഓരോ വരിയിലും ഓരോ അക്സഷൻ നമ്പർ നൽകുക.",
+      "area": "Copies and book covers",
+      "source": "src/features/catalogue/CopyDialogs.tsx:140",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-4ff8fa1bce03",
+      "english": "Could not save.",
+      "draft": "സേവ് ചെയ്യാനായില്ല.",
+      "area": "Copies and book covers",
+      "source": "src/features/catalogue/CopyDialogs.tsx:24\nsrc/features/settings/dialogs.tsx:34\nsrc/features/settings/dialogs.tsx:226",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-4fb015a38ca5",
+      "english": "Accession number, barcode, title or call number",
+      "draft": "അക്സഷൻ നമ്പർ, ബാർകോഡ്, പുസ്തകത്തിന്റെ പേര് അല്ലെങ്കിൽ കോൾ നമ്പർ",
+      "area": "Copies and book covers",
+      "source": "src/features/catalogue/AccessionPage.tsx:95",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-78d44e38375b",
+      "english": "Accession numbers and barcodes are numbered automatically using your accession number format.",
+      "draft": "അക്സഷൻ നമ്പറുകളും ബാർകോഡുകളും നിങ്ങൾ നിശ്ചയിച്ച നമ്പർ രീതിയിൽ സ്വയം നൽകും.",
+      "area": "Copies and book covers",
+      "source": "src/features/catalogue/CopyDialogs.tsx:165",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-cea4d2e010b8",
+      "english": "Clear selection",
+      "draft": "തിരഞ്ഞെടുപ്പ് ഒഴിവാക്കുക",
+      "area": "Copies and book covers",
+      "source": "src/features/catalogue/AccessionPage.tsx:84",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-53aade77cd69",
+      "english": "Columns",
+      "draft": "കോളങ്ങൾ",
+      "area": "Copies and book covers",
+      "source": "src/features/catalogue/ImportDialog.tsx:203",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-3c1f74a4daf1",
+      "english": "I will type the accession numbers myself",
+      "draft": "അക്സഷൻ നമ്പറുകൾ ഞാൻ നൽകാം",
+      "area": "Copies and book covers",
+      "source": "src/features/catalogue/CopyDialogs.tsx:154",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-6d73eff545c5",
+      "english": "One per line. The barcode will be the same number.",
+      "draft": "ഓരോ വരിയിലും ഒരു നമ്പർ നൽകുക. ബാർകോഡും ഇതേ നമ്പറായിരിക്കും.",
+      "area": "Copies and book covers",
+      "source": "src/features/catalogue/CopyDialogs.tsx:162",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-5b3a1334140f",
+      "english": "Print inventory sheet",
+      "draft": "സ്റ്റോക്ക് പരിശോധനാ പട്ടിക പ്രിന്റ് ചെയ്യുക",
+      "area": "Copies and book covers",
+      "source": "src/features/catalogue/AccessionPage.tsx:23",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-a1aa7b58e749",
+      "english": "Print label",
+      "draft": "ലേബൽ പ്രിന്റ് ചെയ്യുക",
+      "area": "Copies and book covers",
+      "source": "src/features/catalogue/CopyDialogs.tsx:227",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-c321afa48451",
+      "english": "Remove cover",
+      "draft": "പുറംചട്ട നീക്കുക",
+      "area": "Copies and book covers",
+      "source": "src/features/catalogue/BookCover.tsx:69",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-106f238b9b2a",
+      "english": "Retry ISBN cover",
+      "draft": "ISBN ഉപയോഗിച്ച് പുറംചട്ട വീണ്ടും കണ്ടെത്തുക",
+      "area": "Copies and book covers",
+      "source": "src/features/catalogue/BookCover.tsx:60",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-93c91c851e7a",
+      "english": "Price",
+      "draft": "വില",
+      "area": "Copies and book covers",
+      "source": "src/features/catalogue/AccessionPage.tsx:136\nsrc/features/catalogue/ImportDialog.tsx:25\nsrc/features/reports/ReportsPage.tsx:174\nsrc/features/reports/ReportsPage.tsx:656",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-3423ed0db9fe",
+      "english": "Accession numbers",
+      "draft": "അക്സഷൻ നമ്പറുകൾ",
+      "area": "Copies and book covers",
+      "source": "src/features/catalogue/CopyDialogs.tsx:159\nsrc/features/settings/SettingsPage.tsx:199",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-e4dba78f9c30",
+      "english": "Inventory sheet",
+      "draft": "സ്റ്റോക്ക് പരിശോധനാ പട്ടിക",
+      "area": "Copies and book covers",
+      "source": "src/features/catalogue/AccessionPage.tsx:21",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-d69d587c8165",
+      "english": "Bank transfer",
+      "draft": "ബാങ്ക് വഴി പണമടയ്ക്കൽ",
+      "area": "Fines and reservations",
+      "source": "src/features/circulation/Fines.tsx:15\nsrc/features/members/MemberFines.tsx:10",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-e2da108f6300",
+      "english": "Cash",
+      "draft": "പണം നേരിട്ട്",
+      "area": "Fines and reservations",
+      "source": "src/features/circulation/Fines.tsx:15\nsrc/features/members/MemberFines.tsx:10",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-7f1769d494f9",
+      "english": "Fine status",
+      "draft": "പിഴയുടെ സ്ഥിതി",
+      "area": "Fines and reservations",
+      "source": "src/features/circulation/Fines.tsx:154",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-f0ff7aa04de7",
+      "english": "Waiver reason",
+      "draft": "പിഴ ഒഴിവാക്കാനുള്ള കാരണം",
+      "area": "Fines and reservations",
+      "source": "src/features/circulation/Fines.tsx:125",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-b948ac04b854",
+      "english": "Payment method",
+      "draft": "പണമടച്ച രീതി",
+      "area": "Fines and reservations",
+      "source": "src/features/circulation/Fines.tsx:34\nsrc/features/circulation/Fines.tsx:122",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-20ed161cf4aa",
+      "english": "Current loan",
+      "draft": "നിലവിലെ പുസ്തക വിതരണം",
+      "area": "Fines and reservations",
+      "source": "src/features/circulation/DueSlip.tsx:17",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-836eb74a3831",
+      "english": "Enter an amount greater than zero and no more than the outstanding balance.",
+      "draft": "പൂജ്യത്തേക്കാൾ കൂടുതലും ബാക്കിയുള്ള തുകയേക്കാൾ കൂടാത്തതുമായ തുക നൽകുക.",
+      "area": "Fines and reservations",
+      "source": "src/features/circulation/Fines.tsx:103",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-8e35b970b7f7",
+      "english": "Hold expires",
+      "draft": "ബുക്കിംഗിന്റെ കാലാവധി അവസാനിക്കുന്നത്",
+      "area": "Fines and reservations",
+      "source": "src/features/circulation/Reservations.tsx:102",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-750b50712925",
+      "english": "Loan issue",
+      "draft": "പുസ്തകം നൽകൽ",
+      "area": "Fines and reservations",
+      "source": "src/features/circulation/DueSlip.tsx:17",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-5707dedaa72a",
+      "english": "Loan renewal",
+      "draft": "കാലാവധി നീട്ടൽ",
+      "area": "Fines and reservations",
+      "source": "src/features/circulation/DueSlip.tsx:17",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-20d764a56cb3",
+      "english": "No outstanding fines.",
+      "draft": "അടയ്ക്കാനുള്ള പിഴകളില്ല.",
+      "area": "Fines and reservations",
+      "source": "src/features/circulation/Fines.tsx:164",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-08d843e2c987",
+      "english": "Payment recorded.",
+      "draft": "പണമടച്ച വിവരം രേഖപ്പെടുത്തി.",
+      "area": "Fines and reservations",
+      "source": "src/features/circulation/Fines.tsx:202",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-f2181f1f714b",
+      "english": "Ready for pickup",
+      "draft": "എടുക്കാൻ തയ്യാറാണ്",
+      "area": "Fines and reservations",
+      "source": "src/features/circulation/Reservations.tsx:111",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-2195b71c57bd",
+      "english": "Record waiver",
+      "draft": "പിഴ ഒഴിവാക്കിയ വിവരം രേഖപ്പെടുത്തുക",
+      "area": "Fines and reservations",
+      "source": "src/features/circulation/Fines.tsx:87",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-3386d29fe54f",
+      "english": "Reservation cancelled.",
+      "draft": "ബുക്കിംഗ് റദ്ദാക്കി.",
+      "area": "Fines and reservations",
+      "source": "src/features/circulation/Reservations.tsx:50",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-c83ef61326e4",
+      "english": "Reservation placed.",
+      "draft": "പുസ്തകം ബുക്ക് ചെയ്തു.",
+      "area": "Fines and reservations",
+      "source": "src/features/circulation/Reservations.tsx:42",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-a6862671f642",
+      "english": "Waiver recorded.",
+      "draft": "പിഴ ഒഴിവാക്കിയ വിവരം രേഖപ്പെടുത്തി.",
+      "area": "Fines and reservations",
+      "source": "src/features/circulation/Fines.tsx:202",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-1ef3fba4680a",
+      "english": "Record payment",
+      "draft": "പണമടച്ച വിവരം രേഖപ്പെടുത്തുക",
+      "area": "Fines and reservations",
+      "source": "src/features/circulation/Fines.tsx:87\nsrc/features/circulation/Fines.tsx:188",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-050bb3644abe",
+      "english": "No fines recorded.",
+      "draft": "പിഴകൾ രേഖപ്പെടുത്തിയിട്ടില്ല.",
+      "area": "Fines and reservations",
+      "source": "src/features/circulation/Fines.tsx:164\nsrc/features/reports/ReportsPage.tsx:562",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-232ba6d1c5e6",
+      "english": "Active copy reservations",
+      "draft": "നിലവിലെ കോപ്പി ബുക്കിംഗുകൾ",
+      "area": "Fines and reservations",
+      "source": "src/features/circulation/Reservations.tsx:100",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-98833b60ca7e",
+      "english": "All fines",
+      "draft": "എല്ലാ പിഴകളും",
+      "area": "Fines and reservations",
+      "source": "src/features/circulation/Fines.tsx:157",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-e7166e685344",
+      "english": "Amount paid",
+      "draft": "അടച്ച തുക",
+      "area": "Fines and reservations",
+      "source": "src/features/circulation/Fines.tsx:33",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-c6e5da97f657",
+      "english": "Back to history",
+      "draft": "ചരിത്രത്തിലേക്ക് മടങ്ങുക",
+      "area": "Fines and reservations",
+      "source": "src/features/circulation/Fines.tsx:22",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-9b2ddc6f1d6c",
+      "english": "Borrower",
+      "draft": "പുസ്തകം എടുത്തയാൾ",
+      "area": "Fines and reservations",
+      "source": "src/features/circulation/DueSlip.tsx:20\nsrc/features/circulation/OverdueLoans.tsx:32",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-0e7696009337",
+      "english": "History",
+      "draft": "ചരിത്രം",
+      "area": "Fines and reservations",
+      "source": "src/features/circulation/Fines.tsx:186\nsrc/features/members/MemberFines.tsx:55",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-4193f5fda48a",
+      "english": "Keep reservation",
+      "draft": "ബുക്കിംഗ് നിലനിർത്തുക",
+      "area": "Fines and reservations",
+      "source": "src/features/circulation/Reservations.tsx:128",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-71aaa40c0ede",
+      "english": "Loading fine history.",
+      "draft": "പിഴയുടെ ചരിത്രം തുറക്കുന്നു…",
+      "area": "Fines and reservations",
+      "source": "src/features/circulation/Fines.tsx:55",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-51f4e864ee01",
+      "english": "No active reservations.",
+      "draft": "നിലവിൽ ബുക്കിംഗുകളില്ല.",
+      "area": "Fines and reservations",
+      "source": "src/features/circulation/Reservations.tsx:95",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-6eb926887ff7",
+      "english": "No payments or waivers recorded.",
+      "draft": "പണമടച്ചതോ പിഴ ഒഴിവാക്കിയതോ രേഖപ്പെടുത്തിയിട്ടില്ല.",
+      "area": "Fines and reservations",
+      "source": "src/features/circulation/Fines.tsx:57",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-e681b89952c4",
+      "english": "Outstanding",
+      "draft": "അടയ്ക്കാനുള്ളത്",
+      "area": "Fines and reservations",
+      "source": "src/features/circulation/Fines.tsx:116\nsrc/features/circulation/Fines.tsx:156\nsrc/features/circulation/Fines.tsx:172\nsrc/features/circulation/HistoryImport.tsx:15\nsrc/features/members/MemberFines.tsx:47\nsrc/features/members/MemberFines.tsx:55\nsrc/features/reports/ReportsPage.tsx:22",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-e66b3f61daad",
+      "english": "Overdue fines",
+      "draft": "വൈകിയതിനുള്ള പിഴകൾ",
+      "area": "Fines and reservations",
+      "source": "src/features/circulation/Fines.tsx:170",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-8f1098b46082",
+      "english": "Place reservation",
+      "draft": "പുസ്തകം ബുക്ക് ചെയ്യുക",
+      "area": "Fines and reservations",
+      "source": "src/features/circulation/Reservations.tsx:78",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-652d6bff4378",
+      "english": "Print receipt",
+      "draft": "രസീത് പ്രിന്റ് ചെയ്യുക",
+      "area": "Fines and reservations",
+      "source": "src/features/circulation/Fines.tsx:23",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-0bef56ffe3db",
+      "english": "Print slip",
+      "draft": "സ്ലിപ്പ് പ്രിന്റ് ചെയ്യുക",
+      "area": "Fines and reservations",
+      "source": "src/features/circulation/DueSlip.tsx:12",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-c5a5aeb93f58",
+      "english": "Received by",
+      "draft": "സ്വീകരിച്ചയാൾ",
+      "area": "Fines and reservations",
+      "source": "src/features/circulation/Fines.tsx:36",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-c7175fa7a0db",
+      "english": "Recorded",
+      "draft": "രേഖപ്പെടുത്തിയ സമയം",
+      "area": "Fines and reservations",
+      "source": "src/features/circulation/Fines.tsx:35",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-99b02666bfdd",
+      "english": "Waive",
+      "draft": "പിഴ ഒഴിവാക്കുക",
+      "area": "Fines and reservations",
+      "source": "src/features/circulation/Fines.tsx:190",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-1ef4240741fb",
+      "english": "Cancel reservation",
+      "draft": "ബുക്കിംഗ് റദ്ദാക്കുക",
+      "area": "Fines and reservations",
+      "source": "src/features/circulation/Reservations.tsx:126\nsrc/features/circulation/Reservations.tsx:129",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-e1eb5cb2a214",
+      "english": "Fine payment receipt",
+      "draft": "പിഴ അടച്ച രസീത്",
+      "area": "Fines and reservations",
+      "source": "src/features/circulation/Fines.tsx:21",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-3ae998c6e998",
+      "english": "Loan due slip",
+      "draft": "പുസ്തകത്തിന്റെ മടക്ക തീയതിയുള്ള സ്ലിപ്പ്",
+      "area": "Fines and reservations",
+      "source": "src/features/circulation/DueSlip.tsx:10",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-c1390bcdeb76",
+      "english": "Fine history",
+      "draft": "പിഴയുടെ ചരിത്രം",
+      "area": "Fines and reservations",
+      "source": "src/features/circulation/Fines.tsx:53\nsrc/features/members/MemberFines.tsx:36",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-38b462953eb2",
+      "english": "Member photo",
+      "draft": "അംഗത്തിന്റെ ഫോട്ടോ",
+      "area": "Member fines and cards",
+      "source": "src/features/members/MemberCard.tsx:62",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-170f63e46c3f",
+      "english": "Title / copy",
+      "draft": "പുസ്തകം / കോപ്പി",
+      "area": "Member fines and cards",
+      "source": "src/features/members/MemberFines.tsx:55",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-560f113a39dc",
+      "english": "All assessed fines by currency",
+      "draft": "രേഖപ്പെടുത്തിയ എല്ലാ പിഴകളും നാണയമനുസരിച്ച്",
+      "area": "Member fines and cards",
+      "source": "src/features/members/MemberFines.tsx:46",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-fd7bedbc2013",
+      "english": "Assessed fines only. Overdue estimates may be added when a copy is returned. Totals include all pages and are kept separate by currency. Payments and waivers are recorded in Circulation.",
+      "draft": "രേഖപ്പെടുത്തിയ പിഴകൾ മാത്രമാണിവ. വൈകിയതിനുള്ള പിഴ കോപ്പി തിരികെ വാങ്ങുമ്പോൾ ചേർത്തേക്കാം. എല്ലാ പേജുകളിലെയും തുകകൾ കൂട്ടി ഓരോ നാണയത്തിനും വേർതിരിച്ച് കാണിക്കുന്നു. പണമടച്ചതും പിഴ ഒഴിവാക്കിയതും പുസ്തക വിതരണ വിഭാഗത്തിൽ രേഖപ്പെടുത്താം.",
+      "area": "Member fines and cards",
+      "source": "src/features/members/MemberFines.tsx:40",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-fc8fa970b031",
+      "english": "Back to fines",
+      "draft": "പിഴ വിവരങ്ങളിലേക്ക് മടങ്ങുക",
+      "area": "Member fines and cards",
+      "source": "src/features/members/MemberFines.tsx:37",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-bb0f9ad6dc33",
+      "english": "Confirm removal",
+      "draft": "നീക്കുന്നത് ഉറപ്പാക്കുക",
+      "area": "Member fines and cards",
+      "source": "src/features/members/MemberCard.tsx:73",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-18d73dbfd623",
+      "english": "Keep photo",
+      "draft": "ഫോട്ടോ നിലനിർത്തുക",
+      "area": "Member fines and cards",
+      "source": "src/features/members/MemberCard.tsx:72",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-30af7493faca",
+      "english": "Loading member fines…",
+      "draft": "അംഗത്തിന്റെ പിഴ വിവരങ്ങൾ തുറക്കുന്നു…",
+      "area": "Member fines and cards",
+      "source": "src/features/members/MemberFines.tsx:41",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-2ce68641cba5",
+      "english": "Loading settlement history…",
+      "draft": "പണമടച്ചതും പിഴ ഒഴിവാക്കിയതുമായ വിവരങ്ങൾ തുറക്കുന്നു…",
+      "area": "Member fines and cards",
+      "source": "src/features/members/MemberFines.tsx:17",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-fd1d9250db5f",
+      "english": "Member assessed fine ledger, including settled fines",
+      "draft": "അടച്ച പിഴകളും ഉൾപ്പെടുന്ന അംഗത്തിന്റെ പിഴക്കണക്ക്",
+      "area": "Member fines and cards",
+      "source": "src/features/members/MemberFines.tsx:54",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-e2ad8f924211",
+      "english": "No payments or waivers recorded for this fine.",
+      "draft": "ഈ പിഴയ്ക്കായി പണമടച്ചതോ പിഴ ഒഴിവാക്കിയതോ രേഖപ്പെടുത്തിയിട്ടില്ല.",
+      "area": "Member fines and cards",
+      "source": "src/features/members/MemberFines.tsx:20",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-445af0b76099",
+      "english": "Print card",
+      "draft": "കാർഡ് പ്രിന്റ് ചെയ്യുക",
+      "area": "Member fines and cards",
+      "source": "src/features/members/MemberCard.tsx:40",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-f46512ab2099",
+      "english": "Remove photo",
+      "draft": "ഫോട്ടോ നീക്കുക",
+      "area": "Member fines and cards",
+      "source": "src/features/members/MemberCard.tsx:69",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-5a5b128d5427",
+      "english": "Retry fines",
+      "draft": "പിഴ വിവരങ്ങൾ വീണ്ടും തുറക്കുക",
+      "area": "Member fines and cards",
+      "source": "src/features/members/MemberFines.tsx:42",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-5663075c859e",
+      "english": "Retry history",
+      "draft": "ചരിത്രം വീണ്ടും തുറക്കുക",
+      "area": "Member fines and cards",
+      "source": "src/features/members/MemberFines.tsx:18",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-4e24d5a035a5",
+      "english": "This member has no assessed fines.",
+      "draft": "ഈ അംഗത്തിന് പിഴകൾ രേഖപ്പെടുത്തിയിട്ടില്ല.",
+      "area": "Member fines and cards",
+      "source": "src/features/members/MemberFines.tsx:44",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-cbe86a0064ca",
+      "english": "This member number prints as text because it contains characters Code 128 cannot encode.",
+      "draft": "ഈ അംഗത്തിന്റെ നമ്പറിലുള്ള ചില അക്ഷരങ്ങൾ Code 128 ബാർകോഡിൽ ഉപയോഗിക്കാനാകില്ല. അതിനാൽ നമ്പർ എഴുത്തായി പ്രിന്റ് ചെയ്യും.",
+      "area": "Member fines and cards",
+      "source": "src/features/members/MemberCard.tsx:59",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-dcc839a4015c",
+      "english": "View",
+      "draft": "കാണുക",
+      "area": "Member fines and cards",
+      "source": "src/features/members/MemberFines.tsx:60",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-707d0f5633e8",
+      "english": "Member card",
+      "draft": "അംഗത്വ കാർഡ്",
+      "area": "Member fines and cards",
+      "source": "src/features/members/MemberCard.tsx:38",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-55e14f40ed17",
+      "english": "Saved backups",
+      "draft": "സേവ് ചെയ്ത ബാക്കപ്പുകൾ",
+      "area": "Database backups",
+      "source": "src/features/backup/BackupPage.tsx:79",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-c688970da1b1",
+      "english": "Save a checked snapshot of the library database.",
+      "draft": "ലൈബ്രറി ഡാറ്റാബേസിന്റെ പരിശോധിച്ച ബാക്കപ്പ് സേവ് ചെയ്യുക.",
+      "area": "Database backups",
+      "source": "src/features/backup/BackupPage.tsx:48",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-e5cc0d5cbec3",
+      "english": "Destination folder",
+      "draft": "സേവ് ചെയ്യേണ്ട ഫോൾഡർ",
+      "area": "Database backups",
+      "source": "src/features/backup/BackupPage.tsx:113",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-e85e36405289",
+      "english": "Ask the host operator to restart Pusthakam to apply the restore. Closing this browser does not restart the host. The current database will be backed up first.",
+      "draft": "ബാക്കപ്പിലെ വിവരങ്ങൾ തിരിച്ചെടുക്കാൻ ലൈബ്രറി സെർവർ നടത്തുന്നയാളോട് Pusthakam വീണ്ടും തുറക്കാൻ പറയുക. ഈ ബ്രൗസർ അടച്ചാൽ സെർവർ വീണ്ടും തുടങ്ങില്ല. ആദ്യം നിലവിലെ ഡാറ്റാബേസിന്റെ ബാക്കപ്പ് എടുക്കും.",
+      "area": "Database backups",
+      "source": "src/features/backup/BackupPage.tsx:63",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-5f815ae70d83",
+      "english": "Checking backup…",
+      "draft": "ബാക്കപ്പ് പരിശോധിക്കുന്നു…",
+      "area": "Database backups",
+      "source": "src/features/backup/BackupPage.tsx:124",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-c08f8d0421b6",
+      "english": "Close every copy of Pusthakam, then reopen it to restore. The current database will be backed up first.",
+      "draft": "ബാക്കപ്പിലെ വിവരങ്ങൾ തിരിച്ചെടുക്കാൻ തുറന്നിരിക്കുന്ന എല്ലാ Pusthakam വിൻഡോകളും അടച്ച് വീണ്ടും തുറക്കുക. ആദ്യം നിലവിലെ ഡാറ്റാബേസിന്റെ ബാക്കപ്പ് എടുക്കും.",
+      "area": "Database backups",
+      "source": "src/features/backup/BackupPage.tsx:63",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-85fb487f030a",
+      "english": "Create backup",
+      "draft": "ബാക്കപ്പ് എടുക്കുക",
+      "area": "Database backups",
+      "source": "src/features/backup/BackupPage.tsx:50",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-6a9c2e3f47e0",
+      "english": "Creating backup…",
+      "draft": "ബാക്കപ്പ് എടുക്കുന്നു…",
+      "area": "Database backups",
+      "source": "src/features/backup/BackupPage.tsx:50",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-aea82a51e462",
+      "english": "Queue restore",
+      "draft": "അടുത്ത തവണ തുറക്കുമ്പോൾ ബാക്കപ്പ് തിരിച്ചെടുക്കാൻ നിശ്ചയിക്കുക",
+      "area": "Database backups",
+      "source": "src/features/backup/BackupPage.tsx:124",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-6b9aff7e6576",
+      "english": "Save copy",
+      "draft": "ഒരു കോപ്പി സേവ് ചെയ്യുക",
+      "area": "Database backups",
+      "source": "src/features/backup/BackupPage.tsx:115",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-64bad207a55b",
+      "english": "A checked daily backup replaces older daily copies. Manual backups and backups queued for restore are kept.",
+      "draft": "പരിശോധിച്ച പുതിയ ദിവസേനയുള്ള ബാക്കപ്പ് പഴയ ദിവസേനയുള്ള ബാക്കപ്പിന് പകരം സൂക്ഷിക്കും. നിങ്ങൾ എടുത്ത ബാക്കപ്പുകളും തിരിച്ചെടുക്കാൻ നിശ്ചയിച്ചവയും നിലനിർത്തും.",
+      "area": "Database backups",
+      "source": "src/features/backup/BackupPage.tsx:73",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-4ddf1cf29bfc",
+      "english": "Back up on first launch each day or when the date changes while Pusthakam is open",
+      "draft": "ഓരോ ദിവസവും ആദ്യം തുറക്കുമ്പോഴോ Pusthakam തുറന്നിരിക്കെ തീയതി മാറുമ്പോഴോ ബാക്കപ്പ് എടുക്കുക",
+      "area": "Database backups",
+      "source": "src/features/backup/BackupPage.tsx:71",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-f5a612712b2a",
+      "english": "Backup copy saved and checked.",
+      "draft": "ബാക്കപ്പിന്റെ കോപ്പി സേവ് ചെയ്ത് പരിശോധിച്ചു.",
+      "area": "Database backups",
+      "source": "src/features/backup/BackupPage.tsx:54",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-fb2647f443e8",
+      "english": "Backup folder",
+      "draft": "ബാക്കപ്പ് ഫോൾഡർ",
+      "area": "Database backups",
+      "source": "src/features/backup/BackupPage.tsx:75",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-24308e79bf2a",
+      "english": "Backup saved and checked.",
+      "draft": "ബാക്കപ്പ് സേവ് ചെയ്ത് പരിശോധിച്ചു.",
+      "area": "Database backups",
+      "source": "src/features/backup/BackupPage.tsx:53",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-d5af55d426b8",
+      "english": "Cancel queued restore",
+      "draft": "ബാക്കപ്പ് തിരിച്ചെടുക്കാനുള്ള നിർദേശം റദ്ദാക്കുക",
+      "area": "Database backups",
+      "source": "src/features/backup/BackupPage.tsx:64",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-39cee2ed0f31",
+      "english": "Copy to folder",
+      "draft": "ഫോൾഡറിലേക്ക് പകർത്തുക",
+      "area": "Database backups",
+      "source": "src/features/backup/BackupPage.tsx:89",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-ca592d415b2d",
+      "english": "Could not verify this backup.",
+      "draft": "ഈ ബാക്കപ്പ് പരിശോധിച്ച് ഉറപ്പാക്കാനായില്ല.",
+      "area": "Database backups",
+      "source": "src/features/backup/BackupPage.tsx:97",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-669211280b63",
+      "english": "Download backup",
+      "draft": "ബാക്കപ്പ് ഡൗൺലോഡ് ചെയ്യുക",
+      "area": "Database backups",
+      "source": "src/features/backup/BackupPage.tsx:88",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-1c349f074ff4",
+      "english": "Keep a copy on a separate drive or another computer so you can recover if this computer is lost.",
+      "draft": "ഈ കമ്പ്യൂട്ടർ നഷ്ടപ്പെട്ടാലും വിവരങ്ങൾ തിരിച്ചെടുക്കാൻ മറ്റൊരു ഡ്രൈവിലോ കമ്പ്യൂട്ടറിലോ ഒരു കോപ്പി സൂക്ഷിക്കുക.",
+      "area": "Database backups",
+      "source": "src/features/backup/BackupPage.tsx:77",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-c2366035ce12",
+      "english": "Loading backups.",
+      "draft": "ബാക്കപ്പുകൾ തുറക്കുന്നു…",
+      "area": "Database backups",
+      "source": "src/features/backup/BackupPage.tsx:55",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-0991e5df0ca7",
+      "english": "No database backups yet.",
+      "draft": "ഡാറ്റാബേസിന്റെ ബാക്കപ്പുകൾ എടുത്തിട്ടില്ല.",
+      "area": "Database backups",
+      "source": "src/features/backup/BackupPage.tsx:78",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-8ff03437c77a",
+      "english": "Restore…",
+      "draft": "ബാക്കപ്പിൽനിന്ന് തിരിച്ചെടുക്കുക…",
+      "area": "Database backups",
+      "source": "src/features/backup/BackupPage.tsx:91",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-882346556377",
+      "english": "Restoring replaces the library database, including staff accounts and changes made since this backup. Pusthakam saves a recovery copy before replacing it.",
+      "draft": "ബാക്കപ്പ് തിരിച്ചെടുക്കുമ്പോൾ ജീവനക്കാരുടെ അക്കൗണ്ടുകളും ഈ ബാക്കപ്പിനുശേഷം വരുത്തിയ മാറ്റങ്ങളും ഉൾപ്പെടെ നിലവിലെ ലൈബ്രറി ഡാറ്റാബേസ് മാറും. മാറ്റുന്നതിന് മുമ്പ് തിരിച്ചെടുക്കാൻ കഴിയുന്ന ഒരു കോപ്പി Pusthakam സേവ് ചെയ്യും.",
+      "area": "Database backups",
+      "source": "src/features/backup/BackupPage.tsx:128",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-301544150234",
+      "english": "You do not have permission to manage backups.",
+      "draft": "ബാക്കപ്പുകൾ കൈകാര്യം ചെയ്യാൻ നിങ്ങൾക്ക് അനുമതിയില്ല.",
+      "area": "Database backups",
+      "source": "src/features/backup/BackupPage.tsx:44",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-bc240e19fef5",
+      "english": "Copy backup to folder",
+      "draft": "ബാക്കപ്പ് ഫോൾഡറിലേക്ക് പകർത്തുക",
+      "area": "Database backups",
+      "source": "src/features/backup/BackupPage.tsx:106",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-c12239c8c8b5",
+      "english": "Restore database on next launch",
+      "draft": "അടുത്ത തവണ തുറക്കുമ്പോൾ ഡാറ്റാബേസ് ബാക്കപ്പിൽനിന്ന് തിരിച്ചെടുക്കുക",
+      "area": "Database backups",
+      "source": "src/features/backup/BackupPage.tsx:120",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-afbbe93ae00e",
+      "english": "Added to existing records",
+      "draft": "നിലവിലുള്ള പുസ്തകവിവരങ്ങളിൽ ചേർത്തത്",
+      "area": "Catalogue import and export",
+      "source": "src/features/catalogue/ImportDialog.tsx:108",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-a08a514df431",
+      "english": "Already in the catalogue",
+      "draft": "പുസ്തകപ്പട്ടികയിൽ നിലവിലുള്ളത്",
+      "area": "Catalogue import and export",
+      "source": "src/features/catalogue/ImportDialog.tsx:190",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-9b7a8a750ec8",
+      "english": "Another library system (MARC file, titles only)",
+      "draft": "മറ്റൊരു ലൈബ്രറി സോഫ്റ്റ്‌വെയർ (MARC ഫയൽ, പുസ്തകവിവരങ്ങൾ മാത്രം)",
+      "area": "Catalogue import and export",
+      "source": "src/features/catalogue/ImportDialog.tsx:15",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-c41810d12ee8",
+      "english": "Cannot be imported",
+      "draft": "ഇംപോർട്ട് ചെയ്യാനാവാത്തത്",
+      "area": "Catalogue import and export",
+      "source": "src/features/catalogue/ImportDialog.tsx:191",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-615ca03701f4",
+      "english": "Catalogue records (JSON file)",
+      "draft": "പുസ്തകപ്പട്ടികയിലെ വിവരങ്ങൾ (JSON ഫയൽ)",
+      "area": "Catalogue import and export",
+      "source": "src/features/catalogue/ImportDialog.tsx:18",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-6e52657544df",
+      "english": "Create the locations, collections and categories named in the file",
+      "draft": "ഫയലിൽ പറയുന്ന സ്ഥലങ്ങളും ശേഖരങ്ങളും വിഭാഗങ്ങളും ചേർക്കുക",
+      "area": "Catalogue import and export",
+      "source": "src/features/catalogue/ImportDialog.tsx:289",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-50009ce1da4d",
+      "english": "File",
+      "draft": "ഫയൽ",
+      "area": "Catalogue import and export",
+      "source": "src/features/catalogue/ImportDialog.tsx:159",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-d63b2b691e7e",
+      "english": "File format",
+      "draft": "ഫയൽ തരം",
+      "area": "Catalogue import and export",
+      "source": "src/features/catalogue/ExportDialog.tsx:33",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-28212cf76524",
+      "english": "If a title is already in the catalogue (same ISBN)",
+      "draft": "ഇതേ ISBN ഉള്ള പുസ്തകം പട്ടികയിൽ ഉണ്ടെങ്കിൽ",
+      "area": "Catalogue import and export",
+      "source": "src/features/catalogue/ImportDialog.tsx:270",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-957096dc8d1e",
+      "english": "Item category for copies that have none",
+      "draft": "വിഭാഗം നൽകിയിട്ടില്ലാത്ത കോപ്പികൾക്ക് ഉപയോഗിക്കേണ്ട വിഭാഗം",
+      "area": "Catalogue import and export",
+      "source": "src/features/catalogue/ImportDialog.tsx:280",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-21baf7182125",
+      "english": "Koha (MARC file with items)",
+      "draft": "Koha (കോപ്പികളുടെ വിവരങ്ങളുള്ള MARC ഫയൽ)",
+      "area": "Catalogue import and export",
+      "source": "src/features/catalogue/ImportDialog.tsx:14",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-b6e86763659d",
+      "english": "Koha (MARCXML file with items)",
+      "draft": "Koha (കോപ്പികളുടെ വിവരങ്ങളുള്ള MARCXML ഫയൽ)",
+      "area": "Catalogue import and export",
+      "source": "src/features/catalogue/ImportDialog.tsx:12",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-9d0f8a7e3eef",
+      "english": "MARCXML (titles only)",
+      "draft": "MARCXML (പുസ്തകവിവരങ്ങൾ മാത്രം)",
+      "area": "Catalogue import and export",
+      "source": "src/features/catalogue/ImportDialog.tsx:13",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-c1c041247307",
+      "english": "Records added",
+      "draft": "ചേർത്ത പുസ്തകവിവരങ്ങൾ",
+      "area": "Catalogue import and export",
+      "source": "src/features/catalogue/ImportDialog.tsx:106",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-00d28b76b03f",
+      "english": "Records in the file",
+      "draft": "ഫയലിലെ പുസ്തകവിവരങ്ങൾ",
+      "area": "Catalogue import and export",
+      "source": "src/features/catalogue/ImportDialog.tsx:188",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-f1cd2c507244",
+      "english": "Skipped or failed",
+      "draft": "ഒഴിവാക്കിയതോ ചേർക്കാനാവാത്തതോ",
+      "area": "Catalogue import and export",
+      "source": "src/features/catalogue/ImportDialog.tsx:109",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-5e6d42940185",
+      "english": "Spreadsheet (CSV file)",
+      "draft": "സ്പ്രെഡ്ഷീറ്റ് (CSV ഫയൽ)",
+      "area": "Catalogue import and export",
+      "source": "src/features/catalogue/ImportDialog.tsx:17",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-e96f1822c36b",
+      "english": "Spreadsheet (Excel XLSX file)",
+      "draft": "സ്പ്രെഡ്ഷീറ്റ് (Excel XLSX ഫയൽ)",
+      "area": "Catalogue import and export",
+      "source": "src/features/catalogue/ImportDialog.tsx:16",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-2966c0dc4ead",
+      "english": "Use each barcode as the accession number",
+      "draft": "ഓരോ ബാർകോഡും അക്സഷൻ നമ്പറായി ഉപയോഗിക്കുക",
+      "area": "Catalogue import and export",
+      "source": "src/features/catalogue/ImportDialog.tsx:291",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-c901a67b65a1",
+      "english": "Where is the data from?",
+      "draft": "വിവരങ്ങൾ എവിടെനിന്നുള്ളതാണ്?",
+      "area": "Catalogue import and export",
+      "source": "src/features/catalogue/ImportDialog.tsx:144",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-a3c5b249ae7a",
+      "english": "Copies added",
+      "draft": "ചേർത്ത കോപ്പികൾ",
+      "area": "Catalogue import and export",
+      "source": "src/features/catalogue/ImportDialog.tsx:107\nsrc/features/reports/ReportsPage.tsx:124\nsrc/features/reports/ReportsPage.tsx:547",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-a4886486a8c9",
+      "english": "Choose a file first.",
+      "draft": "ആദ്യം ഒരു ഫയൽ തിരഞ്ഞെടുക്കുക.",
+      "area": "Catalogue import and export",
+      "source": "src/features/catalogue/ImportDialog.tsx:60",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-b2a7bd46919a",
+      "english": "Could not read the file.",
+      "draft": "ഫയൽ വായിക്കാനായില്ല.",
+      "area": "Catalogue import and export",
+      "source": "src/features/catalogue/ImportDialog.tsx:70",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-fcfc67192bcd",
+      "english": "Prepare export",
+      "draft": "എക്സ്പോർട്ട് തയ്യാറാക്കുക",
+      "area": "Catalogue import and export",
+      "source": "src/features/catalogue/ExportDialog.tsx:29",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-b6d0d73a1902",
+      "english": "Prepare the export first.",
+      "draft": "ആദ്യം എക്സ്പോർട്ട് തയ്യാറാക്കുക.",
+      "area": "Catalogue import and export",
+      "source": "src/features/catalogue/ExportDialog.tsx:15",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-e4c1d2ed77f0",
+      "english": "Preparing CSV…",
+      "draft": "CSV തയ്യാറാക്കുന്നു…",
+      "area": "Catalogue import and export",
+      "source": "src/features/catalogue/AccessionPage.tsx:114",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-2a6f7e3ba15d",
+      "english": "Save file",
+      "draft": "ഫയൽ സേവ് ചെയ്യുക",
+      "area": "Catalogue import and export",
+      "source": "src/features/catalogue/ExportDialog.tsx:28",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-a3593da30a73",
+      "english": "The import could not be completed.",
+      "draft": "ഇംപോർട്ട് പൂർത്തിയാക്കാനായില്ല.",
+      "area": "Catalogue import and export",
+      "source": "src/features/catalogue/ImportDialog.tsx:81",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-50979f0d8c3c",
+      "english": "Create a second record",
+      "draft": "മറ്റൊരു പുസ്തകവിവരമായി ചേർക്കുക",
+      "area": "Catalogue import and export",
+      "source": "src/features/catalogue/ImportDialog.tsx:276",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-5b17c8530e9f",
+      "english": "Leave it alone",
+      "draft": "നിലവിലുള്ളത് അതേപടി വയ്ക്കുക",
+      "area": "Catalogue import and export",
+      "source": "src/features/catalogue/ImportDialog.tsx:274",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-6ba1053159db",
+      "english": "Not in the file",
+      "draft": "ഫയലിലില്ല",
+      "area": "Catalogue import and export",
+      "source": "src/features/catalogue/ImportDialog.tsx:219",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-27a2a65815ea",
+      "english": "Records that could not be imported",
+      "draft": "ഇംപോർട്ട് ചെയ്യാനാവാത്ത പുസ്തകവിവരങ്ങൾ",
+      "area": "Catalogue import and export",
+      "source": "src/features/catalogue/ImportDialog.tsx:118",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-f95f36336928",
+      "english": "Save cancelled. Your export is ready to save again.",
+      "draft": "സേവ് ചെയ്യുന്നത് റദ്ദാക്കി. എക്സ്പോർട്ട് ഫയൽ വീണ്ടും സേവ് ചെയ്യാം.",
+      "area": "Catalogue import and export",
+      "source": "src/features/catalogue/ExportDialog.tsx:43",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-f7278e7eaa21",
+      "english": "Export catalogue records",
+      "draft": "പുസ്തകപ്പട്ടികയിലെ വിവരങ്ങൾ എക്സ്പോർട്ട് ചെയ്യുക",
+      "area": "Catalogue import and export",
+      "source": "src/features/catalogue/ExportDialog.tsx:25",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-2194340e961a",
+      "english": "Import finished",
+      "draft": "ഇംപോർട്ട് പൂർത്തിയായി",
+      "area": "Catalogue import and export",
+      "source": "src/features/catalogue/ImportDialog.tsx:104",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-9b70f0396638",
+      "english": "Import records",
+      "draft": "പുസ്തകവിവരങ്ങൾ ഇംപോർട്ട് ചെയ്യുക",
+      "area": "Catalogue import and export",
+      "source": "src/features/catalogue/ImportDialog.tsx:132",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-fd8962b61138",
+      "english": "Browse by classification",
+      "draft": "വർഗം അനുസരിച്ച് നോക്കുക",
+      "area": "Public catalogue (OPAC)",
+      "source": "src-tauri/src/services/opac/index.html:23",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-a3beec0958d3",
+      "english": "Catalogue results",
+      "draft": "പുസ്തക തിരയലിന്റെ ഫലങ്ങൾ",
+      "area": "Public catalogue (OPAC)",
+      "source": "src-tauri/src/services/opac/index.html:27",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-d6ee7b951536",
+      "english": "Result pages",
+      "draft": "തിരയൽ ഫലങ്ങളുടെ പേജുകൾ",
+      "area": "Public catalogue (OPAC)",
+      "source": "src-tauri/src/services/opac/index.html:32",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-c3b5790c5cec",
+      "english": "Search catalogue",
+      "draft": "പുസ്തകപ്പട്ടികയിൽ തിരയുക",
+      "area": "Public catalogue (OPAC)",
+      "source": "src-tauri/src/services/opac/index.html:20",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-6ed11be59167",
+      "english": "Title, author, subject, or ISBN",
+      "draft": "പുസ്തകത്തിന്റെ പേര്, എഴുത്തുകാരൻ, വിഷയം അല്ലെങ്കിൽ ISBN",
+      "area": "Public catalogue (OPAC)",
+      "source": "src-tauri/src/services/opac/index.html:19",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-9329251b6993",
+      "english": "All classes",
+      "draft": "എല്ലാ വർഗങ്ങളും",
+      "area": "Public catalogue (OPAC)",
+      "source": "src-tauri/src/services/opac/catalogue.js:3",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-731c23d1c2ad",
+      "english": "Ask library staff",
+      "draft": "ലൈബ്രറി ജീവനക്കാരോട് ചോദിക്കുക",
+      "area": "Public catalogue (OPAC)",
+      "source": "src-tauri/src/services/opac/catalogue.js:62\nsrc-tauri/src/services/opac/catalogue.js:92",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-2c00c9aaa72c",
+      "english": "Authors",
+      "draft": "എഴുത്തുകാർ",
+      "area": "Public catalogue (OPAC)",
+      "source": "src-tauri/src/services/opac/catalogue.js:60",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-12f67f8539c4",
+      "english": "Availability",
+      "draft": "ലഭ്യത",
+      "area": "Public catalogue (OPAC)",
+      "source": "src-tauri/src/services/opac/catalogue.js:63",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-26e225eff622",
+      "english": "Cannot connect to the library. Check your connection and try again.",
+      "draft": "ലൈബ്രറിയുമായി ബന്ധപ്പെടാനായില്ല. കണക്ഷൻ പരിശോധിച്ച് വീണ്ടും ശ്രമിക്കുക.",
+      "area": "Public catalogue (OPAC)",
+      "source": "src-tauri/src/services/opac/catalogue.js:122",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-3a63271cafc1",
+      "english": "Catalogue unavailable",
+      "draft": "പുസ്തകപ്പട്ടിക ലഭ്യമല്ല",
+      "area": "Public catalogue (OPAC)",
+      "source": "src-tauri/src/services/opac/catalogue.js:121",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-67fa8067b009",
+      "english": "Could not load the catalogue. Try again.",
+      "draft": "പുസ്തകപ്പട്ടിക തുറക്കാനായില്ല. വീണ്ടും ശ്രമിക്കുക.",
+      "area": "Public catalogue (OPAC)",
+      "source": "src-tauri/src/services/opac/catalogue.js:108",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-4b42c2a29242",
+      "english": "Could not read the catalogue response. Try again.",
+      "draft": "പുസ്തകപ്പട്ടികയിൽനിന്ന് ലഭിച്ച വിവരങ്ങൾ വായിക്കാനായില്ല. വീണ്ടും ശ്രമിക്കുക.",
+      "area": "Public catalogue (OPAC)",
+      "source": "src-tauri/src/services/opac/catalogue.js:110",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-95c61170318a",
+      "english": "Locations",
+      "draft": "സ്ഥലങ്ങൾ",
+      "area": "Public catalogue (OPAC)",
+      "source": "src/features/settings/dialogs.tsx:14\nsrc-tauri/src/services/opac/catalogue.js:62",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-d67f15057b80",
+      "english": "No circulating copies",
+      "draft": "വായിക്കാൻ നൽകാവുന്ന കോപ്പികളില്ല",
+      "area": "Public catalogue (OPAC)",
+      "source": "src-tauri/src/services/opac/catalogue.js:25",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-b2ec3181b360",
+      "english": "No cover",
+      "draft": "പുറംചട്ടയില്ല",
+      "area": "Public catalogue (OPAC)",
+      "source": "src-tauri/src/services/opac/catalogue.js:30",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-e2dc6dd0b6c0",
+      "english": "No titles found. Try another title, author, or ISBN, or clear the filters.",
+      "draft": "പുസ്തകങ്ങൾ കണ്ടെത്തിയില്ല. മറ്റൊരു പേരോ എഴുത്തുകാരനോ ISBN-ഓ ഉപയോഗിച്ചോ ഫിൽട്ടറുകൾ ഒഴിവാക്കിയോ തിരയുക.",
+      "area": "Public catalogue (OPAC)",
+      "source": "src-tauri/src/services/opac/catalogue.js:75",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-b37c7879f6c3",
+      "english": "Not recorded",
+      "draft": "രേഖപ്പെടുത്തിയിട്ടില്ല",
+      "area": "Public catalogue (OPAC)",
+      "source": "src-tauri/src/services/opac/catalogue.js:60",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-721134746501",
+      "english": "The public catalogue is currently disabled. Please ask library staff.",
+      "draft": "പൊതു പുസ്തകപ്പട്ടിക ഇപ്പോൾ പ്രവർത്തനക്ഷമമല്ല. ലൈബ്രറി ജീവനക്കാരോട് ചോദിക്കുക.",
+      "area": "Public catalogue (OPAC)",
+      "source": "src-tauri/src/services/opac/catalogue.js:108",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-1372a3810da5",
+      "english": "Unclassified",
+      "draft": "വർഗം നൽകിയിട്ടില്ല",
+      "area": "Public catalogue (OPAC)",
+      "source": "src-tauri/src/services/opac/catalogue.js:80",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-0ef06353b436",
+      "english": "Loading catalogue…",
+      "draft": "പുസ്തകപ്പട്ടിക തുറക്കുന്നു…",
+      "area": "Public catalogue (OPAC)",
+      "source": "src-tauri/src/services/opac/catalogue.js:103\nsrc-tauri/src/services/opac/index.html:28",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-cd35cd1852a1",
+      "english": "Available copies only",
+      "draft": "ലഭ്യമായ കോപ്പികൾ മാത്രം",
+      "area": "Public catalogue (OPAC)",
+      "source": "src-tauri/src/services/opac/index.html:24",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-7179ea0035fc",
+      "english": "Clear filters",
+      "draft": "ഫിൽട്ടറുകൾ ഒഴിവാക്കുക",
+      "area": "Public catalogue (OPAC)",
+      "source": "src-tauri/src/services/opac/index.html:28",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-edc82d69e76d",
+      "english": "Close details",
+      "draft": "വിവരങ്ങൾ അടയ്ക്കുക",
+      "area": "Public catalogue (OPAC)",
+      "source": "src-tauri/src/services/opac/index.html:36",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-7c4568bbfafe",
+      "english": "Find a book. Check its availability. Locate it in the library.",
+      "draft": "പുസ്തകം കണ്ടെത്തുക. ലഭ്യമാണോ എന്ന് നോക്കുക. ലൈബ്രറിയിൽ എവിടെയാണെന്ന് അറിയുക.",
+      "area": "Public catalogue (OPAC)",
+      "source": "src-tauri/src/services/opac/index.html:16",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-da7020dfe2b6",
+      "english": "Public catalogue",
+      "draft": "പൊതു പുസ്തകപ്പട്ടിക",
+      "area": "Public catalogue (OPAC)",
+      "source": "src-tauri/src/services/opac/index.html:12",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-e52d18f8b074",
+      "english": "Search by title, author, subject, or ISBN",
+      "draft": "പുസ്തകത്തിന്റെ പേര്, എഴുത്തുകാരൻ, വിഷയം അല്ലെങ്കിൽ ISBN ഉപയോഗിച്ച് തിരയുക",
+      "area": "Public catalogue (OPAC)",
+      "source": "src-tauri/src/services/opac/index.html:18",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-13fee4dd41bd",
+      "english": "Skip to search",
+      "draft": "തിരയലിലേക്ക് പോകുക",
+      "area": "Public catalogue (OPAC)",
+      "source": "src-tauri/src/services/opac/index.html:11",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    },
+    {
+      "id": "TXT-d8b8392e2c54",
+      "english": "Try again",
+      "draft": "വീണ്ടും ശ്രമിക്കുക",
+      "area": "Public catalogue (OPAC)",
+      "source": "src-tauri/src/services/opac/index.html:30",
+      "batch": "New 200",
+      "status": "draft-not-integrated"
+    }
+  ]
+}

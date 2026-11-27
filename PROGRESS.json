@@ -1,11 +1,11 @@
 {
   "schemaVersion": 1,
-  "lastUpdated": "2026-11-26T15:12:32.816Z",
+  "lastUpdated": "2026-11-27T03:24:51.045Z",
   "currentPhase": "2",
   "currentTask": {
-    "title": "Paused by owner; 319-draft Malayalam review workbook delivered",
+    "title": "519 Malayalam drafts delivered; awaiting owner review",
     "status": "blocked",
-    "detail": "OWNER PAUSE: owner will return tomorrow and requested all necessary documents updated. Stop application implementation and design until explicit resume. Created and delivered docs/translations/Pusthakam_Malayalam_Drafts_319.xlsx, a separate correction-only workbook for exactly 319 current core draft resource entries, not the earlier 1641-candidate workbook. English/Malayalam pairs prefilled; editable correction/status/notes columns, filterable inferred screen context, hidden stable phrase IDs, instructions/example, separate 20-term approved glossary. Not reviewed/OK/Changed/Question statuses prevent blank corrections from implying approval. Partial reviews are welcome. Snapshot docs/translations/core-draft-review.json and reproducible tools/create-core-draft-review.mjs + tools/create-core-draft-workbook.py saved. Reopened XLSX and verified 319 exact pairs, unique IDs, 20 approved terms, empty correction cells, no formulas; placeholder parity and exporter ESLint passed. New workbook saved successfully for download; old workbook/user work preserved. No app source edits, new translations, native build, owner-data or external-domain changes in this pause operation. Existing core screen tests/build passed in previous checkpoint; full localization and rendering/font/mobile/native acceptance remain incomplete. Next on explicit resume: accept partially or fully reviewed XLSX, reconcile IDs against snapshot/current English, validate placeholders, review questions and apply only approved corrections. Do not make owner translate all phrases or infer unreviewed rows approved. Then continue remaining core dialogs/fines/reservations, other modules/OPAC, font/mobile rendering and installer. English default, everyday Malayalam, 20 approved terms and unchanged records/API contracts remain requirements. V1 totals unchanged; no commit/push performed."
+    "detail": "Owner authorized 200 additional Malayalam review drafts, to review with the earlier 319. Completed exactly 200 unique new English/Malayalam pairs in docs/translations/additional-draft-pairs.json, verified against current source and against existing translation resources/glossary (no duplicates), plus Malayalam script and placeholder checks. Covers copy/cover/stock labels, fines/reservations, member fines/cards, database backups, catalogue import/export and public OPAC. Review snapshot additional-draft-review.json records stable IDs, current source references and draft-not-integrated status. Delivered new combined docs/translations/Pusthakam_Malayalam_Drafts_519.xlsx: original 319 rows followed by 200 additions, Batch column (Original 319 / New 200), correction/status/notes columns, approved terms and instructions. Original 319 workbook preserved byte-for-byte; all original review cells preserved in combined copy. Local original currently had no saved corrections, notes or reviewed statuses; no approval inferred. Workbook reopening validated 519 unique IDs, 200 exact new pairs, 319 preserved rows, empty new correction cells, Not reviewed statuses, no formulas. New exporter ESLint passed; downloadable copy saved successfully. Reproducible scripts tools/create-additional-draft-review.mjs and tools/create-expanded-draft-workbook.py saved; expanded generator refuses overwriting an existing review file. Request resumes draft preparation only: no application source/integration, installer, database, network configuration, commit or push changes. Broader implementation remains paused awaiting owner review/explicit resume. Next: owner reviews 519 workbook (partial file welcome), match reviewed IDs/English and validate placeholders before applying approved corrections. Preserve earlier 20-term glossary and everyday wording; pending modules/font/mobile/native checks unchanged. V1 totals unchanged."
   },
   "nextMilestone": {
     "title": "macOS and Linux package smoke tests",
@@ -3900,9 +3900,23 @@
       "check": "node tools/create-core-draft-review.mjs; python tools/create-core-draft-workbook.py; npx.cmd eslint tools/create-core-draft-review.mjs",
       "outcome": "passed",
       "result": "319 source-exact English/Malayalam pairs, unique stable IDs and placeholder parity; workbook reopen validates correction cells and 20 approved terms; no formulas; lint passed. No app tests repeated because only review artifacts/docs changed."
+    },
+    {
+      "id": "malayalam-expanded-workbook-1795749891063",
+      "title": "200 new drafts and 519-row workbook validation",
+      "at": "2026-11-27T03:24:51.045Z",
+      "check": "node tools/create-additional-draft-review.mjs; python tools/create-expanded-draft-workbook.py; npx.cmd eslint tools/create-additional-draft-review.mjs",
+      "outcome": "passed",
+      "result": "200 new unique source-verified draft phrases, no overlap with existing resources, Malayalam script and placeholder checks; reopened 519-row workbook validates IDs, original319 review-cell equality, source pairs and new blank correction/status cells. Original319 SHA256 unchanged. No formulas; lint passed. Linguistic approval/integration not inferred."
     }
   ],
   "recentActivity": [
+    {
+      "kind": "progress",
+      "at": "2026-11-27T03:24:51.045Z",
+      "title": "Added 200 Malayalam drafts; combined 519-row review workbook saved",
+      "detail": "Owner authorized 200 additional Malayalam review drafts, to review with the earlier 319. Completed exactly 200 unique new English/Malayalam pairs in docs/translations/additional-draft-pairs.json, verified against current source and against existing translation resources/glossary (no duplicates), plus Malayalam script and placeholder checks. Covers copy/cover/stock labels, fines/reservations, member fines/cards, database backups, catalogue import/export and public OPAC. Review snapshot additional-draft-review.json records stable IDs, current source references and draft-not-integrated status. Delivered new combined docs/translations/Pusthakam_Malayalam_Drafts_519.xlsx: original 319 rows followed by 200 additions, Batch column (Original 319 / New 200), correction/status/notes columns, approved terms and instructions. Original 319 workbook preserved byte-for-byte; all original review cells preserved in combined copy. Local original currently had no saved corrections, notes or reviewed statuses; no approval inferred. Workbook reopening validated 519 unique IDs, 200 exact new pairs, 319 preserved rows, empty new correction cells, Not reviewed statuses, no formulas. New exporter ESLint passed; downloadable copy saved successfully. Reproducible scripts tools/create-additional-draft-review.mjs and tools/create-expanded-draft-workbook.py saved; expanded generator refuses overwriting an existing review file. Request resumes draft preparation only: no application source/integration, installer, database, network configuration, commit or push changes. Broader implementation remains paused awaiting owner review/explicit resume. Next: owner reviews 519 workbook (partial file welcome), match reviewed IDs/English and validate placeholders before applying approved corrections. Preserve earlier 20-term glossary and everyday wording; pending modules/font/mobile/native checks unchanged. V1 totals unchanged."
+    },
     {
       "kind": "progress",
       "at": "2026-11-26T15:12:32.816Z",

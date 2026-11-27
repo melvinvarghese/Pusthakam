@@ -1,5 +1,14 @@
 # Malayalam interface
 
+## Latest review file: 519 drafts
+
+2026-11-27T03:24:51.045Z
+
+Use [Pusthakam_Malayalam_Drafts_519.xlsx](Pusthakam_Malayalam_Drafts_519.xlsx). Original 319 rows and their review cells are preserved; 200 new source-verified draft phrases are appended. Filter Batch to New 200 to review only additions. The 319-row original stays unchanged.
+
+The additions in additional-draft-pairs.json / additional-draft-review.json are review-only and are NOT integrated in the app. Earlier core source coverage remains unchanged. Mark OK/Changed/Question and use Your correction/Notes; unreviewed rows remain drafts. Development is still paused awaiting review/explicit resume. Reconcile returned IDs and source wording before applying any approval.
+
+
 English is the default. Malayalam is optional and selected per device in setup, sign-in or Library Settings. The setup request also stores the selected library locale; selecting a language on another device does not change that library record.
 
 Use everyday Malayalam and familiar terms such as library, barcode and password. `approved-glossary.json` contains the 20 terms explicitly approved by the owner. Those terms override drafts. Further wording is a draft for small contextual reviews; the owner is not expected to translate the entire spreadsheet.

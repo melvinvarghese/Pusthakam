@@ -27,6 +27,13 @@
 | KI-023 | Medium | Barcode & Printing now offers book barcode/spine label sheets, member cards and current-loan due-slip reprints, with individual permissions. Existing tools reused; route and print-content regressions pass. | Implemented 2026-11-24; physical printer/scanner checks and die-cut presets remain |
 | KI-024 | Medium | Same-Wi-Fi remote OPAC connection remains pending real second-device acceptance. Development executable previously needed Vite at 127.0.0.1:1420; standalone Tauri packaging and explicit host-IP/OPAC URLs now address delivery/address ambiguity. Windows enumerates active adapters. Do not assume firewall failure without confirming current standalone build, host-local/network URLs and exact remote URL. | Open - external-device walkthrough pending |
 | KI-025 | High | Windows accepted sockets inherited the nonblocking listener mode, causing immediate 408 or connection reset when headers/body arrived separately. A 100 ms delayed raw request reproduced it. Request streams now explicitly use blocking mode with timeouts; delayed-header/body regression passes. | RESOLVED 2026-11-25; gateway regression and 3 exact-release delayed-packet/restore runs passed |
+| KI-027 | High | Automatic daily backup keeps only one day: `run_daily` (`services/backup.rs`) deletes older daily files after each new one, all on the same disk as the live database. See SUGGESTIONS S-R01. Added by review 2026-11-27. | Open |
+| KI-028 | High | Same-network staff pages and API use plain HTTP; staff passwords and session cookies cross Wi-Fi unencrypted. DECISIONS D-026 promised an encrypted LAN API. See S-R02. Added by review 2026-11-27. | Open: owner decision needed |
+| KI-029 | Medium | Old LAN staff API (`/api/lan/pair`, `/api/staff/login`, `/api/staff/circulation/*`, bearer tokens, `Access-Control-Allow-Origin: *`) still runs beside the new gateway; unauthenticated `GET /api/lan/status` returns the server fingerprint. See S-R03. Added by review 2026-11-27. | Open |
+| KI-030 | Medium | No licence: no LICENSE file and no licence field in `package.json` or `Cargo.toml`. See S-R04. Added by review 2026-11-27. | Open |
+| KI-031 | Medium | USER_MANUAL describes unbuilt packages (MSIX, Universal DMG), wrong macOS minimum (12 vs 10.15 in tauri.conf.json), an immediate restore (actual: queued for next start), "rolling" backups and placeholder signing commands. See S-R06. Added by review 2026-11-27. | Open |
+| KI-032 | Low | Status docs stale: README lists Acquisitions & serials as Planned; roadmap phases 6-8 NOT STARTED; KI-005 and KI-010 below are out of date; PROGRESS.md/PROGRESS.json/SESSION_HANDOFF.md are too large to use. See S-R07. Added by review 2026-11-27. | Open |
+| KI-033 | Low | CI Windows and macOS package smoke tests are skipped silently when no package is found (`if ($installer)`, `if [ -f "$DMG_FILE" ]`). See S-R10. Added by review 2026-11-27. | Open |
 
 KI-024 live diagnosis 25 November 2026: host all-interface listener and both portals respond200. Active trusted Wi-Fi is still classified Public; explicit Public TCP Block matches the installed running executable, and its Allow rule is Private only. Administrator launch failed0xc0000142. Set trusted connection Private through Windows Settings and recheck actual second device; not yet resolved.
 
@@ -37,3 +44,10 @@ KI-024 owner confirmation 2026-11-25T12:17:30.108Z: both OPAC and staff now work
 ## KI-026: mobile browser usability
 
 Owner reported OPAC and staff were not optimized on phones. The fresh compiled app now passes115 real-server Edge touch-emulation checks at320/390/768px: all14 staff sections/internal tabs, focus restoration, populated records/dialogs, sign-in, public OPAC and backups. Review found and corrected phone autofocus, backdrop focus loss, Classification/Periodicals filters, tab/toolbar overflow and page padding. Full frontend suite252 passed before backdrop correction; subsequent full run had2 loading-deadline failures, both resolved by an unchanged focused27-test rerun including navigation regressions. TypeScript/Vite/debug build and ESLint pass. Fresh NSIS package built; exact release115 mobile/browser and11 headless restore/delayed-packet checks pass. Physical phone, Safari and real soft-keyboard acceptance remain. See MOBILE_BROWSER_ACCEPTANCE.md; the installed application has not been replaced automatically.
+
+## Review notes, 27 November 2026 (Claude)
+
+Read-only review; owner to confirm before changing statuses above.
+- KI-005 looks resolved: `src-tauri/icons/` were regenerated from the approved teal P logo on 23 November 2026 (`tools/generate-brand-icons.ps1`). Confirm and mark RESOLVED.
+- KI-010 is partly out of date: `.github/workflows/ci.yml` runs `cargo fmt --check`, Clippy, tests and package builds. Playwright tests are still not in CI.
+- New issues KI-027 to KI-033 above come from this review; proposed fixes are in SUGGESTIONS.md under "Release-readiness review: 27 November 2026".
