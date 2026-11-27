@@ -1,5 +1,5 @@
 use crate::error::{AppError, AppResult};
-use crate::services::{reservations, web_http::Head};
+use crate::services::{auth, reservations, web_http::Head};
 use rand_core::{OsRng, RngCore};
 use rusqlite::{Connection, OptionalExtension};
 use serde::{Deserialize, Serialize};
@@ -222,6 +222,7 @@ pub struct PatronHoldRow {
     pub barcode: String,
     pub status: String,
     pub expires_at: Option<String>,
+    pub queue_position: Option<i64>,
 }
 
 #[derive(Serialize)]
@@ -239,24 +240,35 @@ pub fn authenticate(conn: &Connection, input: &PatronLoginInput) -> AppResult<i6
     let number = input.member_number.trim();
     if number.is_empty() || input.verification.trim().is_empty() {
         return Err(AppError::Validation(
-            "Enter your member number and registered phone or email.".into(),
+            "Enter your member number or username, plus your password, PIN, or phone/email.".into(),
         ));
     }
-    let row: Option<(i64, Option<String>, Option<String>)> = conn
+    let row: Option<(i64, Option<String>, Option<String>, Option<String>)> = conn
         .query_row(
-            "SELECT id, email, phone FROM members WHERE member_number = ?1 AND archived_at IS NULL",
+            "SELECT id, email, phone, opac_password_hash
+             FROM members
+             WHERE (member_number = ?1 COLLATE NOCASE OR opac_username = ?1 COLLATE NOCASE)
+               AND archived_at IS NULL",
             [number],
-            |r| Ok((r.get(0)?, r.get(1)?, r.get(2)?)),
+            |r| Ok((r.get(0)?, r.get(1)?, r.get(2)?, r.get(3)?)),
         )
         .optional()?;
-    let Some((member_id, email, phone)) = row else {
+    let Some((member_id, email, phone, password_hash)) = row else {
         return Err(AppError::Permission(
-            "Member number or phone/email did not match an active library account.".into(),
+            "Credentials did not match an active library account.".into(),
         ));
     };
+    if let Some(hash) = password_hash.as_deref() {
+        if auth::verify_password(hash, input.verification.trim()) {
+            return Ok(member_id);
+        }
+        return Err(AppError::Permission(
+            "Credentials did not match an active library account.".into(),
+        ));
+    }
     if !verification_matches(email.as_deref(), phone.as_deref(), &input.verification) {
         return Err(AppError::Permission(
-            "Member number or phone/email did not match an active library account.".into(),
+            "Credentials did not match an active library account.".into(),
         ));
     }
     Ok(member_id)
@@ -331,7 +343,9 @@ pub fn account_summary(
 
     let reservations = {
         let mut stmt = conn.prepare(
-            "SELECT r.id, br.title, i.barcode, r.status, r.expires_at
+            "SELECT r.id, br.title, i.barcode, r.status, r.expires_at,
+                    (SELECT count(*) FROM reservations q
+                     WHERE q.item_id = r.item_id AND q.closed_at IS NULL AND q.id <= r.id)
              FROM reservations r
              JOIN physical_items i ON i.id = r.item_id
              JOIN bibliographic_records br ON br.id = i.record_id
@@ -345,6 +359,7 @@ pub fn account_summary(
                 barcode: r.get(2)?,
                 status: r.get(3)?,
                 expires_at: r.get(4)?,
+                queue_position: r.get(5)?,
             })
         })?;
         rows.collect::<Result<Vec<_>, _>>()?
@@ -441,6 +456,48 @@ mod tests {
             &PatronLoginInput {
                 member_number: "M-101".into(),
                 verification: "0000000000".into(),
+            }
+        )
+        .is_err());
+    }
+
+    #[test]
+    fn authenticates_with_assigned_opac_username_and_password() {
+        let (_dir, mut conn) = seed_db();
+        let actor = crate::services::auth::Session {
+            user_id: 1,
+            username: "admin".into(),
+            display_name: "Admin".into(),
+            role: "administrator".into(),
+            permissions: Default::default(),
+            revision: 1,
+        };
+        crate::services::members::set_opac_credentials(
+            &mut conn,
+            &actor,
+            1,
+            Some("ananya.nair"),
+            Some("4321"),
+            false,
+        )
+        .unwrap();
+
+        assert_eq!(
+            authenticate(
+                &conn,
+                &PatronLoginInput {
+                    member_number: "ananya.nair".into(),
+                    verification: "4321".into(),
+                }
+            )
+            .unwrap(),
+            1
+        );
+        assert!(authenticate(
+            &conn,
+            &PatronLoginInput {
+                member_number: "ananya.nair".into(),
+                verification: "wrong".into(),
             }
         )
         .is_err());

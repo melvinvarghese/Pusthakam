@@ -28,7 +28,7 @@ Suggested order: section 1, then the [owner] tests in section 3, then section 4.
 - [ ] Currencies with other than 2 decimal places (e.g. JPY). Source: KI-012.
 - [ ] **[unchecked]** Audio feedback on barcode scan. Source: SUGGESTIONS S-001.
 - [ ] **[unchecked]** Redirect barcode-scanner bursts typed outside an input. Source: S-002.
-- [ ] **[unchecked]** Fill in book details from ISBN (optional, online). Source: S-003.
+- [x] **[unchecked]** Fill in book details from ISBN (optional, online). Source: S-003. _(Done 2026-11-27: user-triggered `Fill from ISBN` in `RecordFormDialog.tsx` via `src/lib/isbnLookup.ts` using Open Library / Google Books; verified with `isbnLookup.test.ts` (4 tests) and `RecordFormDialog.isbn.test.tsx` (1 test).)_
 - [ ] **[unchecked]** Portable Windows zip version. Source: S-006.
 - [ ] Finish open source checks for splash quotations. Source: SPLASH_QUOTE_SOURCES.md.
 

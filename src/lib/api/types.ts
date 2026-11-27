@@ -867,12 +867,58 @@ export interface MemberInput {
   email: string | null;
   phone: string | null;
   expiresOn: string | null;
+  address?: string | null;
+  department?: string | null;
+  joinedOn?: string | null;
+  notes?: string | null;
 }
 
 export interface Member extends MemberInput {
   id: number;
   categoryName: string;
   expiresOn: string;
+  address?: string | null;
+  department?: string | null;
+  joinedOn?: string | null;
+  notes?: string | null;
+  opacUsername?: string | null;
+  hasOpacPassword?: boolean;
+}
+
+export interface MemberFineBalance {
+  currency: string;
+  outstandingMinor: number;
+}
+
+export interface MemberProfileSummary {
+  activeLoans: number;
+  overdueLoans: number;
+  totalLoans: number;
+  activeHolds: number;
+  maxLoansLimit: number | null;
+  membershipDays: number;
+  eligibleToBorrow: boolean;
+  unpaidFines: MemberFineBalance[];
+}
+
+export interface MemberHold {
+  id: number;
+  title: string;
+  barcode: string;
+  status: string;
+  placedAt: string;
+  expiresAt: string | null;
+  closedAt: string | null;
+  queuePosition: number | null;
+}
+
+export interface MemberActivityItem {
+  id: string;
+  kind: "loan" | "return" | "renewal" | "fine" | "hold" | "admin";
+  occurredAt: string;
+  title: string;
+  detail: string;
+  staffName: string | null;
 }
 
 export interface MemberPage {

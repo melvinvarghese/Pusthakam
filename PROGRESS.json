@@ -1,20 +1,11 @@
 {
   "schemaVersion": 1,
-<<<<<<< Updated upstream
-  "lastUpdated": "2026-11-27T13:05:00Z",
-  "currentPhase": "2",
+  "lastUpdated": "2026-11-27T15:34:01.261Z",
+  "currentPhase": "4",
   "currentTask": {
-    "title": "Rebuilt the public website (website/) in the Spine Label style",
-    "status": "in-progress",
-    "detail": "Outside v1 product scope. Replaced the old site (false download/open-source/encryption claims, AI-generated hero image) with six static pages: Home, Features, Get Pusthakam, Status, FAQ, About, plus 404 and a redirect from try/. Only features present in the code are described; no 'free' or open-source wording, following the 2026-11-27 commercial licensing decision. Screenshots come from the dev preview with synthetic data via tools/website-screenshots. Removed .github/workflows/static.yml, which deployed the whole repository to GitHub Pages. Awaiting owner review on branch website-redesign; not merged or published."
-=======
-  "lastUpdated": "2026-11-27T14:24:32.191Z",
-  "currentPhase": "2",
-  "currentTask": {
-    "title": "All 3 Koha-parity features implemented (ISBN auto-fill, Patron OPAC login, Optional Email/WhatsApp overdue reminders)",
-    "status": "implemented",
-    "detail": "Implemented Feature 3 (Optional Email/WhatsApp overdue reminders) completing the 3-feature Koha-parity batch: added member_email and member_phone to OverdueLoan in src-tauri/src/services/circulation.rs and src/lib/api/types.ts; added src/lib/reminders.ts (buildOverdueReminderMessage, buildMailtoUrl, buildWhatsAppUrl) with unit tests; permitted https://wa.me/* and mailto:* in src-tauri/capabilities/default.json; and added opt-in Email, WhatsApp, and Copy notice buttons to src/features/circulation/OverdueLoans.tsx. Verified with tsc --noEmit, eslint ., and 25 Vitest tests (reminders.test.ts, api.test.ts, CirculationPage.test.tsx)."
->>>>>>> Stashed changes
+    "title": "PAUSED until Monday: Member Profile Batches 1-2, OPAC credentials, and README updated",
+    "status": "blocked",
+    "detail": "Owner paused work until Monday ('i will come monday. save everything on relavent files'). Completed today: (1) Updated README.md with approved teal P logo (branding/pusthakam-logo.png), plain-language librarian overview, and commercial one-time-payment framing; (2) Added MemberProfileDialog.tsx with photo upload/removal and OPAC username/password assignment (migration 0025_member_opac_auth.sql, Argon2id hashing, members_set_opac_credentials); (3) Completed Member Profile technical audit; (4) Implemented Batch 1 (migration 0026_member_profile_fields.sql for address, department, joined_on, notes; members_summary + members_renew; live summary strip & one-click Renew in MemberProfileDialog.tsx); (5) Implemented Batch 2 (members_holds with queue position, members_activity chronological timeline, OPAC queue position in opac_patron.rs/catalogue.js, and Overview/Holds/Activity tabs in MemberProfileDialog.tsx). Verified: tsc --noEmit, eslint ., Vitest members (2 files, 8 tests), Rust services::members (1/1) & opac_patron (3/3) & db::tests (5/5). Also preserved website-redesign and 519-term Malayalam review checkpoint entries. Next on Monday: resume on explicit owner instruction, review/commit local changes, and choose Member Profile Batch 3, Malayalam 519 reconciliation, or Safety & Security fixes in docs/PENDING_WORK.md."
   },
   "nextMilestone": {
     "title": "macOS and Linux package smoke tests",
@@ -3989,16 +3980,31 @@
       "check": "npm.cmd run typecheck && npm.cmd run lint && npx.cmd vitest run src/lib/reminders.test.ts src/features/circulation/CirculationPage.test.tsx src/lib/api/api.test.ts",
       "outcome": "passed",
       "result": "TypeScript typecheck passed, ESLint passed, and all 25 tests across 3 files passed."
+    },
+    {
+      "id": "member-profile-batch-1-2-2026-11-27",
+      "title": "Member Profile Batches 1-2, OPAC credentials, and migration 0025/0026 verification",
+      "at": "2026-11-27T15:34:01.261Z",
+      "check": "npm.cmd run typecheck && npm.cmd run lint && npx.cmd vitest run src/features/members/ && cargo test --manifest-path src-tauri/Cargo.toml services::members opac_patron",
+      "outcome": "passed",
+      "result": "TypeScript typecheck passed, ESLint passed, Vitest members suite passed (2 files, 8 tests), Rust services::members passed (1/1), and Rust opac_patron passed (3/3)."
     }
   ],
   "recentActivity": [
     {
       "kind": "progress",
-<<<<<<< Updated upstream
+      "at": "2026-11-27T15:34:01.261Z",
+      "title": "PAUSED until Monday; saved Member Profile Batches 1-2, OPAC auth, and README updates",
+      "detail": "Updated README.md with approved logo and librarian-friendly copy; added MemberProfileDialog with photo & Argon2id OPAC username/password (0025), Batch 1 profile fields/summary/renew (0026), and Batch 2 holds queue position + unified activity timeline. Paused at owner request until Monday."
+    },
+    {
+      "kind": "progress",
       "at": "2026-11-27T13:05:00Z",
       "title": "Rebuilt the public website on branch website-redesign",
       "detail": "Outside v1 product scope. Replaced the old site (false download/open-source/encryption claims, AI-generated hero image) with six static pages: Home, Features, Get Pusthakam, Status, FAQ, About, plus 404 and a redirect from try/. Only features present in the code are described; no 'free' or open-source wording, following the 2026-11-27 commercial licensing decision. Screenshots come from the dev preview with synthetic data via tools/website-screenshots. Removed .github/workflows/static.yml, which deployed the whole repository to GitHub Pages. Awaiting owner review on branch website-redesign; not merged or published."
-=======
+    },
+    {
+      "kind": "progress",
       "at": "2026-11-27T14:24:32.191Z",
       "title": "Implemented optional Email/WhatsApp overdue reminders",
       "detail": "Added memberEmail/memberPhone to OverdueLoan, created src/lib/reminders.ts, allowed wa.me and mailto in capabilities, and added Email, WhatsApp, and Copy notice actions in OverdueLoans.tsx."
@@ -4032,7 +4038,6 @@
       "at": "2026-11-27T12:39:02.446Z",
       "title": "Owner-approved Reservations terminology updated",
       "detail": "Owner replaces booking wording with the Reservations term saved exactly in approved-glossary.json. This new explicit preference supersedes earlier booking draft terminology for Reservations. Existing workbook and owner corrections untouched; reconcile related sentence forms with owner review rather than guessing singular or verb wording. Shared app translator already gives approved glossary priority. Preserve unrelated current copyright/footer work."
->>>>>>> Stashed changes
     },
     {
       "kind": "progress",

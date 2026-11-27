@@ -1,12 +1,24 @@
 # PROGRESS
 
-<<<<<<< Updated upstream
+## PAUSED until Monday: Member Profile Batches 1–2, OPAC credentials & README updated
+
+2026-11-27T15:34:01.261Z
+
+Owner paused work until Monday (`"i will come monday. save everything on relavent files"`). Resolved prior Git stash conflict markers while preserving both the `website-redesign` entry and the 519-term Malayalam review checkpoint.
+
+Completed before pause:
+- **README updated:** Replaced old SVG with approved teal P logo (`branding/pusthakam-logo.png`), rewrote copy for a common librarian, and aligned with commercial one-time-payment framing.
+- **Member Profile & OPAC Login (`0025_member_opac_auth.sql`):** Clicking a member's name in `MembersPage.tsx` opens `MemberProfileDialog.tsx` with photo upload/removal and OPAC username + Argon2id-hashed password/PIN (`members_set_opac_credentials`). `opac_patron.rs` supports username/password sign-in as well as member number + phone/email fallback.
+- **Member Profile Batch 1 (`0026_member_profile_fields.sql`):** Added `address`, `department`, `joined_on`, and staff-only `notes`; added `members_summary` (active/overdue/total loans, active holds, policy max-loans limit, eligibility, multi-currency unpaid fines) and one-click `members_renew`.
+- **Member Profile Batch 2:** Added `members_holds` (with FIFO queue position `#N`), `members_activity` (chronological timeline of loans, returns, renewals, fine settlements, holds, and member audit events with responsible staff), queue position in `opac_patron.rs` + `opac/catalogue.js`, and **Overview / Holds / Activity** tabs in `MemberProfileDialog.tsx`.
+- **Verification:** `npm.cmd run typecheck` passed; `npm.cmd run lint` passed; `npx.cmd vitest run src/features/members/` passed (2 files, 8 tests); `cargo test services::members` passed (1/1); `cargo test opac_patron` passed (3/3).
+- **Next on Monday:** Resume on explicit owner instruction; review/commit local changes and choose between Member Profile Batch 3 (fine receipts, account statement, HTTP `/api/opac/patron/*` integration tests), Malayalam 519 reconciliation, or `docs/PENDING_WORK.md` Section 1 (Safety & Security Fixes).
 ## Public website rebuilt (branch website-redesign)
 
 2026-11-27T13:05:00Z
 
 Outside v1 product scope. Replaced `website/` with six static pages (Home, Features, Get Pusthakam, Status, FAQ, About) plus `404.html` and a redirect from `try/`, in the app's Spine Label style with self-hosted Hanken Grotesk and Courier Prime. The old site offered a non-existent 0.1.0 download and claimed open source, encryption, Avery presets and macOS/Linux support; its hero image was AI-generated with garbled text. New copy only describes features found in the code and avoids "free"/open-source wording, following the 2026-11-27 commercial licensing decision. Screenshots are real app screens with synthetic data, made by `tools/website-screenshots/run.cjs` (dev preview plus browser-side mock; no app code changed). Removed `.github/workflows/static.yml`, which deployed the whole repository to GitHub Pages alongside `pages.yml`. Checked in Chromium at desktop (light and dark) and iPhone 13 sizes; no broken links or failed requests. Not merged or published; awaiting owner review. Open owner questions: public price wording, whether the repository stays public (Pages and GitHub links depend on it), contact for pilot libraries.
-=======
+
 ## Optional Email/WhatsApp overdue reminders implemented
 
 2026-11-27T14:24:32.191Z
@@ -57,7 +69,6 @@ Owner approved saving 3 high-value features to the roadmap/handoff and implement
 1. **Z39.50 / ISBN auto-fill** (starting now) — explicit user-triggered ISBN lookup in Add Record to populate title, authors, publisher, year, pages, subjects, and cover without sending library data.
 2. **Patron OPAC login** (queued) — member sign-in in the public OPAC to view active loans, due dates, fines, and place hold requests.
 3. **Optional Email/WhatsApp overdue reminders** (queued) — opt-in reminder workflow for libraries with internet access.
->>>>>>> Stashed changes
 
 ## Hyperlinked copyright notice with UTM and SEO attributes
 

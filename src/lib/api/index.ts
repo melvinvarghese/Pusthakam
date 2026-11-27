@@ -6,7 +6,7 @@ import { invoke } from "@tauri-apps/api/core";
 import { openUrl } from "@tauri-apps/plugin-opener";
 import { previewMode } from "@/lib/preview";
 import { staffHttpCommand, staffHttpConfig } from "./staffHttp";
-import type { HistoryBatchSummary, HistorySummary, HistoryPreview, RenewalImportPreview, LoanImportPreview, MemberFineAccount, LibraryCalendar, Holiday,
+import type { MemberActivityItem, MemberHold, MemberProfileSummary, HistoryBatchSummary, HistorySummary, HistoryPreview, RenewalImportPreview, LoanImportPreview, MemberFineAccount, LibraryCalendar, Holiday,
   CatalogueExportFormat, CatalogueExportFile, AccessionFormat, AppErrorPayload, AppInfo, ArchiveKind, CirculationDay, ConfigOverview, CopyBatchInput, CopyPage, CopyQuery,
   CopyRecord, CopyStatus, CopyUpdateInput, DashboardOverview, DuplicateHit, DuplicateProbe, FineAmount, FineHistoryPage, FinePage, FineSettlement, ImportOptions, ImportPreview,
   ImportPreviewRequest, ImportReport, IssuePreview, KohaPatronPreview, LibraryInput, MemberCategoryInput, MemberInput, MemberLoanPage, MemberPage, OpenLoanPage, OverduePage, RenewalPreview, ReservationPage, ReturnCondition, ReturnPreview,
@@ -188,6 +188,11 @@ export const membersApi = {
     call<number>("members_import_koha", { dataBase64, mappings, expectedReady }),
   getPhoto: (id: number) => call<string | null>("members_get_photo", { id }),
   setPhoto: (id: number, pngBase64: string | null) => call<void>("members_set_photo", { id, pngBase64 }),
+  setOpacCredentials: (id: number, username: string | null, password: string | null, clearPassword: boolean) => call<void>("members_set_opac_credentials", { id, username, password, clearPassword }),
+  summary: (id: number) => call<MemberProfileSummary>("members_summary", { id }),
+  renew: (id: number) => call<string>("members_renew", { id }),
+  holds: (id: number) => call<MemberHold[]>("members_holds", { id }),
+  activity: (id: number) => call<MemberActivityItem[]>("members_activity", { id }),
 };
 
 export const circulationApi = {

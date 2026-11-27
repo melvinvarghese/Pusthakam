@@ -1,19 +1,12 @@
-# Pusthakam
-
-## Standalone Windows builds
-
-Use npm.cmd run build:windows to build the standalone application and NSIS installer. Use npm.cmd run build:standalone-debug for a standalone debug executable. Both commands use the Tauri CLI, which embeds the frontend through its production custom protocol. A plain cargo build produces a development executable that expects the Vite server at 127.0.0.1:1420; do not distribute it or use it for standalone acceptance.
-
-After installing/updating, enable Wi-Fi / LAN hosting in Settings and choose Same Wi-Fi or wired network. The app shows the library computer IP and complete OPAC address under Open on other devices on the same Wi-Fi. Copy that address to another device. Addresses under On this computer are for local testing. Keep the host application running.
-
-
 <p align="center">
-  <img src="brand-assets/pusthakam-horizontal.svg" alt="Pusthakam — A Better Way to Manage Libraries" width="620" />
+  <img src="branding/pusthakam-logo.png" alt="Pusthakam logo" width="96" />
 </p>
+
+<h1 align="center">Pusthakam</h1>
 
 <p align="center">
   <strong>A Better Way to Manage Libraries.</strong><br />
-  Free. Offline-first. Built for the people who run libraries.
+  Offline-first. One-time purchase. Built for the people who run libraries.
 </p>
 
 <p align="center">
@@ -22,104 +15,84 @@ After installing/updating, enable Wi-Fi / LAN hosting in Settings and choose Sam
 
 ---
 
-**Pusthakam is a free, offline-first library management system for Windows, macOS and Linux.** It is being built to help librarians manage their collections and everyday work without depending on cloud services, recurring subscriptions or an internet connection.
+**Pusthakam** is a fast, offline-first desktop library management system for schools, colleges, and community libraries. Everything runs on your library's own computer—no monthly subscriptions, no mandatory cloud accounts, and no internet connection required for daily library work.
 
-Catalogue books, manage accession records, organise copies and locations, and build a dependable foundation for circulation, membership, reports and barcode workflows — all from a desktop application with locally stored data.
-
-> **Your library. Your data. No cloud. No subscription.**
-
-## Why Pusthakam?
-
-- **Free to use** — no subscription fees or paid tiers are part of the product plan.
-- **Works offline** — core library work is designed to run locally, without a cloud account or internet connection.
-- **Your data stays local** — the application uses a local SQLite database; it does not require a hosted database.
-- **Made for different libraries** — designed around one configurable core for school, college, university, public, special, research and private libraries.
-- **Built for the library desk** — search-first workflows, keyboard support and USB barcode scanners.
-- **Cross-platform** — Windows, macOS and Linux are the target desktop platforms.
-
-## What it is being built to do
-
-| Area | Planned capabilities | Current state |
-|---|---|---|
-| Catalogue | Bibliographic records, contributors, subjects, classification and search | Implemented; further work pending |
-| Accession & inventory | Individual copies, accession numbers, barcodes, locations, shelves and copy history | Core workflows implemented |
-| Import | CSV and MARC/ISO 2709 import, including a Koha-oriented profile | Implemented; real-world Koha export verification pending |
-| Members | Member records, categories and cards | Implemented. Native card printing still needs verification. |
-| Circulation | Issue, return, renewals, reservations and loan rules | Implemented. Native Windows walkthrough pending. |
-| Reports | Library statistics and operational reports | Partially implemented, with CSV export and printing. |
-| Barcode & printing | Barcode labels and other library print workflows | Partially implemented |
-| Acquisitions & serials | Vendors, orders, subscriptions and periodicals | Planned |
-| Backup & restore | Local backup, validation and safe restoration | Implemented and tested with disposable databases. Native Windows restore pending. |
-
-Pusthakam is under active development. The catalogue and accession work has passed automated tests, but the complete application is not yet feature-complete or ready for production use. See [PROGRESS.md](PROGRESS.md) for verified status and outstanding work.
-
-## Privacy and offline operation
-
-Pusthakam is designed around local ownership of library data:
-
-- No cloud database or mandatory online account.
-- No subscription or recurring payment.
-- No required network connection for core workflows.
-- No telemetry or analytics collection.
-- Library records are stored locally on the computer.
-
-Optional external links, where present, are separate from core library operations and do not send library records.
-
-## Technology
-
-- **Desktop framework:** Tauri 2
-- **Frontend:** React, TypeScript and Vite
-- **Backend:** Rust
-- **Database:** SQLite with full-text search
-- **Interface:** Tailwind CSS, accessible keyboard-first components and bundled assets
-
-## Supported platforms
-
-The project targets:
-
-- Windows
-- macOS
-- Linux
-
-Cross-platform support is a development target; installers and end-to-end operation still need to be verified on each operating system before a stable release.
-
-## Project status
-
-Pusthakam is in active development. Catalogue, accession, member, circulation and inventory workflows are implemented. See the progress tracker for automated test evidence and the remaining release checks.
-
-- [Development progress](PROGRESS.md)
-- [Product specification](docs/PRODUCT_SPECIFICATION.md)
-- [Development roadmap](docs/DEVELOPMENT_ROADMAP.md)
-- [Architecture](docs/ARCHITECTURE.md)
-- [Known issues](docs/KNOWN_ISSUES.md)
-
-## Getting started
-
-There is no stable public release yet. Development setup instructions and required system dependencies are being maintained in [docs/KNOWN_ISSUES.md](docs/KNOWN_ISSUES.md) and [CLAUDE.md](CLAUDE.md). Please do not use an unreleased development build as the sole system of record for a live library.
-
-## Browser access and hosting
-
-The current source serves the public catalogue at `/opac` and the shared staff application at `/staff`. Enable hosting in Settings → Wi-Fi / LAN and share the displayed host address with other devices on the same network. Browser staff accounts use the same roles and permissions as the desktop app.
-
-The library PC is the default host. An optional `pusthakam-server` console executable supports an always-on host with a persistent library directory. Both modes can use a configured HTTPS domain through a local reverse proxy; entering a website address alone does not publish the server. See [hosting instructions](docs/WEB_HOSTING.md) and the [browser acceptance matrix](docs/STAFF_BROWSER_PARITY.md). Public deployment, physical other-device access and hardware checks remain acceptance work.
-
-## Local progress monitor
-
-Open a terminal in this repository and run `npm run progress:monitor`. Open [the dashboard](http://127.0.0.1:4317/) in your browser. Keep the terminal open while viewing it. Press `Ctrl+C` in the terminal to stop the monitor.
-
-The dashboard reads `PROGRESS.json` from this folder every three seconds. Use the Roadmap filters to find tasks and expand a task to see its acceptance criteria and test evidence. The monitor only needs Node.js and runs locally with its bundled assets.
-
-Run `npm run progress:validate` to check the progress data. If PowerShell blocks `npm`, use `npm.cmd` in the same commands.
-
-## Contributing
-
-The project is being developed in phases, with data integrity, reliable workflows, accessibility and honest feature status taking priority over adding features quickly. Bug reports, thoughtful suggestions and testing feedback are welcome.
-
-## Brand
-
-The name **Pusthakam** comes from the Malayalam word for book. The brand assets are in [brand-assets/](brand-assets/).
+> **Your library. Your data. No cloud. No monthly subscription.**
 
 ---
 
-**Pusthakam — A Better Way to Manage Libraries.**<br />
-Free to use. Offline-first. No cloud. No subscription.
+## Why Libraries Choose Pusthakam
+
+- **Works completely offline** — Issue, return, search, and manage your library even when the internet is down.
+- **Your data stays with you** — All books, members, and loan records are stored safely on your own computer, with automatic daily backups.
+- **Saves typing** — Scan a barcode or type an ISBN to auto-fill book details (when online), or import your existing catalogue and patrons from **Koha**, Excel, or CSV.
+- **Built for the library desk** — Works with standard USB barcode scanners, keyboard shortcuts, and ordinary office/label printers.
+- **Multi-device access on your Wi-Fi** — Let students and visitors search your **Public Catalogue (OPAC)** from their phones, and let staff work from tablets or other computers on the same network.
+
+---
+
+## What Pusthakam Does
+
+| Area | How it helps your library |
+|---|---|
+| **Catalogue & ISBN Auto-Fill** | Add books quickly with **Fill from ISBN**, search by title, author, subject, or call number, and save common searches. |
+| **Accession & Barcodes** | Track every individual copy with its accession number, barcode, shelf location, and condition history. |
+| **Circulation & Holds** | Issue, return, and renew books by barcode scanner or book title; manage hold queues, library holidays, and overdue fines. |
+| **Overdue Reminders** | Send optional **Email** or **WhatsApp** overdue notices (or copy a ready message) directly from the Overdue list. |
+| **Members & ID Cards** | Register members, track membership expiry and fine balances, upload photos, and print library member cards. |
+| **Acquisitions & Periodicals** | Manage book purchase requests, vendors, and orders, plus magazine, journal, and newspaper issues. |
+| **Inventory (Stock Check)** | Scan books on the shelf to quickly spot missing or misplaced copies. |
+| **Reports & Printing** | Export circulation, popular titles, and stock reports to **PDF, Excel (XLSX), or CSV**, and print barcode/spine labels and due slips. |
+| **Public Catalogue (OPAC)** | Visitors can search books, check shelf locations and availability, and sign in with their member number + phone/email to view loans, fines, and request holds. |
+| **Backups & Staff Roles** | Create and restore verified backups, assign staff roles (Administrator, Librarian, Circulation, Read-only), and review the audit log. |
+
+---
+
+## Privacy & Offline Operation
+
+Pusthakam is built around local ownership of your library's records:
+
+- **No cloud database** — Library records stay on your computer.
+- **No telemetry or tracking** — Pusthakam does not collect usage analytics.
+- **Optional online helpers only** — Features like **Fill from ISBN**, online book covers, and **Email / WhatsApp** reminders only contact external services when you explicitly use them, and never send your library's database.
+
+---
+
+## Support & Creator
+
+Pusthakam is created and maintained by **[Melvin Varghese](https://melvinvarghese.in/support/?utm_source=pusthakam&utm_medium=readme&utm_campaign=github_readme)** and named after the Malayalam word for *book*.
+
+For support, licensing inquiries, or documentation, visit **[melvinvarghese.in/support](https://melvinvarghese.in/support/?utm_source=pusthakam&utm_medium=readme&utm_campaign=github_readme)**.
+
+---
+
+<details>
+<summary><strong>For Developers: Project Architecture, Builds & Progress Monitor</strong></summary>
+
+### Technology Stack
+- **Desktop shell:** Tauri 2 (Rust backend + embedded webview)
+- **Frontend:** React, TypeScript, Vite, Tailwind CSS
+- **Database:** Local SQLite with FTS5 full-text search
+- **Brand assets:** Approved raster master in [branding/pusthakam-logo.png](branding/pusthakam-logo.png) (see [branding/README.md](branding/README.md))
+
+### Standalone Windows Builds
+- Build standalone app & NSIS installer: `npm.cmd run build:windows`
+- Build standalone debug executable: `npm.cmd run build:standalone-debug`
+- *(A plain `cargo build` produces a dev binary expecting Vite on `127.0.0.1:1420`; use Tauri CLI commands above for standalone testing.)*
+
+### Browser Access & Hosting
+- The embedded HTTP server serves the public catalogue at `/opac` (plus patron endpoints under `/api/opac/patron/*`) and the staff portal at `/staff`.
+- Enable hosting in **Settings → Wi-Fi / LAN**, or run the standalone `pusthakam-server` binary for an always-on host. See [docs/WEB_HOSTING.md](docs/WEB_HOSTING.md) and [docs/STAFF_BROWSER_PARITY.md](docs/STAFF_BROWSER_PARITY.md).
+
+### Local Progress Monitor
+- Start the local progress dashboard: `npm run progress:monitor` (opens at `http://127.0.0.1:4317/`)
+- Validate progress data: `npm run progress:validate` (use `npm.cmd` in Windows PowerShell if scripts are restricted)
+
+### Key Documentation
+- [Development progress](PROGRESS.md)
+- [Pending work checklist](docs/PENDING_WORK.md)
+- [Product specification](docs/PRODUCT_SPECIFICATION.md)
+- [Architecture](docs/ARCHITECTURE.md)
+- [Known issues](docs/KNOWN_ISSUES.md)
+
+</details>
