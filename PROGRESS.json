@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "lastUpdated": "2026-11-27T15:51:18.437Z",
+  "lastUpdated": "2026-11-27T16:00:00Z",
   "currentPhase": "4",
   "currentTask": {
     "title": "PAUSED until Monday: Member Profile Batches 1-2, OPAC credentials, and README updated",
@@ -5608,6 +5608,12 @@
       "at": "2026-11-24T15:16:56.026Z",
       "title": "Refined The Swiss Stacks OPAC direction to remove app-like appearance and optimized mobile layout",
       "detail": "Replaced dark admin header and vertical facet rail with a public typographic masthead, horizontal Dewey classification ribbon, and mobile-optimized touch cards with swipeable chips. Verified via headless Chrome screenshots and clean ESLint/typecheck runs."
+    },
+    {
+      "kind": "decision",
+      "at": "2026-11-27T16:00:00Z",
+      "title": "30-day free trial before one-time paid licence",
+      "detail": "Owner decided public official release should offer a 30-day free trial with no upfront payment; satisfied users may purchase the one-time licence. Controlled beta/pilot precedes official release. Trial mechanics, expiry policy, price and licence scope remain owner decisions; no implementation claimed."
     }
   ],
   "ciDiagnostics": {
@@ -5651,5 +5657,30 @@
       "Do not disable or weaken quality checks",
       "Do not mark CI verified until all required jobs pass"
     ]
+  },
+  "commercialReleasePlan": {
+    "updatedAt": "2026-11-27T16:00:00Z",
+    "status": "owner_decision_recorded; implementation_not_started",
+    "trial": {
+      "durationDays": 30,
+      "paymentRequiredUpfront": false,
+      "conversion": "User who is satisfied during the trial may purchase a licence."
+    },
+    "paidModel": "one-time payment; no recurring subscription intended",
+    "releaseSequence": [
+      "Resolve required CI and platform release blockers",
+      "Run controlled beta/pilot with selected libraries",
+      "Publish official release with a 30-day free trial"
+    ],
+    "ownerDecisionsRequired": [
+      "Trial start trigger and offline clock policy",
+      "Post-expiry access and feature restrictions",
+      "Price",
+      "Licence duration/scope and update entitlement",
+      "Activation, online validation and device-transfer rules",
+      "Support entitlement"
+    ],
+    "dataProtection": "Do not delete or corrupt library data when a trial expires; preserve data and provide a clear purchase/activation path.",
+    "implementationStatus": "Not implemented or verified; documentation decision only."
   }
 }
