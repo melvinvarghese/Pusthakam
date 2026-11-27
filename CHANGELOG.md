@@ -2,6 +2,7 @@
 
 ## [Unreleased]
 ### Added
+- Rebuilt public website (`website/`): Home, Features, Get Pusthakam, Status, FAQ and About pages with real screenshots from synthetic sample data, self-hosted fonts and no tracking. Old pages with unsupported claims removed.
 - Explicit same-Wi-Fi host IP/OPAC URLs, separate local-only addresses, copy/refresh and network binding controls, with native Windows adapter discovery.
 - Cover thumbnails in the desktop catalogue and public OPAC: saved-image reuse, automatic ISBN fallback, visible missing-cover/retry states and permission-aware public image access.
 - Standalone debug and Windows installer build commands using Tauri frontend embedding.
