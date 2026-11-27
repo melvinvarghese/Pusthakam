@@ -268,7 +268,7 @@ export const coreMalayalam: Readonly<Record<string, string>> = {
   "Previous": "മുൻപുള്ളത്",
   "Next": "അടുത്തത്",
   "No results": "ഫലങ്ങളില്ല",
-  "{first}-{last} of {total}": "{total} ഫലങ്ങളിൽ {first}-{last}",
+  "{first}–{last} of {total}": "{total} ഫലങ്ങളിൽ {first}–{last}",
   "Custom": "തിരഞ്ഞെടുക്കുക",
   "to": "മുതൽ",
   "{count} days": "{count} ദിവസം",
