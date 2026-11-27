@@ -2,6 +2,7 @@ import { useTranslation } from "@/lib/translations";
 import { LanguageSelect } from "@/components/LanguageSelect";
 import type { ReactNode } from "react";
 import { BrandMark } from "@/components/BrandMark";
+import { CopyrightNotice } from "@/components/CopyrightNotice";
 
 /** Full-screen frame for the screens shown before the app: setup and sign-in. */
 export function AuthLayout({ children }: { children: ReactNode }) {
@@ -17,6 +18,7 @@ export function AuthLayout({ children }: { children: ReactNode }) {
       </div>
       <div className="w-[min(24rem,100%)] rounded-lg bg-surface p-4 text-fg"><LanguageSelect /></div>
       {children}
+      <footer className="text-xs text-rail-mute"><CopyrightNotice placement="app_auth" /></footer>
     </div>
   );
 }

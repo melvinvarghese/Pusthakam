@@ -1,5 +1,71 @@
 # Development handoff
 
+## Hyperlinked copyright notice with UTM and SEO attributes
+
+2026-11-27T06:13:47.403Z
+
+Hyperlinked `Melvin Varghese` in the runtime copyright footer (`CopyrightNotice` in `AppShell.tsx` and `AuthLayout.tsx`, plus `src-tauri/src/services/opac/index.html`) to `https://melvinvarghese.in/support/` with static UTM attribution (`utm_source=pusthakam`, `utm_medium=app|opac`, `utm_campaign=copyright_footer`, `utm_content=app_sidebar|app_auth|opac_footer`), `target="_blank"`, `rel="noopener noreferrer"`, and a descriptive `title` attribute. Permitted in `src-tauri/capabilities/default.json` (`https://melvinvarghese.in/*`).
+
+## Runtime 2026–current-year copyright notice added
+
+2026-11-27T06:06:22.146Z
+
+Added dynamic runtime copyright notice (`© 2026 Melvin Varghese` in 2026; `© 2026–<currentYear> Melvin Varghese` in 2027+) across the running desktop/web app and embedded OPAC: shared `formatCopyrightNotice()` in `src/lib/copyright.ts`, `AppShell.tsx` sidebar footer, `AuthLayout.tsx` setup/sign-in footer, and `src-tauri/src/services/opac/index.html` + `catalogue.js`. Verified with `npm.cmd run typecheck`, `npm.cmd run lint`, and 21 passing Vitest tests (`copyright.test.ts`, `AppShell.test.tsx`, `Gate.test.tsx`). Installer metadata / static repo year handling deferred for later.
+
+## Creator authorship and copyright updated
+
+2026-11-27T05:55:09.986Z
+
+Owner confirmed Pusthakam is made by Melvin Varghese. Updated `src-tauri/tauri.conf.json` (`copyright` changed from `Pusthakam Contributors` to `Copyright © 2026 Melvin Varghese`), added `"author": "Melvin Varghese"` to `package.json`, and added `authors = ["Melvin Varghese"]` to `src-tauri/Cargo.toml`. Commercial one-time-payment licensing model remains recorded; EULA, third-party dependency notices, `README.md` commercial copy, and release installer rebuild remain pending before commercial release.
+
+## Active 519 workbook updated safely
+
+2026-11-27T05:53:58.680Z
+
+Owner explicitly authorized updating the current 519 workbook while preserving saved translation edits. Updated only docs/translations/Pusthakam_Malayalam_Drafts_519.xlsx with Noto Sans Malayalam, four approved contributor draft labels and 519 automatic status formulas. All 13 existing correction cells preserved exactly; notes, IDs, English, context and batches unchanged; all other draft text preserved, including any custom drafts. Existing manual review statuses retained in new optional Your review (OK / Question) column I; nonempty correction in D overrides computed E to Changed. Open-file lock and SHA256 guard used before atomic replacement. Original byte-for-byte backup in docs/translations/backups; exact path/counts in WORKBOOK_519_UPDATE.json. Reopened workbook validated all 519 rows/formulas and protected values. No live Excel recalculation attempted due prior automation hang; auto calculation on open enabled, formula runtime acceptance still pending. Same downloadable file updated to version1. 519 is the active combined review file; do not make owner duplicate review in319. No application/installer changes, translation integration, commit or push.
+
+
+## Updated 319 workbook only
+
+2026-11-27T05:48:16.146Z
+
+Owner is editing the 519 workbook and explicitly requested prior changes applied to 319 only. Updated docs/translations/Pusthakam_Malayalam_Drafts_319.xlsx in place: Noto Sans Malayalam on Malayalam text, four contributor labels follow approved glossary, 319 automatic Review status formulas (correction => Changed; otherwise optional OK/Question/Not reviewed). Added separate optional manual review column and updated guidance. Existing correction/notes/IDs preserved; temporary pre-edit backup saved outside repo. 519 workbook and owner Excel session not modified. Updated same downloadable 319 file to version 1. Reopen/formula structure/count/preservation checks passed. Excel COM recalculation/runtime attempt hung, isolated review process disappeared, then own automation shell stopped; no completed Excel calculation or Changed/OK interaction test claimed. Cached formula values may remain blank in preview until Excel calculates on open; auto calculation enabled. No application or installer changes. Review scopes overlap: 519 already contains original319; this edit applies only319, do not overwrite reviewed519 rows during future consolidation.
+
+
+## Commercial one-time-payment licensing recorded
+
+2026-11-27T05:46:00Z
+
+Owner decided to sell Pusthakam to libraries for a one-time payment and requested recording this decision in progress and handoff files only. Keep source repository private; do not add an open-source license (MIT/Apache/GPL). Before commercial release: prepare a proprietary Commercial EULA (perpetual, non-exclusive, non-transferable institutional license), run a full transitive dependency license scan and bundle `THIRD_PARTY_NOTICES`, update `README.md` (currently says "Free to use") and `src-tauri/tauri.conf.json` copyright (`Pusthakam Contributors`) to match commercial ownership. Direct dependencies in `package.json` and `src-tauri/Cargo.toml` use permissive licenses compatible with closed-source sales. No source, license file, build or installer changes made.
+
+## Contributor terminology approved
+
+2026-11-27T05:44:10.695Z
+
+Owner approved Contributor terminology in approved-glossary.json, replacing prior wording with sambhaavakan and its grammatical/plural forms. Glossary and core resource updated; existing owner Excel and review snapshots untouched. Reconcile this approval on returned workbook import. No installer rebuild or other translations changed.
+
+
+## Future Excel correction status
+
+2026-11-27T05:37:57.690Z
+
+Owner requires future translation Excels to automatically set Review status to Changed whenever a correction cell is filled. Updated all three translation workbook generators with shared tools/translation_review_status.py: Excel IF formula prioritizes nonempty correction; separate optional Your review (OK / Question) input preserves manual approval/questions without breaking automatic status. Clearing correction returns to optional review or Not reviewed. Automatic calculation/full recalculation on open requested; tables and validation ranges expanded. Existing manual statuses transferred to optional input, including when expanding future workbooks. In-memory helper/table/manual-status/formula checks and four Python syntax checks passed. No current workbook regenerated/modified; owner editing 519 file is preserved. No new XLSX delivered and no Excel recalculation/runtime verification claimed; next generated file must undergo actual formula recalculation verification before delivery. Initial edit-command quoting syntax failed without changing files, corrected using patch. Scope is future review-sheet tooling only, no application translations or installer changes. Overall localization still awaits owner review; previous bundled Noto font checks remain valid. No commit/push.
+
+
+## Font bundle checks complete
+
+2026-11-27T05:32:21.374Z
+
+Noto Sans Malayalam bundled for installed app and embedded OPAC. Build/lint, dist font/licence checks and native OPAC test (1/1) passed. npm dependency install completed successfully using temporary cache after default-cache permission failure. Native installer rebuild and rendered/fresh-install checks still pending. Future workbook exports use Noto; owner workbook edits untouched. Full translation work still awaits owner review. No commit/push or system-wide font registration.
+
+
+## Current: Noto Sans Malayalam font bundling
+
+2026-11-27T05:31:45.363Z
+
+Owner confirms Nirmala UI caused rendering issue and Noto Sans Malayalam fixed it; explicitly requests font included when Pusthakam is installed. Implemented app-private font bundling: @fontsource-variable/noto-sans-malayalam 5.3.0, local CSS import, Noto fallback ahead of OS fonts in sans/mono stacks, removed Nirmala fallback. Independent public OPAC embeds Malayalam WOFF2 as data URI; OFL licence retained in frontend public/licenses and embedded OPAC CSS. No system-wide font registration/admin requirement: installed Pusthakam carries and uses its own font offline; standalone font availability in Excel depends on OS installation already performed by owner. Future workbook generators now select Noto Sans Malayalam. Owner-modified/open 519 workbook and lock file left untouched; no draft wording/approval edits. Frontend build and ESLint passed, bundled WOFF2 magic bytes and dist licence checked. Focused native OPAC embedding test compiling. Initial npm install failed on default cache permissions; retry using authorized temporary cache downloaded/registered package successfully, install command finalization still pending. Existing installer not rebuilt and actual fresh-install/rendered font acceptance pending. This request resumes font integration only; remaining translations await owner review. No owner DB/external-hosting/commit/push changes.
+
+
 ## Current: 519 Malayalam drafts awaiting owner review
 
 2026-11-27T03:24:51.045Z

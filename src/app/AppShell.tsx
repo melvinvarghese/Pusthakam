@@ -13,6 +13,7 @@ import { OnlineToolsMenu } from "@/components/OnlineToolsMenu";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { LiveAnnouncer } from "@/components/LiveAnnouncer";
+import { CopyrightNotice } from "@/components/CopyrightNotice";
 import { cn } from "@/lib/utils";
 
 function Brand({ libraryName }: { libraryName?: string }) {
@@ -64,6 +65,9 @@ function NavRail({ libraryName, mobile, inactive, onNavigate }: { libraryName?: 
         ))}
       </nav>
       <OnlineToolsMenu />
+      <div className="border-t border-ink-3 px-4 py-2 text-[11px] text-rail-mute">
+        <CopyrightNotice placement="app_sidebar" />
+      </div>
     </aside>
   );
 }

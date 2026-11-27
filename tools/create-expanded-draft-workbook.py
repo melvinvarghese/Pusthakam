@@ -7,6 +7,7 @@ from copy import copy
 from pathlib import Path
 
 sys.path.insert(0, str(Path(tempfile.gettempdir()) / 'pusthakam-sheet-deps'))
+from translation_review_status import automatic_review_status, validate_review_status
 from openpyxl import load_workbook
 from openpyxl.styles import Alignment, Font, PatternFill
 from openpyxl.worksheet.table import Table, TableStyleInfo
@@ -23,7 +24,7 @@ if wb.sheetnames != ['Start here', '319 drafts', 'Approved terms']:
     raise SystemExit('Unexpected original workbook structure; inspect before changing.')
 ws = wb['319 drafts']
 headers = ['Screen / context', 'English text', 'Malayalam draft', 'Your correction', 'Review status', 'Notes', 'ID']
-assert [cell.value for cell in ws[1]] == headers
+assert [cell.value for cell in ws[1]][:7] == headers
 assert ws.max_row == 320
 preserved = [tuple(ws.cell(row, col).value for col in range(1, 8)) for row in range(2, 321)]
 old_ids = {row[6] for row in preserved}
@@ -31,6 +32,9 @@ snapshot = json.loads((folder / 'additional-draft-review.json').read_text(encodi
 assert len(snapshot['rows']) == 200
 assert len(old_ids) == 319 and not old_ids.intersection(row['id'] for row in snapshot['rows'])
 ws.title = '519 drafts'
+if ws.cell(1, 8).value == 'Your review (OK / Question)':
+    for row in range(1, 321):
+        ws.cell(row, 9, ws.cell(row, 8).value)
 ws.cell(1, 8, 'Batch')
 for row in range(2, 321):
     ws.cell(row, 8, 'Original 319')
@@ -40,7 +44,7 @@ for entry in snapshot['rows']:
     for col in range(1, 9):
         cell = ws.cell(row, col)
         cell.data_type = 's'
-        cell.font = Font(name='Nirmala UI' if col in (3, 4) else 'Arial', size=12 if col in (3, 4) else 11, color='174EA6' if col == 4 else '203239')
+        cell.font = Font(name='Noto Sans Malayalam' if col in (3, 4) else 'Arial', size=12 if col in (3, 4) else 11, color='174EA6' if col == 4 else '203239')
         cell.alignment = Alignment(vertical='top', wrap_text=True)
         if col in (4, 5, 6):
             cell.fill = PatternFill('solid', fgColor='FFF2CC')
@@ -76,15 +80,16 @@ for row in (guide.max_row - 1, guide.max_row):
         cell.alignment = Alignment(vertical='top', wrap_text=True)
 wb.properties.creator = ''
 wb.properties.lastModifiedBy = ''
+automatic_review_status(ws, 4, 5, guide)
 wb.save(output)
 check = load_workbook(output, rich_text=True)
 sheet = check['519 drafts']
 assert sheet.max_row == 520
-assert [tuple(sheet.cell(row, col).value for col in range(1, 8)) for row in range(2, 321)] == preserved
+assert [tuple(sheet.cell(row, col).value for col in range(1, 8) if col != 5) for row in range(2, 321)] == [tuple(value for col, value in enumerate(row, 1) if col != 5) for row in preserved]
 assert len({sheet.cell(row, 7).value for row in range(2, 521)}) == 519
 for row, entry in enumerate(snapshot['rows'], 321):
     assert sheet.cell(row, 2).value == entry['english'] and sheet.cell(row, 3).value == entry['draft']
-    assert sheet.cell(row, 4).value is None and sheet.cell(row, 5).value == 'Not reviewed'
-assert not any(cell.data_type == 'f' for page in check for row in page for cell in row)
+    assert sheet.cell(row, 4).value is None and sheet.cell(row, 5).data_type == 'f'
+validate_review_status(check['519 drafts'], 4, 5)
 assert hashlib.sha256(original.read_bytes()).hexdigest() == before_digest
 print(json.dumps({'file': str(output), 'total': 519, 'new': 200, 'original_review_rows_preserved': 319, 'original_unchanged': True, 'validation': 'passed'}, ensure_ascii=True))
