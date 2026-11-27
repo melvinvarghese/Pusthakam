@@ -1,12 +1,11 @@
 # Development handoff
 
-<<<<<<< Updated upstream
-## Public website rebuilt (branch website-redesign)
+## End-of-day status, 27 November 2026
 
-2026-11-27T13:05:00Z
+2026-11-27T15:35:00Z
 
-Outside v1 product scope. Replaced `website/` with six static pages (Home, Features, Get Pusthakam, Status, FAQ, About) plus `404.html` and a redirect from `try/`, in the app's Spine Label style with self-hosted Hanken Grotesk and Courier Prime. The old site offered a non-existent 0.1.0 download and claimed open source, encryption, Avery presets and macOS/Linux support; its hero image was AI-generated with garbled text. New copy only describes features found in the code and avoids "free"/open-source wording, following the 2026-11-27 commercial licensing decision. Screenshots are real app screens with synthetic data, made by `tools/website-screenshots/run.cjs` (dev preview plus browser-side mock; no app code changed). Removed `.github/workflows/static.yml`, which deployed the whole repository to GitHub Pages alongside `pages.yml`. Checked in Chromium at desktop (light and dark) and iPhone 13 sizes; no broken links or failed requests. Not merged or published; awaiting owner review. Open owner questions: public price wording, whether the repository stays public (Pages and GitHub links depend on it), contact for pilot libraries.
-=======
+Public website: redesigned site merged (PR #3) and live on GitHub Pages at https://melvinvarghese.github.io/Pusthakam/; any push to main touching `website/**` redeploys. Owner calls it the site to use for now. GitHub Pages needs the repository to stay public, which conflicts with keeping the source private for sale unless on a paid GitHub plan. WordPress test: pusthakamlms.wordpress.com (free plan) now carries a simpler block-based copy of the six pages on the Twenty Twenty-Five theme, published and kept public by owner choice. Owner judged it a test only; proper paid hosting with email is planned for public launch. A separate private WordPress import preview (universally-dreamer-aglet.wpcomstaging.com) is unused and expires 2026-12-27. PR #4 merged: 7 dated daily backups kept in a folder chosen at install, plus start with Windows in the system tray; awaiting the owner's install test. OPAC redesign in progress; owner chose staff-managed categories. Open owner decisions: whether to remove the AI co-author line from merge commit 7c72381 (needs a history rewrite and force push on main, not done); delete temporary branch `wordpress-import-temp` (website zip used for the WordPress import). Standing rule from the owner: never add Claude/AI co-author or attribution lines to commits or PRs. Housekeeping: removed leftover stash-conflict markers that commit b534af6 left in PROGRESS.json, PROGRESS.md and SESSION_HANDOFF.md, keeping both sides.
+
 ## Optional Email/WhatsApp overdue reminders implemented
 
 2026-11-27T14:24:32.191Z
@@ -57,7 +56,12 @@ Owner approved saving 3 high-value features to the roadmap/handoff and implement
 1. **Z39.50 / ISBN auto-fill** (starting now) — explicit user-triggered ISBN lookup in Add Record to populate title, authors, publisher, year, pages, subjects, and cover without sending library data.
 2. **Patron OPAC login** (queued) — member sign-in in the public OPAC to view active loans, due dates, fines, and place hold requests.
 3. **Optional Email/WhatsApp overdue reminders** (queued) — opt-in reminder workflow for libraries with internet access.
->>>>>>> Stashed changes
+
+## Public website rebuilt (branch website-redesign, merged as PR #3)
+
+2026-11-27T13:05:00Z
+
+Outside v1 product scope. Replaced `website/` with six static pages (Home, Features, Get Pusthakam, Status, FAQ, About) plus `404.html` and a redirect from `try/`, in the app's Spine Label style with self-hosted Hanken Grotesk and Courier Prime. The old site offered a non-existent 0.1.0 download and claimed open source, encryption, Avery presets and macOS/Linux support; its hero image was AI-generated with garbled text. New copy only describes features found in the code and avoids "free"/open-source wording, following the 2026-11-27 commercial licensing decision. Screenshots are real app screens with synthetic data, made by `tools/website-screenshots/run.mjs` (dev preview plus browser-side mock; no app code changed). Removed `.github/workflows/static.yml`, which deployed the whole repository to GitHub Pages alongside `pages.yml`. Checked in Chromium at desktop (light and dark) and iPhone 13 sizes; no broken links or failed requests. Merged and published 2026-11-27 (see End-of-day status). Open owner questions: public price wording, whether the repository stays public (Pages and GitHub links depend on it), contact for pilot libraries.
 
 ## Hyperlinked copyright notice with UTM and SEO attributes
 
