@@ -43,7 +43,7 @@ const RECORD: RecordDetail = {
   id: 1, title: "Balyakalasakhi", subtitle: null, edition: null, publisher: "DC Books", publicationPlace: null, publicationYear: 1944,
   language: null, physicalDescription: null, pagination: null, series: null, abstract: null, notes: null, isbn10: null,
   isbn13: "9780306406157", classificationSchemeId: 1, classificationNumber: "894.8123", keywords: null, archived: false,
-  contributors: [{ name: "Vaikom Muhammad Basheer", role: "author" }], subjects: ["Malayalam fiction"], copies: [COPY],
+  contributors: [{ name: "Vaikom Muhammad Basheer", role: "author" }], subjects: ["Malayalam fiction"], categories: [{ id: 1, name: "Malayalam Fiction" }], copies: [COPY],
 };
 
 const SUMMARY = {

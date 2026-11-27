@@ -96,6 +96,8 @@ export function RecordPage() {
           ))}
           <dt className="text-muted">{t("Subjects")}</dt>
           <dd>{r.subjects.length ? r.subjects.join(" · ") : <span className="text-muted">{t("None")}</span>}</dd>
+          <dt className="text-muted">{t("Categories")}</dt>
+          <dd>{r.categories?.length ? r.categories.map((c) => c.name).join(" · ") : <span className="text-muted">{t("None")}</span>}</dd>
           {r.abstract && <><dt className="text-muted">{t("Abstract")}</dt><dd className="max-w-prose">{r.abstract}</dd></>}
           {r.notes && <><dt className="text-muted">{t("Notes")}</dt><dd className="max-w-prose">{r.notes}</dd></>}
         </dl>

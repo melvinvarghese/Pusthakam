@@ -118,8 +118,10 @@ pub struct PublicOpacItem {
     pub publisher: Option<String>,
     pub year: Option<i64>,
     pub isbn: Option<String>,
-    pub classification: Option<String>,
+    pub categories: Vec<String>,
     pub subjects: Vec<String>,
+    /// Shelf call numbers of the copies, shown only in the detail view as "Where to find it".
+    pub call_numbers: Vec<String>,
     pub available_copies: i64,
     pub total_copies: i64,
     pub locations: Vec<String>,
@@ -609,7 +611,7 @@ pub fn opac_search_filtered(
     query_text: &str,
     page: i64,
     page_size: i64,
-    classification: Option<&str>,
+    category: Option<i64>,
     available_only: bool,
 ) -> AppResult<PublicOpacSearchResult> {
     let config = get_or_init_config(conn)?;
@@ -618,11 +620,9 @@ pub fn opac_search_filtered(
             "Public OPAC access is currently disabled.".into(),
         ));
     }
-    let class = classification.unwrap_or("");
-    if !class.is_empty() && (class.len() != 1 || !class.as_bytes()[0].is_ascii_digit()) {
-        return Err(AppError::Validation(
-            "Choose a valid classification group.".into(),
-        ));
+    let category = category.unwrap_or(0);
+    if category < 0 {
+        return Err(AppError::Validation("Choose a valid category.".into()));
     }
     let p = page.max(1);
     let ps = page_size.clamp(1, 50);
@@ -641,7 +641,9 @@ pub fn opac_search_filtered(
     // Apply filters before counting and pagination, never to just the visible page.
     let predicate = "r.archived_at IS NULL
         AND (?1 = '' OR r.id IN (SELECT rowid FROM catalogue_fts WHERE catalogue_fts MATCH ?1))
-        AND (?2 = '' OR substr(trim(r.classification_number), 1, 1) = ?2)
+        AND (?2 = 0 OR r.id IN (SELECT rc.record_id FROM record_categories rc
+                 JOIN browse_categories c ON c.id = rc.category_id AND c.archived_at IS NULL
+                 WHERE rc.category_id = ?2 AND rc.source IN ('rule','manual')))
         AND (?3 = 0 OR EXISTS (SELECT 1 FROM physical_items pi WHERE pi.record_id = r.id AND pi.status = 'available'))";
     // Empty MATCH expressions are invalid in SQLite even inside an OR. Omit the FTS subquery entirely.
     let predicate = if fts.is_empty() {
@@ -654,13 +656,13 @@ pub fn opac_search_filtered(
     };
     let total: i64 = conn.query_row(
         &format!("SELECT COUNT(*) FROM bibliographic_records r WHERE {predicate}"),
-        params![fts, class, available_only],
+        params![fts, category, available_only],
         |r| r.get(0),
     )?;
     let mut stmt = conn.prepare(&format!(
         "SELECT r.id FROM bibliographic_records r WHERE {predicate} ORDER BY r.title COLLATE NOCASE ASC, r.id ASC LIMIT ?4 OFFSET ?5"
     ))?;
-    let rows = stmt.query_map(params![fts, class, available_only, ps, offset], |r| {
+    let rows = stmt.query_map(params![fts, category, available_only, ps, offset], |r| {
         r.get::<_, i64>(0)
     })?;
     let mut items = Vec::new();
@@ -686,7 +688,7 @@ pub fn opac_get_record(conn: &Connection, id: i64) -> AppResult<Option<PublicOpa
         |r| Ok((r.get(0)?, r.get(1)?, r.get(2)?, r.get(3)?, r.get(4)?, r.get(5)?)),
     );
 
-    let (title, subtitle, publisher, year, isbn, classification) = match row {
+    let (title, subtitle, publisher, year, isbn, class_number) = match row {
         Ok(r) => r,
         Err(rusqlite::Error::QueryReturnedNoRows) => return Ok(None),
         Err(e) => return Err(AppError::Database(e)),
@@ -741,6 +743,30 @@ pub fn opac_get_record(conn: &Connection, id: i64) -> AppResult<Option<PublicOpa
         locations.push(l?);
     }
 
+    let categories = crate::services::browse_categories::record_categories(conn, id)?
+        .into_iter()
+        .map(|c| c.name)
+        .collect();
+
+    // Call numbers members can use on the shelf. Falls back to the record's class number.
+    let mut cn_stmt = conn.prepare(
+        "SELECT DISTINCT trim(call_number) FROM physical_items
+         WHERE record_id = ?1 AND call_number IS NOT NULL AND trim(call_number) <> ''
+           AND status NOT IN ('withdrawn', 'lost')
+         ORDER BY 1",
+    )?;
+    let mut call_numbers = cn_stmt
+        .query_map([id], |r| r.get::<_, String>(0))?
+        .collect::<Result<Vec<_>, _>>()?;
+    if call_numbers.is_empty() {
+        if let Some(n) = class_number
+            .map(|n| n.trim().to_string())
+            .filter(|n| !n.is_empty())
+        {
+            call_numbers.push(n);
+        }
+    }
+
     Ok(Some(PublicOpacItem {
         id,
         title,
@@ -749,8 +775,9 @@ pub fn opac_get_record(conn: &Connection, id: i64) -> AppResult<Option<PublicOpa
         publisher,
         year,
         isbn,
-        classification,
+        categories,
         subjects,
+        call_numbers,
         available_copies,
         total_copies,
         locations,
@@ -1468,15 +1495,44 @@ fn handle_http_connection(
         }
     }
 
+    // Route: GET /api/opac/categories -> browse categories that hold visible books
+    if method == "GET" && uri.split('?').next() == Some("/api/opac/categories") {
+        let opac_on = get_or_init_config(&conn)
+            .map(|c| c.enabled && c.opac_enabled)
+            .unwrap_or(false);
+        if !opac_on {
+            let json = serde_json::json!({ "error": "Public OPAC access is currently disabled." })
+                .to_string();
+            return send_json(&mut stream, 403, &json);
+        }
+        return match crate::services::browse_categories::opac_categories(&conn) {
+            Ok(categories) => {
+                let json = serde_json::to_string(&categories).unwrap_or_default();
+                send_json(&mut stream, 200, &json)
+            }
+            Err(e) => {
+                let json = serde_json::json!({ "error": e.to_string() }).to_string();
+                send_json(&mut stream, 500, &json)
+            }
+        };
+    }
+
     // Route: GET /api/opac/search?q=...
     if method == "GET" && uri.split('?').next() == Some("/api/opac/search") {
         let q = extract_query_param(uri, "q").unwrap_or_default();
         let page = extract_query_param(uri, "page")
             .and_then(|p| p.parse().ok())
             .unwrap_or(1);
-        let class = extract_query_param(uri, "class").unwrap_or_default();
+        let category = match extract_query_param(uri, "category").filter(|c| !c.is_empty()) {
+            None => Some(0),
+            Some(c) => c.parse::<i64>().ok().filter(|id| *id > 0),
+        };
         let available = extract_query_param(uri, "available").as_deref() == Some("true");
-        match opac_search_filtered(&conn, &q, page, 20, Some(&class), available) {
+        let result = match category {
+            Some(category) => opac_search_filtered(&conn, &q, page, 20, Some(category), available),
+            None => Err(AppError::Validation("Choose a valid category.".into())),
+        };
+        match result {
             Ok(res) => {
                 let json = serde_json::to_string(&res).unwrap_or_default();
                 return send_json(&mut stream, 200, &json);
@@ -2193,24 +2249,36 @@ mod tests {
         conn.execute("INSERT INTO bibliographic_records (id, title, classification_number) VALUES (600, 'Z Computing', '005.2')", []).unwrap();
         conn.execute("INSERT INTO physical_items (record_id, location_id, item_category_id, barcode, accession_no, status) VALUES (600, 301, 401, 'Z-600', 'Z-600', 'available')", []).unwrap();
         conn.execute("INSERT INTO bibliographic_records (id, title, classification_number, archived_at) VALUES (601, 'Archived', '005', '2026-01-01')", []).unwrap();
-        let filtered = opac_search_filtered(&conn, "", 2, 1, Some("0"), true).unwrap();
+        crate::services::browse_categories::apply_all_rules(&conn).unwrap();
+        let category = |name: &str| -> i64 {
+            conn.query_row(
+                "SELECT id FROM browse_categories WHERE name = ?1",
+                [name],
+                |r| r.get(0),
+            )
+            .unwrap()
+        };
+        let computers = category("Computers & IT");
+        let english_fiction = category("English Fiction");
+        let malayalam_fiction = category("Malayalam Fiction");
+        let filtered = opac_search_filtered(&conn, "", 2, 1, Some(computers), true).unwrap();
         assert_eq!(filtered.total, 2);
         assert_eq!(filtered.items.len(), 1);
         assert_eq!(filtered.items[0].id, 600);
         assert_eq!(
-            opac_search_filtered(&conn, "", 1, 20, Some("8"), true)
+            opac_search_filtered(&conn, "", 1, 20, Some(english_fiction), true)
                 .unwrap()
                 .total,
             0
         );
         assert_eq!(
-            opac_search_filtered(&conn, "Algorithms", 1, 20, Some("0"), true)
+            opac_search_filtered(&conn, "Algorithms", 1, 20, Some(computers), true)
                 .unwrap()
                 .total,
             1
         );
         assert_eq!(
-            opac_search_filtered(&conn, "Cormen", 1, 20, Some("0"), true)
+            opac_search_filtered(&conn, "Cormen", 1, 20, Some(computers), true)
                 .unwrap()
                 .total,
             1
@@ -2227,7 +2295,9 @@ mod tests {
                 .total,
             0
         );
-        assert!(opac_search_filtered(&conn, "", 1, 20, Some("8%"), false).is_err());
+        assert!(opac_search_filtered(&conn, "", 1, 20, Some(-1), false).is_err());
+        // Members see category names, never class numbers, in search results.
+        assert_eq!(filtered.items[0].categories, vec!["Computers & IT"]);
         assert!(opac_search_filtered(&conn, "", i64::MAX, 20, None, false)
             .unwrap()
             .items
@@ -2246,8 +2316,9 @@ mod tests {
         // Reuse catalogue token handling so Malayalam vowel marks are retained.
         conn.execute("INSERT INTO bibliographic_records (id, title, classification_number) VALUES (602, 'ബാല്യകാലസഖി', '894.8123')", []).unwrap();
         crate::services::catalogue::reindex(&conn, 602).unwrap();
+        crate::services::browse_categories::apply_rules_for_record(&conn, 602).unwrap();
         assert_eq!(
-            opac_search_filtered(&conn, "ബാല്യകാലസഖി", 1, 20, Some("8"), false)
+            opac_search_filtered(&conn, "ബാല്യകാലസഖി", 1, 20, Some(malayalam_fiction), false)
                 .unwrap()
                 .total,
             1
