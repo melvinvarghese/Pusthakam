@@ -1,11 +1,11 @@
 {
   "schemaVersion": 1,
-  "lastUpdated": "2026-11-27T06:13:47.403Z",
+  "lastUpdated": "2026-11-27T13:05:00Z",
   "currentPhase": "2",
   "currentTask": {
-    "title": "Hyperlinked Melvin Varghese copyright notice to melvinvarghese.in/support/ with UTM and SEO attributes",
+    "title": "Rebuilt the public website (website/) in the Spine Label style",
     "status": "in-progress",
-    "detail": "Hyperlinked Melvin Varghese in the runtime copyright footer (AppShell sidebar, AuthLayout setup/sign-in, and embedded OPAC footer) to https://melvinvarghese.in/support/ with static UTM attribution (utm_source=pusthakam, utm_medium=app|opac, utm_campaign=copyright_footer, utm_content=app_sidebar|app_auth|opac_footer), target=_blank, rel=noopener noreferrer, and descriptive title attribute. Uses openExternal() in desktop/web app via existing melvinvarghese.in/* opener capability."
+    "detail": "Outside v1 product scope. Replaced the old site (false download/open-source/encryption claims, AI-generated hero image) with six static pages: Home, Features, Get Pusthakam, Status, FAQ, About, plus 404 and a redirect from try/. Only features present in the code are described; no 'free' or open-source wording, following the 2026-11-27 commercial licensing decision. Screenshots come from the dev preview with synthetic data via tools/website-screenshots. Removed .github/workflows/static.yml, which deployed the whole repository to GitHub Pages. Awaiting owner review on branch website-redesign; not merged or published."
   },
   "nextMilestone": {
     "title": "macOS and Linux package smoke tests",
@@ -3951,6 +3951,12 @@
     }
   ],
   "recentActivity": [
+    {
+      "kind": "progress",
+      "at": "2026-11-27T13:05:00Z",
+      "title": "Rebuilt the public website on branch website-redesign",
+      "detail": "Outside v1 product scope. Replaced the old site (false download/open-source/encryption claims, AI-generated hero image) with six static pages: Home, Features, Get Pusthakam, Status, FAQ, About, plus 404 and a redirect from try/. Only features present in the code are described; no 'free' or open-source wording, following the 2026-11-27 commercial licensing decision. Screenshots come from the dev preview with synthetic data via tools/website-screenshots. Removed .github/workflows/static.yml, which deployed the whole repository to GitHub Pages. Awaiting owner review on branch website-redesign; not merged or published."
+    },
     {
       "kind": "progress",
       "at": "2026-11-27T06:13:47.403Z",
