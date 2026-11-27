@@ -1502,6 +1502,7 @@ mod tests {
                 role: "author".into(),
             }],
             subjects: vec!["Malayalam fiction".into()],
+            categories: None,
         };
         let record_id = save_record(&conn, Some(&actor), &rec).unwrap();
 

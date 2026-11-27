@@ -6,7 +6,7 @@ import { invoke } from "@tauri-apps/api/core";
 import { openUrl } from "@tauri-apps/plugin-opener";
 import { previewMode } from "@/lib/preview";
 import { staffHttpCommand, staffHttpConfig } from "./staffHttp";
-import type { HistoryBatchSummary, HistorySummary, HistoryPreview, RenewalImportPreview, LoanImportPreview, MemberFineAccount, LibraryCalendar, Holiday,
+import type { BrowseCategory, BrowseCategoryInput, HistoryBatchSummary, HistorySummary, HistoryPreview, RenewalImportPreview, LoanImportPreview, MemberFineAccount, LibraryCalendar, Holiday,
   CatalogueExportFormat, CatalogueExportFile, AccessionFormat, AppErrorPayload, AppInfo, ArchiveKind, CirculationDay, ConfigOverview, CopyBatchInput, CopyPage, CopyQuery,
   CopyRecord, CopyStatus, CopyUpdateInput, DashboardOverview, DuplicateHit, DuplicateProbe, FineAmount, FineHistoryPage, FinePage, FineSettlement, ImportOptions, ImportPreview,
   ImportPreviewRequest, ImportReport, IssuePreview, KohaPatronPreview, LibraryInput, MemberCategoryInput, MemberInput, MemberLoanPage, MemberPage, OpenLoanPage, OverduePage, RenewalPreview, ReservationPage, ReturnCondition, ReturnPreview,
@@ -331,6 +331,12 @@ export const classificationApi = {
     call<number>("classification_save_subject", { input }),
   mergeSubjects: (fromId: number, toId: number) =>
     call<void>("classification_merge_subjects", { fromId, toId }),
+  listBrowseCategories: (includeArchived = false) =>
+    call<BrowseCategory[]>("browse_categories_list", { includeArchived }),
+  saveBrowseCategory: (input: BrowseCategoryInput) =>
+    call<number>("browse_categories_save", { input }),
+  setBrowseCategoryArchived: (id: number, archived: boolean) =>
+    call<void>("browse_categories_set_archived", { id, archived }),
   listMarcMappings: () =>
     call<MarcMapping[]>("classification_list_marc_mappings", {}),
   saveMarcMapping: (input: MarcMappingInput) =>

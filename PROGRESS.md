@@ -1,5 +1,16 @@
 # PROGRESS
 
+## OPAC browse categories implemented (branch opac-browse-categories)
+
+2026-11-27T16:00:00Z
+
+Owner decision (DECISIONS "OPAC browse categories"): members browse the OPAC by staff-managed categories instead of DDC numbers.
+- Migration `0025_browse_categories.sql`: `browse_categories` (31 defaults with DDC prefix rules), `record_categories` (`rule` / `manual` / `excluded`), view `browse_category_rules`; existing books are placed by rule during the migration.
+- `src-tauri/src/services/browse_categories.rs` (list/save/archive, rule application, record categories, OPAC list); commands `browse_categories_list|save|set_archived` (desktop + browser staff gateway). `catalogue::save_record` accepts optional `categories`; `RecordDetail.categories`.
+- OPAC: `GET /api/opac/categories`, search filter `category=<id>` replaces `class=<digit>`; result rows show category names, not class numbers; details show "Where to find it" (location + shelf call number).
+- Staff UI: Classification & Authorities → Browse Categories tab; category chips on the record form (pre-filled from the DDC number); categories on the record page.
+- Status: IMPLEMENTED. Verified with `cargo test` (all suites pass; `staff_web` needs a built `dist/`), `cargo clippy -D warnings`, `cargo fmt --check`, `npm run typecheck`, `npm run lint`, Vitest 51 files / 280 tests. Not yet checked in a browser on a real catalogue.
+
 <<<<<<< Updated upstream
 ## Public website rebuilt (branch website-redesign)
 
