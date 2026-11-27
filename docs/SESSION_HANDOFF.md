@@ -1004,13 +1004,16 @@ Evidence inspected:
 Owner decisions:
 - Pusthakam's public commercial release should offer a **30-day free trial before payment**. A new user can try the software for 30 days without paying upfront. If satisfied during the trial, the user may purchase a licence.
 - The paid model is a **one-time payment**, not a recurring subscription.
-- The chosen licence duration is **perpetual**: after purchasing, the customer may continue using the licensed Pusthakam product indefinitely, subject to the final licence terms. This decision does **not** automatically promise lifetime feature upgrades, major-version upgrades, maintenance or support; those entitlements remain to be decided.
+- The chosen licence duration is **perpetual**: after purchasing, the customer may continue using Pusthakam indefinitely.
+- **Internal pricing/update policy:** a purchase is a one-time payment that covers future Pusthakam updates. If the selling price increases later, existing customers keep their purchase and do not pay the difference or buy again to receive those updates. A later price change applies only to new purchases.
+- **Customer-facing messaging constraint:** publicly communicate the 30-day trial and one-time payment. Do not separately advertise or promise the internal future-update/pricing protection; do not imply a subscription or recurring fee.
+- This internal policy covers future product updates, including later version upgrades, without an additional payment for existing purchasers. It is a product entitlement decision, not a public marketing claim.
 
 Release sequence:
 1. Complete the required CI, platform packaging, security, installer and real-world acceptance checks before calling the build an official release.
 2. Use a controlled beta/pilot with selected libraries before the public official release.
 3. At official release, clearly explain the 30-day trial, its start/end rules, what happens when it expires, how to purchase, and how to activate a paid licence.
 
-Still requiring owner decisions: exact trial-start trigger and clock policy (especially offline use), post-expiry access and feature restrictions, licence price, licence scope (for example, the number of library installations covered), update/major-version entitlement, activation/online validation and device-transfer rules, and support entitlement. Do not delete or corrupt library data when a trial expires; preserve customer data and provide a clear purchase/activation path. The exact post-expiry access policy requires owner approval.
+Still requiring owner decisions: exact trial-start trigger and clock policy (especially offline use), post-expiry access and feature restrictions, licence price, licence scope (for example, the number of library installations covered), activation/online validation and device-transfer rules, and support entitlement. Do not delete or corrupt library data when a trial expires; preserve customer data and provide a clear purchase/activation path. The exact post-expiry access policy requires owner approval.
 
 This records product/business decisions only. No trial timer, licence enforcement, payment integration, installer, CI or release implementation was changed or verified in this documentation update.
