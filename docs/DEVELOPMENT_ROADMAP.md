@@ -185,7 +185,8 @@ Completed outside v1 scope (no change to v1 weights):
 - **PAUSED until Monday:** Queued for Monday on explicit resume: **Member Profile Batch 3** (printable fine receipts, printable account statement, HTTP `/api/opac/patron/*` integration tests), **Malayalam 519 reconciliation**, and **PENDING_WORK Section 1** (Safety & Security Fixes).
 
 
-## CI failure investigation — 27 November 2026
+
+## CI reliability blockers — 27 November 2026
 
 Documentation checkpoint only; no application source, tests, workflow files, or release settings were changed in this update. PR #2 remains open and unmerged.
 
