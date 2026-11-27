@@ -8,6 +8,8 @@ for (const [, module] of handlers) {
   if (!modules.has(module)) modules.set(module, await readFile(new URL(`src-tauri/src/commands/${module}.rs`, root), 'utf8'));
 }
 const native = new Set(['catalogue_save_export', 'reports_save_export', 'backup_copy_to_folder']);
+// Settings of the host computer itself (folders, Windows sign-in startup); browsers get a clear refusal.
+const hostOnly = new Set(['backup_set_daily_folder', 'launch_at_startup_get', 'launch_at_startup_set']);
 const bootstrap = new Set(['complete_setup', 'setup_status', 'login', 'logout', 'current_session', 'app_info']);
 const dispatcher = await readFile(new URL('src-tauri/src/services/staff_dispatch.rs', root), 'utf8');
 const commands = handlers.map(([, module, command]) => {
@@ -17,7 +19,7 @@ const commands = handlers.map(([, module, command]) => {
   if (!dispatcher.includes(`"${command}"`)) throw Error(`Browser dispatcher missing registered command: ${command}`);
   return {
     command, module, source: `src-tauri/src/commands/${module}.rs`,
-    browserBackend: command === 'backup_copy_to_folder' ? 'replaced-by-authenticated-download' : native.has(command) ? 'browser-download-adapter' : 'shared-http-dispatch',
+    browserBackend: command === 'backup_copy_to_folder' ? 'replaced-by-authenticated-download' : hostOnly.has(command) ? 'host-computer-only' : native.has(command) ? 'browser-download-adapter' : 'shared-http-dispatch',
     verification: 'Shared workflows and route smoke tests; see STAFF_BROWSER_REVIEW.json and PROGRESS.json. Not per-command production deployment acceptance.',
     sharedHandlerReady: file.lastIndexOf('crate::shared_command! {', declaration.index) > file.lastIndexOf('#[tauri::command', declaration.index),
     adaptation: native.has(command) ? 'browser-file-adapter' : bootstrap.has(command) ? 'independent-browser-bootstrap/session' : 'shared-permission-checked-handler',

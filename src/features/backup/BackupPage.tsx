@@ -8,6 +8,50 @@ import { Panel } from "@/components/ui/Panel";
 import { backupApi, toApiError } from "@/lib/api";
 import { can, useSession } from "@/lib/session";
 import { staffHttpConfig } from "@/lib/api/staffHttp";
+import type { BackupList } from "@/lib/api/types";
+
+/** Where dated daily backups go. Set on the computer that runs Pusthakam, not from a browser. */
+function DailyFolder({ list, browserStaff }: { list: BackupList; browserStaff: boolean }) {
+  const client = useQueryClient();
+  const [editing, setEditing] = useState(false);
+  const save = useMutation({
+    mutationFn: backupApi.setDailyFolder,
+    onSuccess: async () => {
+      await client.invalidateQueries({ queryKey: ["database-backups"] });
+      setEditing(false);
+    },
+  });
+  return (
+    <div className="mb-4 space-y-2">
+      <p className="text-sm font-medium">Daily backup folder</p>
+      <p className="break-all font-mono text-xs text-muted">{list.dailyFolder ?? "Pusthakam data folder (same disk as the library database)"}</p>
+      {!list.dailyFolderAvailable && (
+        <p role="alert" className="text-sm text-danger">This folder cannot be reached right now. Daily backups are saved in the Pusthakam data folder until it is connected again.</p>
+      )}
+      <p className="text-sm text-muted">A different drive or a USB drive is safest: if this computer&apos;s disk fails, the backups survive.</p>
+      {!browserStaff && !editing && (
+        <div className="flex flex-wrap gap-2">
+          <Button size="sm" onClick={() => { save.reset(); setEditing(true); }}>Change folder</Button>
+          {list.dailyFolder && <Button size="sm" disabled={save.isPending} onClick={() => save.mutate("")}>Use Pusthakam data folder</Button>}
+        </div>
+      )}
+      {editing && (
+        <form className="space-y-2" onSubmit={(event) => {
+          event.preventDefault();
+          save.mutate(String(new FormData(event.currentTarget).get("dailyFolder") ?? ""));
+        }}>
+          <TextField label="Folder for daily backups" name="dailyFolder" required disabled={save.isPending}
+            defaultValue={list.dailyFolder ?? ""} />
+          <div className="flex gap-2">
+            <Button type="submit" size="sm" variant="primary" disabled={save.isPending}>{save.isPending ? "Saving…" : "Save folder"}</Button>
+            <Button size="sm" disabled={save.isPending} onClick={() => setEditing(false)}>Cancel</Button>
+          </div>
+        </form>
+      )}
+      {save.isError && <p role="alert" className="text-sm text-danger">{toApiError(save.error).message}</p>}
+    </div>
+  );
+}
 
 export function BackupPage() {
   const { session } = useSession();
@@ -70,16 +114,20 @@ export function BackupPage() {
               onChange={(event) => schedule.mutate(event.target.checked)} />
             Back up on first launch each day or when the date changes while Pusthakam is open
           </label>
-          <p className="mb-4 text-sm text-muted">A checked daily backup replaces older daily copies. Manual backups and backups queued for restore are kept.</p>
+          <p className="mb-4 text-sm text-muted">Daily backups are named with the date. The last {list.data.dailyKeep} are kept and the oldest is deleted when a new one is made. Manual backups and backups queued for restore are kept.</p>
           {schedule.isError && <p role="alert" className="mb-4 text-danger">{toApiError(schedule.error).message}</p>}
-          <p className="text-sm font-medium">Backup folder</p>
-          <p className="break-all font-mono text-xs text-muted">{list.data.folder}</p>
-          <p className="mb-4 text-sm text-muted">Keep a copy on a separate drive or another computer so you can recover if this computer is lost.</p>
+          <DailyFolder list={list.data} browserStaff={browserStaff} />
+          {list.data.lastDaily && <p className="mb-4 text-sm" role="status">{list.data.lastDaily}</p>}
+          <p className="text-sm font-medium">Pusthakam data folder</p>
+          <p className="mb-4 break-all font-mono text-xs text-muted">{list.data.folder}</p>
           {list.data.files.length === 0 ? <p className="text-muted">No database backups yet.</p> : (
             <ul aria-label="Saved backups" className="divide-y divide-line">
               {list.data.files.map((file) => (
                 <li key={file.name} className="flex flex-wrap items-baseline justify-between gap-2 py-3 text-sm">
-                  <span className="break-all font-mono">{file.name}</span>
+                  <span className="break-all">
+                    <span className="font-mono">{file.name}</span>
+                    {file.folder !== list.data.folder && <span className="block text-xs text-muted">In the daily backup folder</span>}
+                  </span>
                   <div className="flex flex-wrap items-center gap-2">
                     <span className="text-muted">{file.sizeBytes.toLocaleString()} bytes</span>
                     <Button size="sm" disabled={verify.isPending} onClick={() => verify.mutate(file.name)} aria-label={`Verify ${file.name}`}>
