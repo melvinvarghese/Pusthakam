@@ -941,6 +941,8 @@ export interface RenewalPreview extends ReturnPreview {
 export interface OverdueLoan extends ReturnPreview {
   barcode: string;
   memberNumber: string;
+  memberEmail?: string | null;
+  memberPhone?: string | null;
   daysOverdue: number;
 }
 

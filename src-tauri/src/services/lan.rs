@@ -1253,6 +1253,214 @@ fn handle_http_connection(
         return send_json(&mut stream, 404, "{\"error\":\"Cover not found\"}");
     }
 
+    // Patron OPAC account routes (isolated from staff sessions; only active when OPAC is enabled)
+    if uri.starts_with("/api/opac/patron/") {
+        let opac_on = get_or_init_config(&conn)
+            .map(|c| c.enabled && c.opac_enabled)
+            .unwrap_or(false);
+        if !opac_on {
+            return send_patron_json(
+                &mut stream,
+                403,
+                r#"{"error":"The public catalogue is currently disabled."}"#,
+                None,
+            );
+        }
+
+        if method == "GET" && uri == "/api/opac/patron/session" {
+            if let Some((_, member_id, csrf)) = crate::services::opac_patron::current_session(&head)
+            {
+                match crate::services::opac_patron::account_summary(&mut conn, member_id, csrf) {
+                    Ok(acct) => {
+                        return send_patron_json(
+                            &mut stream,
+                            200,
+                            &serde_json::to_string(&acct).unwrap_or_default(),
+                            None,
+                        );
+                    }
+                    Err(e) => {
+                        let json = serde_json::json!({ "error": e.to_string() }).to_string();
+                        return send_patron_json(&mut stream, 404, &json, None);
+                    }
+                }
+            }
+            return send_patron_json(
+                &mut stream,
+                200,
+                r#"{"signedIn":false,"unpaidFineMinor":0,"loans":[],"reservations":[]}"#,
+                None,
+            );
+        }
+
+        if method == "POST" {
+            if !crate::services::opac_patron::same_origin_ok(&head) {
+                return send_patron_json(
+                    &mut stream,
+                    403,
+                    r#"{"error":"Cross-origin request rejected."}"#,
+                    None,
+                );
+            }
+            let body_str = extract_body(&request_str);
+
+            if uri == "/api/opac/patron/login" {
+                let input: crate::services::opac_patron::PatronLoginInput =
+                    match serde_json::from_str(body_str) {
+                        Ok(v) => v,
+                        Err(_) => {
+                            return send_patron_json(
+                                &mut stream,
+                                400,
+                                r#"{"error":"Invalid login payload."}"#,
+                                None,
+                            );
+                        }
+                    };
+                let member_id = match crate::services::opac_patron::authenticate(&conn, &input) {
+                    Ok(id) => id,
+                    Err(e) => {
+                        let status = if matches!(e, AppError::Validation(_)) { 400 } else { 401 };
+                        let json = serde_json::json!({ "error": e.to_string() }).to_string();
+                        return send_patron_json(&mut stream, status, &json, None);
+                    }
+                };
+                let secure = crate::services::opac_patron::is_secure_request(&head);
+                let (cookie, csrf, _) =
+                    match crate::services::opac_patron::create_session(member_id, secure) {
+                        Ok(v) => v,
+                        Err(e) => {
+                            let json = serde_json::json!({ "error": e.to_string() }).to_string();
+                            return send_patron_json(&mut stream, 500, &json, None);
+                        }
+                    };
+                return match crate::services::opac_patron::account_summary(&mut conn, member_id, csrf)
+                {
+                    Ok(acct) => send_patron_json(
+                        &mut stream,
+                        200,
+                        &serde_json::to_string(&acct).unwrap_or_default(),
+                        Some(&cookie),
+                    ),
+                    Err(e) => {
+                        let json = serde_json::json!({ "error": e.to_string() }).to_string();
+                        send_patron_json(&mut stream, 500, &json, None)
+                    }
+                };
+            }
+
+            if uri == "/api/opac/patron/logout" {
+                let cleared = crate::services::opac_patron::clear_session(&head);
+                return send_patron_json(
+                    &mut stream,
+                    200,
+                    r#"{"signedIn":false,"unpaidFineMinor":0,"loans":[],"reservations":[]}"#,
+                    Some(&cleared),
+                );
+            }
+
+            let Some((_, member_id, csrf)) = crate::services::opac_patron::current_session(&head)
+            else {
+                return send_patron_json(
+                    &mut stream,
+                    401,
+                    r#"{"error":"Please sign in with your library card first."}"#,
+                    None,
+                );
+            };
+            let sent_csrf = head.header("x-csrf-token").unwrap_or("");
+            if sent_csrf != csrf {
+                return send_patron_json(
+                    &mut stream,
+                    403,
+                    r#"{"error":"Security token mismatch. Refresh and try again."}"#,
+                    None,
+                );
+            }
+
+            if uri == "/api/opac/patron/hold" {
+                let input: crate::services::opac_patron::PatronHoldInput =
+                    match serde_json::from_str(body_str) {
+                        Ok(v) => v,
+                        Err(_) => {
+                            return send_patron_json(
+                                &mut stream,
+                                400,
+                                r#"{"error":"Invalid hold request."}"#,
+                                None,
+                            );
+                        }
+                    };
+                if let Err(e) = crate::services::reservations::place_for_patron_record(
+                    &mut conn,
+                    member_id,
+                    input.record_id,
+                ) {
+                    let status = match &e {
+                        AppError::Conflict(_) => 409,
+                        AppError::Validation(_) => 400,
+                        _ => 500,
+                    };
+                    let json = serde_json::json!({ "error": e.to_string() }).to_string();
+                    return send_patron_json(&mut stream, status, &json, None);
+                }
+                return match crate::services::opac_patron::account_summary(&mut conn, member_id, csrf)
+                {
+                    Ok(acct) => send_patron_json(
+                        &mut stream,
+                        200,
+                        &serde_json::to_string(&acct).unwrap_or_default(),
+                        None,
+                    ),
+                    Err(e) => {
+                        let json = serde_json::json!({ "error": e.to_string() }).to_string();
+                        send_patron_json(&mut stream, 500, &json, None)
+                    }
+                };
+            }
+
+            if uri == "/api/opac/patron/cancel-hold" {
+                let input: crate::services::opac_patron::PatronCancelHoldInput =
+                    match serde_json::from_str(body_str) {
+                        Ok(v) => v,
+                        Err(_) => {
+                            return send_patron_json(
+                                &mut stream,
+                                400,
+                                r#"{"error":"Invalid cancel-hold request."}"#,
+                                None,
+                            );
+                        }
+                    };
+                if let Err(e) = crate::services::reservations::cancel_for_patron(
+                    &mut conn,
+                    member_id,
+                    input.reservation_id,
+                ) {
+                    let status = match &e {
+                        AppError::Conflict(_) => 409,
+                        _ => 500,
+                    };
+                    let json = serde_json::json!({ "error": e.to_string() }).to_string();
+                    return send_patron_json(&mut stream, status, &json, None);
+                }
+                return match crate::services::opac_patron::account_summary(&mut conn, member_id, csrf)
+                {
+                    Ok(acct) => send_patron_json(
+                        &mut stream,
+                        200,
+                        &serde_json::to_string(&acct).unwrap_or_default(),
+                        None,
+                    ),
+                    Err(e) => {
+                        let json = serde_json::json!({ "error": e.to_string() }).to_string();
+                        send_patron_json(&mut stream, 500, &json, None)
+                    }
+                };
+            }
+        }
+    }
+
     // Route: GET /api/opac/search?q=...
     if method == "GET" && uri.split('?').next() == Some("/api/opac/search") {
         let q = extract_query_param(uri, "q").unwrap_or_default();
@@ -1603,6 +1811,31 @@ fn send_json(stream: &mut TcpStream, status: u16, json: &str) -> std::io::Result
         status_line,
         json.len(),
         json
+    );
+    stream.write_all(resp.as_bytes())
+}
+
+fn send_patron_json(
+    stream: &mut TcpStream,
+    status: u16,
+    json: &str,
+    set_cookie: Option<&str>,
+) -> std::io::Result<()> {
+    let status_line = match status {
+        200 => "200 OK",
+        400 => "400 Bad Request",
+        401 => "401 Unauthorized",
+        403 => "403 Forbidden",
+        404 => "404 Not Found",
+        409 => "409 Conflict",
+        _ => "500 Internal Server Error",
+    };
+    let cookie_header = set_cookie
+        .map(|c| format!("Set-Cookie: {c}\r\n"))
+        .unwrap_or_default();
+    let resp = format!(
+        "HTTP/1.1 {status_line}\r\nContent-Type: application/json\r\nCache-Control: no-store\r\nX-Content-Type-Options: nosniff\r\n{cookie_header}Content-Length: {}\r\n\r\n{json}",
+        json.len()
     );
     stream.write_all(resp.as_bytes())
 }

@@ -9,7 +9,9 @@
       "identifier": "opener:allow-open-url",
       "allow": [
         { "url": "https://melvinvarghese.in/*" },
-        { "url": "https://melvinvarghese.github.io/*" }
+        { "url": "https://melvinvarghese.github.io/*" },
+        { "url": "https://wa.me/*" },
+        { "url": "mailto:*" }
       ]
     }
   ]

@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/Button";
 import { SelectField, TextField } from "@/components/ui/Field";
 import { Modal } from "@/components/ui/Modal";
 import { ApiError, catalogueApi } from "@/lib/api";
+import { lookupIsbnMetadata } from "@/lib/isbnLookup";
 import type { Contributor, ContributorRole, DuplicateHit, RecordDetail, RecordInput } from "@/lib/api/types";
 import { ROLE_LABELS, useConfig } from "./shared";
 
@@ -45,6 +46,7 @@ export function RecordFormDialog({ record, onClose, onSaved }: Props) {
   const [people, setPeople] = useState<Contributor[]>(record?.contributors.length ? record.contributors : [{ name: "", role: "author" }]);
   const [error, setError] = useState<string | null>(null);
   const [duplicates, setDuplicates] = useState<DuplicateHit[] | null>(null);
+  const [isbnStatus, setIsbnStatus] = useState<string | null>(null);
   const set = (k: keyof typeof f) => (e: { target: { value: string } }) => setF({ ...f, [k]: e.target.value });
 
   const build = (): RecordInput => ({
@@ -99,7 +101,37 @@ export function RecordFormDialog({ record, onClose, onSaved }: Props) {
     else check.mutate();
   };
 
-  const busy = save.isPending || check.isPending;
+  const isbnLookup = useMutation({
+    mutationFn: () => lookupIsbnMetadata(f.isbn),
+    onSuccess: (meta) => {
+      setError(null);
+      setF((prev) => ({
+        ...prev,
+        title: prev.title.trim() ? prev.title : (meta.title ?? prev.title),
+        subtitle: prev.subtitle.trim() ? prev.subtitle : (meta.subtitle ?? prev.subtitle),
+        publisher: prev.publisher.trim() ? prev.publisher : (meta.publisher ?? prev.publisher),
+        place: prev.place.trim() ? prev.place : (meta.publicationPlace ?? prev.place),
+        year: prev.year.trim() ? prev.year : (meta.publicationYear ?? prev.year),
+        language: prev.language.trim() ? prev.language : (meta.language ?? prev.language),
+        pagination: prev.pagination.trim() ? prev.pagination : (meta.pagination ?? prev.pagination),
+        classification: prev.classification.trim() ? prev.classification : (meta.classificationNumber ?? prev.classification),
+        subjects: prev.subjects.trim() ? prev.subjects : meta.subjects.join("\n"),
+        abstract: prev.abstract.trim() ? prev.abstract : (meta.abstract ?? prev.abstract),
+      }));
+      setPeople((prev) => {
+        const hasAny = prev.some((person) => person.name.trim() !== "");
+        if (hasAny || meta.authors.length === 0) return prev;
+        return meta.authors.map((name, i) => ({ name, role: i === 0 ? "author" : "additional_author" }));
+      });
+      setIsbnStatus(`Filled empty fields from ${meta.source}. Review before saving.`);
+    },
+    onError: (e) => {
+      setIsbnStatus(null);
+      setError(e instanceof ApiError ? e.message : "Could not look up that ISBN.");
+    },
+  });
+
+  const busy = save.isPending || check.isPending || isbnLookup.isPending;
   const setPerson = (i: number, patch: Partial<Contributor>) => setPeople(people.map((p, j) => (j === i ? { ...p, ...patch } : p)));
 
   return (
@@ -148,7 +180,12 @@ export function RecordFormDialog({ record, onClose, onSaved }: Props) {
         </fieldset>
 
         <div className="grid grid-cols-3 gap-3">
-          <TextField label="ISBN" value={f.isbn} onChange={set("isbn")} hint={t("10 or 13 digits")} />
+          <div className="col-span-3 flex items-end gap-2 rounded-md border border-line bg-band/50 p-3">
+            <div className="flex-1"><TextField label="ISBN" value={f.isbn} onChange={set("isbn")} hint={t("10 or 13 digits — scan or type ISBN, then click Fill from ISBN")} /></div>
+            <Button type="button" variant="secondary" disabled={busy || !f.isbn.trim()} onClick={() => { setIsbnStatus(null); setError(null); isbnLookup.mutate(); }} className="mb-5">
+              {isbnLookup.isPending ? t("Looking up…") : t("Fill from ISBN")}
+            </Button>
+          </div>
           <TextField label={t("Publisher")} value={f.publisher} onChange={set("publisher")} />
           <TextField label={t("Place of publication")} value={f.place} onChange={set("place")} />
           <TextField label={t("Year")} value={f.year} onChange={set("year")} inputMode="numeric" />
@@ -181,6 +218,7 @@ export function RecordFormDialog({ record, onClose, onSaved }: Props) {
           </div>
         </div>
 
+        {isbnStatus && <p role="status" className="text-xs text-ok">{isbnStatus}</p>}
         {error && <p role="alert" className="text-xs text-danger">{t(error)}</p>}
         <div className="flex justify-end gap-2 pt-1">
           <Button type="button" onClick={onClose}>{t("Cancel")}</Button>

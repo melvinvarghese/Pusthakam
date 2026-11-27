@@ -72,3 +72,11 @@ Owner currently edits 519; only the 319 file was updated with Noto font, approve
 ## Active combined review file updated
 
 The owner authorized updating 519 in place. Noto Sans Malayalam, approved contributor labels and auto-status formulas applied; all13 saved corrections and notes/IDs/batches preserved. Use519 as the review file, no duplicate319 review needed. Backup path and preservation checks: WORKBOOK_519_UPDATE.json. ColumnE is computed; type corrections inD and optional OK/Question inI. Live Excel calculation remains unverified; automatic calculation on open enabled.
+
+
+Latest Reservations wording follows approved-glossary.json and supersedes earlier booking terminology. Owner is correcting the519 review file; do not overwrite it.
+
+
+## Owner review completed; paused until Monday30 November2026
+
+Owner reports519 review done. Saved30 corrections; status metadata is30 Changed,11 OK,478 Not reviewed. Do not alter the workbook to force consistency or make the owner repeat319 review. OWNER_REVIEW_CHECKPOINT.json records hash/backup. On explicit resume reconcile current source and workbook IDs/placeholders before integrating corrections, preserving the approved glossary and newer ISBN work. No translation integration performed during save.

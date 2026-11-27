@@ -9,7 +9,7 @@
 </head>
 <body>
 <a class="skip" href="#q">Skip to search</a>
-<header class="brand"><img src="data:image/png;base64,{{LOGO}}" width="36" height="36" alt="Pusthakam"><span class="brand-name">Pusthakam</span><span>Public catalogue</span></header>
+<header class="brand"><img src="data:image/png;base64,{{LOGO}}" width="36" height="36" alt="Pusthakam"><span class="brand-name">Pusthakam</span><span>Public catalogue</span><button id="account-btn" type="button" class="account-btn">My account</button></header>
 <main>
   <section class="masthead" aria-labelledby="catalogue-title">
     <h1 id="catalogue-title">{{LIBRARY_NAME}}</h1>
@@ -34,6 +34,7 @@
 </main>
 <footer>Library catalogue · Pusthakam · © <span id="copyright-year">2026</span> <a href="https://melvinvarghese.in/support/?utm_source=pusthakam&amp;utm_medium=opac&amp;utm_campaign=copyright_footer&amp;utm_content=opac_footer" target="_blank" rel="noopener noreferrer" title="Pusthakam Library Management System by Melvin Varghese — Support &amp; Documentation">Melvin Varghese</a></footer>
 <dialog id="details" aria-labelledby="detail-title"><button id="close-details" type="button">Close details</button><div id="detail-content"></div></dialog>
+<dialog id="account-dialog" aria-labelledby="account-title"><button id="close-account" type="button">Close</button><div id="account-content"></div></dialog>
 <script>{{SCRIPT}}</script>
 </body>
 </html>

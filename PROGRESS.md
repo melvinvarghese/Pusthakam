@@ -1,10 +1,63 @@
 # PROGRESS
 
+<<<<<<< Updated upstream
 ## Public website rebuilt (branch website-redesign)
 
 2026-11-27T13:05:00Z
 
 Outside v1 product scope. Replaced `website/` with six static pages (Home, Features, Get Pusthakam, Status, FAQ, About) plus `404.html` and a redirect from `try/`, in the app's Spine Label style with self-hosted Hanken Grotesk and Courier Prime. The old site offered a non-existent 0.1.0 download and claimed open source, encryption, Avery presets and macOS/Linux support; its hero image was AI-generated with garbled text. New copy only describes features found in the code and avoids "free"/open-source wording, following the 2026-11-27 commercial licensing decision. Screenshots are real app screens with synthetic data, made by `tools/website-screenshots/run.cjs` (dev preview plus browser-side mock; no app code changed). Removed `.github/workflows/static.yml`, which deployed the whole repository to GitHub Pages alongside `pages.yml`. Checked in Chromium at desktop (light and dark) and iPhone 13 sizes; no broken links or failed requests. Not merged or published; awaiting owner review. Open owner questions: public price wording, whether the repository stays public (Pages and GitHub links depend on it), contact for pilot libraries.
+=======
+## Optional Email/WhatsApp overdue reminders implemented
+
+2026-11-27T14:24:32.191Z
+
+Implemented Feature 3 of the post-v1 Koha-parity batch (**Optional Email/WhatsApp overdue reminders**), completing all 3 requested features:
+- Added `member_email` and `member_phone` to `OverdueLoan` in `src-tauri/src/services/circulation.rs` and `src/lib/api/types.ts`.
+- Added `src/lib/reminders.ts` (`buildOverdueReminderMessage`, `buildMailtoUrl`, `buildWhatsAppUrl`) + `src/lib/reminders.test.ts` (3 tests).
+- Permitted `https://wa.me/*` and `mailto:*` in `src-tauri/capabilities/default.json`.
+- Added opt-in **Email**, **WhatsApp**, and **Copy notice** actions in `src/features/circulation/OverdueLoans.tsx` (zero background network calls; uses cached library name).
+- Verified with `npm.cmd run typecheck`, `npm.cmd run lint`, and 25 passing Vitest tests (`reminders.test.ts`, `api.test.ts`, `CirculationPage.test.tsx`).
+
+## Patron OPAC login & self-service holds implemented
+
+2026-11-27T13:13:07.623Z
+
+Implemented Feature 2 of the post-v1 Koha-parity batch (**Patron OPAC login**):
+- Added `src-tauri/src/services/opac_patron.rs` (`authenticate`, `account_summary`, isolated `HttpOnly; SameSite=Strict` session cookies, `X-CSRF-Token`, `same_origin_ok`). Patrons sign in with member number + registered phone or email.
+- Added `place_for_patron_record` and `cancel_for_patron` in `src-tauri/src/services/reservations.rs` with audit logging.
+- Wired `/api/opac/patron/session`, `/login`, `/logout`, `/hold`, and `/cancel-hold` in `src-tauri/src/services/lan.rs`.
+- Added **My account** sign-in/loans/fines/holds dialog and **Request hold** button in `src-tauri/src/services/opac/{index.html,styles.css,catalogue.js}`.
+- Rust tests passed: `opac_patron` (2/2), `opac_page` (1/1), `services::lan::tests` (7/7).
+- Next queued feature: **Optional Email/WhatsApp overdue reminders**.
+
+## PAUSED until Monday 30 November:519 review complete
+
+2026-11-27T12:57:37.399Z
+
+OWNER PAUSE until Monday 30 November 2026; no further implementation/design until explicit resume. Owner reports review of all519 Malayalam terms complete. Active original docs/translations/Pusthakam_Malayalam_Drafts_519.xlsx saved with30 nonempty correction cells, no notes; cached statuses30 Changed,11 OK,478 Not reviewed. Record owner completion separately from spreadsheet metadata; do not reset statuses, discard corrections or require duplicate319 review. Read-only inspection confirmed519 rows, no Excel lock; workbook SHA256 db2a302e6665b68e3721f1a2e2325ed467be2a78ff848ec8f84a35b23072e94a. Byte-preserving completed-review backup and OWNER_REVIEW_CHECKPOINT.json saved; same downloadable workbook saved as version2. No workbook cell edits or translation integration performed in this save operation. On explicit resume, read checkpoint and reconcile all owner corrections by ID/English/placeholder parity against current source and approved terminology (including contributor and Reservations), then apply reviewed wording while preserving newer source work. Also preserve the independent latest ISBN auto-fill changes/tests and queued patron OPAC login task; these were present on arrival and not modified or reverified here. Broader remaining translations, font/rendering/mobile/native installer verification remain pending. No source tests repeated for documentation-only save, no owner database changes, commit or push. V1 totals unchanged.
+
+Previous active work to preserve: ISBN auto-fill implemented in Add/Edit Record; Patron OPAC login next
+
+
+## ISBN auto-fill implemented in Catalogue
+
+2026-11-27T12:51:45.058Z
+
+Implemented Feature 1 of the post-v1 Koha-parity batch (**ISBN auto-fill**):
+- Added `src/lib/isbnLookup.ts` (`normalizeIsbn`, `parseOpenLibraryBook`, `parseGoogleBooksVolume`, `lookupIsbnMetadata`) with explicit user-triggered lookup only, 10s timeout, `credentials: "omit"`, and `referrerPolicy: "no-referrer"`.
+- Added **Fill from ISBN** button to `src/features/catalogue/RecordFormDialog.tsx`; fills only empty fields (Title, Subtitle, Authors, Publisher, Place, Year, Language, Pagination, Dewey Classification, Subjects, Abstract) without overwriting typed values.
+- Updated `connect-src` CSP in `src-tauri/tauri.conf.json` to permit `https://openlibrary.org` and `https://www.googleapis.com`.
+- Next queued feature: **Patron OPAC login** (view active loans and request holds).
+
+## Post-v1 features queued; starting ISBN auto-fill
+
+2026-11-27T12:49:04.020Z
+
+Owner approved saving 3 high-value features to the roadmap/handoff and implementing them sequentially:
+1. **Z39.50 / ISBN auto-fill** (starting now) — explicit user-triggered ISBN lookup in Add Record to populate title, authors, publisher, year, pages, subjects, and cover without sending library data.
+2. **Patron OPAC login** (queued) — member sign-in in the public OPAC to view active loans, due dates, fines, and place hold requests.
+3. **Optional Email/WhatsApp overdue reminders** (queued) — opt-in reminder workflow for libraries with internet access.
+>>>>>>> Stashed changes
 
 ## Hyperlinked copyright notice with UTM and SEO attributes
 
@@ -1282,3 +1335,8 @@ Shared-handler extraction now covers 162 of 164 registered desktop commands; the
 ### Authenticated gateway handoff 2026-11-25T05:11:23.041Z
 
 Shared-handler foundation proof complete: 162 common typed handlers, 164 registered commands audited (162 exact bodies, 2 reference-only adaptations). Final shared handler tests 3/3 and targeted live listener IPC passed after Clippy fixes; full 35 IPC/7 security passed after extraction. Frontend production build passed. Continuing authenticated web gateway: per-session login/import slots now use independent Arc<Mutex> handles, so an HTTP session store can retain only those handles and weak listener ownership rather than creating a runtime reference cycle. This latest handle adjustment is not yet reverified. Next exact step: bounded HTTP parser, explicit authenticated dispatch, embedded /staff assets, browser backup/export adapters and headless host; then full parity verification. Do not emit server web-mode metadata until these are implemented. Internet DNS/HTTPS ingress remains operator configuration, no external changes made.
+
+
+### Owner terminology correction - 2026-11-27T12:39:02.446Z
+
+Owner replaces booking wording with the Reservations term saved exactly in approved-glossary.json. This new explicit preference supersedes earlier booking draft terminology for Reservations. Existing workbook and owner corrections untouched; reconcile related sentence forms with owner review rather than guessing singular or verb wording. Shared app translator already gives approved glossary priority. Preserve unrelated current copyright/footer work.
