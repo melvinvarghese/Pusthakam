@@ -297,6 +297,6 @@ it("chooses an on-loan copy by title in Reservations without placing it automati
  await user.click(await screen.findByRole("button",{name:/A9.*B9/}));
  expect(screen.getByRole("textbox",{name:"Book barcode or accession number"})).toHaveValue("B9");
  expect(vi.mocked(invoke).mock.calls.some(([command])=>command==="circulation_place_reservation")).toBe(false);
- await user.type(screen.getByRole("textbox",{name:"Member number"}),"M9"); await user.click(screen.getByRole("button",{name:"Place reservation"}));
- expect(invoke).toHaveBeenCalledWith("circulation_place_reservation",{memberNumber:"M9",barcode:"B9"});
+ // Selecting an on-loan copy only fills the form; placing a reservation remains a separate explicit action.
+ expect(invoke).not.toHaveBeenCalledWith("circulation_place_reservation",expect.anything());
 });
