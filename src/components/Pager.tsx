@@ -16,7 +16,7 @@ export function Pager({ page, pageSize, total, onPage }: Props) {
   const pages = Math.max(1, Math.ceil(total / pageSize));
   return (
     <div className="flex items-center justify-between border-t border-line px-4 py-2 text-xs text-muted">
-      <span aria-live="polite">{total === 0 ? t("No results") : t("{first}-{last} of {total}", { first, last, total })}</span>
+      <span aria-live="polite">{total === 0 ? t("No results") : t("{first}–{last} of {total}", { first, last, total })}</span>
       <div className="flex items-center gap-2">
         <Button size="sm" disabled={page <= 1} onClick={() => onPage(page - 1)}>{t("Previous")}</Button>
         <span>{t("Page {page} of {pages}", { page, pages })}</span>
