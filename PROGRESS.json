@@ -1,20 +1,11 @@
 {
   "schemaVersion": 1,
-<<<<<<< Updated upstream
-  "lastUpdated": "2026-11-27T13:05:00Z",
+  "lastUpdated": "2026-11-27T15:35:00Z",
   "currentPhase": "2",
   "currentTask": {
-    "title": "Rebuilt the public website (website/) in the Spine Label style",
-    "status": "in-progress",
-    "detail": "Outside v1 product scope. Replaced the old site (false download/open-source/encryption claims, AI-generated hero image) with six static pages: Home, Features, Get Pusthakam, Status, FAQ, About, plus 404 and a redirect from try/. Only features present in the code are described; no 'free' or open-source wording, following the 2026-11-27 commercial licensing decision. Screenshots come from the dev preview with synthetic data via tools/website-screenshots. Removed .github/workflows/static.yml, which deployed the whole repository to GitHub Pages. Awaiting owner review on branch website-redesign; not merged or published."
-=======
-  "lastUpdated": "2026-11-27T14:24:32.191Z",
-  "currentPhase": "2",
-  "currentTask": {
-    "title": "All 3 Koha-parity features implemented (ISBN auto-fill, Patron OPAC login, Optional Email/WhatsApp overdue reminders)",
+    "title": "End-of-day status, 27 November 2026",
     "status": "implemented",
-    "detail": "Implemented Feature 3 (Optional Email/WhatsApp overdue reminders) completing the 3-feature Koha-parity batch: added member_email and member_phone to OverdueLoan in src-tauri/src/services/circulation.rs and src/lib/api/types.ts; added src/lib/reminders.ts (buildOverdueReminderMessage, buildMailtoUrl, buildWhatsAppUrl) with unit tests; permitted https://wa.me/* and mailto:* in src-tauri/capabilities/default.json; and added opt-in Email, WhatsApp, and Copy notice buttons to src/features/circulation/OverdueLoans.tsx. Verified with tsc --noEmit, eslint ., and 25 Vitest tests (reminders.test.ts, api.test.ts, CirculationPage.test.tsx)."
->>>>>>> Stashed changes
+    "detail": "Public website: redesigned site merged (PR #3) and live on GitHub Pages at https://melvinvarghese.github.io/Pusthakam/; any push to main touching `website/**` redeploys. Owner calls it the site to use for now. GitHub Pages needs the repository to stay public, which conflicts with keeping the source private for sale unless on a paid GitHub plan. WordPress test: pusthakamlms.wordpress.com (free plan) now carries a simpler block-based copy of the six pages on the Twenty Twenty-Five theme, published and kept public by owner choice. Owner judged it a test only; proper paid hosting with email is planned for public launch. A separate private WordPress import preview (universally-dreamer-aglet.wpcomstaging.com) is unused and expires 2026-12-27. PR #4 merged: 7 dated daily backups kept in a folder chosen at install, plus start with Windows in the system tray; awaiting the owner's install test. OPAC redesign in progress; owner chose staff-managed categories. Open owner decisions: whether to remove the AI co-author line from merge commit 7c72381 (needs a history rewrite and force push on main, not done); delete temporary branch `wordpress-import-temp` (website zip used for the WordPress import). Standing rule from the owner: never add Claude/AI co-author or attribution lines to commits or PRs. Housekeeping: removed leftover stash-conflict markers that commit b534af6 left in PROGRESS.json, PROGRESS.md and SESSION_HANDOFF.md, keeping both sides."
   },
   "nextMilestone": {
     "title": "macOS and Linux package smoke tests",
@@ -3994,11 +3985,12 @@
   "recentActivity": [
     {
       "kind": "progress",
-<<<<<<< Updated upstream
-      "at": "2026-11-27T13:05:00Z",
-      "title": "Rebuilt the public website on branch website-redesign",
-      "detail": "Outside v1 product scope. Replaced the old site (false download/open-source/encryption claims, AI-generated hero image) with six static pages: Home, Features, Get Pusthakam, Status, FAQ, About, plus 404 and a redirect from try/. Only features present in the code are described; no 'free' or open-source wording, following the 2026-11-27 commercial licensing decision. Screenshots come from the dev preview with synthetic data via tools/website-screenshots. Removed .github/workflows/static.yml, which deployed the whole repository to GitHub Pages. Awaiting owner review on branch website-redesign; not merged or published."
-=======
+      "at": "2026-11-27T15:35:00Z",
+      "title": "End-of-day status, 27 November 2026",
+      "detail": "Public website: redesigned site merged (PR #3) and live on GitHub Pages at https://melvinvarghese.github.io/Pusthakam/; any push to main touching `website/**` redeploys. Owner calls it the site to use for now. GitHub Pages needs the repository to stay public, which conflicts with keeping the source private for sale unless on a paid GitHub plan. WordPress test: pusthakamlms.wordpress.com (free plan) now carries a simpler block-based copy of the six pages on the Twenty Twenty-Five theme, published and kept public by owner choice. Owner judged it a test only; proper paid hosting with email is planned for public launch. A separate private WordPress import preview (universally-dreamer-aglet.wpcomstaging.com) is unused and expires 2026-12-27. PR #4 merged: 7 dated daily backups kept in a folder chosen at install, plus start with Windows in the system tray; awaiting the owner's install test. OPAC redesign in progress; owner chose staff-managed categories. Open owner decisions: whether to remove the AI co-author line from merge commit 7c72381 (needs a history rewrite and force push on main, not done); delete temporary branch `wordpress-import-temp` (website zip used for the WordPress import). Standing rule from the owner: never add Claude/AI co-author or attribution lines to commits or PRs. Housekeeping: removed leftover stash-conflict markers that commit b534af6 left in PROGRESS.json, PROGRESS.md and SESSION_HANDOFF.md, keeping both sides."
+    },
+    {
+      "kind": "progress",
       "at": "2026-11-27T14:24:32.191Z",
       "title": "Implemented optional Email/WhatsApp overdue reminders",
       "detail": "Added memberEmail/memberPhone to OverdueLoan, created src/lib/reminders.ts, allowed wa.me and mailto in capabilities, and added Email, WhatsApp, and Copy notice actions in OverdueLoans.tsx."
@@ -4032,7 +4024,12 @@
       "at": "2026-11-27T12:39:02.446Z",
       "title": "Owner-approved Reservations terminology updated",
       "detail": "Owner replaces booking wording with the Reservations term saved exactly in approved-glossary.json. This new explicit preference supersedes earlier booking draft terminology for Reservations. Existing workbook and owner corrections untouched; reconcile related sentence forms with owner review rather than guessing singular or verb wording. Shared app translator already gives approved glossary priority. Preserve unrelated current copyright/footer work."
->>>>>>> Stashed changes
+    },
+    {
+      "kind": "progress",
+      "at": "2026-11-27T13:05:00Z",
+      "title": "Rebuilt the public website on branch website-redesign",
+      "detail": "Outside v1 product scope. Replaced the old site (false download/open-source/encryption claims, AI-generated hero image) with six static pages: Home, Features, Get Pusthakam, Status, FAQ, About, plus 404 and a redirect from try/. Only features present in the code are described; no 'free' or open-source wording, following the 2026-11-27 commercial licensing decision. Screenshots come from the dev preview with synthetic data via tools/website-screenshots. Removed .github/workflows/static.yml, which deployed the whole repository to GitHub Pages. Awaiting owner review on branch website-redesign; not merged or published."
     },
     {
       "kind": "progress",
