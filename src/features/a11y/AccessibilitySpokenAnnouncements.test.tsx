@@ -74,7 +74,7 @@ describe("Accessibility and Screen Reader Spoken Announcements (CORE-A11Y)", () 
     const onPage = vi.fn();
     render(<Pager page={2} pageSize={25} total={120} onPage={onPage} />);
 
-    const range = screen.getByText("26–50 of 120");
+    const range = screen.getByText("26-50 of 120");
     expect(range).toHaveAttribute("aria-live", "polite");
   });
 

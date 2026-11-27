@@ -3,6 +3,7 @@ pub mod db;
 mod desktop_tray;
 pub mod domain;
 pub mod error;
+pub mod launch_at_startup;
 pub mod logging;
 pub mod paths;
 pub mod services;
@@ -20,6 +21,8 @@ macro_rules! app_handlers {
             $crate::commands::app::dashboard_overview,
             $crate::commands::app::get_setting,
             $crate::commands::app::set_setting,
+            $crate::commands::app::launch_at_startup_get,
+            $crate::commands::app::launch_at_startup_set,
             $crate::commands::auth::setup_status,
             $crate::commands::auth::complete_setup,
             $crate::commands::auth::login,
@@ -109,6 +112,7 @@ macro_rules! app_handlers {
             $crate::commands::backup::backup_create,
             $crate::commands::backup::backup_copy_to_folder,
             $crate::commands::backup::backup_set_daily,
+            $crate::commands::backup::backup_set_daily_folder,
             $crate::commands::backup::backup_verify,
             $crate::commands::backup::backup_request_restore,
             $crate::commands::backup::backup_cancel_restore,
@@ -172,6 +176,9 @@ macro_rules! app_handlers {
             $crate::commands::classification::classification_list_subjects,
             $crate::commands::classification::classification_save_subject,
             $crate::commands::classification::classification_merge_subjects,
+            $crate::commands::classification::browse_categories_list,
+            $crate::commands::classification::browse_categories_save,
+            $crate::commands::classification::browse_categories_set_archived,
             $crate::commands::classification::classification_list_marc_mappings,
             $crate::commands::classification::classification_save_marc_mapping,
             $crate::commands::classification::classification_test_marc_mapping,
@@ -192,6 +199,10 @@ macro_rules! app_handlers {
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
+        // Must be first: a second launch (Start menu, desktop shortcut) opens the running copy.
+        .plugin(tauri_plugin_single_instance::init(|app, _args, _cwd| {
+            desktop_tray::show(app);
+        }))
         .plugin(tauri_plugin_opener::init())
         .on_window_event(desktop_tray::on_window_event)
         .setup(|app| {
@@ -200,6 +211,12 @@ pub fn run() {
             let paths = paths::AppPaths::ensure(&root)?;
             let guard = logging::init(&paths.logs);
             tracing::info!(version = env!("CARGO_PKG_VERSION"), "Pusthakam starting");
+            if let Err(error) = services::backup::adopt_installer_folder(
+                &paths,
+                launch_at_startup::installer_backup_folder(),
+            ) {
+                tracing::warn!(%error, "Could not record the installer's daily backup folder");
+            }
             let (library_lock, exclusive) = services::backup::startup_lock(&paths)?;
             let mut conn = db::open_with_pre_upgrade(&paths.database, |source| {
                 services::backup::create(source, &paths.backups)?;
@@ -218,8 +235,14 @@ pub fn run() {
                 pending_import: std::sync::Arc::new(Mutex::new(None)),
                 _log_guard: std::sync::Arc::new(guard),
             });
-            if let Err(error) = desktop_tray::install(app.handle()) {
+            let tray = desktop_tray::install(app.handle());
+            if let Err(error) = &tray {
                 tracing::warn!(%error, "System tray unavailable; normal window close remains enabled");
+            }
+            // The window starts hidden. A sign-in launch stays in the tray; any other launch,
+            // or a computer without a tray, shows it so it is never stranded.
+            if tray.is_err() || !launch_at_startup::started_in_background() {
+                desktop_tray::show_maximized(app.handle());
             }
             let state = app.state::<state::AppState>();
             match services::lan_runtime::config(&state) {

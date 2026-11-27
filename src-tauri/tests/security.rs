@@ -62,7 +62,13 @@ impl Harness {
                 cmd: cmd.into(),
                 callback: CallbackFn(0),
                 error: CallbackFn(1),
-                url: "http://tauri.localhost".parse().unwrap(),
+                url: (if cfg!(windows) {
+                    "http://tauri.localhost"
+                } else {
+                    "tauri://localhost"
+                })
+                .parse()
+                .unwrap(),
                 body: InvokeBody::Json(body),
                 headers: Default::default(),
                 invoke_key: INVOKE_KEY.to_string(),
@@ -157,6 +163,9 @@ fn test_unauthenticated_command_matrix_is_rejected() {
         ("reports_stock_by_location", json!({})),
         ("backup_list", json!({})),
         ("backup_create", json!({})),
+        ("backup_set_daily_folder", json!({"folder": "/tmp"})),
+        ("launch_at_startup_get", json!({})),
+        ("launch_at_startup_set", json!({"enabled": true})),
         ("staff_list", json!({})),
         (
             "staff_create",
@@ -242,6 +251,8 @@ fn test_viewer_role_write_command_matrix_is_rejected() {
             json!({"input": {"title": "Unauthorized Serial", "frequency": "monthly", "startDate": "2026-01-01", "endDate": "2026-12-31"}}),
         ),
         ("backup_create", json!({})),
+        ("backup_set_daily_folder", json!({"folder": "/tmp"})),
+        ("launch_at_startup_set", json!({"enabled": true})),
         (
             "backup_request_restore",
             json!({"name": "pusthakam-backup.sqlite3"}),

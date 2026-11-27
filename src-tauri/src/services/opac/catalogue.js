@@ -1,7 +1,6 @@
 (() => {
   const $ = selector => document.querySelector(selector);
-  const classes = ['All classes', '000 General works', '100 Philosophy & psychology', '200 Religion', '300 Social sciences', '400 Language', '500 Science', '600 Technology', '700 Arts & recreation', '800 Literature', '900 History & geography'];
-  let classification = '', page = 1, controller, request = 0, books = [];
+  let category = '', page = 1, controller, request = 0, books = [];
   let patron = { signedIn: false, csrfToken: null, member: null, unpaidFineMinor: 0, loans: [], reservations: [] };
   const formatMoney = (minor, currency) => {
     try { return new Intl.NumberFormat(undefined, { style: 'currency', currency: currency || 'INR' }).format(minor / 100); }
@@ -13,19 +12,37 @@
     if (className) node.className = className;
     return node;
   };
-  classes.forEach((label, index) => {
-    const button = element('button', label);
+  function categoryButton(label, id, count) {
+    const button = element('button');
     button.type = 'button';
-    button.dataset.class = index ? String(index - 1) : '';
-    button.setAttribute('aria-pressed', String(!index));
+    button.dataset.category = id;
+    button.append(document.createTextNode(label));
+    if (count !== undefined) button.append(element('span', String(count), 'category-count'));
+    button.setAttribute('aria-pressed', String(id === category));
+    if (count !== undefined) button.setAttribute('aria-label', `${label}, ${count} ${count === 1 ? 'title' : 'titles'}`);
     button.addEventListener('click', () => {
-      classification = button.dataset.class;
-      document.querySelectorAll('[data-class]').forEach(item => item.setAttribute('aria-pressed', String(item === button)));
+      category = button.dataset.category;
+      document.querySelectorAll('[data-category]').forEach(item => item.setAttribute('aria-pressed', String(item === button)));
       page = 1;
       load();
     });
-    $('#classes').append(button);
-  });
+    return button;
+  }
+  async function loadCategories() {
+    const ribbon = $('#categories');
+    try {
+      const response = await fetch('/api/opac/categories', { cache: 'no-store' });
+      const list = response.ok ? await response.json() : [];
+      if (!Array.isArray(list) || !list.length) { ribbon.hidden = true; return; }
+      ribbon.replaceChildren(categoryButton('All books', ''));
+      list.forEach(item => {
+        if (Number.isSafeInteger(item.id) && item.id > 0 && typeof item.name === 'string') {
+          ribbon.append(categoryButton(item.name, String(item.id), Number(item.count) || 0));
+        }
+      });
+      ribbon.hidden = false;
+    } catch { ribbon.hidden = true; }
+  }
   function availability(book) {
     if (!book.totalCopies) return 'No circulating copies';
     return book.availableCopies > 0 ? `Available (${book.availableCopies} of ${book.totalCopies})` : `No copies available (${book.totalCopies} total)`;
@@ -63,8 +80,8 @@
     const list = element('dl');
     const fields = [
       ['Authors', book.authors.join(', ') || 'Not recorded'], ['Publisher', book.publisher],
-      ['Year', book.year], ['ISBN', book.isbn], ['Classification', book.classification],
-      ['Subjects', book.subjects.join(', ')], ['Locations', book.locations.join(', ') || 'Ask library staff'],
+      ['Year', book.year], ['ISBN', book.isbn], ['Categories', (book.categories || []).join(', ')],
+      ['Subjects', book.subjects.join(', ')], ['Where to find it', whereToFind(book)],
       ['Availability', availability(book)],
     ];
     fields.forEach(([label, value]) => {
@@ -105,6 +122,11 @@
     content.append(holdBar);
     $('#details').showModal();
   }
+  function whereToFind(book) {
+    const place = book.locations.join(', ') || 'Ask library staff';
+    const shelf = (book.callNumbers || []).join(', ');
+    return shelf ? `${place} · shelf number ${shelf}` : place;
+  }
   function render(items) {
     const container = $('#results');
     container.replaceChildren();
@@ -114,7 +136,7 @@
     }
     items.forEach(book => {
       const row = element('article', undefined, 'record');
-      row.append(element('div', book.classification || 'Unclassified', 'classification'));
+      row.append(element('div', (book.categories || []).join(' · '), 'record-category'));
       const bibliography = element('div', undefined, 'bibliography');
       const metadata = element('div');
       const heading = element('h2');
@@ -134,7 +156,7 @@
   async function load() {
     controller?.abort(); controller = new AbortController();
     const sequence = ++request;
-    const query = new URLSearchParams({ q: $('#q').value.trim(), page: String(page), class: classification, available: String($('#available').checked) });
+    const query = new URLSearchParams({ q: $('#q').value.trim(), page: String(page), category, available: String($('#available').checked) });
     $('#results').setAttribute('aria-busy', 'true');
     $('#results').replaceChildren(); books = [];
     $('#summary').textContent = 'Loading catalogue…';
@@ -164,7 +186,7 @@
   }
   $('#search-form').addEventListener('submit', event => { event.preventDefault(); page = 1; load(); });
   $('#available').addEventListener('change', () => { page = 1; load(); });
-  $('#reset').addEventListener('click', () => { $('#q').value = ''; $('#available').checked = false; $('[data-class=""]').click(); });
+  $('#reset').addEventListener('click', () => { $('#q').value = ''; $('#available').checked = false; const all = $('[data-category=""]'); if (all) all.click(); else { category = ''; page = 1; load(); } });
   $('#retry').addEventListener('click', load);
   $('#previous').addEventListener('click', () => { page--; load(); });
   $('#next').addEventListener('click', () => { page++; load(); });
@@ -296,5 +318,6 @@
     copyrightYearEl.textContent = year > 2026 ? `2026–${year}` : '2026';
   }
   loadAccount();
+  loadCategories();
   load();
 })();

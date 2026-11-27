@@ -62,6 +62,10 @@ pub struct RecordInput {
     pub keywords: Option<String>,
     pub contributors: Vec<ContributorDto>,
     pub subjects: Vec<String>,
+    /// Browse category ids chosen by staff. `None` leaves existing choices alone and only
+    /// re-applies DDC rules (imports and other callers that do not edit categories).
+    #[serde(default)]
+    pub categories: Option<Vec<i64>>,
 }
 
 #[derive(Debug, Serialize)]
@@ -110,6 +114,7 @@ pub struct RecordDetail {
     pub archived: bool,
     pub contributors: Vec<ContributorDto>,
     pub subjects: Vec<String>,
+    pub categories: Vec<crate::services::browse_categories::CategoryRef>,
     pub copies: Vec<Copy>,
 }
 
@@ -523,6 +528,10 @@ pub fn save_record(
             (id, sid),
         )?;
     }
+    match &input.categories {
+        Some(ids) => crate::services::browse_categories::set_record_categories(conn, id, ids)?,
+        None => crate::services::browse_categories::apply_rules_for_record(conn, id)?,
+    }
     reindex(conn, id)?;
     audit::record(
         conn,
@@ -584,7 +593,7 @@ pub fn get_record(conn: &Connection, id: i64) -> AppResult<RecordDetail> {
                     physical_description: r.get(8)?, pagination: r.get(9)?, series: r.get(10)?, abstract_text: r.get(11)?,
                     notes: r.get(12)?, isbn10: r.get(13)?, isbn13: r.get(14)?, classification_scheme_id: r.get(15)?,
                     classification_number: r.get(16)?, keywords: r.get(17)?, archived: r.get(18)?,
-                    contributors: vec![], subjects: vec![], copies: vec![],
+                    contributors: vec![], subjects: vec![], categories: vec![], copies: vec![],
                 })
             },
         )
@@ -601,6 +610,7 @@ pub fn get_record(conn: &Connection, id: i64) -> AppResult<RecordDetail> {
         .prepare("SELECT s.heading FROM record_subjects rs JOIN subjects s ON s.id = rs.subject_id WHERE rs.record_id = ?1 ORDER BY s.heading")?
         .query_map([id], |r| r.get(0))?
         .collect::<Result<_, _>>()?;
+    rec.categories = crate::services::browse_categories::record_categories(conn, id)?;
     rec.copies = conn
         .prepare(&format!(
             "SELECT {COPY_COLS} FROM physical_items WHERE record_id = ?1 ORDER BY accession_no"
@@ -1404,6 +1414,7 @@ mod tests {
             keywords: None,
             contributors: vec![],
             subjects: vec![],
+            categories: None,
         }
     }
 
