@@ -16,8 +16,9 @@ import type {
   MarcTestResult,
 } from "@/lib/api/types";
 import { useSession, can } from "@/lib/session";
+import { BrowseCategoriesTab } from "./BrowseCategoriesTab";
 
-type Tab = "schedules" | "authors" | "publishers" | "subjects" | "marc";
+type Tab = "schedules" | "categories" | "authors" | "publishers" | "subjects" | "marc";
 
 export default function ClassificationPage() {
   const [tab, setTab] = useState<Tab>("schedules");
@@ -41,6 +42,16 @@ export default function ClassificationPage() {
           }`}
         >
           Classification Schedules
+        </button>
+        <button
+          role="tab"
+          aria-selected={tab === "categories"}
+          onClick={() => setTab("categories")}
+          className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
+            tab === "categories" ? "border-primary text-primary" : "border-transparent text-muted hover:text-fg"
+          }`}
+        >
+          Browse Categories
         </button>
         <button
           role="tab"
@@ -85,6 +96,7 @@ export default function ClassificationPage() {
       </div>
 
       {tab === "schedules" && <SchedulesTab writable={writable} />}
+      {tab === "categories" && <BrowseCategoriesTab writable={writable} />}
       {tab === "authors" && <AuthorsTab writable={writable} />}
       {tab === "publishers" && <PublishersTab writable={writable} />}
       {tab === "subjects" && <SubjectsTab writable={writable} />}

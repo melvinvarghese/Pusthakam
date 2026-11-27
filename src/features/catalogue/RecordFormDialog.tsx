@@ -1,11 +1,13 @@
 import { useTranslation } from "@/lib/translations";
 import { useState, type FormEvent } from "react";
 import { Link } from "react-router-dom";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/Button";
 import { SelectField, TextField } from "@/components/ui/Field";
 import { Modal } from "@/components/ui/Modal";
-import { ApiError, catalogueApi } from "@/lib/api";
+import { ApiError, catalogueApi, classificationApi } from "@/lib/api";
+import { predictCategoryIds } from "@/lib/browseCategories";
+import { CategoryPicker } from "./CategoryPicker";
 import { lookupIsbnMetadata } from "@/lib/isbnLookup";
 import type { Contributor, ContributorRole, DuplicateHit, RecordDetail, RecordInput } from "@/lib/api/types";
 import { ROLE_LABELS, useConfig } from "./shared";
@@ -43,6 +45,14 @@ export function RecordFormDialog({ record, onClose, onSaved }: Props) {
     abstract: record?.abstract ?? "",
     notes: record?.notes ?? "",
   });
+  const categoriesQuery = useQuery({ queryKey: ["browse-categories"], queryFn: () => classificationApi.listBrowseCategories() });
+  const browseCategories = categoriesQuery.data ?? [];
+  // Until staff touch the chips, categories follow the DDC rules (the backend re-applies them on save).
+  const [chosenCategories, setChosenCategories] = useState<number[] | null>(null);
+  const schemeCode = schemes.find((s) => String(s.id) === f.scheme)?.code;
+  const classUnchanged = record !== undefined && f.classification.trim() === (record.classificationNumber ?? "").trim();
+  const shownCategories = chosenCategories
+    ?? (classUnchanged && record ? record.categories.map((c) => c.id) : predictCategoryIds(f.classification, schemeCode, browseCategories));
   const [people, setPeople] = useState<Contributor[]>(record?.contributors.length ? record.contributors : [{ name: "", role: "author" }]);
   const [error, setError] = useState<string | null>(null);
   const [duplicates, setDuplicates] = useState<DuplicateHit[] | null>(null);
@@ -69,6 +79,7 @@ export function RecordFormDialog({ record, onClose, onSaved }: Props) {
     keywords: emptyToNull(f.keywords),
     contributors: people.filter((p) => p.name.trim() !== ""),
     subjects: f.subjects.split(/\r?\n|;/).map((s) => s.trim()).filter(Boolean),
+    ...(chosenCategories ? { categories: chosenCategories } : {}),
   });
 
   const save = useMutation({
@@ -207,6 +218,14 @@ export function RecordFormDialog({ record, onClose, onSaved }: Props) {
             className="w-full rounded-md border border-line-strong bg-surface px-3 py-2 text-[13px]" />
           <p className="text-xs text-muted">{t("One subject heading per line.")}</p>
         </div>
+        <CategoryPicker
+          categories={browseCategories}
+          selected={shownCategories}
+          onChange={setChosenCategories}
+          hint={chosenCategories
+            ? t("Members browse the public catalogue by these categories.")
+            : t("Filled in from the DDC number. Members browse the public catalogue by these categories.")}
+        />
         <div className="grid grid-cols-2 gap-3">
           <div className="space-y-1">
             <label htmlFor="abstract" className="block text-[13px] font-medium">{t("Abstract")}</label>
