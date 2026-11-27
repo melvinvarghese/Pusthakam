@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "lastUpdated": "2026-11-27T16:00:00Z",
+  "lastUpdated": "2026-11-27",
   "currentPhase": "4",
   "currentTask": {
     "title": "PAUSED until Monday: Member Profile Batches 1-2, OPAC credentials, and README updated",
@@ -5659,7 +5659,7 @@
     ]
   },
   "commercialReleasePlan": {
-    "updatedAt": "2026-11-27T16:00:00Z",
+    "updatedAt": "2026-11-27",
     "status": "owner_decision_recorded; implementation_not_started",
     "trial": {
       "durationDays": 30,
@@ -5676,11 +5676,22 @@
       "Trial start trigger and offline clock policy",
       "Post-expiry access and feature restrictions",
       "Price",
-      "Licence duration/scope and update entitlement",
+      "Licence scope (for example, number of library installations)",
+      "Update and major-version entitlement",
       "Activation, online validation and device-transfer rules",
       "Support entitlement"
     ],
     "dataProtection": "Do not delete or corrupt library data when a trial expires; preserve data and provide a clear purchase/activation path.",
-    "implementationStatus": "Not implemented or verified; documentation decision only."
-  }
+    "implementationStatus": "Not implemented or verified; documentation decision only.",
+    "licenceDuration": "perpetual",
+    "licenceDurationDecision": "Owner selected perpetual use after a one-time payment; lifetime upgrades, major-version upgrades, maintenance and support are not implied and remain undecided."
+  },
+  "decisions": [
+    {
+      "kind": "decision",
+      "at": "2026-11-27",
+      "title": "Perpetual licence duration for one-time payment",
+      "detail": "Owner selected a perpetual licence: after a one-time purchase, the customer may continue using the licensed Pusthakam product indefinitely, subject to final terms. This does not promise lifetime upgrades, major-version upgrades, maintenance or support. Licence scope, price and those entitlements remain undecided; no implementation claimed."
+    }
+  ]
 }
