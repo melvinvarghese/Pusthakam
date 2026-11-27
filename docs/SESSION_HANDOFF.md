@@ -1,5 +1,12 @@
 # Development handoff
 
+## Current: 519 Malayalam drafts awaiting owner review
+
+2026-11-27T03:24:51.045Z
+
+Owner authorized 200 additional Malayalam review drafts, to review with the earlier 319. Completed exactly 200 unique new English/Malayalam pairs in docs/translations/additional-draft-pairs.json, verified against current source and against existing translation resources/glossary (no duplicates), plus Malayalam script and placeholder checks. Covers copy/cover/stock labels, fines/reservations, member fines/cards, database backups, catalogue import/export and public OPAC. Review snapshot additional-draft-review.json records stable IDs, current source references and draft-not-integrated status. Delivered new combined docs/translations/Pusthakam_Malayalam_Drafts_519.xlsx: original 319 rows followed by 200 additions, Batch column (Original 319 / New 200), correction/status/notes columns, approved terms and instructions. Original 319 workbook preserved byte-for-byte; all original review cells preserved in combined copy. Local original currently had no saved corrections, notes or reviewed statuses; no approval inferred. Workbook reopening validated 519 unique IDs, 200 exact new pairs, 319 preserved rows, empty new correction cells, Not reviewed statuses, no formulas. New exporter ESLint passed; downloadable copy saved successfully. Reproducible scripts tools/create-additional-draft-review.mjs and tools/create-expanded-draft-workbook.py saved; expanded generator refuses overwriting an existing review file. Request resumes draft preparation only: no application source/integration, installer, database, network configuration, commit or push changes. Broader implementation remains paused awaiting owner review/explicit resume. Next: owner reviews 519 workbook (partial file welcome), match reviewed IDs/English and validate placeholders before applying approved corrections. Preserve earlier 20-term glossary and everyday wording; pending modules/font/mobile/native checks unchanged. V1 totals unchanged.
+
+
 ## PAUSED: owner reviewing 319 Malayalam drafts
 
 2026-11-26T15:12:32.816Z

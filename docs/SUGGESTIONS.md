@@ -97,3 +97,73 @@ Record now, implement later: an attractive librarian-focused homepage, populated
 ## Paused owner request: real quotations and logo refinement
 
 21 November: replace the current splash closing line with a locally bundled set of about 100 real, source-verified book/reading quotations, one per launch, author credit and no immediate repeat. Not implemented; no quotations have been curated/verified yet. Owner likes the book/P concept but is not fully satisfied; retain draft status and refine its flat silhouette/small-size clarity. Work paused until usage reset; see SPLASH_QUOTES_PLAN.md and the latest SESSION_HANDOFF.md checkpoint.
+
+---
+
+## Release-readiness review: 27 November 2026 (Claude)
+
+_Added by a read-only review of D:\Pusthakam on 27 November 2026. Nothing below is implemented; no progress credit. Each item says where the problem was seen. Review, then accept, change or reject each one. Related new known issues: KI-027 to KI-033 in KNOWN_ISSUES.md._
+
+### Now: before any real library uses Pusthakam
+
+### S-R01: Keep more than one day of automatic backups (see KI-027)
+* **Seen:** `run_daily` in `src-tauri/src/services/backup.rs` deletes every older `pusthakam-YYYYMMDD-daily.sqlite3` after creating today's. Only one day of history exists, in the same folder and disk as the live database.
+* **Proposal:** keep 7 daily, 4 weekly and 12 monthly copies. Let the librarian choose a second backup folder (USB or another drive) that receives a copy automatically when present. Show "last backup copied off this computer" on the dashboard, with a warning after 7 days.
+* **Also:** USER_MANUAL section 12 says "rolling daily snapshots"; correct it once retention is fixed.
+
+### S-R02: Protect staff sign-in on Wi-Fi (see KI-028)
+* **Seen:** the LAN listener serves `/staff` and `/api/staff/*` over plain HTTP. No TLS crate is in `src-tauri/Cargo.toml`. DECISIONS D-026 promised an encrypted LAN API. Staff passwords and session cookies cross shared Wi-Fi unencrypted.
+* **Options (owner decision):** (a) HTTPS on the LAN with a locally generated certificate and a documented one-time trust step on phones; or (b) keep browser staff access off by default, warn in Settings that it is only safe on a trusted private network, and update D-026.
+
+### S-R03: Remove the old LAN staff API (see KI-029)
+* **Seen:** `handle_http_connection` in `src-tauri/src/services/lan.rs` still serves `/api/lan/pair`, `/api/staff/login`, `/api/staff/circulation/issue` and `/return` with bearer tokens and `Access-Control-Allow-Origin: *`, alongside the newer `/api/staff/commands` gateway (cookies, CSRF, origin checks). `GET /api/lan/status` answers without sign-in and returns `server_fingerprint`, which the old login checks.
+* **Proposal:** delete the old routes and their inline HTML pages once nothing uses them; keep one staff gateway. Add an attempt limit to pairing codes if pairing stays.
+
+### S-R04: Add a licence (see KI-030)
+* **Seen:** no LICENSE file; no `license` field in `package.json` or `src-tauri/Cargo.toml`. Without a licence, others may not legally use, copy or change the code, which conflicts with "free" and "contributions welcome" in README.
+* **Proposal:** choose one (GPL-3.0 or AGPL-3.0 keep forks open; MIT or Apache-2.0 are permissive), add LICENSE and the field in both manifests, and mention it in README and the installer.
+
+### S-R05: First real-world trial
+* Install from the NSIS installer on a clean Windows PC (not the dev laptop), run setup, import a real Koha export (KI-015), issue/return/renew, print labels and a member card on real printers, scan with a real USB scanner (KI-020, KI-023), use staff pages on a real phone including Safari (KI-026), back up, restore, uninstall and reinstall. Record every problem as a known issue.
+* Also test: host PC sleep/restart/Wi-Fi loss during an issue; a 10,000+ record import (KI-018); two staff working at once.
+
+### S-R06: Rewrite the user guide for librarians (see KI-031)
+* **Seen in `docs/USER_MANUAL.md`:** offers an MSIX package and a "Universal" macOS DMG that are not built; says macOS 12 minimum while `tauri.conf.json` says 10.15; describes restore as an immediate swap with rollback, but the app queues restore for the next start; section 14 shows signing commands with placeholder names.
+* **Proposal:** a short, true guide with screenshots: install, first setup, daily desk work, backups to USB, what to do if the host PC dies. Move developer material (signing, CI) to a separate developer doc.
+
+### S-R07: Bring status docs up to date (see KI-032)
+* README status table says Acquisitions & serials "Planned"; both are built.
+* DEVELOPMENT_ROADMAP marks phases 6, 7, 7b and 8 "NOT STARTED"; much of that work exists.
+* KNOWN_ISSUES KI-005 (placeholder icon) is out of date: icons were regenerated from the approved logo on 23 November. KI-010 says CI is not set up; `.github/workflows/ci.yml` exists.
+* `PROGRESS.md` (214 KB), `PROGRESS.json` (420 KB) and `docs/SESSION_HANDOFF.md` (142 KB) are too large to read. Archive old entries (e.g. `docs/archive/`) and keep a one-page current status.
+
+### Next: before a public release
+
+### S-R08: Sign the Windows installer
+* Unsigned installers trigger SmartScreen ("Run anyway"), which non-technical librarians will distrust. Free signing for open-source projects exists (for example SignPath Foundation). Apple notarisation is needed if macOS is offered.
+
+### S-R09: Versioned releases and update notice
+* Still version 0.1.0; CHANGELOG has only "Unreleased"; no GitHub Release exists. Tag versions, publish releases with SHA-256 checksums and notes, add a download page to the website.
+* No updater. Add an optional "new version available" notice (respecting the offline rule: check only when online, never required) or Tauri's updater with signed updates.
+* Confirm the bundle identifier `app.pusthakam.desktop` is final before the first release (DECISIONS D-015).
+
+### S-R10: Make CI fail when a package is missing (see KI-033)
+* **Seen in `.github/workflows/ci.yml`:** the Windows smoke step is wrapped in `if ($installer)` and the macOS step in `if [ -f "$DMG_FILE" ]`, so a missing package passes silently. CI uses Node 20 while development uses Node 26 (KI-003). Add `npm audit` / `cargo audit` steps (KI-006).
+
+### S-R11: Host PC failure plan and service mode
+* When the host PC is off, nobody can work. Write a one-page recovery plan: keep a recent USB backup; install Pusthakam on another PC and restore it in under 15 minutes. Recommend a UPS.
+* `pusthakam-server` runs only as a console window (WEB_HOSTING.md). Offer a Windows service or start-on-boot option.
+
+### Later: growth and upkeep
+
+### S-R12: Pilot libraries and a support route
+* Find 2 or 3 pilot libraries. Add GitHub issue templates and a contact (email or WhatsApp) on the website and in the app's About page.
+
+### S-R13: Demo library and first-week checklist
+* An optional sample library so people can try Pusthakam without their own data (kept out of production paths, per CLAUDE.md rule 11). A printable one-page quick start and a first-week checklist: set a USB backup folder, print a first label, add a first member.
+
+### S-R14: Split the largest files gradually
+* `src-tauri/src/services/lan.rs` 87 KB (includes old inline HTML), `services/catalogue.rs` 75 KB, `services/serials.rs` 63 KB, `src/features/classification/ClassificationPage.tsx` 61 KB, `acquisitions/AcquisitionsPage.tsx` 57 KB, `serials/PeriodicalsPage.tsx` 53 KB, `src-tauri/tests/ipc.rs` 187 KB. CLAUDE.md asks for small, focused files. Split one file per change, with tests passing before and after.
+
+### S-R15: Make online cover lookup a visible setting
+* Cover lookups contact `covers.openlibrary.org` (allowed in both CSPs) and send ISBNs. That is optional and sends no member data, but README says "no network". Add an on/off setting in Library Settings and mention it in README's privacy section.
