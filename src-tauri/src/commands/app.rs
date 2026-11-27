@@ -62,3 +62,21 @@ pub fn set_setting(state: State<'_, AppState>, key: String, value: String) -> Ap
     state.with_conn(|c| settings::set(c, &key, &value))
 }
 }
+
+/// Desktop only: whether Pusthakam starts in the tray when the user signs in to Windows.
+#[tauri::command]
+pub fn launch_at_startup_get(
+    state: State<'_, AppState>,
+) -> AppResult<crate::launch_at_startup::StartupSetting> {
+    state.current()?;
+    crate::launch_at_startup::get()
+}
+
+#[tauri::command]
+pub fn launch_at_startup_set(
+    state: State<'_, AppState>,
+    enabled: bool,
+) -> AppResult<crate::launch_at_startup::StartupSetting> {
+    state.require("admin.settings")?;
+    crate::launch_at_startup::set(enabled)
+}

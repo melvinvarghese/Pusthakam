@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "scope": "V3 full staff browser parity; local network and internet; library PC default, optional always-on host",
   "source": "src-tauri/src/lib.rs app_handlers!",
-  "commandCount": 164,
+  "commandCount": 167,
   "legacyStaffPortal": "Pairing/sign-in and issue/return only; does not establish full browser parity",
   "commands": [
     {
@@ -39,6 +39,24 @@
       "browserBackend": "shared-http-dispatch",
       "verification": "Shared workflows and route smoke tests; see STAFF_BROWSER_REVIEW.json and PROGRESS.json. Not per-command production deployment acceptance.",
       "sharedHandlerReady": true,
+      "adaptation": "shared-permission-checked-handler"
+    },
+    {
+      "command": "launch_at_startup_get",
+      "module": "app",
+      "source": "src-tauri/src/commands/app.rs",
+      "browserBackend": "host-computer-only",
+      "verification": "Shared workflows and route smoke tests; see STAFF_BROWSER_REVIEW.json and PROGRESS.json. Not per-command production deployment acceptance.",
+      "sharedHandlerReady": false,
+      "adaptation": "shared-permission-checked-handler"
+    },
+    {
+      "command": "launch_at_startup_set",
+      "module": "app",
+      "source": "src-tauri/src/commands/app.rs",
+      "browserBackend": "host-computer-only",
+      "verification": "Shared workflows and route smoke tests; see STAFF_BROWSER_REVIEW.json and PROGRESS.json. Not per-command production deployment acceptance.",
+      "sharedHandlerReady": false,
       "adaptation": "shared-permission-checked-handler"
     },
     {
@@ -793,6 +811,15 @@
       "module": "backup",
       "source": "src-tauri/src/commands/backup.rs",
       "browserBackend": "shared-http-dispatch",
+      "verification": "Shared workflows and route smoke tests; see STAFF_BROWSER_REVIEW.json and PROGRESS.json. Not per-command production deployment acceptance.",
+      "sharedHandlerReady": true,
+      "adaptation": "shared-permission-checked-handler"
+    },
+    {
+      "command": "backup_set_daily_folder",
+      "module": "backup",
+      "source": "src-tauri/src/commands/backup.rs",
+      "browserBackend": "host-computer-only",
       "verification": "Shared workflows and route smoke tests; see STAFF_BROWSER_REVIEW.json and PROGRESS.json. Not per-command production deployment acceptance.",
       "sharedHandlerReady": true,
       "adaptation": "shared-permission-checked-handler"

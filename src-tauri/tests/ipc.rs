@@ -68,7 +68,13 @@ impl Harness {
                 cmd: cmd.into(),
                 callback: CallbackFn(0),
                 error: CallbackFn(1),
-                url: "http://tauri.localhost".parse().unwrap(),
+                url: (if cfg!(windows) {
+                    "http://tauri.localhost"
+                } else {
+                    "tauri://localhost"
+                })
+                .parse()
+                .unwrap(),
                 body: InvokeBody::Json(body),
                 headers: Default::default(),
                 invoke_key: INVOKE_KEY.to_string(),
@@ -84,7 +90,10 @@ impl Harness {
 
     fn code(&self, cmd: &str, body: Value) -> String {
         match self.call(cmd, body) {
-            Err(e) => e["code"].as_str().unwrap_or("<no code>").to_string(),
+            Err(e) => e["code"]
+                .as_str()
+                .map(str::to_string)
+                .unwrap_or_else(|| format!("<no code> {e}")),
             Ok(v) => panic!("{cmd} should have failed but returned {v}"),
         }
     }
@@ -618,15 +627,23 @@ fn manual_backups_are_permission_checked_complete_and_retained() {
             .with_conn(|conn| pusthakam_lib::services::backup::run_daily(conn, &state.paths))
             .unwrap()
     };
-    let older = "pusthakam-20000101-daily.sqlite3";
-    let queued = "pusthakam-20000102-daily.sqlite3";
+    // Eight older dailies plus today's makes nine: the newest seven stay, the oldest
+    // unqueued one goes, and a backup queued for restore is never removed.
+    let queued = "pusthakam-20000101-daily.sqlite3";
+    let older = "pusthakam-20000102-daily.sqlite3";
     let manual = "pusthakam-20000101T000000Z-manual.sqlite3";
+    let kept: Vec<String> = (3..=8)
+        .map(|day| format!("pusthakam-2000010{day}-daily.sqlite3"))
+        .collect();
     let source = std::fs::read_dir(&folder)
         .unwrap()
         .map(|entry| entry.unwrap().path())
         .find(|path| path.file_name().unwrap() != "pusthakam-broken.sqlite3")
         .unwrap();
-    for name in [older, queued, manual] {
+    for name in [queued, older, manual]
+        .into_iter()
+        .chain(kept.iter().map(String::as_str))
+    {
         std::fs::copy(&source, folder.join(name)).unwrap();
     }
     h.ok("backup_request_restore", json!({ "name": queued }));
@@ -634,8 +651,17 @@ fn manual_backups_are_permission_checked_complete_and_retained() {
     assert!(!folder.join(older).exists());
     assert!(folder.join(queued).is_file());
     assert!(folder.join(manual).is_file());
+    for name in &kept {
+        assert!(
+            folder.join(name).is_file(),
+            "{name} is one of the newest seven"
+        );
+    }
     h.ok("backup_cancel_restore", json!({}));
     std::fs::remove_file(folder.join(queued)).unwrap();
+    for name in &kept {
+        std::fs::remove_file(folder.join(name)).unwrap();
+    }
     assert!(!run_daily());
     h.ok("backup_set_daily", json!({ "enabled": false }));
     assert_eq!(h.ok("backup_list", json!({}))["dailyEnabled"], false);
@@ -678,6 +704,129 @@ fn manual_backups_are_permission_checked_complete_and_retained() {
     );
     assert_eq!(
         h.code("backup_set_daily", json!({ "enabled": false })),
+        "PERMISSION_DENIED"
+    );
+}
+
+#[test]
+fn daily_backups_use_the_chosen_folder_and_fall_back_when_it_is_missing() {
+    use pusthakam_lib::services::backup;
+    let h = Harness::new();
+    let chosen = tempfile::tempdir().unwrap();
+    let usb = chosen.path().join("usb");
+    std::fs::create_dir(&usb).unwrap();
+    assert_eq!(
+        h.code("backup_set_daily_folder", json!({ "folder": usb })),
+        "AUTH_FAILED"
+    );
+    assert_eq!(h.code("launch_at_startup_get", json!({})), "AUTH_FAILED");
+    assert_eq!(
+        h.code("launch_at_startup_set", json!({ "enabled": false })),
+        "AUTH_FAILED"
+    );
+    h.ok("complete_setup", setup_body());
+    let run_daily = || {
+        let state = h.webview.state::<AppState>();
+        state
+            .with_conn(|conn| backup::run_daily(conn, &state.paths))
+            .unwrap()
+    };
+    let data_folder = {
+        let state = h.webview.state::<AppState>();
+        // The installer's choice is adopted only while staff have not chosen a folder.
+        backup::adopt_installer_folder(&state.paths, Some(usb.display().to_string())).unwrap();
+        backup::adopt_installer_folder(&state.paths, Some("/elsewhere".into())).unwrap();
+        state.paths.backups.clone()
+    };
+    let list = h.ok("backup_list", json!({}));
+    assert_eq!(list["dailyFolder"], json!(usb.display().to_string()));
+    assert_eq!(list["dailyFolderAvailable"], true);
+    assert_eq!(list["dailyKeep"], 7);
+
+    assert_eq!(
+        h.code(
+            "backup_set_daily_folder",
+            json!({ "folder": "relative/folder" })
+        ),
+        "VALIDATION"
+    );
+    assert_eq!(
+        h.code(
+            "backup_set_daily_folder",
+            json!({ "folder": chosen.path().join("missing") })
+        ),
+        "VALIDATION"
+    );
+    assert_eq!(
+        h.ok("backup_set_daily_folder", json!({ "folder": usb })),
+        json!(usb.display().to_string())
+    );
+
+    // Today's backup goes to the chosen folder, carries the date, and is listed and checkable.
+    assert!(run_daily());
+    assert!(!run_daily(), "only one daily backup per day");
+    let list = h.ok("backup_list", json!({}));
+    let daily = list["files"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|file| file["name"].as_str().unwrap().ends_with("-daily.sqlite3"))
+        .unwrap()
+        .clone();
+    let name = daily["name"].as_str().unwrap().to_owned();
+    assert_eq!(name.len(), "pusthakam-YYYYMMDD-daily.sqlite3".len());
+    assert!(usb.join(&name).is_file());
+    assert!(!data_folder.join(&name).exists());
+    assert_eq!(daily["folder"], json!(usb.display().to_string()));
+    assert!(list["lastDaily"].as_str().unwrap().contains(&name));
+    assert_eq!(
+        h.ok("backup_verify", json!({ "name": name })),
+        db::migrations::latest_version()
+    );
+
+    // An unplugged drive: the day's backup is saved in the data folder instead, and staff see why.
+    let unplugged = chosen.path().join("unplugged");
+    std::fs::rename(&usb, &unplugged).unwrap();
+    let list = h.ok("backup_list", json!({}));
+    assert_eq!(list["dailyFolderAvailable"], false);
+    assert!(run_daily());
+    assert!(data_folder.join(&name).is_file());
+    assert!(
+        !usb.exists(),
+        "a missing drive is not recreated on the system disk"
+    );
+    let list = h.ok("backup_list", json!({}));
+    assert!(list["lastDaily"]
+        .as_str()
+        .unwrap()
+        .contains("could not be reached"));
+    assert!(!run_daily());
+    std::fs::rename(&unplugged, &usb).unwrap();
+
+    // Clearing the folder returns daily backups to the data folder.
+    assert_eq!(
+        h.ok("backup_set_daily_folder", json!({ "folder": "" })),
+        json!(null)
+    );
+    assert_eq!(h.ok("backup_list", json!({}))["dailyFolder"], json!(null));
+
+    let startup = h.ok("launch_at_startup_get", json!({}));
+    assert_eq!(startup["supported"], cfg!(windows));
+    {
+        let state = h.webview.state::<AppState>();
+        let conn = state.db.lock().unwrap();
+        auth::create_user(&conn, "viewer", "Visitor", "visitor passphrase", "viewer").unwrap();
+    }
+    h.ok(
+        "login",
+        json!({ "username": "viewer", "password": "visitor passphrase" }),
+    );
+    assert_eq!(
+        h.code("backup_set_daily_folder", json!({ "folder": usb })),
+        "PERMISSION_DENIED"
+    );
+    assert_eq!(
+        h.code("launch_at_startup_set", json!({ "enabled": false })),
         "PERMISSION_DENIED"
     );
 }
@@ -4980,8 +5129,10 @@ fn lan_settings_start_and_stop_the_actual_http_listener() {
     assert!(response.contains("/api/opac/search?"));
     assert!(response.contains("data:font/woff2;base64,"));
     for (path, status) in [
-        ("/api/opac/search?class=8&available=true&page=2", "200"),
-        ("/api/opac/search?class=invalid", "400"),
+        ("/api/opac/search?category=1&available=true&page=2", "200"),
+        ("/api/opac/search?category=invalid", "400"),
+        ("/api/opac/search?category=-3", "400"),
+        ("/api/opac/categories", "200"),
     ] {
         let mut request = TcpStream::connect(("127.0.0.1", port)).unwrap();
         request
@@ -5084,5 +5235,100 @@ fn open_loan_directory_paginates_due_order_and_excludes_closed_loans() {
             json!({"search":"DIR-27","page":1})
         )["total"],
         0
+    );
+}
+
+#[test]
+fn browse_categories_drive_record_categories_and_need_permission() {
+    let h = Harness::new();
+    h.ok("complete_setup", setup_body());
+    let categories = h.ok("browse_categories_list", json!({}));
+    let categories = categories.as_array().unwrap();
+    let id_of = |name: &str| {
+        categories.iter().find(|c| c["name"] == name).unwrap()["id"]
+            .as_i64()
+            .unwrap()
+    };
+    let physics = id_of("Physics");
+    let exams = id_of("Competitive Exams");
+
+    // A DDC number places the record automatically when categories are not sent.
+    let record = |categories: Value| {
+        let mut input = json!({
+            "title": "Concepts of Physics", "contributors": [], "subjects": [],
+            "classificationNumber": "530"
+        });
+        if !categories.is_null() {
+            input["categories"] = categories;
+        }
+        input
+    };
+    let id = h.ok(
+        "catalogue_save_record",
+        json!({"input": record(Value::Null)}),
+    );
+    let detail = h.ok("catalogue_get_record", json!({"id": id}));
+    assert_eq!(
+        detail["categories"],
+        json!([{"id": physics, "name": "Physics"}])
+    );
+
+    // Staff choose categories explicitly.
+    let mut input = record(json!([exams]));
+    input["id"] = id.clone();
+    h.ok("catalogue_save_record", json!({"input": input}));
+    let detail = h.ok("catalogue_get_record", json!({"id": id}));
+    assert_eq!(
+        detail["categories"],
+        json!([{"id": exams, "name": "Competitive Exams"}])
+    );
+
+    let created = h.ok(
+        "browse_categories_save",
+        json!({"input": {"name": "Kerala History", "ddcRules": "954.83"}}),
+    );
+    assert!(created.as_i64().unwrap() > 0);
+    assert_eq!(
+        h.code(
+            "browse_categories_save",
+            json!({"input": {"name": "Bad", "ddcRules": "5%"}})
+        ),
+        "VALIDATION"
+    );
+    h.ok(
+        "browse_categories_set_archived",
+        json!({"id": created, "archived": true}),
+    );
+    let active = h.ok("browse_categories_list", json!({}));
+    assert!(!active
+        .as_array()
+        .unwrap()
+        .iter()
+        .any(|c| c["id"] == created));
+
+    {
+        let state = h.webview.state::<AppState>();
+        let conn = state.conn().unwrap();
+        auth::create_user(&conn, "catviewer", "Viewer", "viewer passphrase", "viewer").unwrap();
+    }
+    h.ok("logout", json!({}));
+    h.ok(
+        "login",
+        json!({"username":"catviewer","password":"viewer passphrase"}),
+    );
+    assert!(h.ok("browse_categories_list", json!({})).is_array());
+    assert_eq!(
+        h.code(
+            "browse_categories_save",
+            json!({"input": {"name": "Not allowed"}})
+        ),
+        "PERMISSION_DENIED"
+    );
+    assert_eq!(
+        h.code(
+            "browse_categories_set_archived",
+            json!({"id": physics, "archived": true})
+        ),
+        "PERMISSION_DENIED"
     );
 }

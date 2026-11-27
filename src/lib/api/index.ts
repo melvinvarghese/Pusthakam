@@ -6,12 +6,16 @@ import { invoke } from "@tauri-apps/api/core";
 import { openUrl } from "@tauri-apps/plugin-opener";
 import { previewMode } from "@/lib/preview";
 import { staffHttpCommand, staffHttpConfig } from "./staffHttp";
+<<<<<<< HEAD
 import type { MemberActivityItem, MemberHold, MemberProfileSummary, HistoryBatchSummary, HistorySummary, HistoryPreview, RenewalImportPreview, LoanImportPreview, MemberFineAccount, LibraryCalendar, Holiday,
+=======
+import type { BrowseCategory, BrowseCategoryInput, HistoryBatchSummary, HistorySummary, HistoryPreview, RenewalImportPreview, LoanImportPreview, MemberFineAccount, LibraryCalendar, Holiday,
+>>>>>>> 85521d18193ad76b95a73ecca5d3bc79dd0639d6
   CatalogueExportFormat, CatalogueExportFile, AccessionFormat, AppErrorPayload, AppInfo, ArchiveKind, CirculationDay, ConfigOverview, CopyBatchInput, CopyPage, CopyQuery,
   CopyRecord, CopyStatus, CopyUpdateInput, DashboardOverview, DuplicateHit, DuplicateProbe, FineAmount, FineHistoryPage, FinePage, FineSettlement, ImportOptions, ImportPreview,
   ImportPreviewRequest, ImportReport, IssuePreview, KohaPatronPreview, LibraryInput, MemberCategoryInput, MemberInput, MemberLoanPage, MemberPage, OpenLoanPage, OverduePage, RenewalPreview, ReservationPage, ReturnCondition, ReturnPreview,
   NamedInput, NamedKind, PolicyInput, PopularTitle, RecordDetail, RecordInput, SearchQuery, SearchResult, Session, SetupInput,
-  SetupStatus, ShelfInput, StockRow, FineSummary, CatalogueGrowthDay, MemberSummary, BackupFile, BackupList, AuditPage, AuditQuery,
+  SetupStatus, ShelfInput, StockRow, FineSummary, CatalogueGrowthDay, MemberSummary, BackupFile, BackupList, StartupSetting, AuditPage, AuditQuery,
   OverdueRow, AccessionRow, ExpenditureRow, LossDamageRow, ReportExportFile,
   NewStaff, StaffChanges, StaffDirectory,
   ScanOutcome, StockCheck, StockCheckPage, StockCheckReview, StockCheckView, StockTransfer,
@@ -86,6 +90,8 @@ export const appApi = {
   setting: (key: string) => call<string | null>("get_setting", { key }),
   setSetting: (key: string, value: string) => call<void>("set_setting", { key, value }),
   info: () => call<AppInfo>("app_info"),
+  startup: () => call<StartupSetting>("launch_at_startup_get"),
+  setStartup: (enabled: boolean) => call<StartupSetting>("launch_at_startup_set", { enabled }),
   overview: () => call<DashboardOverview>("dashboard_overview"),
 };
 
@@ -110,6 +116,7 @@ export const backupApi = {
   create: () => call<BackupFile>("backup_create"),
   copyToFolder: (name: string, folder: string) => call<BackupFile>("backup_copy_to_folder", { name, folder }),
   setDaily: (enabled: boolean) => call<void>("backup_set_daily", { enabled }),
+  setDailyFolder: (folder: string) => call<string | null>("backup_set_daily_folder", { folder }),
   verify: (name: string) => call<number>("backup_verify", { name }),
   requestRestore: (name: string) => call<void>("backup_request_restore", { name }),
   cancelRestore: () => call<void>("backup_cancel_restore"),
@@ -333,6 +340,12 @@ export const classificationApi = {
     call<number>("classification_save_subject", { input }),
   mergeSubjects: (fromId: number, toId: number) =>
     call<void>("classification_merge_subjects", { fromId, toId }),
+  listBrowseCategories: (includeArchived = false) =>
+    call<BrowseCategory[]>("browse_categories_list", { includeArchived }),
+  saveBrowseCategory: (input: BrowseCategoryInput) =>
+    call<number>("browse_categories_save", { input }),
+  setBrowseCategoryArchived: (id: number, archived: boolean) =>
+    call<void>("browse_categories_set_archived", { id, archived }),
   listMarcMappings: () =>
     call<MarcMapping[]>("classification_list_marc_mappings", {}),
   saveMarcMapping: (input: MarcMappingInput) =>
