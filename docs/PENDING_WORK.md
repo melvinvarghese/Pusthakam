@@ -64,13 +64,14 @@ Suggested order: section 1, then the [owner] tests in section 3, then section 4.
 
 - [ ] **[owner/product]** Decide the 30-day trial start trigger and offline clock policy.
 - [ ] **[owner/product]** Decide the exact post-expiry access policy; preserve all library data and never make it inaccessible through destructive expiry handling.
-- [ ] **[owner/product]** Set the one-time licence price, licence scope/duration, update entitlement and support entitlement.
+- [x] **[owner/product]** Decide licence duration: perpetual use after a one-time payment (owner decision 27 Nov 2026). This does not itself include lifetime upgrades.
+- [ ] **[owner/product]** Set the one-time licence price and confirm licence scope (for example, number of library installations), update/major-version entitlement and support entitlement.
 - [ ] **[owner/product]** Decide activation, online/offline validation and device-transfer rules.
 - [ ] Implement and test trial countdown/expiry, purchase and licence activation only after the owner decisions above are recorded.
 - [ ] Complete CI, security, installer and supported-platform acceptance; run a controlled library beta/pilot before the public official release.
 - [ ] At official release, publish clear 30-day trial terms and purchase/activation instructions.
 
-Source: owner decision recorded 27 November 2026 in PROGRESS.md, PROGRESS.json, DEVELOPMENT_ROADMAP.md and SESSION_HANDOFF.md.
+Source: owner decisions recorded 27 November 2026 in PROGRESS.md, PROGRESS.json, DEVELOPMENT_ROADMAP.md and SESSION_HANDOFF.md.
 
 ## 5. Documentation
 
