@@ -972,3 +972,26 @@ Shared-handler foundation proof complete: 162 common typed handlers, 164 registe
 ### Owner terminology correction - 2026-11-27T12:39:02.446Z
 
 Owner replaces booking wording with the Reservations term saved exactly in approved-glossary.json. This new explicit preference supersedes earlier booking draft terminology for Reservations. Existing workbook and owner corrections untouched; reconcile related sentence forms with owner review rather than guessing singular or verb wording. Shared app translator already gives approved glossary priority. Preserve unrelated current copyright/footer work.
+
+
+## CI failure investigation — 27 November 2026
+
+Documentation checkpoint only; no application source, tests, workflow files, or release settings were changed in this update. PR #2 remains open and unmerged.
+
+Evidence inspected:
+- PR #2 workflow run **46019761127** (commit `452eb34dc157464ea4229b87ba8834f986e77c61`): [GitHub Actions run](https://github.com/melvinvarghese/Pusthakam/actions/runs/46019761127). The Rust job stopped at `cargo fmt --check` because `src-tauri/src/services/lan.rs`, `opac_patron.rs`, and `reservations.rs` did not match rustfmt. Frontend typecheck and ESLint passed; Vitest reported 2 failing tests out of 274 (272 passed): the Pager range separator differed (hyphen vs expected en dash), and a Circulation reservation test expected `circulation_place_reservation` but observed reservation-list/catalogue lookup calls instead. Later stages were skipped because their prerequisite checks failed.
+- A subsequent run **46023033720** on branch `daily-backups-and-tray-startup` ([GitHub Actions run](https://github.com/melvinvarghese/Pusthakam/actions/runs/46023033720)) showed `cargo fmt --check` passing, but Clippy could not compile the Windows target because three embedded font files were missing from `node_modules`: Hanken Grotesk, Courier Prime, and Noto Sans Malayalam. The Rust source uses `include_bytes!` in `src-tauri/src/services/opac_page.rs`; the Rust job must install frontend dependencies before compiling, or the font assets must be made available through a build-independent path.
+- In that subsequent run, frontend typecheck and ESLint passed, but Vitest had a worker-start failure across many test files (`[vitest-pool]: Failed to start forks worker`). This points to test-worker/resource configuration on the hosted runner; investigate and bound worker concurrency without disabling tests. The earlier two assertion failures also remain to be checked against current source/tests.
+
+### Root causes / follow-up order
+1. **Windows Rust job dependency ordering:** ensure `npm ci` (or the repository's equivalent locked install) runs before any Rust build/Clippy step that embeds files from `node_modules`. Confirm all three font paths exist on Windows before compiling.
+2. **Vitest runner capacity:** inspect Vitest pool configuration and CI runner limits; use a bounded worker count or a suitable pool, retaining the full test suite.
+3. **Pager assertion:** settle the intended typography (hyphen or en dash) and make component, accessibility test, and translation review source agree.
+4. **Circulation reservation assertion:** inspect the test fixture and current reservation UI flow; determine whether implementation regressed or the test is asserting an obsolete interaction. Update implementation or test only after confirming intended behavior.
+5. **Run all downstream stages:** after the above pass, confirm release smoke checks and Linux/macOS/Windows packaging actually execute and pass. Do not treat skipped jobs as successful verification.
+
+### Guardrails
+- Keep Node.js pinned to 22.22.2 in both jobs.
+- Do not remove, weaken, or skip Clippy, Rust tests, Vitest, release smoke tests, or platform packaging checks to obtain a green badge.
+- Record each command, result, runner/OS, run URL, and commit SHA. Mark CI/release work verified only after the complete required matrix passes.
+- This is a handoff for a later authorized fix session; no code fix is claimed here.
