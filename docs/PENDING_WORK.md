@@ -24,6 +24,9 @@ Suggested order: section 1, then the [owner] tests in section 3, then section 4.
 
 - [ ] Polished report designs by default plus an unchecked "Use simple report design" option (preview, PDF, print, styled XLSX; CSV stays data-only). Source: DEVELOPMENT_ROADMAP "Planned report presentation enhancement", REPORT_DESIGN_PLAN.md.
 - [ ] Author and publisher authority records, subject hierarchies, bulk edit and bulk delete (archive, never hard delete). Source: KI-017.
+- [x] OPAC browse categories instead of DDC class buttons (owner decision 27 Nov 2026, DECISIONS "OPAC browse categories"). Done 27 Nov 2026 on branch `opac-browse-categories`: migration 0025, Rust tests `services::browse_categories::tests::*`, `services::lan::tests` OPAC filter test, IPC tests `browse_categories_drive_record_categories_and_need_permission` and the `/api/opac/categories` route check; Vitest `browseCategories.test.ts`.
+- [ ] **[owner]** Check the new OPAC category buttons and the default category list on a real catalogue; rename, add or archive categories to suit the library. Source: DECISIONS "OPAC browse categories".
+- [ ] Optional: a parent level for browse categories (Fiction → Malayalam Fiction), Malayalam display names for categories, and bulk "add category to selected books" in the catalogue. Source: DECISIONS "OPAC browse categories".
 - [ ] Import step that maps source codes (e.g. MAIN, BK) to proper location, collection and item-category names. Source: KI-019.
 - [ ] Preset layouts for common die-cut label sheets. Source: KI-020, KI-023.
 - [ ] MARC-8 encoded MARC import (UTF-8 MARC, MARCXML, JSON and XLSX already exist; update KI-016 text). Source: KI-016.

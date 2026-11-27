@@ -679,6 +679,32 @@ export interface RecordInput {
   keywords: string | null;
   contributors: Contributor[];
   subjects: string[];
+  /** Browse category ids chosen by staff. Omit to keep existing choices and only re-apply DDC rules. */
+  categories?: number[];
+}
+
+export interface CategoryRef {
+  id: number;
+  name: string;
+}
+
+/** Member-facing OPAC grouping such as "Malayalam Fiction". Separate from subject headings. */
+export interface BrowseCategory {
+  id: number;
+  name: string;
+  /** Comma-separated DDC prefixes that place books automatically, e.g. "530" or "894.8123". */
+  ddcRules: string | null;
+  sortOrder: number;
+  isDefault: boolean;
+  archived: boolean;
+  recordCount: number;
+}
+
+export interface BrowseCategoryInput {
+  id?: number | null;
+  name: string;
+  ddcRules: string | null;
+  sortOrder?: number | null;
 }
 
 export interface CopyRecord {
@@ -700,13 +726,14 @@ export interface CopyRecord {
   status: CopyStatus;
 }
 
-export interface RecordDetail extends Omit<RecordInput, "id" | "isbn" | "contributors" | "subjects"> {
+export interface RecordDetail extends Omit<RecordInput, "id" | "isbn" | "contributors" | "subjects" | "categories"> {
   id: number;
   isbn10: string | null;
   isbn13: string | null;
   archived: boolean;
   contributors: Contributor[];
   subjects: string[];
+  categories: CategoryRef[];
   copies: CopyRecord[];
 }
 

@@ -50,6 +50,8 @@ Conventions: see DECISIONS D-003, D-007, D-008, D-009. All tables have `id INTEG
 
 **serial_subscriptions / serial_issues** — ISSN, frequency, period; expected vs received issue rows with `status` (expected/received/missing/claimed).
 
+**browse_categories / record_categories** (migration 0025) — member-facing OPAC groupings, separate from `subjects`. `browse_categories`: `name UNIQUE NOCASE`, `ddc_rules` (comma-separated DDC prefixes), `sort_order`, `is_default`, `archived_at` (archived, not deleted). `record_categories`: `(record_id, category_id)` PK, `source` = `rule` (placed by a DDC rule, recomputed when rules or class numbers change), `manual` (added by staff) or `excluded` (staff removed a rule match; rules do not re-add it). View `browse_category_rules` splits rules into one prefix per row.
+
 **backup_history** — `created_at`, `path`, `size_bytes`, `schema_version`, `integrity_ok`, `kind` (manual/scheduled/pre_restore/pre_migration), `verified_at`.
 
 ## Integrity rules enforced in the database

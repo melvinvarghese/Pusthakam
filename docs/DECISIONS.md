@@ -45,3 +45,13 @@ Owner requested phone/computer browser access for staff and anonymous OPAC for p
 ## V3 hosting and staff browser parity — owner decision, 25 November 2026
 
 Support both local network and internet access for OPAC and the full role-permitted staff app. Default host is the library PC; optionally deploy the same application services on an always-on host. Reuse the staff frontend and typed contracts with independent browser sessions. One authoritative database; explicit verified backup/restore migration when changing host. This supersedes earlier statements that public-internet access is outside all planned scope, while preserving optional/offline PC operation and v1 accounting. No deployment or public domain has been configured.
+
+## OPAC browse categories replace DDC class buttons — owner decision, 27 November 2026
+
+Melvin: members "don't wanna know the numbers. they just want to know the classification/subjects". Three options were offered (relabel the 10 DDC classes without numbers, staff-managed categories, or staff-picked subject headings); the owner chose **staff-managed browse categories**.
+
+- A new `browse_categories` list, separate from subject headings and class numbers, is what members browse in the OPAC. It ships with 31 defaults (Malayalam Fiction, Malayalam Poetry, English Fiction, Children's Books, Physics, Mathematics, Management & Business, Competitive Exams, Reference, ...). Staff add, rename, re-rule or archive them under Classification & Authorities → Browse Categories.
+- Each category may carry DDC prefix rules (e.g. Physics = 53, Malayalam Fiction = 894.8123). Rules place existing and new books automatically, matching only DDC (or unspecified-scheme) class numbers. Staff can add or remove categories on any book from its record form; a removal is stored as `excluded` so rules do not add it back.
+- The OPAC shows only categories that hold visible books, with counts, and never shows class numbers in result rows. The book detail shows "Where to find it" (location plus shelf call number). Staff screens, spine labels and exports keep DDC unchanged.
+- Later: an optional parent level (Fiction → Malayalam Fiction) can cover the "subject hierarchies" item in PENDING_WORK; Malayalam display names for categories are not built yet.
+
