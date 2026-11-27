@@ -1,0 +1,15 @@
+{
+  "at": "2026-11-27T12:57:04.682752+00:00",
+  "owner_review": "Owner explicitly reports all519 terms done; workbook status cells are not all marked reviewed. Preserve both facts.",
+  "rows": 519,
+  "saved_corrections": 30,
+  "cached_statuses": {
+    "Changed": 30,
+    "OK": 11,
+    "Not reviewed": 478
+  },
+  "sha256": "db2a302e6665b68e3721f1a2e2325ed467be2a78ff848ec8f84a35b23072e94a",
+  "backup": "docs\\translations\\backups\\Pusthakam_Malayalam_Drafts_519_owner_completed_20261127T125704Z.xlsx",
+  "application_integration": "not performed",
+  "resume": "Monday 30 November 2026; explicit resume required; reconcile workbook corrections and source before applying"
+}

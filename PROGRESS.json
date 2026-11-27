@@ -1,11 +1,20 @@
 {
   "schemaVersion": 1,
+<<<<<<< Updated upstream
   "lastUpdated": "2026-11-27T13:05:00Z",
   "currentPhase": "2",
   "currentTask": {
     "title": "Rebuilt the public website (website/) in the Spine Label style",
     "status": "in-progress",
     "detail": "Outside v1 product scope. Replaced the old site (false download/open-source/encryption claims, AI-generated hero image) with six static pages: Home, Features, Get Pusthakam, Status, FAQ, About, plus 404 and a redirect from try/. Only features present in the code are described; no 'free' or open-source wording, following the 2026-11-27 commercial licensing decision. Screenshots come from the dev preview with synthetic data via tools/website-screenshots. Removed .github/workflows/static.yml, which deployed the whole repository to GitHub Pages. Awaiting owner review on branch website-redesign; not merged or published."
+=======
+  "lastUpdated": "2026-11-27T14:24:32.191Z",
+  "currentPhase": "2",
+  "currentTask": {
+    "title": "All 3 Koha-parity features implemented (ISBN auto-fill, Patron OPAC login, Optional Email/WhatsApp overdue reminders)",
+    "status": "implemented",
+    "detail": "Implemented Feature 3 (Optional Email/WhatsApp overdue reminders) completing the 3-feature Koha-parity batch: added member_email and member_phone to OverdueLoan in src-tauri/src/services/circulation.rs and src/lib/api/types.ts; added src/lib/reminders.ts (buildOverdueReminderMessage, buildMailtoUrl, buildWhatsAppUrl) with unit tests; permitted https://wa.me/* and mailto:* in src-tauri/capabilities/default.json; and added opt-in Email, WhatsApp, and Copy notice buttons to src/features/circulation/OverdueLoans.tsx. Verified with tsc --noEmit, eslint ., and 25 Vitest tests (reminders.test.ts, api.test.ts, CirculationPage.test.tsx)."
+>>>>>>> Stashed changes
   },
   "nextMilestone": {
     "title": "macOS and Linux package smoke tests",
@@ -3948,14 +3957,82 @@
       "check": "npm.cmd run typecheck && npm.cmd run lint && npx.cmd vitest run src/lib/copyright.test.ts src/app/AppShell.test.tsx src/features/boot/Gate.test.tsx",
       "outcome": "passed",
       "result": "TypeScript typecheck passed (0 errors), ESLint passed (0 errors), and all 21 focused tests across 3 files passed."
+    },
+    {
+      "id": "isbn-autofill-2026-11-27",
+      "title": "ISBN auto-fill helper, RecordFormDialog UI, and catalogue regression checks",
+      "at": "2026-11-27T12:51:45.058Z",
+      "check": "npm.cmd run typecheck && npm.cmd run lint && npx.cmd vitest run src/lib/isbnLookup.test.ts src/features/catalogue/catalogue.test.tsx src/features/catalogue/RecordFormDialog.isbn.test.tsx",
+      "outcome": "passed",
+      "result": "TypeScript typecheck passed, ESLint passed, and ISBN/catalogue tests passed."
+    },
+    {
+      "id": "owner519-completed-1795784257405",
+      "title": "Owner review completion checkpoint",
+      "at": "2026-11-27T12:57:37.399Z",
+      "check": "Read-only workbook inspection, SHA256 and byte-preserving backup; downloadable version save",
+      "outcome": "passed",
+      "result": "519 rows;30 correction cells; cached statuses30 Changed/11 OK/478 Not reviewed. Owner explicitly states review complete. No cells changed. Workbook backup/hash recorded in OWNER_REVIEW_CHECKPOINT.json and downloadable version2 saved."
+    },
+    {
+      "id": "patron-opac-login-2026-11-27",
+      "title": "Patron OPAC login, hold placement/cancellation, and LAN OPAC tests",
+      "at": "2026-11-27T13:13:07.623Z",
+      "check": "cargo test --manifest-path src-tauri/Cargo.toml opac_patron && opac_page && services::lan::tests",
+      "outcome": "passed",
+      "result": "opac_patron (2/2), opac_page (1/1), and services::lan::tests (7/7) all passed."
+    },
+    {
+      "id": "overdue-reminders-2026-11-27",
+      "title": "Optional Email/WhatsApp overdue reminders and circulation regression checks",
+      "at": "2026-11-27T14:24:32.191Z",
+      "check": "npm.cmd run typecheck && npm.cmd run lint && npx.cmd vitest run src/lib/reminders.test.ts src/features/circulation/CirculationPage.test.tsx src/lib/api/api.test.ts",
+      "outcome": "passed",
+      "result": "TypeScript typecheck passed, ESLint passed, and all 25 tests across 3 files passed."
     }
   ],
   "recentActivity": [
     {
       "kind": "progress",
+<<<<<<< Updated upstream
       "at": "2026-11-27T13:05:00Z",
       "title": "Rebuilt the public website on branch website-redesign",
       "detail": "Outside v1 product scope. Replaced the old site (false download/open-source/encryption claims, AI-generated hero image) with six static pages: Home, Features, Get Pusthakam, Status, FAQ, About, plus 404 and a redirect from try/. Only features present in the code are described; no 'free' or open-source wording, following the 2026-11-27 commercial licensing decision. Screenshots come from the dev preview with synthetic data via tools/website-screenshots. Removed .github/workflows/static.yml, which deployed the whole repository to GitHub Pages. Awaiting owner review on branch website-redesign; not merged or published."
+=======
+      "at": "2026-11-27T14:24:32.191Z",
+      "title": "Implemented optional Email/WhatsApp overdue reminders",
+      "detail": "Added memberEmail/memberPhone to OverdueLoan, created src/lib/reminders.ts, allowed wa.me and mailto in capabilities, and added Email, WhatsApp, and Copy notice actions in OverdueLoans.tsx."
+    },
+    {
+      "kind": "progress",
+      "at": "2026-11-27T13:13:07.623Z",
+      "title": "Implemented Patron OPAC login, loans/fines view, and self-service holds",
+      "detail": "Added isolated patron sessions and /api/opac/patron/* endpoints in opac_patron.rs and lan.rs, hold helpers in reservations.rs, and My Account + Request Hold UI in the embedded OPAC."
+    },
+    {
+      "kind": "progress",
+      "at": "2026-11-27T12:57:37.399Z",
+      "title": "Owner completed519 review; saved Monday handoff",
+      "detail": "OWNER PAUSE until Monday 30 November 2026; no further implementation/design until explicit resume. Owner reports review of all519 Malayalam terms complete. Active original docs/translations/Pusthakam_Malayalam_Drafts_519.xlsx saved with30 nonempty correction cells, no notes; cached statuses30 Changed,11 OK,478 Not reviewed. Record owner completion separately from spreadsheet metadata; do not reset statuses, discard corrections or require duplicate319 review. Read-only inspection confirmed519 rows, no Excel lock; workbook SHA256 db2a302e6665b68e3721f1a2e2325ed467be2a78ff848ec8f84a35b23072e94a. Byte-preserving completed-review backup and OWNER_REVIEW_CHECKPOINT.json saved; same downloadable workbook saved as version2. No workbook cell edits or translation integration performed in this save operation. On explicit resume, read checkpoint and reconcile all owner corrections by ID/English/placeholder parity against current source and approved terminology (including contributor and Reservations), then apply reviewed wording while preserving newer source work. Also preserve the independent latest ISBN auto-fill changes/tests and queued patron OPAC login task; these were present on arrival and not modified or reverified here. Broader remaining translations, font/rendering/mobile/native installer verification remain pending. No source tests repeated for documentation-only save, no owner database changes, commit or push. V1 totals unchanged."
+    },
+    {
+      "kind": "progress",
+      "at": "2026-11-27T12:51:45.058Z",
+      "title": "Implemented ISBN auto-fill in Catalogue Add/Edit Record",
+      "detail": "Added src/lib/isbnLookup.ts, Fill from ISBN button in RecordFormDialog.tsx, CSP connect-src entries in tauri.conf.json, and unit/component tests."
+    },
+    {
+      "kind": "progress",
+      "at": "2026-11-27T12:49:04.020Z",
+      "title": "Added 3 post-v1 features to roadmap/handoff; starting ISBN auto-fill",
+      "detail": "Recorded (1) Z39.50 / ISBN auto-fill, (2) Patron OPAC login, and (3) Optional Email/WhatsApp overdue reminders in PROGRESS.json, PROGRESS.md, and docs/SESSION_HANDOFF.md. Proceeding to implement ISBN auto-fill first."
+    },
+    {
+      "kind": "progress",
+      "at": "2026-11-27T12:39:02.446Z",
+      "title": "Owner-approved Reservations terminology updated",
+      "detail": "Owner replaces booking wording with the Reservations term saved exactly in approved-glossary.json. This new explicit preference supersedes earlier booking draft terminology for Reservations. Existing workbook and owner corrections untouched; reconcile related sentence forms with owner review rather than guessing singular or verb wording. Shared app translator already gives approved glossary priority. Preserve unrelated current copyright/footer work."
+>>>>>>> Stashed changes
     },
     {
       "kind": "progress",

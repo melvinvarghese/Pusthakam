@@ -35,6 +35,7 @@ pub mod lan_runtime;
 pub mod loan_import;
 pub mod network_addresses;
 pub mod opac_page;
+pub mod opac_patron;
 pub mod renewal_import;
 pub mod report_export;
 pub mod serials;

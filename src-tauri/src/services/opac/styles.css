@@ -33,3 +33,21 @@ main{min-width:0}.masthead{padding:32px max(24px,calc((100% - 1232px)/2)) 20px;b
   dialog h2{font-size:22px}dialog .book-cover{float:left;width:72px;height:108px;margin:12px 16px 12px 0}
   dialog dl{clear:both;grid-template-columns:92px minmax(0,1fr);gap:10px 12px}dialog dd{margin:0}
 }
+.account-btn{margin-left:auto;font-size:14px;font-weight:600;border-color:var(--ink)}
+.account-form{display:flex;flex-direction:column;gap:12px;border:0;margin:12px 0 0}
+.account-form label{display:flex;flex-direction:column;gap:4px;font-size:14px;font-weight:600}
+.account-form input{width:100%;flex:none;border:1px solid var(--line);border-radius:4px;padding:10px 12px;font-weight:400}
+.account-form button{border-radius:4px;padding:10px 16px;align-self:flex-start}
+.account-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;border-bottom:1px solid var(--line);padding-bottom:12px;margin-bottom:16px}
+.account-section{margin-top:20px}.account-section h3{font-size:15px;margin:0 0 8px}
+.account-list{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:8px}
+.account-item{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:10px 12px;border:1px solid var(--line);border-radius:4px;font-size:14px}
+.account-meta{font-size:13px;color:var(--muted)}
+.status-pill{display:inline-block;font-size:12px;font-weight:600;padding:2px 8px;border-radius:999px;background:#e0f2fe;color:#0369a1}
+.status-pill.overdue{background:#fee2e2;color:#991b1b}
+.hold-bar{margin-top:16px;padding-top:16px;border-top:1px solid var(--line);display:flex;flex-direction:column;gap:8px;align-items:flex-start}
+.hold-btn{background:var(--ink);color:var(--paper);border-color:var(--ink);font-weight:600}
+.ok-note{color:var(--teal);font-size:14px;font-weight:600;margin:0}
+.danger-note{color:#9f2430;font-size:14px;margin:0}
+#close-account{display:block;margin-left:auto}
+@media(max-width:640px){.account-btn{grid-column:1/-1;margin:8px 0 0;width:100%}}

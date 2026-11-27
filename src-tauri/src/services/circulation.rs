@@ -47,6 +47,8 @@ struct OverdueLoan {
     loan: ReturnPreview,
     barcode: String,
     member_number: String,
+    member_email: Option<String>,
+    member_phone: Option<String>,
     days_overdue: i64,
 }
 
@@ -119,7 +121,7 @@ pub fn list_overdue(conn: &Connection, page: i64) -> AppResult<OverduePage> {
     let page = page.clamp(1, ((total + PAGE_SIZE - 1) / PAGE_SIZE).max(1));
     let mut stmt = conn.prepare(
         "SELECT l.id, m.name, r.title, l.due_on, i.barcode, m.member_number,
-                CAST(julianday(?1) - julianday(l.due_on) AS INTEGER)
+                m.email, m.phone, CAST(julianday(?1) - julianday(l.due_on) AS INTEGER)
          FROM loans l JOIN members m ON m.id = l.member_id
          JOIN physical_items i ON i.id = l.item_id JOIN bibliographic_records r ON r.id = i.record_id
          WHERE l.returned_at IS NULL AND l.due_on < ?1
@@ -137,7 +139,9 @@ pub fn list_overdue(conn: &Connection, page: i64) -> AppResult<OverduePage> {
                 },
                 barcode: r.get(4)?,
                 member_number: r.get(5)?,
-                days_overdue: r.get(6)?,
+                member_email: r.get(6)?,
+                member_phone: r.get(7)?,
+                days_overdue: r.get(8)?,
             })
         })?
         .collect::<Result<Vec<_>, _>>()?;

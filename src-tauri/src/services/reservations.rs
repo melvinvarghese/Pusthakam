@@ -272,3 +272,111 @@ pub fn list(conn: &mut Connection, page: i64) -> AppResult<ReservationPage> {
         total,
     })
 }
+
+pub fn place_for_patron_record(
+    conn: &mut Connection,
+    member_id: i64,
+    record_id: i64,
+) -> AppResult<String> {
+    let tx = conn.transaction_with_behavior(TransactionBehavior::Immediate)?;
+    let duplicate_title: bool = tx.query_row(
+        "SELECT EXISTS(
+            SELECT 1 FROM reservations r JOIN physical_items i ON i.id = r.item_id
+            WHERE i.record_id = ?1 AND r.member_id = ?2 AND r.closed_at IS NULL
+         ) OR EXISTS(
+            SELECT 1 FROM loans l JOIN physical_items i ON i.id = l.item_id
+            WHERE i.record_id = ?1 AND l.member_id = ?2 AND l.returned_at IS NULL
+         )",
+        params![record_id, member_id],
+        |r| r.get(0),
+    )?;
+    if duplicate_title {
+        return Err(AppError::Conflict(
+            "You already have an active hold or open loan for this title.".into(),
+        ));
+    }
+
+    let candidate: Option<(i64, String)> = tx
+        .query_row(
+            &format!(
+                "SELECT i.id, i.barcode
+                 FROM physical_items i
+                 JOIN bibliographic_records br ON br.id = i.record_id
+                 JOIN item_categories ic ON ic.id = i.item_category_id
+                 JOIN members m ON m.id = ?1
+                 JOIN member_categories mc ON mc.id = m.category_id
+                 JOIN circulation_policies p ON p.member_category_id = m.category_id AND p.item_category_id = i.item_category_id
+                 WHERE i.record_id = ?2 AND {ELIGIBLE}
+                   AND i.status IN ('available', 'on_loan', 'reserved_hold')
+                 ORDER BY CASE i.status WHEN 'available' THEN 0 WHEN 'on_loan' THEN 1 ELSE 2 END, i.id ASC
+                 LIMIT 1"
+            ),
+            params![member_id, record_id],
+            |r| Ok((r.get(0)?, r.get(1)?)),
+        )
+        .optional()?;
+    let (item_id, barcode) = candidate.ok_or_else(|| {
+        AppError::Validation(
+            "No eligible copy of this title is available for a hold with your membership.".into(),
+        )
+    })?;
+
+    let system_actor: i64 = tx
+        .query_row(
+            "SELECT u.id FROM staff_users u
+             JOIN roles r ON r.id = u.role_id
+             WHERE u.active = 1
+             ORDER BY CASE r.code WHEN 'administrator' THEN 0 ELSE 1 END, u.id ASC LIMIT 1",
+            [],
+            |r| r.get(0),
+        )
+        .optional()?
+        .ok_or_else(|| AppError::Internal("No active staff account available to record hold.".into()))?;
+
+    tx.execute(
+        "INSERT INTO reservations (item_id, member_id, placed_by) VALUES (?1, ?2, ?3)",
+        params![item_id, member_id, system_actor],
+    )?;
+    let id = tx.last_insert_rowid();
+    refresh_copy(&tx, item_id)?;
+    audit::record(
+        &tx,
+        None,
+        "reservation.patron_place",
+        "reservations",
+        Some(id),
+        &format!("Patron placed hold via OPAC on copy {barcode}"),
+    )?;
+    tx.commit()?;
+    Ok(barcode)
+}
+
+pub fn cancel_for_patron(
+    conn: &mut Connection,
+    member_id: i64,
+    reservation_id: i64,
+) -> AppResult<()> {
+    let tx = conn.transaction_with_behavior(TransactionBehavior::Immediate)?;
+    let item_id: i64 = tx
+        .query_row(
+            &format!(
+                "UPDATE reservations SET status = 'cancelled', closed_at = {NOW}
+                 WHERE id = ?1 AND member_id = ?2 AND closed_at IS NULL RETURNING item_id"
+            ),
+            params![reservation_id, member_id],
+            |r| r.get(0),
+        )
+        .optional()?
+        .ok_or_else(|| AppError::Conflict("This hold is no longer active.".into()))?;
+    refresh_copy(&tx, item_id)?;
+    audit::record(
+        &tx,
+        None,
+        "reservation.patron_cancel",
+        "reservations",
+        Some(reservation_id),
+        "Patron cancelled hold via OPAC",
+    )?;
+    tx.commit()?;
+    Ok(())
+}
