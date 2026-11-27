@@ -331,7 +331,9 @@ pub fn place_for_patron_record(
             |r| r.get(0),
         )
         .optional()?
-        .ok_or_else(|| AppError::Internal("No active staff account available to record hold.".into()))?;
+        .ok_or_else(|| {
+            AppError::Internal("No active staff account available to record hold.".into())
+        })?;
 
     tx.execute(
         "INSERT INTO reservations (item_id, member_id, placed_by) VALUES (?1, ?2, ?3)",

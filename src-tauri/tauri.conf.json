@@ -17,7 +17,8 @@
         "height": 800,
         "minWidth": 1024,
         "minHeight": 640,
-        "maximized": true
+        "maximized": true,
+        "visible": false
       }
     ],
     "security": {
@@ -40,7 +41,8 @@
     ],
     "windows": {
       "nsis": {
-        "installMode": "currentUser"
+        "installMode": "currentUser",
+        "installerHooks": "./installer-hooks.nsh"
       }
     },
     "macOS": {

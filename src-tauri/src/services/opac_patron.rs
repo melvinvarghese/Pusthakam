@@ -85,8 +85,7 @@ pub fn current_session(head: &Head) -> Option<(String, i64, String)> {
     let mut map = store().sessions.lock().ok()?;
     let now = Instant::now();
     map.retain(|_, s| s.expires > now);
-    map.get(&key)
-        .map(|s| (key, s.member_id, s.csrf.clone()))
+    map.get(&key).map(|s| (key, s.member_id, s.csrf.clone()))
 }
 
 pub fn create_session(member_id: i64, secure: bool) -> AppResult<(String, String, String)> {
@@ -141,7 +140,11 @@ fn digits_only(s: &str) -> String {
     s.chars().filter(|c| c.is_ascii_digit()).collect()
 }
 
-fn verification_matches(stored_email: Option<&str>, stored_phone: Option<&str>, input: &str) -> bool {
+fn verification_matches(
+    stored_email: Option<&str>,
+    stored_phone: Option<&str>,
+    input: &str,
+) -> bool {
     let trimmed = input.trim();
     if trimmed.is_empty() {
         return false;

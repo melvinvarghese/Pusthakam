@@ -1320,7 +1320,11 @@ fn handle_http_connection(
                 let member_id = match crate::services::opac_patron::authenticate(&conn, &input) {
                     Ok(id) => id,
                     Err(e) => {
-                        let status = if matches!(e, AppError::Validation(_)) { 400 } else { 401 };
+                        let status = if matches!(e, AppError::Validation(_)) {
+                            400
+                        } else {
+                            401
+                        };
                         let json = serde_json::json!({ "error": e.to_string() }).to_string();
                         return send_patron_json(&mut stream, status, &json, None);
                     }
@@ -1334,8 +1338,9 @@ fn handle_http_connection(
                             return send_patron_json(&mut stream, 500, &json, None);
                         }
                     };
-                return match crate::services::opac_patron::account_summary(&mut conn, member_id, csrf)
-                {
+                return match crate::services::opac_patron::account_summary(
+                    &mut conn, member_id, csrf,
+                ) {
                     Ok(acct) => send_patron_json(
                         &mut stream,
                         200,
@@ -1404,8 +1409,9 @@ fn handle_http_connection(
                     let json = serde_json::json!({ "error": e.to_string() }).to_string();
                     return send_patron_json(&mut stream, status, &json, None);
                 }
-                return match crate::services::opac_patron::account_summary(&mut conn, member_id, csrf)
-                {
+                return match crate::services::opac_patron::account_summary(
+                    &mut conn, member_id, csrf,
+                ) {
                     Ok(acct) => send_patron_json(
                         &mut stream,
                         200,
@@ -1444,8 +1450,9 @@ fn handle_http_connection(
                     let json = serde_json::json!({ "error": e.to_string() }).to_string();
                     return send_patron_json(&mut stream, status, &json, None);
                 }
-                return match crate::services::opac_patron::account_summary(&mut conn, member_id, csrf)
-                {
+                return match crate::services::opac_patron::account_summary(
+                    &mut conn, member_id, csrf,
+                ) {
                     Ok(acct) => send_patron_json(
                         &mut stream,
                         200,

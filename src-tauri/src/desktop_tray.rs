@@ -11,7 +11,7 @@ struct TrayState<R: Runtime> {
     quitting: AtomicBool,
 }
 
-fn show<R: Runtime>(app: &AppHandle<R>) {
+pub fn show<R: Runtime>(app: &AppHandle<R>) {
     if let Some(window) = app.get_webview_window("main") {
         if let Err(error) = window
             .show()
@@ -21,6 +21,16 @@ fn show<R: Runtime>(app: &AppHandle<R>) {
             tracing::warn!(%error, "Could not restore the application window");
         }
     }
+}
+
+/// First appearance of the window, which `tauri.conf.json` creates hidden.
+pub fn show_maximized<R: Runtime>(app: &AppHandle<R>) {
+    if let Some(window) = app.get_webview_window("main") {
+        if let Err(error) = window.maximize() {
+            tracing::warn!(%error, "Could not maximize the application window");
+        }
+    }
+    show(app);
 }
 
 pub fn install<R: Runtime>(app: &AppHandle<R>) -> Result<(), Box<dyn std::error::Error>> {
