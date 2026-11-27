@@ -1,5 +1,11 @@
 # PROGRESS
 
+## Public website rebuilt (branch website-redesign)
+
+2026-11-27T13:05:00Z
+
+Outside v1 product scope. Replaced `website/` with six static pages (Home, Features, Get Pusthakam, Status, FAQ, About) plus `404.html` and a redirect from `try/`, in the app's Spine Label style with self-hosted Hanken Grotesk and Courier Prime. The old site offered a non-existent 0.1.0 download and claimed open source, encryption, Avery presets and macOS/Linux support; its hero image was AI-generated with garbled text. New copy only describes features found in the code and avoids "free"/open-source wording, following the 2026-11-27 commercial licensing decision. Screenshots are real app screens with synthetic data, made by `tools/website-screenshots/run.cjs` (dev preview plus browser-side mock; no app code changed). Removed `.github/workflows/static.yml`, which deployed the whole repository to GitHub Pages alongside `pages.yml`. Checked in Chromium at desktop (light and dark) and iPhone 13 sizes; no broken links or failed requests. Not merged or published; awaiting owner review. Open owner questions: public price wording, whether the repository stays public (Pages and GitHub links depend on it), contact for pilot libraries.
+
 ## Hyperlinked copyright notice with UTM and SEO attributes
 
 2026-11-27T06:13:47.403Z
