@@ -64,8 +64,10 @@ Suggested order: section 1, then the [owner] tests in section 3, then section 4.
 
 - [ ] **[owner/product]** Decide the 30-day trial start trigger and offline clock policy.
 - [ ] **[owner/product]** Decide the exact post-expiry access policy; preserve all library data and never make it inaccessible through destructive expiry handling.
-- [x] **[owner/product]** Decide licence duration: perpetual use after a one-time payment (owner decision 27 Nov 2026). This does not itself include lifetime upgrades.
-- [ ] **[owner/product]** Set the one-time licence price and confirm licence scope (for example, number of library installations), update/major-version entitlement and support entitlement.
+- [x] **[owner/product]** Decide licence duration and update entitlement: perpetual use, with future Pusthakam updates (including later version upgrades) included in the original one-time payment; no extra payment for existing customers if the public price later increases (owner decision 27 Nov 2026).
+- [ ] **[owner/product]** Set the one-time licence price and confirm licence scope (for example, number of library installations) and support entitlement.
+- [x] **[owner/product]** Record internal pricing policy: price increases apply to new purchases only; existing purchasers do not pay the difference.
+- [x] **[owner/marketing]** Keep customer-facing messaging focused on the 30-day trial and one-time payment; do not separately advertise the internal future-update/pricing protection.
 - [ ] **[owner/product]** Decide activation, online/offline validation and device-transfer rules.
 - [ ] Implement and test trial countdown/expiry, purchase and licence activation only after the owner decisions above are recorded.
 - [ ] Complete CI, security, installer and supported-platform acceptance; run a controlled library beta/pilot before the public official release.
