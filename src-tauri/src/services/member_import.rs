@@ -208,6 +208,10 @@ pub fn commit(
                 email: patron.email,
                 phone: patron.phone,
                 expires_on: patron.expires_on,
+                address: None,
+                department: None,
+                joined_on: None,
+                notes: None,
             },
         )?;
     }

@@ -169,3 +169,17 @@ Owner requires future translation Excels to automatically set Review status to C
 2026-11-27T12:57:37.399Z
 
 OWNER PAUSE until Monday 30 November 2026; no further implementation/design until explicit resume. Owner reports review of all519 Malayalam terms complete. Active original docs/translations/Pusthakam_Malayalam_Drafts_519.xlsx saved with30 nonempty correction cells, no notes; cached statuses30 Changed,11 OK,478 Not reviewed. Record owner completion separately from spreadsheet metadata; do not reset statuses, discard corrections or require duplicate319 review. Read-only inspection confirmed519 rows, no Excel lock; workbook SHA256 db2a302e6665b68e3721f1a2e2325ed467be2a78ff848ec8f84a35b23072e94a. Byte-preserving completed-review backup and OWNER_REVIEW_CHECKPOINT.json saved; same downloadable workbook saved as version2. No workbook cell edits or translation integration performed in this save operation. On explicit resume, read checkpoint and reconcile all owner corrections by ID/English/placeholder parity against current source and approved terminology (including contributor and Reservations), then apply reviewed wording while preserving newer source work. Also preserve the independent latest ISBN auto-fill changes/tests and queued patron OPAC login task; these were present on arrival and not modified or reverified here. Broader remaining translations, font/rendering/mobile/native installer verification remain pending. No source tests repeated for documentation-only save, no owner database changes, commit or push. V1 totals unchanged.
+
+## Post-v1 Koha-parity batch, Member Profile Batches 1–2 & Monday pause — 27 November 2026
+
+2026-11-27T15:34:01.261Z
+
+Completed outside v1 scope (no change to v1 weights):
+- **Authorship & Runtime Copyright:** Updated author/copyright to Melvin Varghese (`package.json`, `Cargo.toml`, `tauri.conf.json`) and added dynamic `2026–<currentYear>` footer links (`CopyrightNotice.tsx`, `opac/index.html`) to `https://melvinvarghese.in/support/` with UTM parameters.
+- **Koha-Parity Batch (all 3 complete):**
+  1. **ISBN auto-fill:** Explicit **Fill from ISBN** in `RecordFormDialog.tsx` (`src/lib/isbnLookup.ts`).
+  2. **Patron OPAC login & holds:** Isolated `HttpOnly; SameSite=Strict` patron session (`opac_patron.rs`), **My account** dialog, and self-service **Request hold** / **Cancel hold** (`reservations.rs`, `lan.rs`, `opac/`).
+  3. **Optional Email/WhatsApp overdue reminders:** Opt-in **Email**, **WhatsApp**, and **Copy notice** actions in `OverdueLoans.tsx` (`src/lib/reminders.ts`).
+- **README updated:** Replaced old SVG with `branding/pusthakam-logo.png`, rewrote for a common librarian, and aligned with commercial one-time-payment licensing.
+- **Member Profile & Batches 1–2 (`0025_member_opac_auth.sql`, `0026_member_profile_fields.sql`):** Clickable member names open `MemberProfileDialog.tsx` with photo upload/removal, OPAC username + Argon2id password/PIN, `address`/`department`/`joined_on`/staff-only `notes`, live `members_summary`, one-click `members_renew`, `members_holds` (with FIFO queue position `#N`), `members_activity` timeline, and **Overview / Holds / Activity** tabs.
+- **PAUSED until Monday:** Queued for Monday on explicit resume: **Member Profile Batch 3** (printable fine receipts, printable account statement, HTTP `/api/opac/patron/*` integration tests), **Malayalam 519 reconciliation**, and **PENDING_WORK Section 1** (Safety & Security Fixes).

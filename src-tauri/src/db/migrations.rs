@@ -133,6 +133,16 @@ pub const MIGRATIONS: &[Migration] = &[
         name: "lan_mode",
         sql: include_str!("../../migrations/0024_lan_mode.sql"),
     },
+    Migration {
+        version: 25,
+        name: "member_opac_auth",
+        sql: include_str!("../../migrations/0025_member_opac_auth.sql"),
+    },
+    Migration {
+        version: 26,
+        name: "member_profile_fields",
+        sql: include_str!("../../migrations/0026_member_profile_fields.sql"),
+    },
 ];
 
 pub fn checksum(sql: &str) -> String {

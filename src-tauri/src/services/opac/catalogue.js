@@ -185,13 +185,13 @@
     box.replaceChildren();
     if (!patron.signedIn || !patron.member) {
       const h = element('h2', 'Member sign in'); h.id = 'account-title';
-      const hint = element('p', 'Enter your library member number and registered phone number or email.', 'account-meta');
+      const hint = element('p', 'Enter your member number or OPAC username, plus your password, PIN, or registered phone/email.', 'account-meta');
       const form = element('form', undefined, 'account-form');
-      const l1 = element('label', 'Member number');
-      const numIn = document.createElement('input'); numIn.required = true; numIn.autocomplete = 'username'; numIn.placeholder = 'e.g. M-101';
+      const l1 = element('label', 'Member number or username');
+      const numIn = document.createElement('input'); numIn.required = true; numIn.autocomplete = 'username'; numIn.placeholder = 'e.g. M-101 or ananya.nair';
       l1.append(numIn);
-      const l2 = element('label', 'Phone or email');
-      const verIn = document.createElement('input'); verIn.required = true; verIn.placeholder = 'Registered phone or email';
+      const l2 = element('label', 'Password, PIN, or phone/email');
+      const verIn = document.createElement('input'); verIn.type = 'password'; verIn.required = true; verIn.autocomplete = 'current-password'; verIn.placeholder = 'Password, PIN, or phone/email';
       l2.append(verIn);
       const err = element('p', undefined, 'danger-note'); err.setAttribute('role', 'alert'); err.hidden = true;
       const submit = element('button', 'Sign in'); submit.type = 'submit';
@@ -262,7 +262,7 @@
       patron.reservations.forEach(r => {
         const li = element('li', undefined, 'account-item');
         const left = element('div');
-        left.append(element('strong', r.title), element('div', `${r.barcode} · ${r.status === 'ready' ? 'Ready for pickup' : 'Pending in queue'}`, 'account-meta'));
+        left.append(element('strong', r.title), element('div', `${r.barcode} · ${r.status === 'ready' ? 'Ready for pickup' : `Pending in queue${r.queuePosition ? ` (#${r.queuePosition})` : ''}`}`, 'account-meta'));
         const cancelBtn = element('button', 'Cancel hold'); cancelBtn.type = 'button';
         cancelBtn.addEventListener('click', async () => {
           cancelBtn.disabled = true;

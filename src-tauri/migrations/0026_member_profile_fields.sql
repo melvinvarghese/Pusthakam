@@ -1,0 +1,4 @@
+ALTER TABLE members ADD COLUMN address TEXT;
+ALTER TABLE members ADD COLUMN department TEXT;
+ALTER TABLE members ADD COLUMN joined_on TEXT;
+ALTER TABLE members ADD COLUMN notes TEXT;

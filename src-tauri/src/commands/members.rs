@@ -1,5 +1,7 @@
 use crate::error::AppResult;
-use crate::services::members::{self, MemberInput, MemberLoanPage, MemberPage};
+use crate::services::members::{
+    self, MemberActivityItem, MemberHold, MemberInput, MemberLoanPage, MemberPage, MemberSummary,
+};
 use crate::services::{member_import, member_photo};
 use crate::state::AppState;
 use std::collections::BTreeMap;
@@ -93,6 +95,59 @@ pub fn members_set_photo(
 ) -> AppResult<()> {
     let actor = state.require("members.write")?;
     member_photo::set(&mut *state.conn()?, &actor, id, png_base64.as_deref())
+}
+}
+
+crate::shared_command! {
+
+pub fn members_set_opac_credentials(
+    state: State<'_, AppState>,
+    id: i64,
+    username: Option<String>,
+    password: Option<String>,
+    clear_password: bool,
+) -> AppResult<()> {
+    let actor = state.require("members.write")?;
+    members::set_opac_credentials(
+        &mut *state.conn()?,
+        &actor,
+        id,
+        username.as_deref(),
+        password.as_deref(),
+        clear_password,
+    )
+}
+}
+
+crate::shared_command! {
+
+pub fn members_summary(state: State<'_, AppState>, id: i64) -> AppResult<MemberSummary> {
+    state.require("members.read")?;
+    state.with_conn(|conn| members::summary(conn, id))
+}
+}
+
+crate::shared_command! {
+
+pub fn members_renew(state: State<'_, AppState>, id: i64) -> AppResult<String> {
+    let actor = state.require("members.write")?;
+    members::renew_membership(&mut *state.conn()?, &actor, id)
+}
+}
+
+crate::shared_command! {
+
+pub fn members_holds(state: State<'_, AppState>, id: i64) -> AppResult<Vec<MemberHold>> {
+    state.require("members.read")?;
+    members::holds(&mut *state.conn()?, id)
+}
+}
+
+crate::shared_command! {
+
+pub fn members_activity(state: State<'_, AppState>, id: i64) -> AppResult<Vec<MemberActivityItem>> {
+    state.require("members.read")?;
+    state.with_conn(|conn| members::activity(conn, id))
 }
 }
 

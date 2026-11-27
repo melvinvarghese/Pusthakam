@@ -152,6 +152,11 @@ pub fn dispatch(
         }
         "members_get_photo" => crate::commands::members::members_get_photo::dispatch(state, args),
         "members_set_photo" => crate::commands::members::members_set_photo::dispatch(state, args),
+        "members_set_opac_credentials" => crate::commands::members::members_set_opac_credentials::dispatch(state, args),
+        "members_summary" => crate::commands::members::members_summary::dispatch(state, args),
+        "members_renew" => crate::commands::members::members_renew::dispatch(state, args),
+        "members_holds" => crate::commands::members::members_holds::dispatch(state, args),
+        "members_activity" => crate::commands::members::members_activity::dispatch(state, args),
         "circulation_preview_import" => {
             crate::commands::circulation::circulation_preview_import::dispatch(state, args)
         }

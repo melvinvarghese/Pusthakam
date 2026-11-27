@@ -14,6 +14,7 @@ import { can, useSession } from "@/lib/session";
 import { MemberFines } from "./MemberFines";
 import { MemberLoanHistory } from "./MemberLoanHistory";
 import { MemberCard } from "./MemberCard";
+import { MemberProfileDialog } from "./MemberProfileDialog";
 
 const KohaMemberImport = lazy(() => import("./KohaMemberImport"));
 
@@ -43,6 +44,10 @@ function MemberForm({ member, categories, onClose }: {
       email: String(form.get("email") ?? "") || null,
       phone: String(form.get("phone") ?? "") || null,
       expiresOn: String(form.get("expiry") ?? "") || null,
+      department: String(form.get("department") ?? "").trim() || null,
+      address: String(form.get("address") ?? "").trim() || null,
+      joinedOn: String(form.get("joinedOn") ?? "").trim() || null,
+      notes: String(form.get("notes") ?? "").trim() || null,
     };
     save.mutate(input);
   }
@@ -61,8 +66,18 @@ function MemberForm({ member, categories, onClose }: {
             <TextField label={t("Email")} name="email" type="email" defaultValue={member?.email ?? ""} maxLength={254} />
             <TextField label={t("Phone")} name="phone" type="tel" defaultValue={member?.phone ?? ""} maxLength={40} />
           </div>
-          <TextField label={t("Expiry date")} name="expiry" type="date" defaultValue={member?.expiresOn}
-            required={!!member} hint={member ? undefined : t("Leave blank to use the category’s membership period.")} />
+          <div className="grid grid-cols-2 gap-3">
+            <TextField label={t("Start date")} name="joinedOn" type="date" defaultValue={member?.joinedOn ?? ""} />
+            <TextField label={t("Expiry date")} name="expiry" type="date" defaultValue={member?.expiresOn}
+              required={!!member} hint={member ? undefined : t("Leave blank to use the category’s membership period.")} />
+          </div>
+          <TextField label={t("Department / Class")} name="department" defaultValue={member?.department ?? ""} maxLength={120} />
+          <TextField label={t("Address")} name="address" defaultValue={member?.address ?? ""} maxLength={500} />
+          <div className="space-y-1">
+            <label htmlFor="member-notes" className="block text-[13px] font-medium">{t("Internal librarian notes")}</label>
+            <textarea id="member-notes" name="notes" rows={2} maxLength={2000} defaultValue={member?.notes ?? ""}
+              className="w-full rounded-md border border-line-strong bg-surface px-3 py-2 text-[13px]" />
+          </div>
         </fieldset>
         {save.error && <p role="alert" className="text-danger">{toApiError(save.error).message}</p>}
         <div className="flex justify-end gap-2">
@@ -86,6 +101,7 @@ export function MembersPage() {
   const [fineMember, setFineMember] = useState<Member | null>(null);
   const [loanHistory, setLoanHistory] = useState<Member | null>(null);
   const [card, setCard] = useState<Member | null>(null);
+  const [profile, setProfile] = useState<Member | null>(null);
   const [importOpen, setImportOpen] = useState(false);
   const [confirm, setConfirm] = useState<{ member: Member; archive: boolean } | null>(null);
   const members = useQuery({
@@ -146,7 +162,7 @@ export function MembersPage() {
                   <tr key={member.id} className="border-b border-line last:border-b-0">
                     <td data-mobile-label={t("Member number")} className="px-4 py-2 font-mono">{member.memberNumber}</td>
                     <td className="px-4 py-2">
-                      <div>{member.name}</div>
+                      <button type="button" className="text-left font-medium text-accent hover:underline" onClick={() => setProfile(member)}>{member.name}</button>
                       {(member.email || member.phone) && <div className="text-xs text-muted">{[member.email, member.phone].filter(Boolean).join(" · ")}</div>}
                     </td>
                     <td data-mobile-label={t("Category")} className="px-4 py-2">{member.categoryName}</td>
@@ -183,6 +199,18 @@ export function MembersPage() {
       {form && <MemberForm member={form.member} categories={categories} onClose={() => setForm(null)} />}
       {fineMember && <MemberFines member={fineMember} onClose={() => setFineMember(null)} />}
       {loanHistory && <MemberLoanHistory member={loanHistory} onClose={() => setLoanHistory(null)} />}
+      {profile && (
+        <MemberProfileDialog
+          member={profile}
+          canEdit={canEdit}
+          hasLibrary={!!config.data?.library}
+          onClose={() => setProfile(null)}
+          onLoans={() => setLoanHistory(profile)}
+          onFines={() => setFineMember(profile)}
+          onCard={() => setCard(profile)}
+          onEdit={() => setForm({ member: profile })}
+        />
+      )}
       {card && config.data?.library && (
         <MemberCard member={card} libraryName={config.data.library.name} onClose={() => setCard(null)} />
       )}
