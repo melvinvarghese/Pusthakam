@@ -56,6 +56,12 @@ pub fn dispatch(
         "backup_copy_to_folder" => Err(AppError::Validation(
             "Download the backup to this device instead of supplying a server folder.".into(),
         )),
+        "backup_set_daily_folder" => Err(AppError::Validation(
+            "Choose the daily backup folder on the computer that runs Pusthakam.".into(),
+        )),
+        "launch_at_startup_get" | "launch_at_startup_set" => Err(AppError::Validation(
+            "Change starting with Windows on the computer that runs Pusthakam.".into(),
+        )),
         "dashboard_overview" => crate::commands::app::dashboard_overview::dispatch(state, args),
         "get_setting" => crate::commands::app::get_setting::dispatch(state, args),
         "set_setting" => crate::commands::app::set_setting::dispatch(state, args),

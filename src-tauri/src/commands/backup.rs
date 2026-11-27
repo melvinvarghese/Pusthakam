@@ -23,7 +23,7 @@ crate::shared_command! {
 
 pub async fn backup_verify(state: State<'_, AppState>, name: String) -> AppResult<i64> {
     state.require("admin.backup")?;
-    backup::verify_saved(&state.paths.backups, &name)
+    backup::verify(&state.paths, &name)
 }
 }
 
@@ -60,5 +60,14 @@ pub async fn backup_copy_to_folder(
 ) -> AppResult<BackupFile> {
     state.require("admin.backup")?;
     backup::copy_to_folder(&state.paths, &name, &folder)
+}
+}
+
+crate::shared_command! {
+
+/// Folder for dated daily backups on this computer. An empty value means the Pusthakam data folder.
+pub fn backup_set_daily_folder(state: State<'_, AppState>, folder: String) -> AppResult<Option<String>> {
+    state.require("admin.backup")?;
+    backup::set_daily_folder(&state.paths, &folder)
 }
 }

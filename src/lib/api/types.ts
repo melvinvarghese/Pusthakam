@@ -1002,12 +1002,20 @@ export interface MemberSummary {
 export interface BackupFile {
   name: string;
   sizeBytes: number;
+  /** Folder holding the file: the Pusthakam data folder or the daily backup folder. */
+  folder: string;
 }
 
 export interface BackupList {
   folder: string;
   files: BackupFile[];
   dailyEnabled: boolean;
+  /** Folder chosen for daily backups; null means the Pusthakam data folder. */
+  dailyFolder: string | null;
+  /** False when the chosen folder cannot be reached, e.g. an unplugged USB drive. */
+  dailyFolderAvailable: boolean;
+  dailyKeep: number;
+  lastDaily: string | null;
   pendingRestore: string | null;
   lastRestore: string | null;
 }
@@ -1272,3 +1280,9 @@ export interface OpenLoan {
   memberName: string; memberNumber: string; dueOn: string;
 }
 export interface OpenLoanPage { rows: OpenLoan[]; page: number; pageSize: number; total: number }
+
+export interface StartupSetting {
+  /** False where Pusthakam cannot start itself when the user signs in (non-Windows). */
+  supported: boolean;
+  enabled: boolean;
+}
