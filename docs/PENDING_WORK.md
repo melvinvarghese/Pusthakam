@@ -12,8 +12,8 @@ Suggested order: section 1, then the [owner] tests in section 3, then section 4.
 
 ## 1. Safety and security fixes (do first)
 
-- [x] Keep 7 daily automatic backups instead of one day, in a folder chosen at install (another drive or USB suggested), with fallback and a warning when that folder is missing; start with Windows in the tray so the daily backup runs. Done 27 Nov 2026 (owner spec): IPC tests `daily_backups_use_the_chosen_folder_and_fall_back_when_it_is_missing` and the updated `manual_backups_are_permission_checked_complete_and_retained`; Vitest `BackupPage.test.tsx`, `StartupPanel.test.tsx`. Source: SUGGESTIONS S-R01, KNOWN_ISSUES KI-027.
-- [ ] **[owner]** Try the new Windows installer once: backup-folder prompt, Pusthakam starting with Windows in the tray (hidden icons), a dated daily file in the chosen folder, and the warning after unplugging the USB drive. Source: KI-027.
+- [x] Keep 7 daily automatic backups instead of one day, in a folder chosen in the library setup wizard (another drive or USB suggested; moved out of the installer by owner decision 28 Nov 2026), with fallback and a warning when that folder is missing; start with Windows in the tray so the daily backup runs. Done 27 Nov 2026 (owner spec): IPC tests `daily_backups_use_the_chosen_folder_and_fall_back_when_it_is_missing` and the updated `manual_backups_are_permission_checked_complete_and_retained`; Vitest `BackupPage.test.tsx`, `StartupPanel.test.tsx`. Source: SUGGESTIONS S-R01, KNOWN_ISSUES KI-027.
+- [ ] **[owner]** Try the new Windows installer once (rebuilt 28 Nov 2026; installs for all users with default `C:\Program Files (x86)\Pusthakam`; first build did not install): administrator prompt, the setup wizard's Backups step and Choose folder button, Pusthakam starting with Windows in the tray (hidden icons), a dated daily file in the chosen folder, and the warning after unplugging the USB drive. Source: KI-027.
 - [ ] Optional, if wanted later: weekly and monthly backup copies, and a "last backup copied off this computer" dashboard warning. Source: S-R01.
 - [ ] **[owner]** Decide how to protect staff sign-in on Wi-Fi: HTTPS on the LAN, or browser staff access off by default with a warning. Then implement and update DECISIONS D-026. Source: S-R02, KI-028.
 - [ ] _(Implemented 28 Nov 2026, awaiting `cargo test` before ticking.)_ Remove the old LAN staff API (`/api/lan/pair`, `/api/staff/login`, `/api/staff/circulation/*`, `GET /api/lan/status` fingerprint leak) from `handle_http_connection` in `src-tauri/src/services/lan.rs`; keep only the `/api/staff/commands` gateway. Source: S-R03, KI-029.
@@ -36,6 +36,12 @@ Suggested order: section 1, then the [owner] tests in section 3, then section 4.
 - [x] **[unchecked]** Fill in book details from ISBN (optional, online). Source: S-003. _(Done 2026-11-27: user-triggered `Fill from ISBN` in `RecordFormDialog.tsx` via `src/lib/isbnLookup.ts` using Open Library / Google Books; verified with `isbnLookup.test.ts` (4 tests) and `RecordFormDialog.isbn.test.tsx` (1 test).)_
 - [ ] **[unchecked]** Portable Windows zip version. Source: S-006.
 - [ ] Finish open source checks for splash quotations. Source: SPLASH_QUOTE_SOURCES.md.
+- [ ] Online web demo on GitHub Pages: demo staff account and OPAC with a demo member login, sample data in the browser, **Try the demo** link on the website (owner request 28 Nov 2026). Source: WEB_DEMO_PLAN.md, DEVELOPMENT_ROADMAP "Online web demo on GitHub Pages".
+  - [ ] **[owner]** Confirm demo sign-ins and URLs, and editable-with-Reset vs read-only. Source: WEB_DEMO_PLAN.md "Open owner decisions".
+  - [ ] Step 1: OPAC demo (shim for the eight `/api/opac/*` calls) plus `website/demo/` landing page and website links.
+  - [ ] Step 2: staff demo build mode (`npm run build:demo`) with in-browser backend for sign-in, dashboard, catalogue, members, circulation, fines, overdue and reports.
+  - [ ] Step 3: read-only screens for the other modules, demo banner and Reset, Pages workflow builds the demo, `noindex` on demo app pages.
+  - [ ] **[owner]** Try the demo on a laptop and a phone before it is published.
 
 ## 3. Real-world testing
 
@@ -80,7 +86,7 @@ Source: owner decisions recorded 27 November 2026 in PROGRESS.md, PROGRESS.json,
 - [ ] Rewrite `docs/USER_MANUAL.md` as a short, accurate librarian guide with screenshots; move developer material elsewhere. Source: S-R06, KI-031.
 - [ ] Update README status table, DEVELOPMENT_ROADMAP phase table (6, 7, 7b, 8 are marked NOT STARTED but largely built), and close or update KI-005 and KI-010. Source: S-R07, KI-032.
 - [ ] Archive old entries from `PROGRESS.md`, `PROGRESS.json` and `docs/SESSION_HANDOFF.md`; keep a one-page current status. Source: S-R07.
-- [ ] Printable quick start, first-week checklist and demo library. Source: S-R13.
+- [ ] Printable quick start, first-week checklist and demo library. Source: S-R13. (The online demo's sample library in WEB_DEMO_PLAN.md can be reused for this.)
 
 ## 6. Code health and growth
 

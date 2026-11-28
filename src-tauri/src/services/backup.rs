@@ -18,7 +18,7 @@ const RESTORE_RESULT: &str = "backup.last_restore";
 const RESTORE_REQUEST: &str = "restore-request";
 const LAST_DAILY: &str = "backup.last_daily";
 /// Plain-text file in the data directory naming the folder for daily backups.
-/// The Windows installer's choice is copied here on first start (see `adopt_installer_folder`).
+/// First chosen in the setup wizard; changeable on the Database Backups page.
 const DAILY_FOLDER_FILE: &str = "daily-backup-folder.txt";
 /// Daily backups kept in each folder. Making the eighth removes the oldest.
 pub const DAILY_KEEP: usize = 7;
@@ -166,16 +166,12 @@ fn write_daily_folder(paths: &AppPaths, folder: &Path) -> AppResult<()> {
     Ok(())
 }
 
-/// Choose where daily backups go. An empty value returns them to the Pusthakam data folder.
-pub fn set_daily_folder(paths: &AppPaths, folder: &str) -> AppResult<Option<String>> {
+/// Checks a folder offered for daily backups without saving the choice. `Ok(false)` means the
+/// backups stay in the Pusthakam data folder (an empty value, or that folder's own backups folder).
+pub fn check_daily_folder(paths: &AppPaths, folder: &str) -> AppResult<bool> {
     let folder = folder.trim();
     if folder.is_empty() {
-        match fs::remove_file(paths.data_dir.join(DAILY_FOLDER_FILE)) {
-            Ok(()) => {}
-            Err(error) if error.kind() == ErrorKind::NotFound => {}
-            Err(error) => return Err(error.into()),
-        }
-        return Ok(None);
+        return Ok(false);
     }
     let path = Path::new(folder);
     if !path.is_absolute() || !path.is_dir() {
@@ -187,7 +183,7 @@ pub fn set_daily_folder(paths: &AppPaths, folder: &str) -> AppResult<Option<Stri
     let data_dir = paths.data_dir.canonicalize()?;
     if canonical.starts_with(&data_dir) {
         if canonical == paths.backups.canonicalize()? {
-            return set_daily_folder(paths, "");
+            return Ok(false);
         }
         return Err(AppError::Validation(
             "Choose a folder outside the Pusthakam data directory.".into(),
@@ -196,22 +192,22 @@ pub fn set_daily_folder(paths: &AppPaths, folder: &str) -> AppResult<Option<Stri
     let probe = tempfile::NamedTempFile::new_in(path)
         .map_err(|_| AppError::Validation("Pusthakam cannot save files in that folder.".into()))?;
     drop(probe);
-    write_daily_folder(paths, path)?;
-    Ok(Some(folder.to_owned()))
+    Ok(true)
 }
 
-/// Startup only: keep the folder the installer asked for unless staff already chose one.
-pub fn adopt_installer_folder(paths: &AppPaths, folder: Option<String>) -> AppResult<()> {
-    let Some(folder) = folder.map(|folder| folder.trim().to_owned()) else {
-        return Ok(());
-    };
-    if folder.is_empty()
-        || !Path::new(&folder).is_absolute()
-        || paths.data_dir.join(DAILY_FOLDER_FILE).try_exists()?
-    {
-        return Ok(());
+/// Choose where daily backups go. An empty value returns them to the Pusthakam data folder.
+pub fn set_daily_folder(paths: &AppPaths, folder: &str) -> AppResult<Option<String>> {
+    let folder = folder.trim();
+    if !check_daily_folder(paths, folder)? {
+        match fs::remove_file(paths.data_dir.join(DAILY_FOLDER_FILE)) {
+            Ok(()) => {}
+            Err(error) if error.kind() == ErrorKind::NotFound => {}
+            Err(error) => return Err(error.into()),
+        }
+        return Ok(None);
     }
-    write_daily_folder(paths, Path::new(&folder))
+    write_daily_folder(paths, Path::new(folder))?;
+    Ok(Some(folder.to_owned()))
 }
 
 /// Where a listed backup lives: the daily folder when it holds the file, else the data folder.

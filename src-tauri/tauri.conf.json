@@ -41,7 +41,7 @@
     ],
     "windows": {
       "nsis": {
-        "installMode": "currentUser",
+        "installMode": "perMachine",
         "installerHooks": "./installer-hooks.nsh"
       }
     },

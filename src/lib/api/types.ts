@@ -601,6 +601,8 @@ export interface SetupInput {
   applyProfileDefaults: boolean;
   /** Minor units (e.g. paise or cents). 0 = no fines until configured. */
   finePerDayMinor: number;
+  /** Folder for the daily backups. Left out or empty keeps them in the Pusthakam data folder. */
+  backupFolder?: string;
 }
 
 // ----- configuration -----

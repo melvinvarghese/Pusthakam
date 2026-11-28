@@ -9,7 +9,7 @@ for (const [, module] of handlers) {
 }
 const native = new Set(['catalogue_save_export', 'reports_save_export', 'backup_copy_to_folder']);
 // Settings of the host computer itself (folders, Windows sign-in startup); browsers get a clear refusal.
-const hostOnly = new Set(['backup_set_daily_folder', 'launch_at_startup_get', 'launch_at_startup_set']);
+const hostOnly = new Set(['backup_set_daily_folder', 'backup_pick_folder', 'launch_at_startup_get', 'launch_at_startup_set']);
 const bootstrap = new Set(['complete_setup', 'setup_status', 'login', 'logout', 'current_session', 'app_info']);
 const dispatcher = await readFile(new URL('src-tauri/src/services/staff_dispatch.rs', root), 'utf8');
 const commands = handlers.map(([, module, command]) => {

@@ -73,6 +73,16 @@ Phase 5 / REQ-RPT / RPT-FORMATS: reports must be polished and aesthetically beau
 
 Build later: attractive librarian-focused homepage with a clear path to trying Pusthakam, populated Blog and FAQ tabs, and a separate static/crawlable URL for every article. Include sitemap.xml, robots.txt (with correct host-root deployment), unique metadata/canonical URLs and appropriate structured data. Aim for useful search/AI-search discovery without guaranteeing rankings or citations. Use relevant installed design/writing/site skills. Authoritative scope: [GITHUB_PAGES_WEBSITE_PLAN.md](GITHUB_PAGES_WEBSITE_PLAN.md). Documentation only; no site or publishing implemented, no desktop weight/credit. This public project website is separate from Phase 7b OPAC and does not reorder the current recovery milestone.
 
+## Daily backups and Windows installer — owner decisions, 28 November 2026
+
+The installer installs for all users and offers `C:\Program Files (x86)\Pusthakam` as the default folder. The daily backup folder is chosen in the library setup wizard (Backups step, with a folder dialog), not in the installer, and can be changed later on the Database Backups page. Status: IMPLEMENTED; awaiting the owner's install test on Windows. See PROGRESS.md, 28 November 2026.
+
+## Online web demo on GitHub Pages — owner request, 28 November 2026
+
+Owner: "we have to setup a demo staff account and opac (with a demo member login). so users can experience the app before downloading the app. this should be a web demo done on GitHub pages (for now)."
+
+Planned: a browser-only demo under `/Pusthakam/demo/` on the existing GitHub Pages site, linked from the website with **Try the demo**. Staff demo (proposed sign-in `demo.librarian` / `demo1234`) is the real React frontend built in a separate `demo` mode with an in-browser stand-in backend and seeded sample data. OPAC demo (proposed member `DEMO-001` / PIN `1234`) is the real OPAC page with a small shim answering its eight `/api/opac/*` calls. Both share one sample library in the browser's local storage, so holds and loans show up on both sides; **Reset demo** restores the sample data. No server, no network calls, no demo code in desktop builds. Build order: OPAC demo and landing page first, then staff core flows, then read-only screens for the rest. Authoritative scope, acceptance checks and open decisions: [WEB_DEMO_PLAN.md](WEB_DEMO_PLAN.md). Status: NOT STARTED, documentation only, outside v1 scope (no weight or credit).
+
 ## Splash quotations and logo refinement — owner request, 21 November 2026
 
 The minimum-three-second splash and local quotation rotation are implemented. Twenty primary-text reviewed short entries are enabled, with remaining source/edition checks explicit in SPLASH_QUOTE_SOURCES.md; the target of approximately 100 authentic quotations remains incomplete. Owner approved the latest teal book/P on 23 November 2026 for use throughout. Exact master and reproducible icon tooling are in branding/; app, native icon family, all seven website pages, progress monitor and LAN views now use it. See SPLASH_QUOTES_PLAN.md, LOGO_DESIGN_DIRECTION.md and the latest handoff. No new roadmap weight/credit or change to the product release milestone.

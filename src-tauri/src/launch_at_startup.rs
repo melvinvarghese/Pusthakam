@@ -1,7 +1,7 @@
 //! Start Pusthakam in the system tray when the user signs in to Windows.
 //!
-//! The installer turns this on by default (`installer-hooks.nsh`) and records the backup folder
-//! the user picked. Both live under HKEY_CURRENT_USER, so no administrator rights are needed.
+//! The installer turns this on by default (`installer-hooks.nsh`). The entry lives under
+//! HKEY_CURRENT_USER, so staff can change it in Settings without administrator rights.
 #[cfg(not(windows))]
 use crate::error::AppError;
 use crate::error::AppResult;
@@ -34,7 +34,6 @@ mod registry {
     /// Task Manager's Startup tab records "disabled" here without removing the Run value.
     pub const APPROVED_KEY: &str =
         r"Software\Microsoft\Windows\CurrentVersion\Explorer\StartupApproved\Run";
-    pub const APP_KEY: &str = r"Software\Pusthakam";
     pub const VALUE: &str = "Pusthakam";
 
     fn wide(text: &str) -> Vec<u16> {
@@ -168,15 +167,6 @@ pub fn set(enabled: bool) -> AppResult<StartupSetting> {
     get()
 }
 
-/// Backup folder chosen in the Windows installer, if any.
-#[cfg(windows)]
-pub fn installer_backup_folder() -> Option<String> {
-    registry::read_string(registry::APP_KEY, "BackupFolder")
-        .map_err(|error| tracing::warn!(%error, "Could not read the installer backup folder"))
-        .ok()
-        .flatten()
-}
-
 #[cfg(not(windows))]
 pub fn get() -> AppResult<StartupSetting> {
     Ok(StartupSetting {
@@ -190,9 +180,4 @@ pub fn set(_enabled: bool) -> AppResult<StartupSetting> {
     Err(AppError::Validation(
         "Starting with the computer is available on Windows only.".into(),
     ))
-}
-
-#[cfg(not(windows))]
-pub fn installer_backup_folder() -> Option<String> {
-    None
 }

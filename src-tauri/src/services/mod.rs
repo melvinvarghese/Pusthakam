@@ -26,6 +26,7 @@ pub mod catalogue_export;
 pub mod marc_export;
 
 pub mod export_save;
+pub mod folder_picker;
 
 pub mod acquisitions;
 pub mod calendar;

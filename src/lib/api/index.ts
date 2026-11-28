@@ -113,6 +113,8 @@ export const backupApi = {
   copyToFolder: (name: string, folder: string) => call<BackupFile>("backup_copy_to_folder", { name, folder }),
   setDaily: (enabled: boolean) => call<void>("backup_set_daily", { enabled }),
   setDailyFolder: (folder: string) => call<string | null>("backup_set_daily_folder", { folder }),
+  /** Windows folder dialog on the computer running Pusthakam. `null` means the user cancelled. */
+  pickFolder: () => call<string | null>("backup_pick_folder"),
   verify: (name: string) => call<number>("backup_verify", { name }),
   requestRestore: (name: string) => call<void>("backup_request_restore", { name }),
   cancelRestore: () => call<void>("backup_cancel_restore"),

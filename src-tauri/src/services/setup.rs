@@ -32,6 +32,33 @@ pub struct SetupInput {
     pub apply_profile_defaults: bool,
     /// Late fine per day in minor units (e.g. paise/cents). 0 = no fines until configured.
     pub fine_per_day_minor: i64,
+    /// Folder for the daily backups, ideally on another drive or a USB drive.
+    /// Empty or missing keeps them in the Pusthakam data folder.
+    #[serde(default)]
+    pub backup_folder: Option<String>,
+}
+
+/// Setup from the wizard: checks the chosen backup folder first so a bad path is reported before
+/// the library exists, then creates the library and records the folder.
+pub fn complete_with_backup_folder(
+    conn: &mut Connection,
+    paths: &crate::paths::AppPaths,
+    input: &SetupInput,
+) -> AppResult<i64> {
+    if status(conn)?.configured {
+        return Err(AppError::Conflict(
+            "This library has already been set up.".into(),
+        ));
+    }
+    let folder = input.backup_folder.as_deref().unwrap_or("");
+    crate::services::backup::check_daily_folder(paths, folder)?;
+    let admin_id = complete(conn, input)?;
+    // The folder passed the check a moment ago; if saving it fails now, setup still stands and
+    // backups go to the data folder until staff choose a folder on the Database Backups page.
+    if let Err(error) = crate::services::backup::set_daily_folder(paths, folder) {
+        tracing::warn!(%error, "Could not record the daily backup folder chosen during setup");
+    }
+    Ok(admin_id)
 }
 
 pub fn status(conn: &Connection) -> AppResult<SetupStatus> {
@@ -204,6 +231,7 @@ mod tests {
             },
             apply_profile_defaults: true,
             fine_per_day_minor: 100,
+            backup_folder: None,
         }
     }
 

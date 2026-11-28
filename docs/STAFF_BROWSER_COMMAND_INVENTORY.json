@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "scope": "V3 full staff browser parity; local network and internet; library PC default, optional always-on host",
   "source": "src-tauri/src/lib.rs app_handlers!",
-  "commandCount": 167,
+  "commandCount": 176,
   "legacyStaffPortal": "Pairing/sign-in and issue/return only; does not establish full browser parity",
   "commands": [
     {
@@ -483,6 +483,51 @@
       "adaptation": "shared-permission-checked-handler"
     },
     {
+      "command": "members_set_opac_credentials",
+      "module": "members",
+      "source": "src-tauri/src/commands/members.rs",
+      "browserBackend": "shared-http-dispatch",
+      "verification": "Shared workflows and route smoke tests; see STAFF_BROWSER_REVIEW.json and PROGRESS.json. Not per-command production deployment acceptance.",
+      "sharedHandlerReady": true,
+      "adaptation": "shared-permission-checked-handler"
+    },
+    {
+      "command": "members_summary",
+      "module": "members",
+      "source": "src-tauri/src/commands/members.rs",
+      "browserBackend": "shared-http-dispatch",
+      "verification": "Shared workflows and route smoke tests; see STAFF_BROWSER_REVIEW.json and PROGRESS.json. Not per-command production deployment acceptance.",
+      "sharedHandlerReady": true,
+      "adaptation": "shared-permission-checked-handler"
+    },
+    {
+      "command": "members_renew",
+      "module": "members",
+      "source": "src-tauri/src/commands/members.rs",
+      "browserBackend": "shared-http-dispatch",
+      "verification": "Shared workflows and route smoke tests; see STAFF_BROWSER_REVIEW.json and PROGRESS.json. Not per-command production deployment acceptance.",
+      "sharedHandlerReady": true,
+      "adaptation": "shared-permission-checked-handler"
+    },
+    {
+      "command": "members_holds",
+      "module": "members",
+      "source": "src-tauri/src/commands/members.rs",
+      "browserBackend": "shared-http-dispatch",
+      "verification": "Shared workflows and route smoke tests; see STAFF_BROWSER_REVIEW.json and PROGRESS.json. Not per-command production deployment acceptance.",
+      "sharedHandlerReady": true,
+      "adaptation": "shared-permission-checked-handler"
+    },
+    {
+      "command": "members_activity",
+      "module": "members",
+      "source": "src-tauri/src/commands/members.rs",
+      "browserBackend": "shared-http-dispatch",
+      "verification": "Shared workflows and route smoke tests; see STAFF_BROWSER_REVIEW.json and PROGRESS.json. Not per-command production deployment acceptance.",
+      "sharedHandlerReady": true,
+      "adaptation": "shared-permission-checked-handler"
+    },
+    {
       "command": "circulation_preview_import",
       "module": "circulation",
       "source": "src-tauri/src/commands/circulation.rs",
@@ -822,6 +867,15 @@
       "browserBackend": "host-computer-only",
       "verification": "Shared workflows and route smoke tests; see STAFF_BROWSER_REVIEW.json and PROGRESS.json. Not per-command production deployment acceptance.",
       "sharedHandlerReady": true,
+      "adaptation": "shared-permission-checked-handler"
+    },
+    {
+      "command": "backup_pick_folder",
+      "module": "backup",
+      "source": "src-tauri/src/commands/backup.rs",
+      "browserBackend": "host-computer-only",
+      "verification": "Shared workflows and route smoke tests; see STAFF_BROWSER_REVIEW.json and PROGRESS.json. Not per-command production deployment acceptance.",
+      "sharedHandlerReady": false,
       "adaptation": "shared-permission-checked-handler"
     },
     {
@@ -1384,6 +1438,33 @@
     },
     {
       "command": "classification_merge_subjects",
+      "module": "classification",
+      "source": "src-tauri/src/commands/classification.rs",
+      "browserBackend": "shared-http-dispatch",
+      "verification": "Shared workflows and route smoke tests; see STAFF_BROWSER_REVIEW.json and PROGRESS.json. Not per-command production deployment acceptance.",
+      "sharedHandlerReady": true,
+      "adaptation": "shared-permission-checked-handler"
+    },
+    {
+      "command": "browse_categories_list",
+      "module": "classification",
+      "source": "src-tauri/src/commands/classification.rs",
+      "browserBackend": "shared-http-dispatch",
+      "verification": "Shared workflows and route smoke tests; see STAFF_BROWSER_REVIEW.json and PROGRESS.json. Not per-command production deployment acceptance.",
+      "sharedHandlerReady": true,
+      "adaptation": "shared-permission-checked-handler"
+    },
+    {
+      "command": "browse_categories_save",
+      "module": "classification",
+      "source": "src-tauri/src/commands/classification.rs",
+      "browserBackend": "shared-http-dispatch",
+      "verification": "Shared workflows and route smoke tests; see STAFF_BROWSER_REVIEW.json and PROGRESS.json. Not per-command production deployment acceptance.",
+      "sharedHandlerReady": true,
+      "adaptation": "shared-permission-checked-handler"
+    },
+    {
+      "command": "browse_categories_set_archived",
       "module": "classification",
       "source": "src-tauri/src/commands/classification.rs",
       "browserBackend": "shared-http-dispatch",

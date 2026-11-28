@@ -46,4 +46,12 @@ export const setupMalayalam: Record<string, string> = {
   "3 to 40 characters: letters, digits, '.', '_' or '-'.": "3 മുതൽ 40 വരെ ഇംഗ്ലീഷ് അക്ഷരങ്ങൾ, അക്കങ്ങൾ, '.', '_' അല്ലെങ്കിൽ '-'.",
   "Use at least 10 characters.": "കുറഞ്ഞത് 10 അക്ഷരങ്ങൾ ഉപയോഗിക്കുക.",
   "The passwords do not match.": "പാസ്‌വേഡുകൾ തമ്മിൽ പൊരുത്തപ്പെടുന്നില്ല.",
+  "Backups": "ബാക്കപ്പുകൾ",
+  "Pusthakam backs up your library the first time it opens each day and keeps the last 7 days.": "ഓരോ ദിവസവും ആദ്യം തുറക്കുമ്പോൾ Pusthakam ലൈബ്രറിയുടെ ബാക്കപ്പ് എടുക്കും. അവസാനത്തെ 7 ദിവസത്തെ ബാക്കപ്പുകൾ സൂക്ഷിക്കും.",
+  "Choose a folder on a different drive or a USB drive. If this computer's disk fails, your backups are still safe there.": "മറ്റൊരു ഡ്രൈവിലോ USB ഡ്രൈവിലോ ഉള്ള ഒരു ഫോൾഡർ തിരഞ്ഞെടുക്കുക. ഈ കമ്പ്യൂട്ടറിന്റെ ഡിസ്ക് കേടായാലും ബാക്കപ്പുകൾ അവിടെ സുരക്ഷിതമായിരിക്കും.",
+  "Backup folder (optional)": "ബാക്കപ്പ് ഫോൾഡർ (നിർബന്ധമില്ല)",
+  "Leave empty to keep backups in Pusthakam's own data folder. You can change this later under Database Backups.": "ഒഴിച്ചിട്ടാൽ ബാക്കപ്പുകൾ Pusthakam-ന്റെ ഡാറ്റ ഫോൾഡറിൽ തന്നെ സൂക്ഷിക്കും. പിന്നീട് ഡാറ്റാബേസ് ബാക്കപ്പുകൾ എന്ന ഭാഗത്ത് ഇത് മാറ്റാം.",
+  "Choose folder…": "ഫോൾഡർ തിരഞ്ഞെടുക്കുക…",
+  "Choosing folder.": "ഫോൾഡർ തിരഞ്ഞെടുക്കുന്നു…",
+  "The folder dialog could not open. Type the folder path instead.": "ഫോൾഡർ തിരഞ്ഞെടുക്കാനുള്ള ജാലകം തുറക്കാനായില്ല. പകരം ഫോൾഡറിന്റെ വിലാസം ടൈപ്പ് ചെയ്യുക.",
 };

@@ -724,20 +724,40 @@ fn daily_backups_use_the_chosen_folder_and_fall_back_when_it_is_missing() {
         h.code("launch_at_startup_set", json!({ "enabled": false })),
         "AUTH_FAILED"
     );
-    h.ok("complete_setup", setup_body());
+    // The setup wizard asks for the folder. A bad folder is refused before the library exists.
+    let with_folder = |folder: Value| {
+        let mut body = setup_body();
+        body["input"]["backupFolder"] = folder;
+        body
+    };
+    assert_eq!(
+        h.code(
+            "complete_setup",
+            with_folder(json!(chosen.path().join("missing")))
+        ),
+        "VALIDATION"
+    );
+    assert_eq!(h.ok("setup_status", json!({}))["configured"], false);
+    h.ok("complete_setup", with_folder(json!(usb)));
+    // Once set up, nobody can change the folder through setup again.
+    assert_eq!(
+        h.code("complete_setup", with_folder(json!(chosen.path()))),
+        "CONFLICT"
+    );
+    // The folder dialog is open to the setup wizard only until the library exists.
+    h.ok("logout", json!({}));
+    assert_eq!(h.code("backup_pick_folder", json!({})), "AUTH_FAILED");
+    h.ok(
+        "login",
+        json!({ "username": "admin", "password": "a long passphrase" }),
+    );
     let run_daily = || {
         let state = h.webview.state::<AppState>();
         state
             .with_conn(|conn| backup::run_daily(conn, &state.paths))
             .unwrap()
     };
-    let data_folder = {
-        let state = h.webview.state::<AppState>();
-        // The installer's choice is adopted only while staff have not chosen a folder.
-        backup::adopt_installer_folder(&state.paths, Some(usb.display().to_string())).unwrap();
-        backup::adopt_installer_folder(&state.paths, Some("/elsewhere".into())).unwrap();
-        state.paths.backups.clone()
-    };
+    let data_folder = h.webview.state::<AppState>().paths.backups.clone();
     let list = h.ok("backup_list", json!({}));
     assert_eq!(list["dailyFolder"], json!(usb.display().to_string()));
     assert_eq!(list["dailyFolderAvailable"], true);

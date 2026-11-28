@@ -56,7 +56,7 @@ pub fn dispatch(
         "backup_copy_to_folder" => Err(AppError::Validation(
             "Download the backup to this device instead of supplying a server folder.".into(),
         )),
-        "backup_set_daily_folder" => Err(AppError::Validation(
+        "backup_set_daily_folder" | "backup_pick_folder" => Err(AppError::Validation(
             "Choose the daily backup folder on the computer that runs Pusthakam.".into(),
         )),
         "launch_at_startup_get" | "launch_at_startup_set" => Err(AppError::Validation(

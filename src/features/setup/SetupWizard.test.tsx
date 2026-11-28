@@ -4,14 +4,15 @@ import userEvent from "@testing-library/user-event";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 const api = vi.hoisted(() => ({ completeSetup: vi.fn() }));
-vi.mock("@/lib/api", async (orig) => ({ ...(await orig<typeof import("@/lib/api")>()), authApi: api }));
+const backup = vi.hoisted(() => ({ pickFolder: vi.fn() }));
+vi.mock("@/lib/api", async (orig) => ({ ...(await orig<typeof import("@/lib/api")>()), authApi: api, backupApi: backup }));
 
 import { ApiError } from "@/lib/api";
 import { SetupWizard, validateStep } from "./SetupWizard";
 import { setLanguage } from "@/lib/language";
 
 const FORM = {
-  name: "Demo Library", profile: "school" as const, address: "", currency: "INR", applyDefaults: true, fine: "0",
+  name: "Demo Library", profile: "school" as const, address: "", currency: "INR", applyDefaults: true, fine: "0", backupFolder: "",
   displayName: "Head Librarian", username: "admin", password: "a long passphrase", confirm: "a long passphrase",
 };
 
@@ -24,11 +25,12 @@ function renderWizard() {
 beforeEach(() => {
   setLanguage("en");
   api.completeSetup.mockReset();
+  backup.pickFolder.mockReset();
 });
 
 describe("validateStep", () => {
   it("accepts a complete form on every step", () => {
-    for (const step of [0, 1, 2]) expect(validateStep(step, FORM)).toEqual({});
+    for (const step of [0, 1, 2, 3]) expect(validateStep(step, FORM)).toEqual({});
   });
 
   it("flags each problem on its own field", () => {
@@ -36,7 +38,8 @@ describe("validateStep", () => {
       name: expect.any(String), currency: expect.any(String),
     });
     expect(validateStep(1, { ...FORM, fine: "1,5" })).toHaveProperty("fine");
-    const e = validateStep(2, { ...FORM, displayName: "", username: "a b", password: "short", confirm: "other" });
+    expect(validateStep(2, { ...FORM, backupFolder: "" })).toEqual({});
+    const e = validateStep(3, { ...FORM, displayName: "", username: "a b", password: "short", confirm: "other" });
     expect(Object.keys(e).sort()).toEqual(["confirm", "displayName", "password", "username"]);
   });
 });
@@ -50,6 +53,7 @@ describe("SetupWizard", () => {
     expect(screen.getByLabelText("ലൈബ്രറിയുടെ പേര്")).toHaveValue("My Library");
     expect(document.documentElement.lang).toBe("ml");
     expect(localStorage.getItem("pusthakam.language")).toBe("ml");
+    await userEvent.click(screen.getByRole("button", { name: "തുടരുക" }));
     await userEvent.click(screen.getByRole("button", { name: "തുടരുക" }));
     await userEvent.click(screen.getByRole("button", { name: "തുടരുക" }));
     await userEvent.type(screen.getByLabelText("നിങ്ങളുടെ പേര്"), "Melvin");
@@ -86,6 +90,8 @@ describe("SetupWizard", () => {
     await userEvent.clear(fine);
     await userEvent.type(fine, "2.50");
     await userEvent.click(screen.getByRole("button", { name: "Continue" }));
+    // Backups step: leaving the folder empty keeps backups in the data folder.
+    await userEvent.click(screen.getByRole("button", { name: "Continue" }));
 
     await userEvent.type(screen.getByLabelText("Your name"), "Head Librarian");
     await userEvent.type(screen.getByLabelText("Username"), "admin");
@@ -102,9 +108,33 @@ describe("SetupWizard", () => {
     });
   });
 
+  it("asks for the daily backup folder during setup and sends the chosen folder", async () => {
+    api.completeSetup.mockResolvedValue({});
+    backup.pickFolder.mockResolvedValueOnce(null).mockResolvedValueOnce("E:\\Library Backups");
+    renderWizard();
+    await userEvent.type(screen.getByLabelText("Library name"), "Demo");
+    await userEvent.click(screen.getByRole("button", { name: "Continue" }));
+    await userEvent.click(screen.getByRole("button", { name: "Continue" }));
+    expect(screen.getByRole("heading", { name: "Backups" })).toBeInTheDocument();
+    const folder = screen.getByLabelText("Backup folder (optional)");
+    // Cancelling the dialog leaves the field as it was; choosing a folder fills it in.
+    await userEvent.click(screen.getByRole("button", { name: "Choose folder…" }));
+    expect(folder).toHaveValue("");
+    await userEvent.click(screen.getByRole("button", { name: "Choose folder…" }));
+    expect(folder).toHaveValue("E:\\Library Backups");
+    await userEvent.click(screen.getByRole("button", { name: "Continue" }));
+    await userEvent.type(screen.getByLabelText("Your name"), "A B");
+    await userEvent.type(screen.getByLabelText("Username"), "admin");
+    await userEvent.type(screen.getByLabelText("Password"), "a long passphrase");
+    await userEvent.type(screen.getByLabelText("Repeat password"), "a long passphrase");
+    await userEvent.click(screen.getByRole("button", { name: "Create library" }));
+    expect(api.completeSetup.mock.calls[0]?.[0]).toMatchObject({ backupFolder: "E:\\Library Backups" });
+  });
+
   it("does not send mismatched passwords", async () => {
     renderWizard();
     await userEvent.type(screen.getByLabelText("Library name"), "Demo");
+    await userEvent.click(screen.getByRole("button", { name: "Continue" }));
     await userEvent.click(screen.getByRole("button", { name: "Continue" }));
     await userEvent.click(screen.getByRole("button", { name: "Continue" }));
     await userEvent.type(screen.getByLabelText("Your name"), "A B");
@@ -122,6 +152,7 @@ describe("SetupWizard", () => {
     });
     renderWizard();
     await userEvent.type(screen.getByLabelText("Library name"), "Demo");
+    await userEvent.click(screen.getByRole("button", { name: "Continue" }));
     await userEvent.click(screen.getByRole("button", { name: "Continue" }));
     await userEvent.click(screen.getByRole("button", { name: "Continue" }));
     await userEvent.type(screen.getByLabelText("Your name"), "A B");

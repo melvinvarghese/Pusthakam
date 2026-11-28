@@ -3,7 +3,8 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { BrandMark } from "@/components/BrandMark";
 import { Button } from "@/components/ui/Button";
 import { CheckField, SelectField, TextField } from "@/components/ui/Field";
-import { ApiError, authApi } from "@/lib/api";
+import { ApiError, authApi, backupApi } from "@/lib/api";
+import { staffHttpConfig } from "@/lib/api/staffHttp";
 import type { ProfileCode, SetupInput } from "@/lib/api/types";
 import { parseMinor } from "@/lib/money";
 import { setLanguage, type Language } from "@/lib/language";
@@ -21,7 +22,8 @@ const PROFILES: { code: ProfileCode; label: string; hint: string }[] = [
   { code: "private", label: "Private collection", hint: "One person or family." },
 ];
 
-const STEPS = ["Your library", "Loan rules", "Administrator"] as const;
+const STEPS = ["Your library", "Loan rules", "Backups", "Administrator"] as const;
+const ADMIN_STEP = STEPS.indexOf("Administrator");
 
 interface Form {
   name: string;
@@ -30,6 +32,7 @@ interface Form {
   currency: string;
   applyDefaults: boolean;
   fine: string;
+  backupFolder: string;
   displayName: string;
   username: string;
   password: string;
@@ -37,7 +40,7 @@ interface Form {
 }
 
 const INITIAL: Form = {
-  name: "", profile: "school", address: "", currency: "INR", applyDefaults: true, fine: "0",
+  name: "", profile: "school", address: "", currency: "INR", applyDefaults: true, fine: "0", backupFolder: "",
   displayName: "", username: "", password: "", confirm: "",
 };
 
@@ -49,7 +52,9 @@ export function validateStep(step: number, f: Form): Partial<Record<keyof Form, 
     if (!/^[A-Za-z]{3}$/.test(f.currency.trim())) e.currency = "Use a 3-letter currency code, such as INR or USD.";
   } else if (step === 1) {
     if (parseMinor(f.fine) === null) e.fine = "Enter an amount such as 0, 1 or 2.50.";
-  } else {
+  } else if (step === ADMIN_STEP) {
+    // The backup folder step has nothing to check here: Pusthakam checks the folder itself
+    // when the library is created, and an empty folder means the data folder.
     if (!f.displayName.trim()) e.displayName = "Enter your name.";
     if (!/^[A-Za-z0-9._-]{3,40}$/.test(f.username.trim())) {
       e.username = "3 to 40 characters: letters, digits, '.', '_' or '-'.";
@@ -79,6 +84,7 @@ export function SetupWizard() {
         admin: { username: form.username, displayName: form.displayName, password: form.password },
         applyProfileDefaults: form.applyDefaults,
         finePerDayMinor: parseMinor(form.fine) ?? 0,
+        ...(form.backupFolder.trim() ? { backupFolder: form.backupFolder.trim() } : {}),
       };
       return authApi.completeSetup(input);
     },
@@ -86,6 +92,12 @@ export function SetupWizard() {
       qc.setQueryData(["session"], session);
       await qc.invalidateQueries({ queryKey: ["setup-status"] });
     },
+  });
+  // The folder dialog opens on the computer running Pusthakam, so a browser gets no Browse button.
+  const canBrowse = staffHttpConfig() === null;
+  const browse = useMutation({
+    mutationFn: backupApi.pickFolder,
+    onSuccess: (folder) => { if (folder) set("backupFolder", folder); },
   });
 
   const next = (e: FormEvent) => {
@@ -176,6 +188,31 @@ export function SetupWizard() {
           )}
 
           {step === 2 && (
+            <>
+              <p className="text-muted">{t("Pusthakam backs up your library the first time it opens each day and keeps the last 7 days.")}</p>
+              <p className="text-muted">{t("Choose a folder on a different drive or a USB drive. If this computer's disk fails, your backups are still safe there.")}</p>
+              <TextField
+                label={t("Backup folder (optional)")}
+                value={form.backupFolder}
+                onChange={(e) => set("backupFolder", e.target.value)}
+                hint={t("Leave empty to keep backups in Pusthakam's own data folder. You can change this later under Database Backups.")}
+                placeholder="E:\Pusthakam Backups"
+                spellCheck={false}
+              />
+              {canBrowse && (
+                <Button variant="secondary" disabled={browse.isPending} onClick={() => browse.mutate()}>
+                  {t(browse.isPending ? "Choosing folder." : "Choose folder…")}
+                </Button>
+              )}
+              {browse.isError && (
+                <p role="alert" className="text-xs text-danger">
+                  {browse.error instanceof ApiError ? browse.error.message : t("The folder dialog could not open. Type the folder path instead.")}
+                </p>
+              )}
+            </>
+          )}
+
+          {step === ADMIN_STEP && (
             <>
               <p className="text-muted">{t("You will use this account to sign in. It has full access to everything.")}</p>
               <TextField label={t("Your name")} value={form.displayName} onChange={(e) => set("displayName", e.target.value)} error={translatedError(errors.displayName)} autoFocus />

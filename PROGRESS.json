@@ -1,11 +1,11 @@
 {
   "schemaVersion": 1,
-  "lastUpdated": "2026-11-27",
+  "lastUpdated": "2026-11-28",
   "currentPhase": "4",
   "currentTask": {
-    "title": "PAUSED until Monday: Member Profile Batches 1-2, OPAC credentials, and README updated",
+    "title": "Paused until Monday: new Windows installer and setup-wizard backup folder awaiting owner install test",
     "status": "blocked",
-    "detail": "Owner paused work until Monday ('i will come monday. save everything on relavent files'). Completed today: (1) Updated README.md with approved teal P logo (branding/pusthakam-logo.png), plain-language librarian overview, and commercial one-time-payment framing; (2) Added MemberProfileDialog.tsx with photo upload/removal and OPAC username/password assignment (migration 0025_member_opac_auth.sql, Argon2id hashing, members_set_opac_credentials); (3) Completed Member Profile technical audit; (4) Implemented Batch 1 (migration 0026_member_profile_fields.sql for address, department, joined_on, notes; members_summary + members_renew; live summary strip & one-click Renew in MemberProfileDialog.tsx); (5) Implemented Batch 2 (members_holds with queue position, members_activity chronological timeline, OPAC queue position in opac_patron.rs/catalogue.js, and Overview/Holds/Activity tabs in MemberProfileDialog.tsx). Verified: tsc --noEmit, eslint ., Vitest members (2 files, 8 tests), Rust services::members (1/1) & opac_patron (3/3) & db::tests (5/5). Also preserved website-redesign and 519-term Malayalam review checkpoint entries. Next on Monday: resume on explicit owner instruction, review/commit local changes, and choose Member Profile Batch 3, Malayalam 519 reconciliation, or Safety & Security fixes in docs/PENDING_WORK.md."
+    "detail": "28 Nov 2026 on the desktop clone (E:\\Git\\Pusthakam, local commits, not pushed): fixed merge-conflict markers that broke the build (browse categories migration renumbered to 0027); merged and cleaned local branches (only main and wordpress-import-temp left); installer now perMachine with default C:\\Program Files (x86)\\Pusthakam (owner decision); backup folder moved from the installer to a new Backups step in the setup wizard with a Windows folder dialog (backup_pick_folder). Verified: typecheck, eslint on changed files, Vitest setup/backup/translations, cargo test ipc daily_backups. Next: owner installs D:\\dev\\cargo-target\\release\\bundle\\nsis\\Pusthakam_0.1.0_x64-setup.exe and checks the setup Backups step, dated daily file, tray after restart and USB-missing warning; push the desktop commits before working on the laptop. Web demo plan (docs/WEB_DEMO_PLAN.md) awaits owner decisions on demo sign-ins and editable-with-Reset vs read-only."
   },
   "nextMilestone": {
     "title": "macOS and Linux package smoke tests",
@@ -3991,6 +3991,18 @@
     }
   ],
   "recentActivity": [
+    {
+      "kind": "progress",
+      "at": "2026-11-28T12:30:00Z",
+      "title": "Installer fixed (per-machine, Program Files (x86)) and backup folder moved to the setup wizard",
+      "detail": "First owner install failed because the per-user installer could not write to Program Files (x86). Now perMachine; setup wizard Backups step with folder dialog; installer backup prompt removed. Also fixed committed conflict markers (migration 0027 browse_categories) and cleaned local branches. Awaiting owner install test; desktop commits not pushed."
+    },
+    {
+      "kind": "progress",
+      "at": "2026-11-28T11:45:00Z",
+      "title": "Planned the online web demo on GitHub Pages (docs only)",
+      "detail": "Owner request: demo staff account and OPAC with a demo member login on GitHub Pages so people can try Pusthakam before downloading. Plan in docs/WEB_DEMO_PLAN.md (demo build of the real frontend with an in-browser stand-in backend and sample data; real OPAC page with a shim for its /api/opac calls; shared browser storage with Reset; no demo code in desktop builds). Proposed sign-ins staff demo.librarian / demo1234, member DEMO-001 / PIN 1234, awaiting owner confirmation. Outside v1 scope, no weight or credit; NOT STARTED; no code changed or tests run."
+    },
     {
       "kind": "progress",
       "at": "2026-11-27T15:34:01.261Z",

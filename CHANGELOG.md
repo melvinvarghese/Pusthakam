@@ -3,7 +3,8 @@
 ## [Unreleased]
 ### Added
 - Public catalogue (OPAC) browse categories: members browse by names such as Malayalam Fiction, Physics or Management instead of DDC numbers. 31 default categories are filled in automatically from DDC numbers; staff manage them under Classification & Authorities → Browse Categories and adjust any book from its record form. OPAC results no longer show class numbers; book details show where to find the book.
-- Daily backups keep the last 7 days in a folder chosen in the Windows installer (another drive or USB suggested), changeable on the Database Backups page. If the folder is unreachable, that day's backup goes to the data folder and the page shows a warning.
+- Daily backups keep the last 7 days in a folder chosen in the library setup wizard (Backups step, with a folder dialog; another drive or USB suggested), changeable on the Database Backups page. If the folder is unreachable, that day's backup goes to the data folder and the page shows a warning.
+- The Windows installer installs for all users and offers `C:\Program Files (x86)\Pusthakam` as the default folder.
 - Pusthakam starts with Windows in the system tray by default (turn off under Library Settings). A second launch opens the running copy instead of starting another one.
 - Rebuilt public website (`website/`): Home, Features, Get Pusthakam, Status, FAQ and About pages with real screenshots from synthetic sample data, self-hosted fonts and no tracking. Old pages with unsupported claims removed.
 - Explicit same-Wi-Fi host IP/OPAC URLs, separate local-only addresses, copy/refresh and network binding controls, with native Windows adapter discovery.

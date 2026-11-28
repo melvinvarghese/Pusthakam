@@ -19,7 +19,7 @@ crate::shared_command! {
 pub fn complete_setup(state: State<'_, AppState>, input: SetupInput) -> AppResult<Session> {
     let session = {
         let mut conn = state.conn()?;
-        let admin_id = setup::complete(&mut conn, &input)?;
+        let admin_id = setup::complete_with_backup_folder(&mut conn, &state.paths, &input)?;
         auth::load_session(&conn, admin_id)?
     };
     state.set_session(Some(session.clone()))?;

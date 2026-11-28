@@ -113,6 +113,7 @@ macro_rules! app_handlers {
             $crate::commands::backup::backup_copy_to_folder,
             $crate::commands::backup::backup_set_daily,
             $crate::commands::backup::backup_set_daily_folder,
+            $crate::commands::backup::backup_pick_folder,
             $crate::commands::backup::backup_verify,
             $crate::commands::backup::backup_request_restore,
             $crate::commands::backup::backup_cancel_restore,
@@ -211,12 +212,6 @@ pub fn run() {
             let paths = paths::AppPaths::ensure(&root)?;
             let guard = logging::init(&paths.logs);
             tracing::info!(version = env!("CARGO_PKG_VERSION"), "Pusthakam starting");
-            if let Err(error) = services::backup::adopt_installer_folder(
-                &paths,
-                launch_at_startup::installer_backup_folder(),
-            ) {
-                tracing::warn!(%error, "Could not record the installer's daily backup folder");
-            }
             let (library_lock, exclusive) = services::backup::startup_lock(&paths)?;
             let mut conn = db::open_with_pre_upgrade(&paths.database, |source| {
                 services::backup::create(source, &paths.backups)?;
