@@ -77,6 +77,10 @@ Build later: attractive librarian-focused homepage with a clear path to trying P
 
 The installer installs for all users and offers `C:\Program Files (x86)\Pusthakam` as the default folder. The daily backup folder is chosen in the library setup wizard (Backups step, with a folder dialog), not in the installer, and can be changed later on the Database Backups page. Status: IMPLEMENTED; awaiting the owner's install test on Windows. See PROGRESS.md, 28 November 2026.
 
+## "Other" library type in setup — owner request, 28 November 2026
+
+Add an **Other** library type to the setup wizard's "Type of library" list (owner request 28 Nov 2026), for libraries that are not a school, college, university, public, special, research, institutional or private collection. Plan: new profile code `other` in `src-tauri/src/domain/profiles.rs` with general starting defaults (members/staff categories, standard loan rules), label and hint in `src/features/setup/SetupWizard.tsx` plus Malayalam text, `ProfileCode` in `src/lib/api/types.ts`; `libraries.profile` has a CHECK list in `0001_core.sql`, so a new migration (0028) must rebuild that table to allow `other` (never edit 0001). Tests: setup with `other` in `services/setup.rs` and the IPC setup test, wizard Vitest. Status: NOT STARTED.
+
 ## Online web demo on GitHub Pages — owner request, 28 November 2026
 
 Owner: "we have to setup a demo staff account and opac (with a demo member login). so users can experience the app before downloading the app. this should be a web demo done on GitHub pages (for now)."

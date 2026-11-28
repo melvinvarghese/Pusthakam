@@ -43,6 +43,8 @@ Suggested order: section 1, then the [owner] tests in section 3, then section 4.
   - [ ] Step 3: read-only screens for the other modules, demo banner and Reset, Pages workflow builds the demo, `noindex` on demo app pages.
   - [ ] **[owner]** Try the demo on a laptop and a phone before it is published.
 
+- [ ] Add an **Other** library type to the setup wizard's "Type of library" list (owner request 28 Nov 2026), for libraries that are not a school, college, university, public, special, research, institutional or private collection. Plan: new profile code `other` in `src-tauri/src/domain/profiles.rs` with general starting defaults (members/staff categories, standard loan rules), label and hint in `src/features/setup/SetupWizard.tsx` plus Malayalam text, `ProfileCode` in `src/lib/api/types.ts`; `libraries.profile` has a CHECK list in `0001_core.sql`, so a new migration (0028) must rebuild that table to allow `other` (never edit 0001). Tests: setup with `other` in `services/setup.rs` and the IPC setup test, wizard Vitest. Status: NOT STARTED.
+
 ## 3. Real-world testing
 
 - [ ] **[owner]** Install from the NSIS installer on a clean Windows PC; click through setup, catalogue, circulation, fines, reports; uninstall and reinstall and confirm data survives. Source: DEVELOPMENT_ROADMAP phases 2-4, S-R05.
