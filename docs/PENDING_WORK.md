@@ -23,11 +23,15 @@ Suggested order: section 1, then the [owner] tests in section 3, then section 4.
 ## 2. Features not built yet
 
 - [ ] Polished report designs by default plus an unchecked "Use simple report design" option (preview, PDF, print, styled XLSX; CSV stays data-only). Source: DEVELOPMENT_ROADMAP "Planned report presentation enhancement", REPORT_DESIGN_PLAN.md.
-- [ ] Author and publisher authority records, subject hierarchies, bulk edit and bulk delete (archive, never hard delete). Source: KI-017.
+- [ ] **Post-release Koha parity 1:** Author, publisher and subject authority records; subject hierarchies; merge/rename; and permissioned bulk edit/archive (never hard delete). Keep routine catalogue workflows simple. Source: DEVELOPMENT_ROADMAP "Deferred Koha-parity additions", KI-017.
+- [ ] **Post-release Koha parity 2:** Optional patron purchase suggestions in the OPAC, with a staff review queue that can create an acquisition request/order after approval. Source: DEVELOPMENT_ROADMAP "Deferred Koha-parity additions".
+- [ ] **Post-release Koha parity 3:** Explicit, optional online Z39.50/SRU copy cataloguing in Add Record; import a selected external bibliographic record into the local catalogue without making daily use network-dependent. Source: DEVELOPMENT_ROADMAP "Deferred Koha-parity additions".
+- [ ] **Post-release Koha parity 4:** Richer serials operations: configurable issue-number patterns, routing lists, renewal reminders and vendor claim notices. Source: DEVELOPMENT_ROADMAP "Deferred Koha-parity additions".
 - [x] OPAC browse categories instead of DDC class buttons (owner decision 27 Nov 2026, DECISIONS "OPAC browse categories"). Done 27 Nov 2026 on branch `opac-browse-categories`: migration 0025, Rust tests `services::browse_categories::tests::*`, `services::lan::tests` OPAC filter test, IPC tests `browse_categories_drive_record_categories_and_need_permission` and the `/api/opac/categories` route check; Vitest `browseCategories.test.ts`.
 - [ ] **[owner]** Check the new OPAC category buttons and the default category list on a real catalogue; rename, add or archive categories to suit the library. Source: DECISIONS "OPAC browse categories".
 - [ ] Optional: a parent level for browse categories (Fiction → Malayalam Fiction), Malayalam display names for categories, and bulk "add category to selected books" in the catalogue. Source: DECISIONS "OPAC browse categories".
 - [ ] Import step that maps source codes (e.g. MAIN, BK) to proper location, collection and item-category names. Source: KI-019.
+- [ ] **Import workflow expansion:** Owner is not satisfied with the current import feature because it is too limiting. Before implementation, inspect the current CSV/XLSX/MARC/Koha import paths with real source files and define the missing mappings, field coverage, duplicate handling, error correction, preview/review and history/import requirements. Preserve transactional rollback and never silently discard unmatched data. Source: DEVELOPMENT_ROADMAP "Import workflow expansion requirement". Status: NOT STARTED; scope needs owner examples/acceptance criteria.
 - [ ] Preset layouts for common die-cut label sheets. Source: KI-020, KI-023.
 - [ ] MARC-8 encoded MARC import (UTF-8 MARC, MARCXML, JSON and XLSX already exist; update KI-016 text). Source: KI-016.
 - [ ] Currencies with other than 2 decimal places (e.g. JPY). Source: KI-012.
@@ -44,6 +48,7 @@ Suggested order: section 1, then the [owner] tests in section 3, then section 4.
   - [ ] **[owner]** Try the demo on a laptop and a phone before it is published.
 
 - [ ] Add an **Other** library type to the setup wizard's "Type of library" list (owner request 28 Nov 2026), for libraries that are not a school, college, university, public, special, research, institutional or private collection. Plan: new profile code `other` in `src-tauri/src/domain/profiles.rs` with general starting defaults (members/staff categories, standard loan rules), label and hint in `src/features/setup/SetupWizard.tsx` plus Malayalam text, `ProfileCode` in `src/lib/api/types.ts`; `libraries.profile` has a CHECK list in `0001_core.sql`, so a new migration (0028) must rebuild that table to allow `other` (never edit 0001). Tests: setup with `other` in `services/setup.rs` and the IPC setup test, wizard Vitest. Status: NOT STARTED.
+- [ ] Simplify first-run language selection (owner request 28 Nov 2026): show it only on setup step 1; retain the choice silently for every later step; change the control label from `Language / ഭാഷ` to `Language`; keep `English` and `മലയാളം` as the dropdown choices. Preserve the per-device setting, immediate translation behaviour, entered setup data and accessibility label association. Tests: update `SetupWizard` language tests for step-one-only visibility, English/Malayalam selection and preserved submission data. Source: DEVELOPMENT_ROADMAP "Setup-wizard language selection simplification". Status: NOT STARTED.
 
 ## 3. Real-world testing
 

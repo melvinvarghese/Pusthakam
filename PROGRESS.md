@@ -1,5 +1,23 @@
 # PROGRESS
 
+## Import workflow expansion requirement recorded (documentation only)
+
+2026-11-28T18:00:00+05:30
+
+Owner is not satisfied with the current import feature because it is too limiting. Recorded a deferred requirement to inspect the existing CSV/XLSX/MARC/Koha workflows against representative source files and define the missing capability before implementation. Import safety—preview, confirmation, rollback, reconciliation and no silent data loss—remains mandatory. No source, tests, weights or release status changed.
+
+## Setup-wizard language selection simplification recorded (documentation only)
+
+2026-11-28T18:00:00+05:30
+
+Owner requested a later UI refinement: show language selection only on the first setup step, retain it for the rest of setup, change its label to **Language**, and keep **English** / **മലയാളം** as the choices. Recorded in `docs/DEVELOPMENT_ROADMAP.md` and `docs/PENDING_WORK.md`; no source, tests, weights or release status changed.
+
+## Four deferred Koha-parity features recorded (documentation only)
+
+2026-11-28T18:00:00+05:30
+
+Owner asked to retain four later enhancements without starting implementation: (1) authority control and safe bulk catalogue work, (2) patron purchase suggestions, (3) optional online Z39.50/SRU copy cataloguing, and (4) richer serials operations. They are documented in `docs/DEVELOPMENT_ROADMAP.md` and `docs/PENDING_WORK.md` as post-release work. Default daily workflows must remain simple; no source code, tests, product weights or release status changed.
+
 ## Backup install test, branch cleanup and installer fixes (desktop E:\Git\Pusthakam, not pushed)
 
 2026-11-28T12:30:00Z

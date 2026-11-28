@@ -17,6 +17,17 @@ Status key: NOT STARTED · IN PROGRESS · IMPLEMENTED · VERIFIED · BLOCKED
 
 > **Open work checklist (added 27 November 2026):** [PENDING_WORK.md](PENDING_WORK.md) lists everything still open apart from Malayalam translation, with the source of each item. Note: the phase statuses above for 6, 7, 7b and 8 are out of date (much of that work exists); see PENDING_WORK.md section 5.
 
+## Deferred Koha-parity additions (owner direction, 28 November 2026)
+
+These are deliberate post-release enhancements, not prerequisites for the v1 release. They must preserve Pusthakam's simple default workflows: a library that does not need an enhancement must not have to configure or see its complexity.
+
+1. **Authority control and safe bulk catalogue work** — author, publisher and subject authority records; merge/rename; subject hierarchies; and permissioned bulk edit/archive actions. Build on the existing Classification & Authorities area.
+2. **Patron purchase suggestions** — an optional OPAC suggestion form and a staff review queue that can create an acquisition request/order after approval.
+3. **Z39.50/SRU copy cataloguing** — an explicit, user-initiated external catalogue search/import in the Add Record flow. It remains optional and online-only; routine Pusthakam use stays fully offline.
+4. **Richer serials operations** — configurable issue-number patterns, routing lists, renewal reminders, and vendor claim notices.
+
+Sequence these after the current release/security/real-library validation work. Do not add general ERM, preservation, POS, ILL, RFID/SIP2, plug-in infrastructure or enterprise consortium features unless real customer demand justifies separate scope.
+
 ## Several computers on one network (LAN mode), owner request 2026-11-15
 Was **not** in the original plan (the brief describes one local database per installation). Added as Phase 7b.
 - **Design:** one computer is the *Library Server*: it holds the only copy of the database and runs a small server inside Pusthakam. The other computers run the same app as *Clients* and connect to it by address plus a one-time pairing code. All rules and permission checks stay in the server, so every librarian sees exactly the same data and each signs in to their own account. Works on a local network with **no internet**.
@@ -45,6 +56,10 @@ Libraries must be able to move their existing data into Pusthakam. Plan:
 - **Phase 4:** migrate members and all available circulation and fine history, including current and closed loans, renewals, reservations, and fine settlements.
 - **Always:** staged wizard (preview, map fields, validate, duplicates, errors and warnings, confirm, transactional import, summary), nothing silently discarded, nothing imported without the user's confirmation.
 - **Full migration scope:** carry over all data available from Koha or other source systems, including catalogue and holdings, patrons, circulation and financial history, and other exported records and settings. Validate supported mappings per source and preserve or explicitly report data without a matching Pusthakam field. Reconcile source and destination counts before cutover.
+
+## Import workflow expansion requirement — owner request, 28 November 2026
+
+Owner is not satisfied with the current import feature because it is too limiting. This is a requirement to expand and improve the workflow, not authorization to guess at a solution. Before implementation, obtain representative source files and identify the exact limitations across CSV/XLSX, MARC/MARCXML and Koha import: field mappings, holdings and member data, duplicate resolution, validation messages, correction/retry, preview/review, and import of history or financial data. Retain the existing safety baseline: preview before write, explicit user confirmation, transactional rollback, source/destination count reconciliation, and no silent loss of unmapped data. Status: NOT STARTED; detailed acceptance criteria await owner examples.
 
 ## Phase 1 work breakdown
 1. Toolchain ready (Rust stable, MSVC Build Tools, WebView2 ✔ present).
@@ -80,6 +95,10 @@ The installer installs for all users and offers `C:\Program Files (x86)\Pusthaka
 ## "Other" library type in setup — owner request, 28 November 2026
 
 Add an **Other** library type to the setup wizard's "Type of library" list (owner request 28 Nov 2026), for libraries that are not a school, college, university, public, special, research, institutional or private collection. Plan: new profile code `other` in `src-tauri/src/domain/profiles.rs` with general starting defaults (members/staff categories, standard loan rules), label and hint in `src/features/setup/SetupWizard.tsx` plus Malayalam text, `ProfileCode` in `src/lib/api/types.ts`; `libraries.profile` has a CHECK list in `0001_core.sql`, so a new migration (0028) must rebuild that table to allow `other` (never edit 0001). Tests: setup with `other` in `services/setup.rs` and the IPC setup test, wizard Vitest. Status: NOT STARTED.
+
+## Setup-wizard language selection simplification — owner request, 28 November 2026
+
+The language selector belongs only on setup step 1. After a user chooses a language, retain the per-device preference and apply translations through the rest of setup without repeatedly showing the control. Its visible label must be **Language**, not `Language / ഭാഷ`; the dropdown options remain **English** and **മലയാളം**. Preserve entered setup data, immediate translation and accessible label association. Status: NOT STARTED; no implementation or verification credit.
 
 ## Online web demo on GitHub Pages — owner request, 28 November 2026
 

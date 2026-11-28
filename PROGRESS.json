@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "lastUpdated": "2026-11-28",
+  "lastUpdated": "2026-11-28T12:30:00Z",
   "currentPhase": "4",
   "currentTask": {
     "title": "Paused until Monday: new Windows installer and setup-wizard backup folder awaiting owner install test",
@@ -3994,6 +3994,24 @@
     {
       "kind": "progress",
       "at": "2026-11-28T12:30:00Z",
+      "title": "Recorded import workflow expansion requirement",
+      "detail": "Owner is not satisfied with the limiting current import workflow. Deferred work requires representative source files and agreed gaps across CSV/XLSX/MARC/Koha imports before implementation; preserve preview, confirmation, rollback, reconciliation and no silent data loss. Documentation only: no source, test, weight or release-status change."
+    },
+    {
+      "kind": "progress",
+      "at": "2026-11-28T12:30:00Z",
+      "title": "Recorded setup-wizard language selection simplification",
+      "detail": "Owner requested that language selection appear only on setup step 1, retain the preference for later steps, use the visible label Language, and keep English and Malayalam as options. Saved as deferred work in DEVELOPMENT_ROADMAP.md and PENDING_WORK.md. Documentation only: no source, test, weight or release-status change."
+    },
+    {
+      "kind": "progress",
+      "at": "2026-11-28T12:30:00Z",
+      "title": "Recorded four deferred Koha-parity enhancements",
+      "detail": "Owner asked to retain, for later implementation: authority control and safe bulk catalogue work; patron purchase suggestions; explicit optional online Z39.50/SRU copy cataloguing; and richer serials operations. They are post-release work in DEVELOPMENT_ROADMAP.md and PENDING_WORK.md; default workflows must remain simple. Documentation only: no source, test, weight or release-status change."
+    },
+    {
+      "kind": "progress",
+      "at": "2026-11-28T12:30:00Z",
       "title": "Installer fixed (per-machine, Program Files (x86)) and backup folder moved to the setup wizard",
       "detail": "First owner install failed because the per-user installer could not write to Program Files (x86). Now perMachine; setup wizard Backups step with folder dialog; installer backup prompt removed. Also fixed committed conflict markers (migration 0027 browse_categories) and cleaned local branches. Awaiting owner install test; desktop commits not pushed."
     },
@@ -5622,7 +5640,7 @@
       "detail": "Replaced dark admin header and vertical facet rail with a public typographic masthead, horizontal Dewey classification ribbon, and mobile-optimized touch cards with swipeable chips. Verified via headless Chrome screenshots and clean ESLint/typecheck runs."
     },
     {
-      "kind": "decision",
+      "kind": "progress",
       "at": "2026-11-27T16:00:00Z",
       "title": "30-day free trial before one-time paid licence",
       "detail": "Owner decided public official release should offer a 30-day free trial with no upfront payment; satisfied users may purchase the one-time licence. Controlled beta/pilot precedes official release. Trial mechanics, expiry policy, price and licence scope remain owner decisions; no implementation claimed."
@@ -5701,6 +5719,12 @@
     "internalOnlyPolicy": "Keep the future-update and price-protection policy internal. Customer-facing messaging focuses on the 30-day trial and one-time payment; do not separately advertise this additional entitlement."
   },
   "decisions": [
+    {
+      "kind": "decision",
+      "at": "2026-11-28",
+      "title": "Four Koha-parity enhancements deferred without expanding the default UI",
+      "detail": "Record for later work: authority/bulk catalogue work, patron purchase suggestions, optional Z39.50/SRU copy cataloguing, and richer serials operations. Build them as optional layers after release/security/real-library validation work; do not make small libraries configure or see unnecessary complexity."
+    },
     {
       "kind": "decision",
       "at": "2026-11-27",

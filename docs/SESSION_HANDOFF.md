@@ -1,5 +1,23 @@
 # Development handoff
 
+## Import workflow expansion requirement recorded (documentation only)
+
+2026-11-28T18:00:00+05:30
+
+Owner reports that the current import feature is too limiting. Do not guess at implementation: first inspect actual CSV/XLSX/MARC/Koha source files and agree the missing mappings, validation/correction, duplicates, preview/review and historical-data requirements. The authoritative requirement is in `docs/DEVELOPMENT_ROADMAP.md`; the checklist item is in `docs/PENDING_WORK.md`. Preserve preview, explicit confirmation, transactional rollback, reconciliation and no silent loss of unmapped data. No code or tests changed.
+
+## Setup-wizard language selection simplification recorded (documentation only)
+
+2026-11-28T18:00:00+05:30
+
+Owner requested a later setup UX refinement: show the language selector only on step 1, retain the selected per-device language silently for later steps, label it **Language** (not `Language / ഭാഷ`), and retain **English** / **മലയാളം** as dropdown choices. Scope and acceptance safeguards are in `docs/DEVELOPMENT_ROADMAP.md` and `docs/PENDING_WORK.md`. No code or tests changed.
+
+## Four deferred Koha-parity features recorded (documentation only)
+
+2026-11-28T18:00:00+05:30
+
+Owner asked to retain, for later work: (1) authority control and safe bulk catalogue actions, (2) optional OPAC patron purchase suggestions flowing into Acquisitions, (3) explicit optional online Z39.50/SRU copy cataloguing, and (4) richer serials operations (issue-number patterns, routing, renewal reminders and vendor claims). `docs/DEVELOPMENT_ROADMAP.md` is the scope source and `docs/PENDING_WORK.md` has the four unchecked implementation items. These are post-release work: preserve simple default workflows and do not begin them until separately authorized. No code or tests changed.
+
 ## Backup install test, branch cleanup and installer fixes (desktop E:\Git\Pusthakam, not pushed)
 
 2026-11-28T12:30:00Z
