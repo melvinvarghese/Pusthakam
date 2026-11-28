@@ -135,7 +135,6 @@ pub const MIGRATIONS: &[Migration] = &[
     },
     Migration {
         version: 25,
-<<<<<<< HEAD
         name: "member_opac_auth",
         sql: include_str!("../../migrations/0025_member_opac_auth.sql"),
     },
@@ -143,10 +142,13 @@ pub const MIGRATIONS: &[Migration] = &[
         version: 26,
         name: "member_profile_fields",
         sql: include_str!("../../migrations/0026_member_profile_fields.sql"),
-=======
+    },
+    Migration {
+        // Written in parallel as 0025 on the browse-categories branch; renumbered when both
+        // branches met on main. No released build ever shipped it as version 25.
+        version: 27,
         name: "browse_categories",
-        sql: include_str!("../../migrations/0025_browse_categories.sql"),
->>>>>>> 85521d18193ad76b95a73ecca5d3bc79dd0639d6
+        sql: include_str!("../../migrations/0027_browse_categories.sql"),
     },
 ];
 

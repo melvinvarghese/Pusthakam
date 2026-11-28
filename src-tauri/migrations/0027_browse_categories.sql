@@ -1,4 +1,4 @@
--- 0025_browse_categories: member-facing browse categories for the public catalogue (OPAC).
+-- 0027_browse_categories: member-facing browse categories for the public catalogue (OPAC).
 -- Categories are plain names such as "Malayalam Fiction" or "Physics", managed by staff and kept
 -- separate from catalogue subject headings and class numbers. Each category may carry DDC prefix
 -- rules (comma-separated, e.g. '530' or '894.8123') so records are placed automatically from their

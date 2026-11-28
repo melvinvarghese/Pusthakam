@@ -1,6 +1,5 @@
 # PROGRESS
 
-<<<<<<< HEAD
 ## PAUSED until Monday: Member Profile Batches 1–2, OPAC credentials & README updated
 
 2026-11-27T15:34:01.261Z
@@ -14,7 +13,7 @@ Completed before pause:
 - **Member Profile Batch 2:** Added `members_holds` (with FIFO queue position `#N`), `members_activity` (chronological timeline of loans, returns, renewals, fine settlements, holds, and member audit events with responsible staff), queue position in `opac_patron.rs` + `opac/catalogue.js`, and **Overview / Holds / Activity** tabs in `MemberProfileDialog.tsx`.
 - **Verification:** `npm.cmd run typecheck` passed; `npm.cmd run lint` passed; `npx.cmd vitest run src/features/members/` passed (2 files, 8 tests); `cargo test services::members` passed (1/1); `cargo test opac_patron` passed (3/3).
 - **Next on Monday:** Resume on explicit owner instruction; review/commit local changes and choose between Member Profile Batch 3 (fine receipts, account statement, HTTP `/api/opac/patron/*` integration tests), Malayalam 519 reconciliation, or `docs/PENDING_WORK.md` Section 1 (Safety & Security Fixes).
-=======
+
 ## OPAC browse categories implemented (branch opac-browse-categories)
 
 2026-11-27T16:00:00Z
@@ -26,8 +25,6 @@ Owner decision (DECISIONS "OPAC browse categories"): members browse the OPAC by 
 - Staff UI: Classification & Authorities → Browse Categories tab; category chips on the record form (pre-filled from the DDC number); categories on the record page.
 - Status: IMPLEMENTED. Verified with `cargo test` (all suites pass; `staff_web` needs a built `dist/`), `cargo clippy -D warnings`, `cargo fmt --check`, `npm run typecheck`, `npm run lint`, Vitest 51 files / 280 tests. Not yet checked in a browser on a real catalogue.
 
-<<<<<<< Updated upstream
->>>>>>> 85521d18193ad76b95a73ecca5d3bc79dd0639d6
 ## Public website rebuilt (branch website-redesign)
 
 2026-11-27T13:05:00Z
