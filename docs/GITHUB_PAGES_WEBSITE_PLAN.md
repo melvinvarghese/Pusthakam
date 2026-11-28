@@ -39,6 +39,10 @@ No product roadmap weight or completion credit is added for this website plan. P
 
 Later narrow exception (20 November 2026): the owner authorized only a responsive overflow fix for long inline code on the FAQ page. The broader website plan remains deferred, with no desktop/v1 product credit.
 
+## Online demo — owner request, 28 November 2026
+
+The live site (redesigned and published 27 November 2026) will get a **Try the demo** route at `/Pusthakam/demo/`: a landing page with the demo staff sign-in and the demo OPAC member sign-in, a button on Home and Get Pusthakam, and a line on Status. The demo app and OPAC pages are `noindex`; the landing page goes in `sitemap.xml`. `pages.yml` will build the demo with Node and publish it next to `website/`. Copy must say it is sample data running in the browser, and must not say "free". Full plan: [WEB_DEMO_PLAN.md](WEB_DEMO_PLAN.md). Not started.
+
 ## Initial visual direction, for later review
 
 The preliminary concept is a librarian's desk and classification-spine composition using Pusthakam's shelf-ink blue, white surfaces, classification colors and existing brand assets. Use clear navigation, readable long-form articles and practical product examples rather than a generic repeated-card landing page. This is a starting proposal, not an approved final design.

@@ -55,3 +55,6 @@ Melvin: members "don't wanna know the numbers. they just want to know the classi
 - The OPAC shows only categories that hold visible books, with counts, and never shows class numbers in result rows. The book detail shows "Where to find it" (location plus shelf call number). Staff screens, spine labels and exports keep DDC unchanged.
 - Later: an optional parent level (Fiction → Malayalam Fiction) can cover the "subject hierarchies" item in PENDING_WORK; Malayalam display names for categories are not built yet.
 
+## Online web demo on GitHub Pages — owner request, 28 November 2026
+
+Melvin asked for a demo staff account and an OPAC with a demo member login, so people can try Pusthakam before downloading it, as a web demo on GitHub Pages for now. Proposed approach (not yet confirmed by the owner): static demo build of the real frontend and OPAC with an in-browser stand-in backend and sample data, kept out of desktop builds the same way as the D-023 preview. See WEB_DEMO_PLAN.md. Not started.
