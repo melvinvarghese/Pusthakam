@@ -16,7 +16,7 @@ Suggested order: section 1, then the [owner] tests in section 3, then section 4.
 - [ ] **[owner]** Try the new Windows installer once: backup-folder prompt, Pusthakam starting with Windows in the tray (hidden icons), a dated daily file in the chosen folder, and the warning after unplugging the USB drive. Source: KI-027.
 - [ ] Optional, if wanted later: weekly and monthly backup copies, and a "last backup copied off this computer" dashboard warning. Source: S-R01.
 - [ ] **[owner]** Decide how to protect staff sign-in on Wi-Fi: HTTPS on the LAN, or browser staff access off by default with a warning. Then implement and update DECISIONS D-026. Source: S-R02, KI-028.
-- [ ] Remove the old LAN staff API (`/api/lan/pair`, `/api/staff/login`, `/api/staff/circulation/*`, `GET /api/lan/status` fingerprint leak) from `handle_http_connection` in `src-tauri/src/services/lan.rs`; keep only the `/api/staff/commands` gateway. Source: S-R03, KI-029.
+- [ ] _(Implemented 28 Nov 2026, awaiting `cargo test` before ticking.)_ Remove the old LAN staff API (`/api/lan/pair`, `/api/staff/login`, `/api/staff/circulation/*`, `GET /api/lan/status` fingerprint leak) from `handle_http_connection` in `src-tauri/src/services/lan.rs`; keep only the `/api/staff/commands` gateway. Source: S-R03, KI-029.
 - [ ] Add an on/off setting for online cover lookups (contacts `covers.openlibrary.org`, sends ISBNs) and mention it in README's privacy section. Source: S-R15.
 - [ ] Review `npm audit` and run `cargo audit` before release. Source: KI-006.
 

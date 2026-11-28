@@ -954,11 +954,6 @@ fn handle_http_connection(
     let method = head.method.as_str();
     let uri = head.target.as_str();
 
-    if method == "OPTIONS" {
-        let cors_resp = "HTTP/1.1 204 No Content\r\nAccess-Control-Allow-Origin: *\r\nAccess-Control-Allow-Methods: GET, POST, OPTIONS\r\nAccess-Control-Allow-Headers: Authorization, Content-Type\r\nContent-Length: 0\r\n\r\n";
-        return stream.write_all(cors_resp.as_bytes());
-    }
-
     let mut conn = match Connection::open(db_path) {
         Ok(c) => {
             let _ = c.busy_timeout(Duration::from_secs(5));
@@ -970,287 +965,6 @@ fn handle_http_connection(
             return stream.write_all(resp.as_bytes());
         }
     };
-
-    // Route: GET /api/lan/status
-    if method == "GET" && uri == "/api/lan/status" {
-        if let Ok(config) = get_or_init_config(&conn) {
-            let json = serde_json::to_string(&config).unwrap_or_default();
-            return send_json(&mut stream, 200, &json);
-        }
-    }
-
-    // Route: POST /api/lan/pair
-    if method == "POST" && uri == "/api/lan/pair" {
-        let body = extract_body(&request_str);
-        let pair_req: Result<PairRequest, _> = serde_json::from_str(body);
-        match pair_req {
-            Ok(req) => match pair_client(&conn, &req) {
-                Ok(resp) => {
-                    let json = serde_json::to_string(&resp).unwrap_or_default();
-                    return send_json(&mut stream, 200, &json);
-                }
-                Err(e) => {
-                    let status = match e {
-                        AppError::Validation(_) => 400,
-                        AppError::Permission(_) => 403,
-                        AppError::Conflict(_) => 409,
-                        _ => 400,
-                    };
-                    let json = serde_json::json!({ "error": e.to_string() }).to_string();
-                    return send_json(&mut stream, status, &json);
-                }
-            },
-            Err(e) => {
-                let json = serde_json::json!({ "error": format!("Invalid JSON request: {e}") })
-                    .to_string();
-                return send_json(&mut stream, 400, &json);
-            }
-        }
-    }
-
-    // Route: POST /api/staff/login
-    if method == "POST" && uri == "/api/staff/login" {
-        let config = match get_or_init_config(&conn) {
-            Ok(c) => c,
-            Err(e) => {
-                let json = serde_json::json!({ "error": e.to_string() }).to_string();
-                return send_json(&mut stream, 500, &json);
-            }
-        };
-        if !config.enabled || !config.browser_staff_enabled {
-            let json =
-                serde_json::json!({ "error": "Browser staff access is currently disabled." })
-                    .to_string();
-            return send_json(&mut stream, 403, &json);
-        }
-
-        let body = extract_body(&request_str);
-        let login_req: Result<LanLoginRequest, _> = serde_json::from_str(body);
-        match login_req {
-            Ok(req) => match lan_login(&conn, &req) {
-                Ok(resp) => {
-                    let json = serde_json::to_string(&resp).unwrap_or_default();
-                    return send_json(&mut stream, 200, &json);
-                }
-                Err(e) => {
-                    let status = match e {
-                        AppError::Auth(_) => 401,
-                        AppError::Permission(_) => 403,
-                        AppError::Conflict(_) => 409,
-                        _ => 400,
-                    };
-                    let json = serde_json::json!({ "error": e.to_string() }).to_string();
-                    return send_json(&mut stream, status, &json);
-                }
-            },
-            Err(e) => {
-                let json = serde_json::json!({ "error": format!("Invalid JSON request: {e}") })
-                    .to_string();
-                return send_json(&mut stream, 400, &json);
-            }
-        }
-    }
-
-    // Route: GET /api/staff/me
-    if method == "GET" && uri == "/api/staff/me" {
-        let token = match extract_bearer_token(&request_str) {
-            Some(t) => t,
-            None => {
-                let json =
-                    serde_json::json!({ "error": "Missing Authorization header" }).to_string();
-                return send_json(&mut stream, 401, &json);
-            }
-        };
-        match verify_lan_session(&conn, &token) {
-            Ok((session, client_id)) => {
-                let mut perms: Vec<String> = session.permissions.into_iter().collect();
-                perms.sort();
-                let json = serde_json::json!({
-                    "userId": session.user_id,
-                    "username": session.username,
-                    "displayName": session.display_name,
-                    "role": session.role,
-                    "permissions": perms,
-                    "clientId": client_id,
-                })
-                .to_string();
-                return send_json(&mut stream, 200, &json);
-            }
-            Err(e) => {
-                let json = serde_json::json!({ "error": e.to_string() }).to_string();
-                return send_json(&mut stream, 401, &json);
-            }
-        }
-    }
-
-    // Route: POST /api/staff/circulation/issue
-    if method == "POST" && uri == "/api/staff/circulation/issue" {
-        let token = match extract_bearer_token(&request_str) {
-            Some(t) => t,
-            None => {
-                let json =
-                    serde_json::json!({ "error": "Missing Authorization header" }).to_string();
-                return send_json(&mut stream, 401, &json);
-            }
-        };
-        let (session, _) = match verify_lan_session(&conn, &token) {
-            Ok(s) => s,
-            Err(e) => {
-                let json = serde_json::json!({ "error": e.to_string() }).to_string();
-                return send_json(&mut stream, 401, &json);
-            }
-        };
-
-        if let Err(e) = session.require("circulation.issue") {
-            let json = serde_json::json!({ "error": e.to_string() }).to_string();
-            return send_json(&mut stream, 403, &json);
-        }
-
-        let body = extract_body(&request_str);
-        let issue_req: Result<StaffIssueRequest, _> = serde_json::from_str(body);
-        match issue_req {
-            Ok(req) => {
-                let preview_res = crate::services::circulation::prepare_issue(
-                    &mut conn,
-                    &req.member_number,
-                    &req.barcode,
-                );
-                match preview_res {
-                    Ok(preview) => {
-                        match crate::services::circulation::issue(
-                            &mut conn,
-                            &session,
-                            &req.member_number,
-                            &req.barcode,
-                            (preview.member_id, preview.item_id, &preview.due_on),
-                        ) {
-                            Ok(()) => {
-                                let resp = StaffIssueResponse {
-                                    success: true,
-                                    member_name: preview.member_name,
-                                    title: preview.title,
-                                    due_on: preview.due_on,
-                                };
-                                let json = serde_json::to_string(&resp).unwrap_or_default();
-                                return send_json(&mut stream, 200, &json);
-                            }
-                            Err(e) => {
-                                let status = match e {
-                                    AppError::Conflict(_) => 409,
-                                    AppError::Validation(_) => 400,
-                                    _ => 500,
-                                };
-                                let json =
-                                    serde_json::json!({ "error": e.to_string() }).to_string();
-                                return send_json(&mut stream, status, &json);
-                            }
-                        }
-                    }
-                    Err(e) => {
-                        let status = match e {
-                            AppError::NotFound(_) => 404,
-                            AppError::Conflict(_) => 409,
-                            AppError::Validation(_) => 400,
-                            _ => 500,
-                        };
-                        let json = serde_json::json!({ "error": e.to_string() }).to_string();
-                        return send_json(&mut stream, status, &json);
-                    }
-                }
-            }
-            Err(e) => {
-                let json = serde_json::json!({ "error": format!("Invalid JSON request: {e}") })
-                    .to_string();
-                return send_json(&mut stream, 400, &json);
-            }
-        }
-    }
-
-    // Route: POST /api/staff/circulation/return
-    if method == "POST" && uri == "/api/staff/circulation/return" {
-        let token = match extract_bearer_token(&request_str) {
-            Some(t) => t,
-            None => {
-                let json =
-                    serde_json::json!({ "error": "Missing Authorization header" }).to_string();
-                return send_json(&mut stream, 401, &json);
-            }
-        };
-        let (session, _) = match verify_lan_session(&conn, &token) {
-            Ok(s) => s,
-            Err(e) => {
-                let json = serde_json::json!({ "error": e.to_string() }).to_string();
-                return send_json(&mut stream, 401, &json);
-            }
-        };
-
-        if let Err(e) = session.require("circulation.issue") {
-            let json = serde_json::json!({ "error": e.to_string() }).to_string();
-            return send_json(&mut stream, 403, &json);
-        }
-
-        let body = extract_body(&request_str);
-        let return_req: Result<StaffReturnRequest, _> = serde_json::from_str(body);
-        match return_req {
-            Ok(req) => {
-                let preview_res = crate::services::circulation::prepare_return(&conn, &req.barcode);
-                match preview_res {
-                    Ok(preview) => {
-                        let condition = match req.condition.as_deref() {
-                            Some("damaged") => {
-                                crate::services::circulation::ReturnCondition::Damaged
-                            }
-                            Some("lost") => crate::services::circulation::ReturnCondition::Lost,
-                            _ => crate::services::circulation::ReturnCondition::Available,
-                        };
-                        match crate::services::circulation::return_copy(
-                            &mut conn,
-                            &session,
-                            preview.loan_id,
-                            condition,
-                        ) {
-                            Ok(fine) => {
-                                let resp = StaffReturnResponse {
-                                    success: true,
-                                    member_name: preview.member_name,
-                                    title: preview.title,
-                                    due_on: preview.due_on,
-                                    has_fine: fine.is_some(),
-                                };
-                                let json = serde_json::to_string(&resp).unwrap_or_default();
-                                return send_json(&mut stream, 200, &json);
-                            }
-                            Err(e) => {
-                                let status = match e {
-                                    AppError::Conflict(_) => 409,
-                                    AppError::Validation(_) => 400,
-                                    _ => 500,
-                                };
-                                let json =
-                                    serde_json::json!({ "error": e.to_string() }).to_string();
-                                return send_json(&mut stream, status, &json);
-                            }
-                        }
-                    }
-                    Err(e) => {
-                        let status = match e {
-                            AppError::NotFound(_) => 404,
-                            AppError::Conflict(_) => 409,
-                            AppError::Validation(_) => 400,
-                            _ => 500,
-                        };
-                        let json = serde_json::json!({ "error": e.to_string() }).to_string();
-                        return send_json(&mut stream, status, &json);
-                    }
-                }
-            }
-            Err(e) => {
-                let json = serde_json::json!({ "error": format!("Invalid JSON request: {e}") })
-                    .to_string();
-                return send_json(&mut stream, 400, &json);
-            }
-        }
-    }
 
     // Public covers expose only an active record's stored image, never a filesystem path.
     if method == "GET" && uri.starts_with("/api/opac/cover/") {
@@ -1549,295 +1263,6 @@ fn handle_http_connection(
         }
     }
 
-    // Route: GET /staff -> Mobile/Tablet Friendly Staff Portal HTML Page
-    if method == "GET" && uri == "/staff" {
-        let config = get_or_init_config(&conn).ok();
-        let server_name = config
-            .as_ref()
-            .map(|c| c.server_name.as_str())
-            .unwrap_or("Pusthakam Staff Portal");
-        let browser_staff_on = config
-            .as_ref()
-            .map(|c| c.enabled && c.browser_staff_enabled)
-            .unwrap_or(false);
-
-        let html = if !browser_staff_on {
-            r#"<!DOCTYPE html>
-<html lang="en">
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Access Disabled</title>
-<style>body { font-family: sans-serif; background: #f8fafc; color: #1e293b; padding: 40px 20px; text-align: center; }
-.card { max-width: 500px; margin: 0 auto; background: white; padding: 32px; border-radius: 12px; border: 1px solid #e2e8f0; }
-h1 { color: #dc2626; font-size: 20px; }
-p { color: #64748b; font-size: 15px; line-height: 1.5; }
-</style></head>
-<body><div class="card"><h1>Browser Staff Access Disabled</h1>
-<p>The library administrator has not enabled browser staff access for this server.<br/>Enable it in <strong>Settings &rarr; Local Network</strong> on the main desktop app.</p></div></body></html>"#.to_string()
-        } else {
-            format!(
-                r#"<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>{server_name} — Staff Circulation</title>
-<style>
-* {{ box-sizing: border-box; }}
-body {{ font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; margin: 0; padding: 16px; background: #f1f5f9; color: #0f172a; }}
-.container {{ max-width: 600px; margin: 0 auto; }}
-.header {{ display: flex; justify-content: space-between; align-items: center; background: white; padding: 16px 20px; border-radius: 12px; border: 1px solid #e2e8f0; margin-bottom: 16px; }}
-.header h1 {{ margin: 0; font-size: 18px; font-weight: 700; color: #0284c7; }}
-.badge {{ display: inline-block; padding: 2px 8px; font-size: 11px; font-weight: 600; border-radius: 9999px; background: #e0f2fe; color: #0369a1; }}
-.card {{ background: white; padding: 20px; border-radius: 12px; border: 1px solid #e2e8f0; margin-bottom: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }}
-.tabs {{ display: flex; gap: 8px; margin-bottom: 16px; }}
-.tab-btn {{ flex: 1; padding: 10px; border: 1px solid #cbd5e1; background: white; border-radius: 8px; font-weight: 600; font-size: 14px; cursor: pointer; text-align: center; }}
-.tab-btn.active {{ background: #0284c7; color: white; border-color: #0284c7; }}
-label {{ display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; color: #475569; }}
-input, select {{ width: 100%; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 15px; margin-bottom: 14px; outline: none; }}
-input:focus {{ border-color: #0284c7; ring: 2px solid #bae6fd; }}
-button.submit-btn {{ width: 100%; padding: 12px; background: #0284c7; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; }}
-button.submit-btn:hover {{ background: #0369a1; }}
-button.ghost-btn {{ padding: 6px 12px; background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; }}
-.alert {{ padding: 12px 16px; border-radius: 8px; font-size: 14px; margin-top: 14px; display: none; }}
-.alert-success {{ background: #dcfce7; color: #166534; border: 1px solid #bbf7d0; }}
-.alert-error {{ background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }}
-</style>
-</head>
-<body>
-<div class="container">
-  <div class="header">
-    <div>
-      <span class="badge">LAN Staff Access</span>
-      <h1>{server_name}</h1>
-    </div>
-    <div id="userStatus" style="text-align: right; display: none;">
-      <div id="userNameDisplay" style="font-size: 13px; font-weight: 600;"></div>
-      <button class="ghost-btn" onclick="logout()" style="margin-top: 4px;">Sign Out</button>
-    </div>
-  </div>
-
-  <!-- Pairing Card (if device not yet paired) -->
-  <div id="pairingCard" class="card" style="display: none;">
-    <h2 style="margin: 0 0 8px; font-size: 18px;">Pair This Device</h2>
-    <p style="font-size: 14px; color: #64748b; margin: 0 0 16px;">Enter the 6-character single-use pairing code generated by the library administrator.</p>
-    <label>Pairing Code</label>
-    <input type="text" id="pairingCodeInput" placeholder="e.g. 7K9X2A" style="text-transform: uppercase; letter-spacing: 2px; font-weight: 700; font-size: 18px;" />
-    <label>Device Name</label>
-    <input type="text" id="deviceNameInput" value="Staff Mobile/Tablet" />
-    <button class="submit-btn" onclick="pairDevice()">Pair Device</button>
-    <div id="pairingAlert" class="alert"></div>
-  </div>
-
-  <!-- Login Card (if paired but no active token) -->
-  <div id="loginCard" class="card" style="display: none;">
-    <h2 style="margin: 0 0 8px; font-size: 18px;">Staff Sign In</h2>
-    <p style="font-size: 14px; color: #64748b; margin: 0 0 16px;">Sign in with your library staff credentials.</p>
-    <label>Username</label>
-    <input type="text" id="loginUsername" placeholder="Enter username" />
-    <label>Password</label>
-    <input type="password" id="loginPassword" placeholder="Enter password" />
-    <button class="submit-btn" onclick="loginStaff()">Sign In</button>
-    <div id="loginAlert" class="alert"></div>
-  </div>
-
-  <!-- Main Circulation Card -->
-  <div id="mainCard" style="display: none;">
-    <div class="tabs">
-      <button class="tab-btn active" id="tabIssueBtn" onclick="switchTab('issue')">Issue Book</button>
-      <button class="tab-btn" id="tabReturnBtn" onclick="switchTab('return')">Return Book</button>
-    </div>
-
-    <!-- Issue Panel -->
-    <div id="issuePanel" class="card">
-      <h2 style="margin: 0 0 14px; font-size: 17px;">Issue Item to Member</h2>
-      <label>Member Number</label>
-      <input type="text" id="issueMemberNo" placeholder="Scan or enter member number" autofocus />
-      <label>Item Barcode</label>
-      <input type="text" id="issueBarcode" placeholder="Scan or enter item barcode" />
-      <button class="submit-btn" onclick="submitIssue()">Complete Issue</button>
-      <div id="issueAlert" class="alert"></div>
-    </div>
-
-    <!-- Return Panel -->
-    <div id="returnPanel" class="card" style="display: none;">
-      <h2 style="margin: 0 0 14px; font-size: 17px;">Return Item</h2>
-      <label>Item Barcode</label>
-      <input type="text" id="returnBarcode" placeholder="Scan or enter item barcode" />
-      <label>Condition</label>
-      <select id="returnCondition">
-        <option value="available">Normal / Available</option>
-        <option value="damaged">Damaged</option>
-        <option value="lost">Lost</option>
-      </select>
-      <button class="submit-btn" onclick="submitReturn()">Complete Return</button>
-      <div id="returnAlert" class="alert"></div>
-    </div>
-  </div>
-</div>
-
-<script>
-let state = {{
-  token: localStorage.getItem('lan_staff_token'),
-  clientId: localStorage.getItem('lan_client_id'),
-  serverFp: localStorage.getItem('lan_server_fp'),
-  user: null,
-}};
-
-function showAlert(elId, isSuccess, msg) {{
-  const el = document.getElementById(elId);
-  el.className = 'alert ' + (isSuccess ? 'alert-success' : 'alert-error');
-  el.innerText = msg;
-  el.style.display = 'block';
-}}
-
-function switchTab(t) {{
-  document.getElementById('issuePanel').style.display = t === 'issue' ? 'block' : 'none';
-  document.getElementById('returnPanel').style.display = t === 'return' ? 'block' : 'none';
-  document.getElementById('tabIssueBtn').className = 'tab-btn' + (t === 'issue' ? ' active' : '');
-  document.getElementById('tabReturnBtn').className = 'tab-btn' + (t === 'return' ? ' active' : '');
-}}
-
-async function init() {{
-  if (!state.clientId || !state.serverFp) {{
-    document.getElementById('pairingCard').style.display = 'block';
-    return;
-  }}
-  if (!state.token) {{
-    document.getElementById('loginCard').style.display = 'block';
-    return;
-  }}
-  // Verify token
-  try {{
-    const res = await fetch('/api/staff/me', {{ headers: {{ 'Authorization': 'Bearer ' + state.token }} }});
-    if (res.ok) {{
-      const user = await res.json();
-      state.user = user;
-      document.getElementById('userNameDisplay').innerText = user.displayName + ' (' + user.role + ')';
-      document.getElementById('userStatus').style.display = 'block';
-      document.getElementById('mainCard').style.display = 'block';
-    }} else {{
-      localStorage.removeItem('lan_staff_token');
-      state.token = null;
-      document.getElementById('loginCard').style.display = 'block';
-    }}
-  }} catch (e) {{
-    document.getElementById('loginCard').style.display = 'block';
-  }}
-}}
-
-async function pairDevice() {{
-  const code = document.getElementById('pairingCodeInput').value.trim();
-  const name = document.getElementById('deviceNameInput').value.trim();
-  if (!code) return showAlert('pairingAlert', false, 'Please enter a pairing code');
-  try {{
-    const res = await fetch('/api/lan/pair', {{
-      method: 'POST',
-      headers: {{ 'Content-Type': 'application/json' }},
-      body: JSON.stringify({{ pairingCode: code, clientName: name, deviceKind: 'browser' }})
-    }});
-    const data = await res.json();
-    if (res.ok) {{
-      localStorage.setItem('lan_client_id', data.clientId);
-      localStorage.setItem('lan_server_fp', data.serverFingerprint);
-      state.clientId = data.clientId;
-      state.serverFp = data.serverFingerprint;
-      document.getElementById('pairingCard').style.display = 'none';
-      document.getElementById('loginCard').style.display = 'block';
-    }} else {{
-      showAlert('pairingAlert', false, data.error || 'Pairing failed');
-    }}
-  }} catch (e) {{
-    showAlert('pairingAlert', false, e.message);
-  }}
-}}
-
-async function loginStaff() {{
-  const u = document.getElementById('loginUsername').value.trim();
-  const p = document.getElementById('loginPassword').value;
-  if (!u || !p) return showAlert('loginAlert', false, 'Enter username and password');
-  try {{
-    const res = await fetch('/api/staff/login', {{
-      method: 'POST',
-      headers: {{ 'Content-Type': 'application/json' }},
-      body: JSON.stringify({{ clientId: state.clientId, serverFingerprint: state.serverFp, username: u, password: p }})
-    }});
-    const data = await res.json();
-    if (res.ok) {{
-      localStorage.setItem('lan_staff_token', data.token);
-      state.token = data.token;
-      document.getElementById('loginCard').style.display = 'none';
-      init();
-    }} else {{
-      showAlert('loginAlert', false, data.error || 'Sign in failed');
-    }}
-  }} catch (e) {{
-    showAlert('loginAlert', false, e.message);
-  }}
-}}
-
-function logout() {{
-  localStorage.removeItem('lan_staff_token');
-  location.reload();
-}}
-
-async function submitIssue() {{
-  const mem = document.getElementById('issueMemberNo').value.trim();
-  const bar = document.getElementById('issueBarcode').value.trim();
-  if (!mem || !bar) return showAlert('issueAlert', false, 'Please enter member number and barcode');
-  try {{
-    const res = await fetch('/api/staff/circulation/issue', {{
-      method: 'POST',
-      headers: {{ 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + state.token }},
-      body: JSON.stringify({{ memberNumber: mem, barcode: bar }})
-    }});
-    const data = await res.json();
-    if (res.ok) {{
-      showAlert('issueAlert', true, 'Successfully issued "' + data.title + '" to ' + data.memberName + ' (Due: ' + data.dueOn + ')');
-      document.getElementById('issueBarcode').value = '';
-    }} else {{
-      showAlert('issueAlert', false, data.error || 'Issue failed');
-    }}
-  }} catch (e) {{
-    showAlert('issueAlert', false, e.message);
-  }}
-}}
-
-async function submitReturn() {{
-  const bar = document.getElementById('returnBarcode').value.trim();
-  const cond = document.getElementById('returnCondition').value;
-  if (!bar) return showAlert('returnAlert', false, 'Please enter barcode');
-  try {{
-    const res = await fetch('/api/staff/circulation/return', {{
-      method: 'POST',
-      headers: {{ 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + state.token }},
-      body: JSON.stringify({{ barcode: bar, condition: cond }})
-    }});
-    const data = await res.json();
-    if (res.ok) {{
-      showAlert('returnAlert', true, 'Successfully returned "' + data.title + '" from ' + data.memberName + (data.hasFine ? ' (Fine assessed)' : ''));
-      document.getElementById('returnBarcode').value = '';
-    }} else {{
-      showAlert('returnAlert', false, data.error || 'Return failed');
-    }}
-  }} catch (e) {{
-    showAlert('returnAlert', false, e.message);
-  }}
-}}
-
-init();
-</script>
-</body>
-</html>"#
-            )
-        };
-        let html = brand_browser_page(html);
-        let resp = format!(
-            "HTTP/1.1 200 OK\r\nContent-Type: text/html; charset=utf-8\r\nContent-Length: {}\r\n\r\n{}",
-            html.len(),
-            html
-        );
-        return stream.write_all(resp.as_bytes());
-    }
-
     // Route: GET / or /opac -> Swiss Stacks public catalogue
     if method == "GET" && (uri == "/" || uri == "/opac") {
         let config = get_or_init_config(&conn).ok();
@@ -1901,19 +1326,6 @@ fn send_patron_json(
         json.len()
     );
     stream.write_all(resp.as_bytes())
-}
-
-fn extract_bearer_token(request_str: &str) -> Option<String> {
-    for line in request_str.lines() {
-        let trimmed = line.trim();
-        if trimmed.to_ascii_lowercase().starts_with("authorization:") {
-            let val = trimmed["authorization:".len()..].trim();
-            if val.to_ascii_lowercase().starts_with("bearer ") {
-                return Some(val["bearer ".len()..].trim().to_string());
-            }
-        }
-    }
-    None
 }
 
 fn extract_body(request_str: &str) -> &str {
@@ -2390,18 +1802,6 @@ mod tests {
         // Start server on free loopback port
         let mut handle = start_lan_listener(db_path, "127.0.0.1", 4399).unwrap();
 
-        // Connect over standard TcpStream to verify HTTP response
-        let mut client = TcpStream::connect("127.0.0.1:4399").unwrap();
-        client
-            .write_all(b"GET /api/lan/status HTTP/1.1\r\nHost: localhost\r\n\r\n")
-            .unwrap();
-
-        let mut resp_buf = [0u8; 1024];
-        let n = client.read(&mut resp_buf).unwrap();
-        let resp = String::from_utf8_lossy(&resp_buf[..n]);
-        assert!(resp.starts_with("HTTP/1.1 200 OK"));
-        assert!(resp.contains("\"serverName\":\"Test HTTP Server\""));
-
         // Test OPAC HTML page response
         let mut client_html = TcpStream::connect("127.0.0.1:4399").unwrap();
         client_html
@@ -2431,38 +1831,10 @@ mod tests {
     }
 
     #[test]
-    fn test_embedded_http_staff_and_circulation_workflow_and_concurrency() {
+    fn test_embedded_http_server_serves_no_legacy_staff_api() {
         let (dir, conn) = test_db();
         let db_path = dir.path().join("test.sqlite3");
         let admin = admin_session();
-
-        // Seed library, member, record, copy, and circulation policy
-        conn.execute("INSERT OR IGNORE INTO libraries (id, name, profile, currency, locale) VALUES (1, 'Test Lib', 'school', 'INR', 'en')", []).unwrap();
-        conn.execute(
-            "INSERT INTO member_categories (id, name, membership_days) VALUES (1, 'General', 365)",
-            [],
-        )
-        .unwrap();
-        conn.execute(
-            "INSERT INTO item_categories (id, name) VALUES (1, 'Book')",
-            [],
-        )
-        .unwrap();
-        conn.execute("INSERT INTO circulation_policies (member_category_id, item_category_id, loan_days, max_loans, max_renewals, renewal_days, fine_per_day_minor, fine_grace_days, fine_cap_minor) VALUES (1, 1, 14, 5, 2, 7, 100, 1, 500)", []).unwrap();
-        conn.execute("INSERT INTO members (id, category_id, member_number, name, expires_on) VALUES (1, 1, 'MEM-001', 'Test Member', date('now', '+30 days'))", []).unwrap();
-        conn.execute(
-            "INSERT INTO locations (id, name) VALUES (1, 'Main Shelf')",
-            [],
-        )
-        .unwrap();
-        conn.execute(
-            "INSERT INTO bibliographic_records (id, title) VALUES (1, 'Rust In Action')",
-            [],
-        )
-        .unwrap();
-        conn.execute("INSERT INTO physical_items (id, record_id, location_id, item_category_id, barcode, accession_no, status) VALUES (1, 1, 1, 1, 'BAR-1001', 'ACC-1001', 'available')", []).unwrap();
-
-        // Enable LAN, OPAC, and Browser Staff
         update_config(
             &conn,
             &admin,
@@ -2478,11 +1850,7 @@ mod tests {
         )
         .unwrap();
 
-        let pair_code = generate_pairing_code(&conn, &admin).unwrap();
-
         let mut handle = start_lan_listener(db_path, "127.0.0.1", 4488).unwrap();
-
-        // Helper to send HTTP request
         let send_req = |req: &str| -> String {
             let mut stream = TcpStream::connect("127.0.0.1:4488").unwrap();
             let _ = stream.set_read_timeout(Some(Duration::from_secs(5)));
@@ -2493,105 +1861,29 @@ mod tests {
             String::from_utf8_lossy(&resp_buf).to_string()
         };
 
-        // 1. Pair client over HTTP POST /api/lan/pair
-        let pair_body = serde_json::json!({
-            "pairingCode": pair_code.code,
-            "clientName": "Staff iPad",
-            "deviceKind": "tablet"
-        })
-        .to_string();
-        let pair_req = format!(
-            "POST /api/lan/pair HTTP/1.1\r\nHost: localhost\r\nContent-Length: {}\r\n\r\n{}",
-            pair_body.len(),
-            pair_body
-        );
-        let pair_resp = send_req(&pair_req);
-        assert!(pair_resp.starts_with("HTTP/1.1 200 OK"));
-        let pair_json: serde_json::Value =
-            serde_json::from_str(pair_resp.split("\r\n\r\n").nth(1).unwrap()).unwrap();
-        let client_id = pair_json["clientId"].as_str().unwrap();
-        let server_fp = pair_json["serverFingerprint"].as_str().unwrap();
+        // KI-029 regression: the old bearer-token staff API and pairing routes are gone.
+        for (method, path) in [
+            ("GET", "/api/lan/status"),
+            ("POST", "/api/lan/pair"),
+            ("POST", "/api/staff/login"),
+            ("GET", "/api/staff/me"),
+            ("POST", "/api/staff/circulation/issue"),
+            ("POST", "/api/staff/circulation/return"),
+        ] {
+            let resp = send_req(&format!(
+                "{method} {path} HTTP/1.1\r\nHost: localhost\r\nContent-Length: 2\r\n\r\n{{}}"
+            ));
+            assert!(
+                resp.starts_with("HTTP/1.1 404 Not Found"),
+                "{method} {path} should be gone, got: {resp}"
+            );
+            assert!(!resp.contains("serverFingerprint"));
+        }
 
-        // 2. Staff Login over HTTP POST /api/staff/login
-        let login_body = serde_json::json!({
-            "clientId": client_id,
-            "serverFingerprint": server_fp,
-            "username": "admin",
-            "password": "admin_pass_123"
-        })
-        .to_string();
-        let login_req = format!(
-            "POST /api/staff/login HTTP/1.1\r\nHost: localhost\r\nContent-Length: {}\r\n\r\n{}",
-            login_body.len(),
-            login_body
-        );
-        let login_resp = send_req(&login_req);
-        assert!(login_resp.starts_with("HTTP/1.1 200 OK"));
-        let login_json: serde_json::Value =
-            serde_json::from_str(login_resp.split("\r\n\r\n").nth(1).unwrap()).unwrap();
-        let token = login_json["token"].as_str().unwrap();
+        // No wildcard cross-origin access on the embedded server.
+        let options = send_req("OPTIONS /api/staff/login HTTP/1.1\r\nHost: localhost\r\n\r\n");
+        assert!(!options.contains("Access-Control-Allow-Origin"));
 
-        // 3. Verify session over HTTP GET /api/staff/me
-        let me_req = format!(
-            "GET /api/staff/me HTTP/1.1\r\nHost: localhost\r\nAuthorization: Bearer {}\r\n\r\n",
-            token
-        );
-        let me_resp = send_req(&me_req);
-        assert!(me_resp.starts_with("HTTP/1.1 200 OK"));
-        assert!(me_resp.contains("\"username\":\"admin\""));
-
-        // 4. Test unauthorized request rejection (missing token)
-        let unauth_req = "GET /api/staff/me HTTP/1.1\r\nHost: localhost\r\n\r\n";
-        let unauth_resp = send_req(unauth_req);
-        assert!(unauth_resp.starts_with("HTTP/1.1 401 Unauthorized"));
-
-        // 5. Staff Circulation Issue over HTTP POST /api/staff/circulation/issue
-        let issue_body = serde_json::json!({
-            "memberNumber": "MEM-001",
-            "barcode": "BAR-1001"
-        })
-        .to_string();
-        let issue_req = format!("POST /api/staff/circulation/issue HTTP/1.1\r\nHost: localhost\r\nAuthorization: Bearer {}\r\nContent-Length: {}\r\n\r\n{}", token, issue_body.len(), issue_body);
-        let issue_resp = send_req(&issue_req);
-        assert!(
-            issue_resp.starts_with("HTTP/1.1 200 OK"),
-            "Unexpected issue response: {}",
-            issue_resp
-        );
-        let issue_json: serde_json::Value =
-            serde_json::from_str(issue_resp.split("\r\n\r\n").nth(1).unwrap()).unwrap();
-        assert_eq!(issue_json["success"], true);
-        assert_eq!(issue_json["title"], "Rust In Action");
-
-        // 6. Concurrency Safety: Attempt to issue the SAME copy concurrently -> Must return 409 Conflict
-        let conflict_resp = send_req(&issue_req);
-        assert!(conflict_resp.starts_with("HTTP/1.1 409 Conflict"));
-        assert!(conflict_resp.contains("unavailable"));
-
-        // 7. Staff Circulation Return over HTTP POST /api/staff/circulation/return
-        let return_body = serde_json::json!({
-            "barcode": "BAR-1001",
-            "condition": "available"
-        })
-        .to_string();
-        let return_req = format!("POST /api/staff/circulation/return HTTP/1.1\r\nHost: localhost\r\nAuthorization: Bearer {}\r\nContent-Length: {}\r\n\r\n{}", token, return_body.len(), return_body);
-        let return_resp = send_req(&return_req);
-        assert!(return_resp.starts_with("HTTP/1.1 200 OK"));
-        let return_json: serde_json::Value =
-            serde_json::from_str(return_resp.split("\r\n\r\n").nth(1).unwrap()).unwrap();
-        assert_eq!(return_json["success"], true);
-        assert_eq!(return_json["title"], "Rust In Action");
-
-        // 8. Staff Portal HTML Page GET /staff
-        let staff_html_req = "GET /staff HTTP/1.1\r\nHost: localhost\r\n\r\n";
-        let staff_html_resp = send_req(staff_html_req);
-        assert!(staff_html_resp.starts_with("HTTP/1.1 200 OK"));
-        assert!(staff_html_resp.contains("Circulation Server — Staff Circulation"));
-        assert!(staff_html_resp.contains("Issue Item to Member"));
-        assert!(staff_html_resp.contains("data:image/png;base64,"));
-        assert!(staff_html_resp.contains("alt=\"Pusthakam\""));
-
-        // Clean shutdown
         handle.stop();
     }
 }
